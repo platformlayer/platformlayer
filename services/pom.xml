@@ -1,0 +1,201 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.platformlayer</groupId>
+        <artifactId>platformlayer-parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>platformlayer-services-parent</artifactId>
+    <name>PlatformLayer :: XaaS :: Parent</name>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>service-image-factory</module>
+        <module>service-apt-cache</module>
+        <module>service-instance-supervisor</module>
+        <module>service-dns</module>
+        <module>service-dnsresolver</module>
+        <module>service-git</module>
+        <module>service-gitlab</module>
+        <module>service-jenkins</module>
+        <module>service-collectd</module>
+        <module>service-postgresql</module>
+        <module>service-tomcat</module>
+        <module>service-jetty</module>
+        <module>service-nexus</module>
+        <module>service-openldap</module>
+        <module>service-wordpress</module>
+        <module>service-mysql</module>
+        <module>service-nginx</module>
+        <module>service-cloud-lxc</module>
+        <module>service-cloud-raw</module>
+        <module>service-cloud-openstack</module>
+        <module>service-image-store</module>
+        <module>service-networks</module>
+        <module>service-federation</module>
+        <!-- Relies on Java 7 <module>service-platformlayer</module> -->
+        <module>service-desktop</module>
+    </modules>
+    <build>
+        <resources>
+            <resource>
+                <directory>${basedir}/src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>${basedir}/src/main/java</directory>
+            </resource>
+            <resource>
+                <directory>${basedir}/src/codegen/java</directory>
+            </resource>
+        </resources>
+
+        <plugins>
+			<!-- Build our XSD -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jaxb2-maven-plugin</artifactId>
+                <version>1.3.1</version>
+                <executions>
+                    <execution>
+                        <id>schemagen</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>schemagen</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <includes>
+                        <include>**/model/**/*.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
+
+    
+            <!-- 
+            <plugin>
+                <groupId>com.sun.tools.jxc.maven2</groupId>
+                <artifactId>maven-jaxb-schemagen-plugin</artifactId>
+                <version>1.2</version>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <project>
+                        ${project}
+                    </project>
+                    <destdir>${project.build.directory}/schemas</destdir>
+                    <srcdir>${basedir}</srcdir>
+                    <includes>
+                        <include>src/main/java/**/model/**/*.java</include>
+                    </includes>
+                    
+                    <verbose>true</verbose>
+                </configuration>
+
+                <dependencies>
+                    <dependency>
+                        <groupId>org.platformlayer</groupId>
+                        <artifactId>codegen-annotations</artifactId>
+                        <version>1.0-SNAPSHOT</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>javax.xml.bind</groupId>
+                        <artifactId>jaxb-api</artifactId>
+                        <version>2.2.6</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.sun.xml.bind</groupId>
+                        <artifactId>jaxb-impl</artifactId>
+                        <version>2.2.4-1</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.sun.xml.bind</groupId>
+                        <artifactId>jaxb-xjc</artifactId>
+                        <version>2.2.4-1</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+ -->
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.7</version>
+                <executions> <!--
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>
+                                    ${basedir}/src/codegen/java
+                                </source>
+                            </sources>
+                        </configuration>
+                    </execution> -->
+                </executions>
+            </plugin>
+
+            <!-- Do Codegen -->
+            <plugin>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>gwt-codegen</artifactId>
+                <version>1.0-SNAPSHOT</version>
+                <executions>
+                    <execution>
+                        <id>codegen-generate</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                </configuration>
+            </plugin>
+        </plugins>
+
+        <pluginManagement>
+            <plugins>
+	            <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>org.platformlayer</groupId>
+                                        <artifactId>gwt-codegen</artifactId>
+                                        <versionRange>[1.0-SNAPSHOT,)</versionRange>
+                                        <goals>
+                                            <goal>generate</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore></ignore>
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+</project>
+

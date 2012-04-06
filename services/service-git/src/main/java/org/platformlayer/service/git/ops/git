@@ -1,0 +1,59 @@
+# Git configuration
+SetEnv GIT_PROJECT_ROOT /var/git/
+SetEnv GIT_HTTP_EXPORT_ALL
+ScriptAliasMatch \
+    "(?x)^/git/(.*/(HEAD | \
+        info/refs | \
+        objects/(info/[^/]+ | \
+            [0-9a-f]{2}/[0-9a-f]{38} | \
+            pack/pack-[0-9a-f]{40}\.(pack|idx)) | \
+        git-(upload|receive)-pack))$" \
+    /usr/lib/git-core/git-http-backend/$1
+#ScriptAlias /git /usr/share/gitweb/index.cgi
+
+<LocationMatch "^/git/.*/git-receive-pack$">
+# TODO: Require SSL because we're using plaintext auth
+#        SSLRequireSSL
+#        Order deny,allow
+#        Deny from All
+        AuthName "GIT Repo"
+        AuthType Basic
+        AuthBasicProvider ldap
+        AuthzLDAPAuthoritative on
+        AuthLDAPURL "${AuthLDAPURL}"
+ #       Require valid-user
+	AuthLDAPBindDN "${AuthLDAPBindDN}" 
+	AuthLDAPBindPassword "${AuthLDAPBindPassword}"
+	
+	# Note that it looks like we _can't_ quote the group DN...
+	Require ldap-group ${requireLdapGroup}
+
+#    AuthType Basic
+#    AuthName "Git repository"
+#    AuthUserFile /var/git/users
+#    Require valid-user
+</LocationMatch>
+
+<LocationMatch "^/git/.*$">
+# TODO: Require SSL because we're using plaintext auth
+#        SSLRequireSSL
+#        Order deny,allow
+#        Deny from All
+        AuthName "GIT Repo"
+        AuthType Basic
+        AuthBasicProvider ldap
+        AuthzLDAPAuthoritative on
+        AuthLDAPURL "${AuthLDAPURL}"
+ #       Require valid-user
+	AuthLDAPBindDN "${AuthLDAPBindDN}" 
+	AuthLDAPBindPassword "${AuthLDAPBindPassword}"
+	
+	# Note that it looks like we _can't_ quote the group DN...
+	Require ldap-group ${requireLdapGroup}
+
+#    AuthType Basic
+#    AuthName "Git repository"
+#    AuthUserFile /var/git/users
+#    Require valid-user
+</LocationMatch>
+

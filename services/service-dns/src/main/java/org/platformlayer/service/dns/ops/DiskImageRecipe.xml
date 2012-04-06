@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<diskImageRecipe xmlns="http://platformlayer.org/service/imagefactory/v1.0">
+	<operatingSystem>
+		<!-- DJB DNS was removed from squeeze, because of a big fight over security 
+			when run as a cache. However, we are using it as an authoritative server, not 
+			a cache. -->
+		<!--  
+        Don't use lenny - not getting security updates
+        <distribution>debian</distribution>
+		<version>lenny</version>-->
+        
+        <distribution>ubuntu</distribution>
+        <version>lucid</version>
+	</operatingSystem>
+
+	<addPackage>monit</addPackage>
+	<addPackage>dbndns</addPackage>
+	<addPackage>daemontools</addPackage>
+</diskImageRecipe>

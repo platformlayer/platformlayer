@@ -1,0 +1,10 @@
+VERSION=1.0-SNAPSHOT
+
+# We use Java 7
+#export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64/
+#JAVA=${JAVA_HOME}/bin/java
+
+JAVA=java
+
+BASE_DIR=${SCRIPT_DIR}/../
+

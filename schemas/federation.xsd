@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema elementFormDefault="qualified" version="1.0" targetNamespace="http://platformlayer.org/service/federation/v1.0" xmlns:ns1="http://platformlayer.org/core/v1.0" xmlns:tns="http://platformlayer.org/service/federation/v1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:import namespace="http://platformlayer.org/core/v1.0" schemaLocation="platformlayer-core.xsd"/>
+
+  <xs:element name="federatedService" type="tns:federatedService"/>
+
+  <xs:element name="federatedServiceMap" type="tns:federatedServiceMap"/>
+
+  <xs:complexType name="federatedService">
+    <xs:complexContent>
+      <xs:extension base="ns1:itemBase">
+        <xs:sequence>
+          <xs:element name="server" type="xs:string" minOccurs="0"/>
+          <xs:element name="tenant" type="xs:string" minOccurs="0"/>
+          <xs:element name="username" type="xs:string" minOccurs="0"/>
+          <xs:element name="secret" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="federatedServiceMap">
+    <xs:complexContent>
+      <xs:extension base="ns1:itemBase">
+        <xs:sequence>
+          <xs:element name="target" type="xs:string" minOccurs="0"/>
+          <xs:element name="serviceType" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+</xs:schema>
+

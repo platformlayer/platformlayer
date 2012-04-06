@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ldapConfiguration>
+  <connectionInfo>
+    <searchBase>${searchBase}</searchBase>
+    <systemUsername>${systemUsername}</systemUsername>
+    <systemPassword>${systemPassword}</systemPassword>
+    <authScheme>simple</authScheme>
+    <protocol>ldap</protocol>
+    <host>${ldapHost}</host>
+    <port>389</port>
+  </connectionInfo>
+  <userAndGroupConfig>
+  <!-- TODO: groupMemberFormat is a bit limiting.
+  The memberOf overlay or equivalent would be a much better solution -->
+    <emailAddressAttribute>mail</emailAddressAttribute>
+    <ldapGroupsAsRoles>true</ldapGroupsAsRoles>
+    <groupBaseDn>ou=Groups</groupBaseDn>
+    <groupIdAttribute>cn</groupIdAttribute>
+    <groupMemberAttribute>member</groupMemberAttribute>
+    <groupMemberFormat>${groupMemberFormat}</groupMemberFormat>
+    <groupObjectClass>groupOfNames</groupObjectClass>
+    <userPasswordAttribute>userPassword</userPasswordAttribute>
+    <userIdAttribute>uid</userIdAttribute>
+    <userObjectClass>inetOrgPerson</userObjectClass>
+    <userBaseDn>ou=Users</userBaseDn>
+    <userRealNameAttribute>cn</userRealNameAttribute>
+  </userAndGroupConfig>
+</ldapConfiguration>

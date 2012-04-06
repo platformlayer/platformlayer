@@ -1,0 +1,5 @@
+firewall: [
+    { port: 22 },
+    { port: 53, protocol: 'tcp' },
+    { port: 53, protocol: 'udp' }
+]

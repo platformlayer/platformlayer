@@ -1,0 +1,9 @@
+repos/
+logs/
+.gwt/
+*~
+.classpath
+.project
+.settings
+target/
+workspace/

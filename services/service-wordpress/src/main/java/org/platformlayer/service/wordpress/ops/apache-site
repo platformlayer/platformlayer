@@ -1,0 +1,11 @@
+<VirtualHost *:80>
+ServerName ${domainName}
+ServerAdmin admin@${domainName}
+DocumentRoot /srv/www/${domainName}
+DirectoryIndex index.php
+<Directory /srv/www/${domainName}/>
+  AllowOverride All
+  Order Deny,Allow
+  Allow from all
+</Directory>
+</VirtualHost>

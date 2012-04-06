@@ -1,0 +1,11 @@
+#!/bin/bash -e
+
+echo $$ > /var/run/dnsdatabasemonitor.pid
+
+while [ 1 ]; do
+	if [ -e /var/dns/dirty ]
+	then 
+		rm /var/dns/dirty
+		tinydns-data /var/dns/records/ || logger -s "Error rebuilding tinydns data"
+	fi
+done

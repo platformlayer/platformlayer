@@ -1,0 +1,51 @@
+<DiskImageRecipe xmlns="http://platformlayer.org/service/imagefactory/v1.0">
+	apt-get install python-twisted
+	apt-get install python-cairo
+	apt-get install python-django
+	apt-get install python-memcache python-ldap
+	apt-get install libapache2-mod-python libapache2-mod-wsgi
+	
+	wget -N http://launchpad.net/graphite/1.0/0.9.8/+download/graphite-web-0.9.8.tar.gz
+	wget -N http://launchpad.net/graphite/1.0/0.9.8/+download/carbon-0.9.8.tar.gz
+	wget -N http://launchpad.net/graphite/1.0/0.9.8/+download/whisper-0.9.8.tar.gz
+	
+	tar zxf graphite-web-0.9.8.tar.gz
+	tar zxf carbon-0.9.8.tar.gz
+	tar zxf whisper-0.9.8.tar.gz
+	
+	pushd whisper-0.9.8
+	python setup.py install
+	popd
+	
+	pushd carbon-0.9.8
+	python setup.py install
+	popd
+
+	pushd graphite-web-0.9.8
+	python setup.py install
+	popd
+	
+	pushd /opt/graphite/conf
+	cp carbon.conf.example carbon.conf
+	cp storage-schemas.conf.example storage-schemas.conf
+	cp graphite.wsgi.example graphite.wsgi
+	#cp dashboard.conf.example dashboard.conf
+	popd
+	
+	cp graphite-web-0.9.8/examples/example-graphite-vhost.conf /etc/apache2/sites-available/graphite-vhost.conf
+	
+	pushd /etc/apache2/sites-enabled/
+	ln -s ../sites-available/graphite-vhost.conf
+	popd
+	
+	pushd /opt/graphite/webapp/graphite
+	# ICK!! This prompts for the root user
+	python manage.py syncdb
+	popd
+	
+	chown -R www-data:www-data /opt/graphite/storage/
+	
+	apache2ctl restart
+	
+	
+</DiskImageRecipe>

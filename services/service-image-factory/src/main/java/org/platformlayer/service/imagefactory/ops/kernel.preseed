@@ -1,0 +1,19 @@
+linux-image-2.6.26-2-amd64	shared/kernel-image/really-run-bootloader	boolean	true
+linux-image-2.6.26-2-amd64	linux-image-2.6.26-2-amd64/postinst/old-dir-initrd-link-2.6.26-2-amd64	boolean	true
+linux-image-2.6.26-2-amd64	linux-image-2.6.26-2-amd64/preinst/abort-install-2.6.26-2-amd64	note	
+linux-image-2.6.26-2-amd64	linux-image-2.6.26-2-amd64/postinst/bootloader-error-2.6.26-2-amd64	note	
+linux-image-2.6.26-2-amd64	linux-image-2.6.26-2-amd64/preinst/overwriting-modules-2.6.26-2-amd64	boolean	true
+linux-image-2.6.26-2-amd64	linux-image-2.6.26-2-amd64/postinst/kimage-is-a-directory	note	
+linux-image-2.6.26-2-amd64	linux-image-2.6.26-2-amd64/postinst/old-initrd-link-2.6.26-2-amd64	boolean	true
+linux-image-2.6.26-2-amd64	linux-image-2.6.26-2-amd64/preinst/failed-to-move-modules-2.6.26-2-amd64	note	
+linux-image-2.6.26-2-amd64	linux-image-2.6.26-2-amd64/postinst/create-kimage-link-2.6.26-2-amd64	boolean	true
+linux-image-2.6.26-2-amd64	linux-image-2.6.26-2-amd64/postinst/depmod-error-initrd-2.6.26-2-amd64	boolean	false
+linux-image-2.6.26-2-amd64	linux-image-2.6.26-2-amd64/preinst/lilo-initrd-2.6.26-2-amd64	boolean	false
+linux-image-2.6.26-2-amd64	linux-image-2.6.26-2-amd64/postinst/depmod-error-2.6.26-2-amd64	boolean	false
+linux-image-2.6.26-2-amd64	linux-image-2.6.26-2-amd64/prerm/would-invalidate-boot-loader-2.6.26-2-amd64	boolean	true
+linux-image-2.6.26-2-amd64	linux-image-2.6.26-2-amd64/postinst/bootloader-test-error-2.6.26-2-amd64	note	
+linux-image-2.6.26-2-amd64	linux-image-2.6.26-2-amd64/postinst/old-system-map-link-2.6.26-2-amd64	boolean	true
+linux-image-2.6.26-2-amd64	linux-image-2.6.26-2-amd64/preinst/abort-overwrite-2.6.26-2-amd64	note	
+linux-image-2.6.26-2-amd64	linux-image-2.6.26-2-amd64/preinst/bootloader-initrd-2.6.26-2-amd64	boolean	true
+linux-image-2.6.26-2-amd64	linux-image-2.6.26-2-amd64/preinst/elilo-initrd-2.6.26-2-amd64	boolean	true
+linux-image-2.6.26-2-amd64	linux-image-2.6.26-2-amd64/prerm/removing-running-kernel-2.6.26-2-amd64	boolean	true

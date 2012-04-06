@@ -1,0 +1,664 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.platformlayer</groupId>
+    <artifactId>platformlayer-parent</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <version.gwt>2.4.0</version.gwt>
+
+        <guice.verion>3.0</guice.verion>
+
+        <jetty.version>7.6.1.v20120215</jetty.version>
+        <jersey.version>1.11</jersey.version>
+        <junit.version>4.8.2</junit.version>
+        <version.google-collections>1.0</version.google-collections>
+        <version.project>1.0-SNAPSHOT</version.project>
+        <version.springframework>3.0.5.RELEASE</version.springframework>
+        <version.jackson>1.9.2</version.jackson>
+
+        <version.postgresql>9.1-901.jdbc4</version.postgresql>
+        <version.jettison>1.3.1</version.jettison>
+        <version.openstack>0.1-SNAPSHOT</version.openstack>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
+
+    <!-- Don't let your Mac use a crazy non-standard encoding -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+    </properties>
+
+    <modules>
+        <module>shared</module>
+        <module>auth</module>
+        <module>xaas</module>
+        <module>ops</module>
+        <module>services</module>
+        <module>bindings</module>
+        <module>gui</module>
+        <module>packages</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+			<!-- Declare our own projects -->
+
+            <dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>gwt-shared</artifactId>
+                <version>${version.project}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>core-model</artifactId>
+                <version>${version.project}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>platformlayer-maven-utils</artifactId>
+                <version>${version.project}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>model-shared</artifactId>
+                <version>${version.project}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>service-machines</artifactId>
+                <version>${version.project}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>service-openldap</artifactId>
+                <version>${version.project}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>platformlayer-shared-utils</artifactId>
+                <version>${version.project}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>platformlayer-xaas-webapp</artifactId>
+                <version>${version.project}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>service-mysql</artifactId>
+                <version>${version.project}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>platformlayer-ops-core</artifactId>
+                <version>${version.project}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>service-base</artifactId>
+                <version>${version.project}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>platformlayer-ops-worker</artifactId>
+                <version>${version.project}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>platformlayer-ops-ssh</artifactId>
+                <version>${version.project}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>platformlayer-xaas-core</artifactId>
+                <version>${version.project}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>keystone-client</artifactId>
+                <version>${version.project}</version>
+            </dependency>
+
+<dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>service-networks</artifactId>
+                <version>${version.project}</version>
+            </dependency>
+
+<dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>service-postgresql</artifactId>
+                <version>${version.project}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>keystone-api</artifactId>
+                <version>${version.project}</version>
+            </dependency>
+
+     <dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>keystone-webapp-user</artifactId>
+                <version>${version.project}</version>
+            </dependency>
+
+     <dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>keystone-webapp-admin</artifactId>
+                <version>${version.project}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>platformlayer-xaas-services</artifactId>
+                <version>${version.project}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>platformlayer-xaas-ops-core</artifactId>
+                <version>${version.project}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>platformlayer-xaas-spring</artifactId>
+                <version>${version.project}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>platformlayer-xaas-guice</artifactId>
+                <version>${version.project}</version>
+            </dependency>
+
+
+
+
+            <dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>platformlayer-auth</artifactId>
+                <version>${version.project}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>platformlayer-api</artifactId>
+                <version>${version.project}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-validator</artifactId>
+                <version>4.2.0.Final</version>
+            </dependency>
+
+      <dependency>
+            <groupId>org.platformlayer</groupId>
+            <artifactId>openstack-fileprovider</artifactId>
+          <version>${version.openstack}</version>
+              </dependency>
+
+
+            <dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>shared-cli</artifactId>
+                <version>${version.openstack}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>openstack-commons</artifactId>
+                <version>${version.openstack}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>openstack-api</artifactId>
+                <version>${version.openstack}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>1.6.1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.6.1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>1.2.16</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-jpamodelgen</artifactId>
+                <version>1.0.0.Final</version>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.inject</groupId>
+                <artifactId>javax.inject</artifactId>
+                <version>1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.xml.bind</groupId>
+                <artifactId>jaxb-api</artifactId>
+                <version>2.1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.sun.jersey</groupId>
+                <artifactId>jersey-core</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.sun.jersey</groupId>
+                <artifactId>jersey-server</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>11.0</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava-gwt</artifactId>
+                <version>11.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-entitymanager</artifactId>
+                <version>3.6.0.Final</version>
+            </dependency>
+
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+			<!-- Jetty WebServer -->
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-webapp</artifactId>
+                <version>${jetty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-websocket</artifactId>
+                <version>${jetty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-server</artifactId>
+                <version>${jetty.version}</version>
+            </dependency>
+
+
+			<!-- Database drivers -->
+            <dependency>
+                <groupId>commons-dbcp</groupId>
+                <artifactId>commons-dbcp</artifactId>
+                <version>1.4</version>
+            </dependency>
+			<!-- <dependency> <groupId>mysql</groupId> <artifactId>mysql-connector-java</artifactId> 
+				<version>5.1.14</version> </dependency> -->
+            <dependency>
+                <groupId>postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${version.postgresql}</version>
+            </dependency>
+
+			<!-- Jersey Spring integration; this would normally pull in Spring 2.5 -->
+            <dependency>
+                <groupId>com.sun.jersey.contribs</groupId>
+                <artifactId>jersey-spring</artifactId>
+                <version>${jersey.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-web</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-beans</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-context</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+			<!-- Jackson is better at serializing collections than the built in Jersey 
+				stuff -->
+            <dependency>
+                <groupId>org.codehaus.jackson</groupId>
+                <artifactId>jackson-xc</artifactId>
+                <version>${version.jackson}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.jackson</groupId>
+                <artifactId>jackson-jaxrs</artifactId>
+                <version>${version.jackson}</version>
+            </dependency>
+
+			<!-- JSP support for Jetty -->
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-jsp-2.1</artifactId>
+                <version>${jetty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tomcat</groupId>
+                <artifactId>jasper</artifactId>
+                <version>6.0.29</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>jstl</artifactId>
+                <version>1.2</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-httpclient</groupId>
+                <artifactId>commons-httpclient</artifactId>
+                <version>3.1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>javax</groupId>
+                <artifactId>javaee-api</artifactId>
+                <version>6.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>args4j</groupId>
+                <artifactId>args4j</artifactId>
+                <version>2.0.12</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.sonatype.jline</groupId>
+                <artifactId>jline</artifactId>
+                <version>2.5</version>
+            </dependency>
+
+
+			<!-- Spring Security dependencies -->
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-web</artifactId>
+                <version>${version.springframework}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-config</artifactId>
+                <version>${version.springframework}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.freemarker</groupId>
+                <artifactId>freemarker</artifactId>
+                <version>2.3.18</version>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>servlet-api</artifactId>
+                <version>2.5</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.codehaus.jettison</groupId>
+                <artifactId>jettison</artifactId>
+                <version>${version.jettison}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.sshd</groupId>
+                <artifactId>sshd-core</artifactId>
+                <version>0.5.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.jcraft</groupId>
+                <artifactId>jzlib</artifactId>
+                <version>1.0.7</version>
+
+            </dependency>
+
+            <dependency>
+                <groupId>bouncycastle</groupId>
+                <artifactId>bcprov-jdk16</artifactId>
+                <version>140</version>
+
+            </dependency>
+
+
+            <dependency>
+                <groupId>org.json</groupId>
+                <artifactId>json</artifactId>
+                <version>20090211</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.inject</groupId>
+                <artifactId>guice</artifactId>
+                <version>3.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.amazonaws</groupId>
+                <artifactId>aws-java-sdk</artifactId>
+                <version>1.1.9</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>org.jclouds</groupId>
+                <artifactId>jclouds-allcompute</artifactId>
+                <version>1.0-beta-9b</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jclouds</groupId>
+                <artifactId>jclouds-allblobstore</artifactId>
+                <version>1.0-beta-9b</version>
+            </dependency>
+
+            <dependency>
+                <groupId>net.iharder</groupId>
+                <artifactId>base64</artifactId>
+                <version>2.3.8</version>
+            </dependency>
+
+<!-- Google Web Toolkit (GWT) -->
+
+            <dependency>
+                <groupId>com.google.gwt</groupId>
+                <artifactId>gwt-user</artifactId>
+                <version>${version.gwt}</version>
+      <!-- "provided" so that we don't deploy -->
+                <scope>provided</scope>
+            </dependency>
+
+    <!-- RequestFactory server -->
+
+            <dependency>
+                <groupId>com.google.web.bindery</groupId>
+                <artifactId>requestfactory-server</artifactId>
+                <version>${version.gwt}</version>
+            </dependency>
+
+        </dependencies>
+
+
+    </dependencyManagement>
+
+    <repositories>
+        <repository>
+            <id>jboss.org</id>
+            <url>http://repository.jboss.org/nexus/content/groups/public-jboss/</url>
+        </repository>
+        <repository>
+            <id>java.net</id>
+            <url>http://download.java.net/maven/2</url>
+        </repository>
+    </repositories>
+
+    <build> <!--
+        <extensions>
+            <extension>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>openstack-maven</artifactId>
+            </extension>
+        </extensions>
+-->
+
+        <resources>
+            <resource>
+                <!--
+                    It's nice to put supporting resources right by the code
+                -->
+                <directory>src/main/java</directory>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+
+
+        <plugins>
+            <plugin>
+                <groupId>org.jvnet.jaxb2.maven2</groupId>
+                <artifactId>maven-jaxb2-plugin</artifactId>
+                <version>0.8.0</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.7</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+ <source>${maven.compiler.source}</source>
+          <target>${maven.compiler.target}</target>
+                    <encoding>UTF-8</encoding>
+					<!-- We invoke our compiler plugins manually -->
+                    <compilerArgument>-proc:none</compilerArgument>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>2.4.0</version>
+                <configuration>
+                    <findbugsXmlOutput>true</findbugsXmlOutput>
+                    <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
+                    <xmlOutput>true</xmlOutput>
+                    <excludeFilterFile>meta/findbugs/findbugs-exclude.xml</excludeFilterFile>
+                </configuration>
+            </plugin>
+        </plugins>
+
+        <pluginManagement>
+            <plugins>
+	            <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>com.sun.tools.jxc.maven2</groupId>
+                                        <artifactId>maven-jaxb-schemagen-plugin</artifactId>
+                                        <versionRange>[1.2,)</versionRange>
+                                        <goals>
+                                            <goal>generate</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore></ignore>
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+
+    <distributionManagement>
+        <repository>
+            <id>openstack-release</id>
+            <name>OpenStack Release Repository</name>
+            <url>openstack://maven.openstack.org/release</url>
+        </repository>
+        <snapshotRepository>
+            <id>openstack-snapshot</id>
+            <name>OpenStack Snapshot Repository</name>
+            <url>openstack://maven.openstack.org/snapshot</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+</project>
+

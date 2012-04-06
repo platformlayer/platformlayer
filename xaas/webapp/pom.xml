@@ -1,0 +1,111 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.platformlayer</groupId>
+        <artifactId>platformlayer-xaas-parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>platformlayer-xaas-webapp</artifactId>
+    <name>PlatformLayer :: XaaS :: Web Application</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.platformlayer</groupId>
+            <artifactId>platformlayer-xaas-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.platformlayer</groupId>
+            <artifactId>platformlayer-ops-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.platformlayer</groupId>
+            <artifactId>platformlayer-ops-worker</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.platformlayer</groupId>
+            <artifactId>platformlayer-xaas-guice</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.platformlayer</groupId>
+            <artifactId>platformlayer-xaas-services</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-server</artifactId>
+        </dependency>
+
+
+		<!-- Jetty WebServer -->
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-webapp</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
+
+		<!-- Jackson is better at serializing collections than the built in Jersey 
+			stuff -->
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-xc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-jaxrs</artifactId>
+        </dependency>
+
+
+
+		<!-- Guice dependencies -->
+        <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-servlet</artifactId>
+            <version>3.0</version>
+        </dependency>
+
+		<!-- Guice-Jersey integration -->
+        <dependency>
+            <groupId>com.sun.jersey.contribs</groupId>
+            <artifactId>jersey-guice</artifactId>
+            <version>${jersey.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.inject.extensions</groupId>
+                    <artifactId>guice-servlet</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sun.jersey</groupId>
+                    <artifactId>jersey-grizzly2</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sun.jersey</groupId>
+                    <artifactId>jersey-client</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        
+        <!--  We add jersey-json explicitly, because otherwise it tends not to get included -->
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-json</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
+    </dependencies>
+
+</project>

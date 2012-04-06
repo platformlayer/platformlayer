@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+	<bean id="secretsConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location">
+			<value>file:///var/secrets/openstack-xaas.properties</value>
+		</property>
+	</bean>
+	
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<!-- <property name="driverClassName" value="com.mysql.jdbc.Driver" /> <property name="url" value="jdbc:mysql://127.0.0.1:3306/xaas" /> -->
+		<property name="driverClassName" value="org.postgresql.Driver" />
+		<property name="url" value="jdbc:postgresql://127.0.0.1:5432/xaas" />
+
+		<property name="username" value="xaas-web" />
+		<property name="password" value="xaas-web-password" />
+	</bean>
+
+
+	<bean id="dataTransactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="dataEntityManagerFactory" />
+	</bean>
+
+
+	<!-- Databases -->
+	<bean id="dataEntityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="jpaVendorAdapter">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+				<property name="showSql" value="true" />
+				<property name="generateDdl" value="true" />
+				<property name="databasePlatform" value="org.hibernate.dialect.PostgreSQLDialect" />
+			</bean>
+			<!-- Avoiding eclipselink / toplink ... needs a weaver; not widely used... <bean class="org.springframework.orm.jpa.vendor.ToplinkJpaVendorAdapter"> <property name="showSql" value="true" /> <property 
+				name="generateDdl" value="true" /> <property name="databasePlatform" value="org.eclipse.persistence.platform.database.PostgreSQLPlatform" /> </bean> -->
+		</property>
+		<property name="dataSource" ref="dataSource" />
+		<property name="persistenceUnitName" value="data" />
+		<property name="persistenceXmlLocation" value="classpath:data-persistence.xml" />
+		<!-- Hibernate doesn't need a load time weaver <property name="loadTimeWeaver"> <bean class="org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver" /> </property> -->
+	</bean>
+</beans>

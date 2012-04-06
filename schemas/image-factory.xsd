@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema elementFormDefault="qualified" version="1.0" targetNamespace="http://platformlayer.org/service/imagefactory/v1.0" xmlns:ns1="http://platformlayer.org/core/v1.0" xmlns:tns="http://platformlayer.org/service/imagefactory/v1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:import namespace="http://platformlayer.org/core/v1.0" schemaLocation="platformlayer-core.xsd"/>
+
+  <xs:element name="diskImage" type="tns:diskImage"/>
+
+  <xs:element name="diskImageRecipe" type="tns:diskImageRecipe"/>
+
+  <xs:complexType name="diskImage">
+    <xs:complexContent>
+      <xs:extension base="ns1:itemBase">
+        <xs:sequence>
+          <xs:element name="cloud" type="ns1:platformLayerKey" minOccurs="0"/>
+          <xs:element name="recipeId" type="ns1:platformLayerKey" minOccurs="0"/>
+          <xs:element name="format" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="repositoryKey">
+    <xs:sequence>
+      <xs:element name="url" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="repository">
+    <xs:sequence>
+      <xs:element name="key" type="xs:string" minOccurs="0"/>
+      <xs:element name="source" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="configurePackage">
+    <xs:sequence>
+      <xs:element name="packageName" type="xs:string" minOccurs="0"/>
+      <xs:element name="type" type="xs:string" minOccurs="0"/>
+      <xs:element name="key" type="xs:string" minOccurs="0"/>
+      <xs:element name="value" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="operatingSystemRecipe">
+    <xs:sequence>
+      <xs:element name="distribution" type="xs:string" minOccurs="0"/>
+      <xs:element name="version" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="diskImageRecipe">
+    <xs:complexContent>
+      <xs:extension base="ns1:itemBase">
+        <xs:sequence>
+          <xs:element name="addPackage" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="operatingSystem" type="tns:operatingSystemRecipe" minOccurs="0"/>
+          <xs:element name="repository" type="tns:repository" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="repositoryKey" type="tns:repositoryKey" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="configurePackage" type="tns:configurePackage" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+</xs:schema>
+

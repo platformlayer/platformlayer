@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema elementFormDefault="qualified" version="1.0" targetNamespace="http://platformlayer.org/metrics/v1.0" xmlns:tns="http://platformlayer.org/metrics/v1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="metricInfo" type="tns:metricInfo"/>
+
+  <xs:element name="metricInfoCollection" type="tns:metricInfoCollection"/>
+
+  <xs:element name="metricValue" type="tns:metricValue"/>
+
+  <xs:element name="xport" type="tns:metricValues"/>
+
+  <xs:complexType name="metricInfo">
+    <xs:sequence>
+      <xs:element name="key" type="xs:string" minOccurs="0"/>
+      <xs:element name="description" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="metricInfoCollection">
+    <xs:sequence>
+      <xs:element name="metricInfos" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element ref="tns:metricInfo" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="metricValue">
+    <xs:sequence>
+      <xs:element name="t" type="xs:long"/>
+      <xs:element name="v" type="xs:float"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="metricValues">
+    <xs:sequence>
+      <xs:element name="data" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="row" type="tns:metricValue" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="meta" type="tns:metricValuesMetadata" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="metricValuesMetadata">
+    <xs:sequence>
+      <xs:element name="start" type="xs:long"/>
+      <xs:element name="step" type="xs:long"/>
+      <xs:element name="end" type="xs:long"/>
+      <xs:element name="rows" type="xs:long"/>
+      <xs:element name="columns" type="xs:long"/>
+      <xs:element name="legend" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="entry" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
+

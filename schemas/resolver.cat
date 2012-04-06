@@ -1,0 +1,3 @@
+-- Match by namespace URI --
+PUBLIC "http://platformlayer.org/core/v1.0" "platformlayer-core.xsd"
+

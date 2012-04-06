@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema elementFormDefault="qualified" version="1.0" targetNamespace="http://platformlayer.org/service/instancesupervisor/v1.0" xmlns:ns1="http://platformlayer.org/core/v1.0" xmlns:tns="http://platformlayer.org/service/instancesupervisor/v1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:import namespace="http://platformlayer.org/core/v1.0" schemaLocation="platformlayer-core.xsd"/>
+
+  <xs:element name="persistentInstance" type="tns:persistentInstance"/>
+
+  <xs:complexType name="persistentInstance">
+    <xs:complexContent>
+      <xs:extension base="ns1:itemBase">
+        <xs:sequence>
+          <xs:element name="recipe" type="ns1:platformLayerKey" minOccurs="0"/>
+          <xs:element name="dnsName" type="xs:string" minOccurs="0"/>
+          <xs:element name="sshPublicKey" type="xs:string" minOccurs="0"/>
+          <xs:element name="securityGroup" type="xs:string" minOccurs="0"/>
+          <xs:element name="minimumRam" type="xs:int"/>
+          <xs:element name="cloud" type="ns1:platformLayerKey" minOccurs="0"/>
+          <xs:element name="hostPolicy" type="ns1:hostPolicy" minOccurs="0"/>
+          <xs:element name="publicPorts" type="xs:int" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+</xs:schema>
+

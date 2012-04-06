@@ -1,0 +1,32 @@
+# For rewrite rules needed for making Wordpress URL friendly
+# See Options -> Permalinks for details and please use the defaults,
+# especially in mind when hosting several blogs on one machine!
+
+##
+## Configuration for a single blog hosted on / (root of the website)
+##
+#<IfModule mod_rewrite.c>
+#RewriteEngine On
+#RewriteBase /
+#RewriteCond %{REQUEST_FILENAME} !-f
+#RewriteCond %{REQUEST_FILENAME} !-d
+#RewriteRule . /index.php [L]
+#</IfModule>
+
+##
+## Configuration for a multi-site wordpress installation using subdomains
+##
+#<IfModule mod_rewrite.c>
+#RewriteEngine On
+#RewriteBase /
+#RewriteRule ^index\.php$ - [L]
+## uploaded files
+#RewriteRule ^files/(.+) wp-includes/ms-files.php?file=$1 [L]
+## real files dealt directly
+#RewriteCond %{REQUEST_FILENAME} -f [OR]
+#RewriteCond %{REQUEST_FILENAME} -d
+#RewriteRule ^ - [L]
+## other go through index.php
+#RewriteRule . index.php [L]
+#</IfModule>
+

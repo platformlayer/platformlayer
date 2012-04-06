@@ -1,0 +1,21 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui"
+    xmlns:d="urn:import:org.platformlayer.service.dns.client" xmlns:h="urn:import:javax.swing.text.html">
+    <ui:style>
+        
+    </ui:style>
+    <g:TabLayoutPanel ui:field="tabs" barHeight="3" barUnit="EM" height="100%" width="100%">
+      <g:tab>
+            <g:header>Zones</g:header>
+            <d:DnsZoneGrid></d:DnsZoneGrid>
+        </g:tab>
+        <g:tab>
+            <g:header>Records</g:header>
+            <d:DnsRecordGrid></d:DnsRecordGrid>
+        </g:tab>  
+        <g:tab>
+            <g:header>Servers</g:header>
+            <d:DnsServerGrid></d:DnsServerGrid>
+        </g:tab>  
+    </g:TabLayoutPanel>
+</ui:UiBinder> 

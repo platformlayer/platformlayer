@@ -1,0 +1,4 @@
+firewall: [
+    { port: 22 },
+    { port: 3306 }
+]

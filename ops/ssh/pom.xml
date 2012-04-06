@@ -1,0 +1,37 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.platformlayer</groupId>
+		<artifactId>platformlayer-ops-parent</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>platformlayer-ops-ssh</artifactId>
+	<name>PlatformLayer :: Ops :: SSH</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.platformlayer</groupId>
+			<artifactId>platformlayer-ops-core</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.sshd</groupId>
+			<artifactId>sshd-core</artifactId>
+		</dependency>
+
+		<!-- We enable SSH compression -->
+		<dependency>
+			<groupId>com.jcraft</groupId>
+			<artifactId>jzlib</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>bouncycastle</groupId>
+			<artifactId>bcprov-jdk16</artifactId>
+		</dependency>
+	</dependencies>
+
+</project>

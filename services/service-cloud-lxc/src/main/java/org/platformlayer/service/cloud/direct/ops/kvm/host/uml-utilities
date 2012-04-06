@@ -1,0 +1,20 @@
+# Options to pass to uml_switch.
+
+# set to "false" if you want to prevent uml_switch from
+# starting with SysV scripts in /etc/init.d
+UML_SWITCH_START="false"
+
+# For preconfigured tap setup, see
+# /usr/share/doc/uml-utilities/examples/interfaces.example
+#UML_SWITCH_OPTIONS="-tap tap0"
+
+# User as which to run uml_switch
+#UML_SWITCH_USER="uml-net"
+
+# Socket file to use
+# Debian's default is:
+#UML_SWITCH_CTL="/var/run/uml-utilities/uml_switch.ctl"
+#
+# if you instead use your rolled up kernel from upstream
+# sources you may want to uncomment the following:
+#UML_SWITCH_CTL="/tmp/uml.ctl"

@@ -1,0 +1,3 @@
+<#list authorizedKeys as authorizedKey>
+${authorizedKey}
+</#list>

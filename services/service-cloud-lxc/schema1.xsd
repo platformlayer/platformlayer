@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema elementFormDefault="qualified" version="1.0" targetNamespace="http://platformlayer.org/service/machines/lxc/v1.0" xmlns:tns="http://platformlayer.org/service/machines/lxc/v1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="lxcCloud" type="tns:lxcCloud"/>
+
+  <xs:element name="lxcHost" type="tns:lxcHost"/>
+
+  <xs:element name="lxcInstance" type="tns:lxcInstance"/>
+
+  <xs:complexType name="lxcCloud">
+    <xs:sequence>
+      <xs:element name="dummy2" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="lxcHost">
+    <xs:sequence>
+      <xs:element name="cloud" type="xs:string" minOccurs="0"/>
+      <xs:element name="machineSource" type="xs:string" minOccurs="0"/>
+      <xs:element name="ipRange" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="lxcInstance">
+    <xs:sequence>
+      <xs:element name="a" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
+

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<bindings version="2.1" xmlns="http://java.sun.com/xml/ns/jaxb">
+  <!--
+
+This file was copied from target/generated-sources/xjc/META-INF/sun-jaxb.episode,
+and then manually edited to give us the mappings we want
+
+  -->
+  
+  <bindings scd="x-schema::tns" xmlns:tns="http://platformlayer.org/core/v1.0">
+    <schemaBindings map="false"/>
+    <bindings scd="~tns:managedItemCollection">
+      <class ref="org.platformlayer.core.model.ManagedItemCollection"/>
+    </bindings>
+    <bindings scd="~tns:hostPolicy">
+      <class ref="org.platformlayer.core.model.HostPolicy"/>
+    </bindings>
+    <bindings scd="~tns:tags">
+      <class ref="org.platformlayer.core.model.Tags"/>
+    </bindings>
+    <bindings scd="~tns:action">
+      <class ref="org.platformlayer.core.model.Action"/>
+    </bindings>
+    <bindings scd="~tns:serviceInfoCollection">
+      <class ref="org.platformlayer.core.model.ServiceInfoCollection"/>
+    </bindings>
+    <bindings scd="~tns:serviceInfo">
+      <class ref="org.platformlayer.core.model.ServiceInfo"/>
+    </bindings>
+    <bindings scd="~tns:tagChanges">
+      <class ref="org.platformlayer.core.model.TagChanges"/>
+    </bindings>
+    <bindings scd="~tns:tag">
+      <class ref="org.platformlayer.core.model.Tag"/>
+    </bindings>
+    <bindings scd="~tns:itemBase">
+      <class ref="org.platformlayer.core.model.ItemBase"/>
+    </bindings>
+    <bindings scd="~tns:publicEndpointBase">
+      <class ref="org.platformlayer.core.model.PublicEndpointBase"/>
+    </bindings>
+    <bindings scd="~tns:platformLayerKey">
+      <class ref="org.platformlayer.core.model.PlatformLayerKey"/>
+    </bindings>
+    <bindings scd="~tns:managedItemState">
+      <typesafeEnumClass ref="org.platformlayer.core.model.ManagedItemState"/>
+    </bindings>
+    <bindings scd="~tns:instanceBase">
+      <class ref="org.platformlayer.core.model.InstanceBase"/>
+    </bindings>
+    <bindings scd="~tns:machineCloudBase">
+      <class ref="org.platformlayer.core.model.MachineCloudBase"/>
+    </bindings>
+  </bindings>
+</bindings>
+

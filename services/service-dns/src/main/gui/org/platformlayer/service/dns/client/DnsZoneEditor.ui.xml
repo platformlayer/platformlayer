@@ -1,0 +1,18 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui"
+    xmlns:e="urn:import:com.google.gwt.editor.ui.client">
+    <ui:style src="common.css">
+        
+    </ui:style>
+    <g:HTMLPanel>
+        <div class="{style.rightAlign}">
+            DNS Name:
+            <e:ValueBoxEditorDecorator ui:field="dnsName" stylePrimaryName="{style.editField}">
+                <e:valuebox>
+                    <g:TextBox stylePrimaryName="{style.editField}" />
+                </e:valuebox>
+            </e:ValueBoxEditorDecorator>
+            <br />
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder> 

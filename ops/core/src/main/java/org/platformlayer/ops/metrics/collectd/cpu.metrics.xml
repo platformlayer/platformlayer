@@ -1,0 +1,12 @@
+<metrics key="cpu">
+    <!-- TODO: Sum across all CPUs?? -->
+
+    <metric key="cpu_nice" rrd="cpu-0/cpu-nice.rrd" />
+    <metric key="cpu_interrupt" rrd="cpu-0/cpu-interrupt.rrd" />
+    <metric key="cpu_idle" rrd="cpu-0/cpu-idle.rrd" />
+    <metric key="cpu_user" rrd="cpu-0/cpu-user.rrd" />
+    <metric key="cpu_system" rrd="cpu-0/cpu-system.rrd" />
+    <metric key="cpu_wait" rrd="cpu-0/cpu-wait.rrd" />
+    <metric key="cpu_steal" rrd="cpu-0/cpu-steal.rrd" />
+    <metric key="cpu_softirq" rrd="cpu-0/cpu-softirq.rrd" />
+</metrics>

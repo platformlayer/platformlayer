@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<security-configuration>
+  <version>2.0.3</version>
+  <enabled>true</enabled>
+  <anonymousAccessEnabled>true</anonymousAccessEnabled>
+  <anonymousUsername>anonymous</anonymousUsername>
+  <!-- TODO: Should this be dynamically generated ? -->
+  <anonymousPassword>{oOclJRh0QLsHYp50Vg8IwhfWnwqKAMqlXpDbjxJ/xqs=}</anonymousPassword>
+  <realms>
+    <realm>NexusLdapAuthenticationRealm</realm>
+    <!-- Removed XML authentication
+    (but authorization still controlled by Xml)
+    <realm>XmlAuthenticatingRealm</realm>
+    -->
+    
+    
+    <realm>XmlAuthorizingRealm</realm>
+  </realms>
+  <securityManager>nexus</securityManager>
+</security-configuration>

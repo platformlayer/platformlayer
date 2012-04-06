@@ -1,0 +1,9 @@
+<securityRealm class="hudson.security.LDAPSecurityRealm">
+    <server>${ldapServer}</server>
+    <rootDN>${rootDN}</rootDN>
+    <inhibitInferRootDN>false</inhibitInferRootDN>
+    <userSearchBase></userSearchBase>
+    <userSearch>uid={0}</userSearch>
+    <managerDN>${managedDN}</managerDN>
+    <managerPassword>${managerPassword}</managerPassword>
+  </securityRealm>

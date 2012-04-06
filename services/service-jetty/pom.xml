@@ -1,0 +1,35 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.platformlayer</groupId>
+		<artifactId>platformlayer-services-parent</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>service-jetty</artifactId>
+	<name>PlatformLayer :: Services :: Jetty</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.platformlayer</groupId>
+			<artifactId>platformlayer-xaas-core</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.platformlayer</groupId>
+			<artifactId>platformlayer-ops-ssh</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.platformlayer</groupId>
+			<artifactId>platformlayer-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.inject</groupId>
+			<artifactId>javax.inject</artifactId>
+		</dependency>
+	</dependencies>
+</project>

@@ -1,0 +1,7 @@
+/*
+TODO: We really need to be on port 80
+*/       
+firewall: [
+    { port: 22 },
+    { port: 8080 }
+]

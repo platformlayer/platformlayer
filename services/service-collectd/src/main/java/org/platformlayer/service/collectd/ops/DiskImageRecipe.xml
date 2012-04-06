@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<diskImageRecipe xmlns="http://platformlayer.org/service/imagefactory/v1.0">
+	<!--  collectd is a bit fussy, so we install it after the image has been created.
+	TODO: This sucks - collectd is pretty big...
+	<addPackage>collectd</addPackage>-->
+	
+	<addPackage>librrd4</addPackage>
+	<addPackage>rrdcached</addPackage>
+</diskImageRecipe>

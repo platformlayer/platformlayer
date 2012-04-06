@@ -1,0 +1,3 @@
+firewall: [
+    { port: 22 }
+]

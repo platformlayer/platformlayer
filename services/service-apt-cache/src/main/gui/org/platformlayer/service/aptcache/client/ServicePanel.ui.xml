@@ -1,0 +1,13 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui"
+    xmlns:h="urn:import:javax.swing.text.html" xmlns:a="urn:import:org.platformlayer.service.aptcache.client">
+    <ui:style>
+        
+    </ui:style>
+    <g:TabLayoutPanel ui:field="tabs" barHeight="3" barUnit="EM" height="100%" width="100%">
+        <g:tab>
+            <g:header>Servers</g:header>
+            <a:AptCacheServiceGrid />
+        </g:tab>
+    </g:TabLayoutPanel>
+</ui:UiBinder> 

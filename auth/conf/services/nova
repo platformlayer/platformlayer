@@ -1,0 +1,13 @@
+{
+	service: {
+		type: 'compute',
+		name: 'OpenStack Compute', 
+		endpoints: [
+			{
+				tenantId: '{tenantId}',
+				internalURL: 'http://192.168.1.104:8774/v1.1/{tenantId}',
+				publicURL: 'http://192.168.1.104:8774/v1.1/{tenantId}'
+			}
+		]
+	}
+}

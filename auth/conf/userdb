@@ -1,0 +1,5 @@
+novaadmin.password=novaadmin
+novaadmin.groups=nova.novaadmin.admin,platformlayer.1.admin
+
+justinsb.password=secret
+justinsb.groups=platformlayer.fathomdb.admin,platformlayer.fathomdb.read

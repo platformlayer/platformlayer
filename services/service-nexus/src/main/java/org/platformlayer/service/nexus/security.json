@@ -1,0 +1,8 @@
+/*
+TODO: We're on port 8080 so we can run as a non-privileged user "tomcat6"; we'd prefer to be on port 80 (jenkins has the same issue)
+Apparently using an iptables rule is a reasonable solution, although I'm not convinced...
+*/       
+firewall: [
+    { port: 22 },
+    { port: 8080 }
+]

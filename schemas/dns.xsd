@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema elementFormDefault="qualified" version="1.0" targetNamespace="http://platformlayer.org/service/dns/v1.0" xmlns:ns1="http://platformlayer.org/core/v1.0" xmlns:tns="http://platformlayer.org/service/dns/v1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:import namespace="http://platformlayer.org/core/v1.0" schemaLocation="platformlayer-core.xsd"/>
+
+  <xs:element name="dnsRecord" type="tns:dnsRecord"/>
+
+  <xs:element name="dnsServer" type="tns:dnsServer"/>
+
+  <xs:element name="dnsZone" type="tns:dnsZone"/>
+
+  <xs:complexType name="dnsServer">
+    <xs:complexContent>
+      <xs:extension base="ns1:itemBase">
+        <xs:sequence>
+          <xs:element name="dnsName" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="dnsZone">
+    <xs:complexContent>
+      <xs:extension base="ns1:itemBase">
+        <xs:sequence>
+          <xs:element name="dnsName" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="dnsRecord">
+    <xs:complexContent>
+      <xs:extension base="ns1:itemBase">
+        <xs:sequence>
+          <xs:element name="dnsName" type="xs:string" minOccurs="0"/>
+          <xs:element name="recordType" type="xs:string" minOccurs="0"/>
+          <xs:element name="address" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+</xs:schema>
+

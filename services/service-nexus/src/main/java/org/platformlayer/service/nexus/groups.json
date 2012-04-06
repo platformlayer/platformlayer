@@ -1,0 +1,10 @@
+/* This is not yet implemented ... just an idea! */
+group : {
+name: 'Nexus Administrators'
+},
+group : {
+name: 'Nexus Developers'
+},
+group : {
+name: 'Nexus Deployers'
+}

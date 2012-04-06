@@ -1,0 +1,9 @@
+<metrics key="diskfree">
+    <!-- TODO: Multiple disks?? -->
+
+    <metrics key="root">
+        <metric key="free" rrd="df-root/df_complex-free.rrd" />
+        <metric key="used" rrd="df-root/df_complex-used.rrd" />
+        <metric key="reserved" rrd="df-root/df_complex-reserved.rrd" />
+    </metrics>
+</metrics>

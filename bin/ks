@@ -1,0 +1,67 @@
+#!/bin/bash
+
+PRG="$0"
+
+while [ -h "$PRG" ] ; do
+   PRG=`readlink "$PRG"`
+done
+
+pushd `dirname $PRG` > /dev/null
+BASEDIR=`pwd`
+popd > /dev/null
+
+DEFAULT_FORMAT=""
+
+set -e
+
+# By default, we won't use nailgun (for easier setup)
+if [[ "${USE_NAILGUN}" == "" ]]; then
+	USE_NAILGUN=0
+fi
+
+if [[ "${USE_NAILGUN}" == "1" ]]; then
+	NAILGUN=ng-nailgun
+	if ! builtin type -p ${NAILGUN} &>/dev/null; then
+		NAILGUN=ng
+		if ! builtin type -p ${NAILGUN} &>/dev/null; then
+			NAILGUN=${BASEDIR}/../nailgun/ng
+			if ! builtin type -p ${NAILGUN} &>/dev/null; then
+				echo "${NAILGUN} not found; try sudo apt-get install nailgun"
+				exit 1
+			fi
+		fi
+	fi
+fi
+
+if [[ "$DEFAULT_FORMAT" == "" ]]; then
+	DEFAULT_FORMAT="raw"
+fi
+
+if [[ "$PROFILE" == "" ]]; then
+	PROFILE=platformlayer
+fi
+
+if [[ "$FORMAT" == "" ]]; then
+	FORMAT=${DEFAULT_FORMAT}
+fi
+
+if [[ "$CONFIG_FILE" == "" ]]; then
+	CONFIG_FILE=~/.credentials/${PROFILE}
+fi
+
+
+if [[ "${USE_NAILGUN}" == "1" ]]; then
+	export NAILGUN_PORT=2101
+	cmd=(${NAILGUN} org.platformlayer.keystone.cli.KeystoneCli)
+	args=(--format "${FORMAT}" --config -)
+else
+	cmd=(${JAVA_HOME}/bin/java -jar ${BASEDIR}/auth-cli-standalone.jar)
+	args=(--format "${FORMAT}" --config "${CONFIG_FILE}")
+fi
+
+
+if [[ "${USE_NAILGUN}" == "1" ]]; then
+	${cmd[@]} ${args[@]} "${@}" < ${CONFIG_FILE}
+else
+	${cmd[@]} ${args[@]} "${@}"
+fi

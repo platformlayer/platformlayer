@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema elementFormDefault="qualified" version="1.0" targetNamespace="http://docs.openstack.org/identity/api/v2.0" xmlns:tns="http://docs.openstack.org/identity/api/v2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="access" type="tns:access"/>
+
+  <xs:element name="auth" type="tns:auth"/>
+
+  <xs:element name="authenticateRequest" type="tns:authenticateRequest"/>
+
+  <xs:element name="authenticateResponse" type="tns:authenticateResponse"/>
+
+  <xs:element name="ec2ConvertTokenRequest" type="tns:ec2ConvertTokenRequest"/>
+
+  <xs:element name="ec2ConvertTokenResponse" type="tns:ec2ConvertTokenResponse"/>
+
+  <xs:element name="roles" type="tns:roleList"/>
+
+  <xs:element name="service" type="tns:service"/>
+
+  <xs:element name="tenants" nillable="true" type="xs:anyType"/>
+
+  <xs:element name="user" type="tns:user"/>
+
+  <xs:element name="validateAccess" type="tns:validateAccess"/>
+
+  <xs:element name="validateTokenResponse" type="tns:validateTokenResponse"/>
+
+  <xs:complexType name="access">
+    <xs:sequence>
+      <xs:element name="token" type="tns:token" minOccurs="0"/>
+      <xs:element name="serviceCatalog" type="tns:service" nillable="true" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="token">
+    <xs:sequence>
+      <xs:element name="expires" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="id" type="xs:string" minOccurs="0"/>
+      <xs:element name="tenant" type="tns:tenant" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="tenant">
+    <xs:sequence>
+      <xs:element name="description" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="enabled" type="xs:boolean" use="required"/>
+    <xs:attribute name="id" type="xs:string"/>
+    <xs:attribute name="name" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="service">
+    <xs:sequence>
+      <xs:element name="type" type="xs:string" minOccurs="0"/>
+      <xs:element name="name" type="xs:string" minOccurs="0"/>
+      <xs:element name="endpoints" type="tns:serviceEndpoint" nillable="true" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="serviceEndpoint">
+    <xs:sequence>
+      <xs:element name="region" type="xs:string" minOccurs="0"/>
+      <xs:element name="tenantId" type="xs:string" minOccurs="0"/>
+      <xs:element name="internalURL" type="xs:string" minOccurs="0"/>
+      <xs:element name="publicURL" type="xs:string" minOccurs="0"/>
+      <xs:element name="version" type="tns:serviceVersion" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="serviceVersion">
+    <xs:sequence/>
+    <xs:attribute name="id" type="xs:string"/>
+    <xs:attribute name="info" type="xs:string"/>
+    <xs:attribute name="list" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="auth">
+    <xs:sequence>
+      <xs:element name="passwordCredentials" type="tns:passwordCredentials" minOccurs="0"/>
+      <xs:element name="token" type="tns:token" minOccurs="0"/>
+      <xs:element name="serviceCatalog" type="tns:service" nillable="true" maxOccurs="unbounded" minOccurs="0"/>
+      <xs:element name="user" type="tns:userValidation" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="tenantName" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="passwordCredentials">
+    <xs:sequence>
+      <xs:element name="username" type="xs:string" minOccurs="0"/>
+      <xs:element name="password" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="userValidation">
+    <xs:sequence>
+      <xs:element name="id" type="xs:string" minOccurs="0"/>
+      <xs:element name="name" type="xs:string" minOccurs="0"/>
+      <xs:element name="secret" type="xs:base64Binary" minOccurs="0"/>
+      <xs:element name="roles" type="tns:role" nillable="true" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="role">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" minOccurs="0"/>
+      <xs:element name="tenantId" type="xs:string" minOccurs="0"/>
+      <xs:element name="description" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="authenticateRequest">
+    <xs:sequence>
+      <xs:element ref="tns:auth" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="authenticateResponse">
+    <xs:sequence>
+      <xs:element ref="tns:access" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ec2ConvertTokenRequest">
+    <xs:sequence>
+      <xs:element name="ec2Credentials" type="tns:ec2Credentials" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ec2Credentials">
+    <xs:sequence>
+      <xs:element name="access" type="xs:string" minOccurs="0"/>
+      <xs:element name="signature" type="xs:string" minOccurs="0"/>
+      <xs:element name="host" type="xs:string" minOccurs="0"/>
+      <xs:element name="verb" type="xs:string" minOccurs="0"/>
+      <xs:element name="path" type="xs:string" minOccurs="0"/>
+      <xs:element name="params" type="tns:ec2RequestParameters" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ec2RequestParameters"/>
+
+  <xs:complexType name="ec2ConvertTokenResponse">
+    <xs:sequence>
+      <xs:element name="credentials" type="tns:ec2Credentials" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="roleList">
+    <xs:sequence>
+      <xs:element name="role" type="tns:role" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="tenantEndpoint">
+    <xs:sequence/>
+    <xs:attribute name="href" type="xs:string"/>
+    <xs:attribute name="id" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="tenantEndpointList">
+    <xs:sequence>
+      <xs:element name="tenants" type="tns:tenant" nillable="true" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="tenantsList">
+    <xs:sequence>
+      <xs:element name="tenant" type="tns:tenant" nillable="true" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="user">
+    <xs:sequence>
+      <xs:element name="username" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="enabled" type="xs:boolean" use="required"/>
+    <xs:attribute name="email" type="xs:string"/>
+    <xs:attribute name="id" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="validateAccess">
+    <xs:sequence>
+      <xs:element name="token" type="tns:token" minOccurs="0"/>
+      <xs:element name="user" type="tns:userValidation" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="validateTokenResponse">
+    <xs:sequence>
+      <xs:element name="access" type="tns:validateAccess" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
+

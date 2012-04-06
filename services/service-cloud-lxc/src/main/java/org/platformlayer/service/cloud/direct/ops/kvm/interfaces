@@ -1,0 +1,17 @@
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+<#list interfaces as interface>
+auto ${interface.name}
+iface ${interface.name} inet static
+	address ${interface.address}
+	netmask ${interface.netmask}
+	gateway ${interface.gateway}
+	<#if interface.dns??>
+	dns-nameservers ${interface.dns}
+	</#if>
+</#list>

@@ -1,0 +1,179 @@
+listServices()
+getSchema('imagefactory')
+
+config = {}
+
+config['compute.ec2.url'] = 'http://192.168.64.1:8773/services/Cloud'
+config['compute.ec2.username'] = 'cf4e00bf-b632-629d-e362-9b960ba436a7'
+config['compute.ec2.secret'] = '9444f096-9d55-444b-ad86-c3c6782aaf85'
+
+config['compute.os.auth'] = 'http://192.168.64.1:8774/v1.1'
+config['compute.os.username'] = 'justinsb'
+config['compute.os.secret'] = 'cf4e00bf-b632-629d-e362-9b960ba436a7'
+
+config['conductor.username'] = 'justinsb'
+config['conductor.secret'] = 'secret'
+config['conductor.auth'] = 'http://127.0.0.1:5000/v2.0/'
+config['conductor.tenant'] = 'fathomdb'
+
+config['image.url'] = 'http://192.168.64.1:9292/v1'
+
+activateService('imagefactory', config)
+getActivation('imagefactory')
+
+activateService('dns', config)
+getActivation('dns')
+
+activateService('aptcache', config)
+getActivation('aptcache')
+
+activateService('nginx', config)
+getActivation('nginx')
+
+activateService('postgresql', config)
+getActivation('postgresql')
+
+activateService('wordpress', config)
+getActivation('wordpress')
+
+activateService('mysql', config)
+getActivation('mysql')
+
+activateService('nexus', config)
+getActivation('nexus')
+
+activateService('openldap', config)
+getActivation('openldap')
+
+activateService('jetty', config)
+getActivation('jetty')
+
+activateService('tomcat', config)
+getActivation('tomcat')
+
+activateService('tomcat', config)
+getActivation('tomcat')
+
+activateService('git', config)
+getActivation('git')
+
+activateService('dnsresolver', config)
+getActivation('dnsresolver')
+
+activateService('jenkins', config)
+getActivation('jenkins')
+
+activateService('collectd', config)
+getActivation('collectd')
+
+activateService('instancesupervisor', config)
+getActivation('instancesupervisor')
+
+# Create our domain (we should do this first, even though we don't check it yet)
+dnsDomain = { 'dnsName': 'internal.fathomscale.com' }
+create('dns', 'dnsDomain', dnsDomain)
+listItems('dns', 'dnsDomain')
+
+# Create an apt-cache asap to spare the debian mirrors (and speed things up!)
+# Note that because this is done before the DNS server, it won't have the right DNS configuration and will need a reconfig
+aptCache = { 'dnsName': 'aptcache.internal.fathomscale.com' }
+create('aptcache', 'aptCacheService', aptCache)
+listItems('aptcache', 'aptCacheService')
+
+# Create a DNS server so that DNS will work
+dnsServer = { 'dnsName': 'ns.internal.fathomscale.com' }
+create('dns', 'dnsServer', dnsServer)
+listItems('dns', 'dnsServer')
+
+# Create a dummy DNS record so that we can verify that DNS is working
+dnsRecord = { 'dnsName': 'googledns.internal.fathomscale.com', 'address': ['8.8.8.8'] }
+create('dns', 'dnsRecord', dnsRecord)
+
+# Unfortunately, it looks like we need to use our own resolver if we want to have a private DNS server
+# (because otherwise the recursive DNS server tries to hit our private IP)
+# TODO: Can we fix this??
+resolver = { 'dnsName': 'resolver.internal.fathomscale.com' }
+create('dnsresolver', 'dnsResolverService', resolver)
+listItems('dnsresolver', 'dnsResolverService')
+
+# We create a collectd server to aggregate metrics
+collectdService = { 'dnsName': 'collectd.internal.fathomscale.com' }
+create('collectd', 'collectdService', collectdService)
+listItems('collectd', 'collectdService')
+
+# Working towards self-hosting...
+
+# LDAP service for shared authentication
+ldap = { 'dnsName': 'ldap.internal.fathomscale.com', 'ldapServerPassword': 'mysecret' }
+create('openldap', 'ldapService', ldap)
+listItems('openldap', 'ldapService')
+
+ldapDomain = { 'organizationName': 'fathomscale.com', 'adminPassword': 'adminsecret' }
+create('openldap', 'ldapDomain', ldapDomain)
+listItems('openldap', 'ldapDomain')
+
+# Nexus repo to hold our artifacts
+nexus = { 'dnsName': 'nexus.internal.fathomscale.com' }
+create('nexus', 'nexusService', nexus)
+listItems('nexus', 'nexusService')
+
+# Create tomcat webserver to deploy to
+tomcat = { 'dnsName': 'tomcat.internal.fathomscale.com' }
+create('tomcat', 'tomcatService', tomcat)
+listItems('tomcat', 'tomcatService')
+
+# Create jetty webserver to deploy to
+#jetty = { 'dnsName': 'jetty.internal.fathomscale.com' }
+#create('jetty', 'jettyService', jetty)
+
+# Create jenkins service to build code from github
+jenkins = { 'dnsName': 'jenkins.internal.fathomscale.com' }
+create('jenkins', 'jenkinsService', jenkins)
+listItems('jenkins', 'jenkinsService')
+
+# Private git repos are nice
+gitService = { 'dnsName': 'git.internal.fathomscale.com' }
+create('git', 'gitService', gitService)
+listItems('git', 'gitService')
+
+gitRepository = { 'name': 'testrepo' }
+create('git', 'gitRepository', gitRepository)
+listItems('git', 'gitRepository')
+
+mysqlServer = { 'dnsName': 'mysql.internal.fathomscale.com', 'rootPassword': 'mysqlsecret' }
+create('mysql', 'mysqlServer', mysqlServer)
+listItems('mysql', 'mysqlServer')
+
+wordpressService = { 'dnsName': 'wordpress.internal.fathomscale.com', 'databaseHost': 'mysql.internal.fathomscale.com' }
+create('wordpress', 'wordpressService', wordpressService)
+listItems('wordpress', 'wordpressService')
+
+postgresqlServer = { 'dnsName': 'postgres3.internal.fathomscale.com', 'postgresPassword': 'pgsecret' }
+create('postgresql', 'postgresqlServer', postgresqlServer)
+listItems('postgresql', 'postgresqlServer')
+
+
+nginxService = { 'dnsName': 'nginx.internal.fathomscale.com' }
+create('nginx', 'nginxService', nginxService)
+listItems('nginx', 'nginxService')
+
+httpFrontend = { 'hostname': 'jenkinsnginx.internal.fathomscale.com' }
+create('nginx', 'nginxFrontend', httpFrontend)
+listItems('nginx', 'nginxFrontend')
+
+httpBackend = { 'hostname': 'jenkinsnginx.internal.fathomscale.com', 'backend': 'jenkins:jenkinsService:636' }
+create('nginx', 'nginxBackend', httpBackend)
+listItems('nginx', 'nginxBackend')
+
+listItems('tomcat', 'tomcatService')
+listMetrics('tomcat', 'tomcatService', 527)
+getMetric('tomcat', 'tomcatService', 527, 'cpu.cpu_user')
+getMetric('tomcat', 'tomcatService', 527, 'diskfree.root.used')
+getMetric('tomcat', 'tomcatService', 527, 'diskfree.root.free')
+
+listItems('jenkins', 'jenkinsService')
+listMetrics('jenkins', 'jenkinsService', 636)
+getMetric('jenkins', 'jenkinsService', 636, 'diskfree.root.free')
+
+listItems('nginx', 'nginxService')
+

@@ -1,0 +1,47 @@
+<DiskImageRecipe xmlns="http://platformlayer.org/service/imagefactory/v1.0">
+	<!--  Set a default password to avoid hanging -->
+    <configurePackage>
+        <packageName>slapd</packageName>
+        <key>slapd/password2</key>
+        <value>password</value>
+    </configurePackage>
+
+    <configurePackage>
+        <packageName>slapd</packageName>
+        <key>slapd/password1</key>
+        <value>password</value>
+    </configurePackage>
+
+    <configurePackage>
+        <packageName>slapd</packageName>
+        <key>slapd/no_configuration</key>
+        <value>true</value>
+    </configurePackage>
+
+    <addPackage>slapd</addPackage>
+    
+<!-- 
+debconf
+slapd   slapd/internal/generated_adminpw    password    
+slapd   slapd/password2 password    
+slapd   slapd/internal/adminpw  password    
+slapd   slapd/password1 password    
+slapd   slapd/allow_ldap_v2 boolean false
+slapd   slapd/password_mismatch note    
+slapd   slapd/invalid_config    boolean true
+slapd   shared/organization string  nodomain
+slapd   slapd/upgrade_slapcat_failure   error   
+slapd   slapd/dump_database_destdir string  /var/backups/slapd-VERSION
+# Do you want the database to be removed when slapd is purged?
+slapd   slapd/purge_database    boolean false
+slapd   slapd/domain    string  nodomain
+slapd   slapd/backend   select  HDB
+slapd   slapd/no_configuration  boolean false
+slapd   slapd/move_old_database boolean true
+slapd   slapd/dump_database select  when needed
+-->
+
+    <addPackage>ldap-utils</addPackage>
+    
+    <addPackage>collectd</addPackage>
+</DiskImageRecipe>
