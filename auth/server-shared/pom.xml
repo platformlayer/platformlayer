@@ -104,9 +104,6 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <project>
-                        ${project}
-                    </project>
                     <destdir>${project.build.directory}/schemas</destdir>
                     <srcdir>${basedir}</srcdir>
                     <includes>
