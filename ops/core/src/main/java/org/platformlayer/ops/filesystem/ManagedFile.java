@@ -91,7 +91,7 @@ public abstract class ManagedFile extends ManagedFilesystemItem {
                 if (!Objects.equal(remoteMd5, sourceMd5)) {
                     Md5Hash debugSourceMd5 = getSourceMd5(target);
                     debugSourceMd5 = getSourceMd5(target);
-                    log.debug("debugSourceMd5: " + debugSourceMd5);
+                    log.debug("debugSourceMd5: " + debugSourceMd5 + " vs " + remoteMd5);
                     throw new IllegalStateException("Uploaded file, but contents did not then match");
                 }
 

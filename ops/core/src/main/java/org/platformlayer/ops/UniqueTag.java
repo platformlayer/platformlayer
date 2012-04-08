@@ -20,6 +20,13 @@ public class UniqueTag {
         return new Tag(Tag.UNIQUE_ID, s);
     }
 
+    public static Tag build(ItemBase item, String key) {
+        String s = null;
+        s = append(s, item);
+        s = join(s, key);
+        return new Tag(Tag.UNIQUE_ID, s);
+    }
+
     private static String join(String s, String suffix) {
         if (!Strings.isNullOrEmpty(s))
             return s + "::" + suffix;
@@ -34,5 +41,4 @@ public class UniqueTag {
         String add = key.getServiceType().getKey() + "/" + key.getItemType().getKey() + "/" + key.getItemId().getKey();
         return join(s, add);
     }
-
 }

@@ -37,6 +37,7 @@
         <module>service-networks</module>
         <module>service-federation</module>
         <!-- Relies on Java 7 <module>service-platformlayer</module> -->
+        <module>service-zookeeper</module>
         <module>service-desktop</module>
     </modules>
     <build>

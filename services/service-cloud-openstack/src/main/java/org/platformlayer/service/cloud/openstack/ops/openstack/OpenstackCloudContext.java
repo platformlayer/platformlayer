@@ -244,7 +244,8 @@ public class OpenstackCloudContext {
                 }
 
                 if (cloudBehaviours.isHpCloud()) {
-                    Set<String> imageNames = Sets.newHashSet("Ubuntu Lucid 10.04 LTS Server 64-bit");
+                	// TODO: We need a better solution here!!
+                    Set<String> imageNames = Sets.newHashSet("Debian Squeeze 6.0.3 Server 64-bit 20120123");
                     log.warn("Hard coding image name (presuming HP cloud)");
 
                     // TODO: Match OS

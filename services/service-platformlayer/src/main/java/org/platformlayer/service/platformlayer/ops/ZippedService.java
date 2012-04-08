@@ -16,10 +16,9 @@ import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
 import org.platformlayer.ops.packages.PackageDependency;
 import org.platformlayer.ops.supervisor.SupervisorInstance;
 import org.platformlayer.ops.supervisor.SupervisordService;
-import org.platformlayer.service.platformlayer.ops.auth.user.PlatformLayerUserAuthInstance;
 
 public abstract class ZippedService extends OpsTreeBase {
-    static final Logger log = Logger.getLogger(PlatformLayerUserAuthInstance.class);
+    static final Logger log = Logger.getLogger(ZippedService.class);
 
     @Inject
     SoftwareRepositoryHelpers softwareRepository;
