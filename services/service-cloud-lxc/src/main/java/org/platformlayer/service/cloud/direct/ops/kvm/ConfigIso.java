@@ -6,8 +6,8 @@ import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.ManagedDirectory;
 import org.platformlayer.ops.filesystem.TemplatedFile;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
 import org.platformlayer.ops.templates.TemplateDataSource;
+import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class ConfigIso extends OpsTreeBase {
     public File isoFile;

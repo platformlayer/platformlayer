@@ -13,8 +13,8 @@ import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
 import org.platformlayer.ops.networks.NetworkPoint;
+import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.mysql.model.MysqlServer;
 import org.platformlayer.service.mysql.ops.MysqlTarget;
 

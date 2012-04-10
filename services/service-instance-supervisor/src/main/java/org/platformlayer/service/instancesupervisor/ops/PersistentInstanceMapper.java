@@ -20,8 +20,8 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsProvider;
 import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.machines.PlatformLayerCloudHelpers;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
 import org.platformlayer.ops.tagger.Tagger;
+import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.instancesupervisor.model.PersistentInstance;
 
 import com.google.common.collect.Lists;
@@ -79,7 +79,7 @@ public class PersistentInstanceMapper extends OpsTreeBase {
             }
         }
 
-        pushChildScope(Machine.class, machine);
+        getRecursionState().pushChildScope(Machine.class, machine);
     }
 
     private MachineCreationRequest buildMachineCreationRequest(PersistentInstance model) throws OpsException {

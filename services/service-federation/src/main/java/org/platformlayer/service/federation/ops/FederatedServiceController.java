@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.apache.log4j.Logger;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
+import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class FederatedServiceController extends OpsTreeBase {
     static final Logger log = Logger.getLogger(FederatedServiceController.class);

@@ -10,7 +10,7 @@ import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.helpers.ServiceContext;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
+import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class NginxBackendConfiguration extends OpsTreeBase implements CustomRecursor {
     static final Logger log = Logger.getLogger(NginxBackendConfiguration.class);

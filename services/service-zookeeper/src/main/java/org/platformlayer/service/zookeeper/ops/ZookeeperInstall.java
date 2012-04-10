@@ -7,8 +7,8 @@ import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.DownloadFile;
 import org.platformlayer.ops.java.JavaVirtualMachine;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
 import org.platformlayer.ops.supervisor.SupervisordService;
+import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class ZookeeperInstall extends OpsTreeBase {
 

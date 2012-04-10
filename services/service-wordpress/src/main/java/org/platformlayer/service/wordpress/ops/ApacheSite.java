@@ -6,7 +6,7 @@ import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.ManagedSymlink;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
+import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class ApacheSite extends OpsTreeBase {
     String siteName;

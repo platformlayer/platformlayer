@@ -7,6 +7,7 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.ManagedDirectory;
 import org.platformlayer.ops.filesystem.TemplatedFile;
 import org.platformlayer.ops.packages.PackageDependency;
+import org.platformlayer.ops.tree.OpsTreeBase;
 
 public abstract class CollectdCommon extends OpsTreeBase {
     public static final int COLLECTD_PORT = 25826;

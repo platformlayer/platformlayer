@@ -16,15 +16,14 @@ import org.platformlayer.ops.filesystem.ManagedDirectory;
 import org.platformlayer.ops.filesystem.SimpleFile;
 import org.platformlayer.ops.firewall.FirewallRecord.Protocol;
 import org.platformlayer.ops.helpers.ImageFactory;
-import org.platformlayer.ops.helpers.PersistentInstances;
 import org.platformlayer.ops.helpers.ServiceContext;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.metrics.collectd.CollectdCollector;
 import org.platformlayer.ops.metrics.collectd.ManagedService;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
 import org.platformlayer.ops.networks.PublicEndpoint;
 import org.platformlayer.ops.packages.PackageDependency;
+import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.ops.users.PosixGroup;
 import org.platformlayer.ops.users.PosixUser;
 import org.platformlayer.service.dns.model.DnsServer;
@@ -43,9 +42,6 @@ public class DnsServerController extends OpsTreeBase {
 
     @Inject
     ServiceContext service;
-
-    @Inject
-    PersistentInstances persistentInstances;
 
     @Handler
     public void doOperation() throws OpsException, IOException {

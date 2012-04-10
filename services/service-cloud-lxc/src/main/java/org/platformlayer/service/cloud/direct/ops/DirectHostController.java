@@ -13,8 +13,8 @@ import org.platformlayer.ops.helpers.ServiceContext;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.machines.PlatformLayerCloudContext;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
 import org.platformlayer.ops.packages.PackageDependency;
+import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.direct.model.DirectHost;
 import org.platformlayer.service.cloud.direct.ops.kvm.host.KvmHost;
 

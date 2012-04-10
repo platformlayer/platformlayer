@@ -6,8 +6,8 @@ import org.openstack.utils.Utf8;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.SyntheticFile;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
 import org.platformlayer.ops.supervisor.SupervisorProcessConfig;
+import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class ManagedSupervisorInstance extends OpsTreeBase {
     public SupervisorProcessConfig supervisorProcess;

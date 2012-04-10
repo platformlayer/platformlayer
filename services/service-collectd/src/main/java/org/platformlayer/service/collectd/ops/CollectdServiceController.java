@@ -11,8 +11,8 @@ import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.metrics.collectd.CollectdSink;
 import org.platformlayer.ops.metrics.collectd.ManagedService;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
 import org.platformlayer.ops.packages.PackageDependency;
+import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.collectd.model.CollectdService;
 
 public class CollectdServiceController extends OpsTreeBase {

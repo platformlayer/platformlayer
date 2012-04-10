@@ -17,7 +17,7 @@ import org.platformlayer.ops.helpers.ImageFactory;
 import org.platformlayer.ops.helpers.SshKeys;
 import org.platformlayer.ops.images.ImageStore;
 import org.platformlayer.ops.machines.PlatformLayerCloudHelpers;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
+import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.direct.model.DirectCloud;
 
 public class DownloadImage extends OpsTreeBase {

@@ -9,7 +9,7 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.images.ImageStore;
 import org.platformlayer.ops.machines.CloudController;
 import org.platformlayer.ops.machines.StorageConfiguration;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
+import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class RawCloudController extends OpsTreeBase implements CloudController {
     static final Logger log = Logger.getLogger(RawCloudController.class);

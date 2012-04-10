@@ -23,8 +23,8 @@ import org.platformlayer.ops.firewall.FirewallRecord.Protocol;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.machines.PlatformLayerCloudHelpers;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
 import org.platformlayer.ops.tagger.Tagger;
+import org.platformlayer.ops.tree.OpsTreeBase;
 
 import com.google.common.base.Strings;
 

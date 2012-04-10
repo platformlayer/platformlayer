@@ -10,8 +10,8 @@ import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.metrics.collectd.CollectdCollector;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
 import org.platformlayer.ops.networks.PublicEndpoint;
+import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.openldap.model.LdapService;
 import org.platformlayer.service.openldap.ops.ldap.LdapMasterPassword;
 

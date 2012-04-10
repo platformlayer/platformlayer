@@ -7,7 +7,7 @@ import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.backups.BackupDirectory;
 import org.platformlayer.ops.filesystem.ManagedDirectory;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
+import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.git.model.GitRepository;
 
 public class GitRepositoryDirectory extends OpsTreeBase {

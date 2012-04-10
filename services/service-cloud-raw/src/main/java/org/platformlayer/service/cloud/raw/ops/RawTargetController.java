@@ -12,9 +12,9 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.helpers.ServiceContext;
 import org.platformlayer.ops.helpers.SshKey;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.ssh.SshAuthorizedKey;
+import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.raw.model.RawTarget;
 
 public class RawTargetController extends OpsTreeBase {

@@ -15,7 +15,7 @@ import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.helpers.ServiceContext;
 import org.platformlayer.ops.helpers.SshKey;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
+import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.git.model.GitRepository;
 import org.platformlayer.service.git.model.GitService;
 
@@ -54,7 +54,7 @@ public class GitServerAssignment extends OpsTreeBase implements CustomRecursor {
         SshKey sshKey = service.getSshKey();
         OpsTarget target = machine.getTarget(sshKey);
 
-        pushChildScope(OpsTarget.class, target);
+        getRecursionState().pushChildScope(OpsTarget.class, target);
     }
 
     @Override

@@ -9,6 +9,7 @@ import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
 import org.openstack.client.OpenstackException;
+import org.openstack.client.OpenstackNotFoundException;
 import org.openstack.client.common.OpenstackComputeClient;
 import org.openstack.client.common.OpenstackImageClient;
 import org.openstack.client.compute.AsyncServerOperation;
@@ -160,6 +161,8 @@ public class OpenstackCloudContext {
         try {
             Server server = computeClient.root().servers().server(serverId).show();
             return server;
+        } catch (OpenstackNotFoundException e) {
+            return null;
         } catch (OpenstackException e) {
             throw new OpsException("Error getting server", e);
         }
@@ -687,9 +690,13 @@ public class OpenstackCloudContext {
         terminateInstance(machine.getCloud(), machine.getOpenstackServerId());
     }
 
-    public void terminateInstance(OpenstackCloud cloud, String instanceId) throws OpsException {
+    public boolean terminateInstance(OpenstackCloud cloud, String instanceId) throws OpsException {
         try {
             getComputeClient(cloud).root().servers().server(instanceId).delete();
+            return true;
+        } catch (OpenstackNotFoundException e) {
+            log.info("Could not find instance to be terminated, assuming already terminated: " + instanceId);
+            return false;
         } catch (OpenstackException e) {
             throw new OpsException("Error terminating server", e);
         }

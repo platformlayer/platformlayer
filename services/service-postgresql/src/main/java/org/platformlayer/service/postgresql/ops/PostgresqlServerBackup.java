@@ -19,8 +19,8 @@ import org.platformlayer.ops.backups.BackupItem;
 import org.platformlayer.ops.backups.ShellBackupClient;
 import org.platformlayer.ops.backups.ShellBackupClient.Backup;
 import org.platformlayer.ops.machines.PlatformLayerCloudHelpers;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
 import org.platformlayer.ops.process.ProcessExecution;
+import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.postgresql.model.PostgresqlServer;
 
 import com.google.common.base.Splitter;

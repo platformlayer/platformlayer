@@ -11,8 +11,8 @@ import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.java.JavaVirtualMachine;
 import org.platformlayer.ops.metrics.collectd.CollectdCollector;
 import org.platformlayer.ops.metrics.collectd.ManagedService;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
 import org.platformlayer.ops.packages.PackageDependency;
+import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.tomcat.model.TomcatService;
 
 public class TomcatServiceController extends OpsTreeBase {

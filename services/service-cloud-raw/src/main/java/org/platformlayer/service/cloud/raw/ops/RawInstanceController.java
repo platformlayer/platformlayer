@@ -20,9 +20,9 @@ import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.helpers.ServiceContext;
 import org.platformlayer.ops.helpers.SshKey;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.ssh.SshAuthorizedKey;
+import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.raw.model.RawInstance;
 import org.platformlayer.service.cloud.raw.model.RawTarget;
 

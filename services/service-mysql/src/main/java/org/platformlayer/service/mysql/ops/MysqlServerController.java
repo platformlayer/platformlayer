@@ -13,9 +13,9 @@ import org.platformlayer.ops.filesystem.SimpleFile;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.metrics.collectd.ManagedService;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
 import org.platformlayer.ops.networks.PublicEndpoint;
 import org.platformlayer.ops.packages.PackageDependency;
+import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.mysql.model.MysqlServer;
 
 public class MysqlServerController extends OpsTreeBase {

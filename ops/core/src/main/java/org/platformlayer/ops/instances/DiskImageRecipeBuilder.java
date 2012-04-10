@@ -12,6 +12,7 @@ import org.platformlayer.ResourceUtils;
 import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.packages.HasDiskImageRecipe;
+import org.platformlayer.ops.tree.OpsTreeVisitor;
 import org.platformlayer.service.imagefactory.v1.ConfigurePackage;
 import org.platformlayer.service.imagefactory.v1.DiskImageRecipe;
 import org.platformlayer.service.imagefactory.v1.Repository;

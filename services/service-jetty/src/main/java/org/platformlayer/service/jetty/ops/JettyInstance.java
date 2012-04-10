@@ -7,8 +7,8 @@ import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.java.JavaVirtualMachine;
 import org.platformlayer.ops.metrics.collectd.ManagedService;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
 import org.platformlayer.ops.packages.PackageDependency;
+import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class JettyInstance extends OpsTreeBase {
     @Handler

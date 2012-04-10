@@ -15,7 +15,7 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.backups.ShellBackupClient.DirectoryBackup;
 import org.platformlayer.ops.machines.PlatformLayerCloudHelpers;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
+import org.platformlayer.ops.tree.OpsTreeBase;
 
 import com.google.common.collect.Lists;
 

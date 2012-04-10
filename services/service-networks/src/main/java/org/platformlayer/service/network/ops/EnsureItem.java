@@ -7,7 +7,7 @@ import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
+import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class EnsureItem extends OpsTreeBase {
 

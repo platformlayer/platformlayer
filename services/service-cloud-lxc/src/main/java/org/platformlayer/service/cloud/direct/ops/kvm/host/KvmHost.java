@@ -5,9 +5,9 @@ import java.io.File;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.SimpleFile;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
 import org.platformlayer.ops.packages.PackageDependency;
 import org.platformlayer.ops.supervisor.SupervisordService;
+import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class KvmHost extends OpsTreeBase {
 

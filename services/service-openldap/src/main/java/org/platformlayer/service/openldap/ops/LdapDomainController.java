@@ -19,7 +19,7 @@ import org.platformlayer.ops.ldap.LdapDN;
 import org.platformlayer.ops.ldap.LdapDN.LdapDNComponent;
 import org.platformlayer.ops.ldap.LdapPasswords;
 import org.platformlayer.ops.ldap.LdapServerUtilities;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
+import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.openldap.model.LdapDomain;
 import org.platformlayer.service.openldap.model.LdapService;
 import org.platformlayer.service.openldap.ops.ldap.HdbDatabaseEntry;

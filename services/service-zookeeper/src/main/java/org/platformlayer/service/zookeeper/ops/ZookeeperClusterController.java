@@ -16,9 +16,9 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.UniqueTag;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.helpers.MachineCluster;
-import org.platformlayer.ops.items.OwnedItem;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
+import org.platformlayer.ops.tree.OpsTreeBase;
+import org.platformlayer.ops.tree.OwnedItem;
 import org.platformlayer.service.zookeeper.model.ZookeeperCluster;
 import org.platformlayer.service.zookeeper.model.ZookeeperServer;
 

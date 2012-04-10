@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 import org.platformlayer.PlatformLayerClientException;
+import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.HostPolicy;
 import org.platformlayer.core.model.InstanceBase;
 import org.platformlayer.core.model.ItemBase;
@@ -25,14 +26,14 @@ import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.dns.DnsResolver;
 import org.platformlayer.ops.helpers.ImageFactory;
+import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.helpers.InstanceSupervisor;
-import org.platformlayer.ops.helpers.PersistentInstances;
 import org.platformlayer.ops.helpers.ServiceContext;
 import org.platformlayer.ops.helpers.SshKey;
 import org.platformlayer.ops.helpers.SshKeys;
 import org.platformlayer.ops.machines.PlatformLayerCloudHelpers;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
+import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.imagefactory.v1.DiskImageRecipe;
 import org.platformlayer.service.instancesupervisor.v1.PersistentInstance;
 
@@ -67,9 +68,6 @@ public class InstanceBuilder extends OpsTreeBase implements CustomRecursor {
     ServiceContext service;
 
     @Inject
-    PersistentInstances persistentInstances;
-
-    @Inject
     OpsContext ops;
 
     @Inject
@@ -81,6 +79,9 @@ public class InstanceBuilder extends OpsTreeBase implements CustomRecursor {
     @Inject
     PlatformLayerCloudHelpers cloudHelpers;
 
+    @Inject
+    InstanceHelpers instances;
+    
     @Handler
     public void doOperation() throws OpsException, IOException {
         ItemBase item = ops.getInstance(ItemBase.class);
@@ -100,7 +101,14 @@ public class InstanceBuilder extends OpsTreeBase implements CustomRecursor {
         persistentInstance = getOrCreate(parentTag, persistentInstanceTemplate);
 
         if (persistentInstance != null) {
-            instance = persistentInstances.getInstance(persistentInstance);
+            // We have to connect to the underlying machine not-via-DNS for Dns service => use instance id
+            // TODO: Should we always use the instance id??
+
+            instance = instances.findInstance(persistentInstance);
+            if (instance == null && !OpsContext.isDelete()) {
+                // A machine has not (yet) been assigned
+                throw new OpsException("Machine is not yet built").setRetry(TimeSpan.ONE_MINUTE);
+            }
         }
 
         if (instance != null) {
@@ -119,10 +127,17 @@ public class InstanceBuilder extends OpsTreeBase implements CustomRecursor {
             target = machine.getTarget(sshKey);
         }
 
-        pushChildScope(Machine.class, machine);
-        pushChildScope(PersistentInstance.class, persistentInstance);
-        pushChildScope(InstanceBase.class, instance);
-        pushChildScope(OpsTarget.class, target);
+        RecursionState recursion = getRecursionState();
+        
+        if (OpsContext.isDelete() && machine == null) {
+            // Don't recurse into no machine :-)
+            recursion.setPreventRecursion(true);
+        }
+        
+        recursion.pushChildScope(Machine.class, machine);
+        recursion.pushChildScope(PersistentInstance.class, persistentInstance);
+        recursion.pushChildScope(InstanceBase.class, instance);
+        recursion.pushChildScope(OpsTarget.class, target);
     }
 
     private PersistentInstance buildPersistentInstanceTemplate() throws OpsException {

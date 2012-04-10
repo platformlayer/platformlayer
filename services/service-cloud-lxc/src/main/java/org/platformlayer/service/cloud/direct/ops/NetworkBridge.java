@@ -9,9 +9,9 @@ import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
 import org.platformlayer.ops.process.ProcessExecution;
 import org.platformlayer.ops.process.ProcessExecutionException;
+import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class NetworkBridge extends OpsTreeBase {
     public String bridge = "br0";

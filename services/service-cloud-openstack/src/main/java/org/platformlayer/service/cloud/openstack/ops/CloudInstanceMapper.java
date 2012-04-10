@@ -23,7 +23,8 @@ import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.helpers.ServiceContext;
 import org.platformlayer.ops.helpers.SshKey;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
+import org.platformlayer.ops.tree.OpsTreeBase;
+import org.platformlayer.ops.tree.OpsTreeBase.RecursionState;
 import org.platformlayer.service.cloud.openstack.model.OpenstackCloud;
 import org.platformlayer.service.cloud.openstack.model.OpenstackInstance;
 import org.platformlayer.service.cloud.openstack.ops.openstack.OpenstackCloudContext;
@@ -62,7 +63,7 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
             throw new OpsException("Could not find cloud");
         }
 
-        pushChildScope(cloud);
+        getRecursionState().pushChildScope(cloud);
 
         List<String> assignedInstanceIds = instanceTags.find(Tag.ASSIGNED);
         if (assignedInstanceIds.isEmpty()) {
@@ -102,12 +103,18 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
 
             Server server = openstack.findServerById(cloud, assignedInstanceId);
 
-            server = openstack.ensureHasPublicIp(cloud, server);
+            if (server == null) {
+                if (OpsContext.isConfigure()) {
+                    throw new OpsException("Unable to find assigned server: " + assignedInstanceId);
+                }
+            } else {
+                server = openstack.ensureHasPublicIp(cloud, server);
 
-            machine = new OpenstackComputeMachine(openstack, cloud, server);
+                machine = new OpenstackComputeMachine(openstack, cloud, server);
 
-            SshKey sshKey = service.getSshKey();
-            target = machine.getTarget(sshKey);
+                SshKey sshKey = service.getSshKey();
+                target = machine.getTarget(sshKey);
+            }
         }
 
         if (!assignedInstanceIds.isEmpty() && OpsContext.isDelete()) {
@@ -116,8 +123,14 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
             }
         }
 
-        pushChildScope(machine);
-        pushChildScope(target);
+        RecursionState recursion = getRecursionState();
+
+        if (OpsContext.isDelete() && machine == null) {
+            recursion.setPreventRecursion(true);
+        } else {
+            recursion.pushChildScope(machine);
+            recursion.pushChildScope(target);
+        }
     }
 
     private String buildServerName() {

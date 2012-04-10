@@ -9,7 +9,7 @@ import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.UniqueTag;
 import org.platformlayer.ops.firewall.FirewallRecord.Protocol;
-import org.platformlayer.ops.items.OwnedItem;
+import org.platformlayer.ops.tree.OwnedItem;
 import org.platformlayer.service.network.v1.NetworkConnection;
 
 import com.google.common.base.Strings;

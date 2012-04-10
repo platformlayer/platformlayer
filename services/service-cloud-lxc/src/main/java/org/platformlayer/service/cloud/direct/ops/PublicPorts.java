@@ -24,8 +24,8 @@ import org.platformlayer.ops.helpers.ServiceContext;
 import org.platformlayer.ops.lxc.FilesystemBackedPool;
 import org.platformlayer.ops.machines.PlatformLayerCloudMachine;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
 import org.platformlayer.ops.tagger.Tagger;
+import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.direct.model.DirectInstance;
 import org.platformlayer.service.cloud.direct.ops.kvm.PoolAssignment;
 

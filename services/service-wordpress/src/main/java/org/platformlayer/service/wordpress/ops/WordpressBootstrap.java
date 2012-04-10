@@ -8,7 +8,7 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.ManagedDirectory;
 import org.platformlayer.ops.filesystem.ManagedSymlink;
 import org.platformlayer.ops.filesystem.TemplatedFile;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
+import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class WordpressBootstrap extends OpsTreeBase {
 

@@ -13,8 +13,8 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsProvider;
 import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
 import org.platformlayer.ops.tagger.Tagger;
+import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.openstack.model.OpenstackInstance;
 import org.platformlayer.service.cloud.openstack.model.OpenstackPublicEndpoint;
 

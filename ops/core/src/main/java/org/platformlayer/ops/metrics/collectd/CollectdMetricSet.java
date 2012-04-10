@@ -8,6 +8,7 @@ import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.TemplatedFile;
 import org.platformlayer.ops.model.metrics.MetricConfig;
+import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class CollectdMetricSet extends OpsTreeBase {
     String metricKey;

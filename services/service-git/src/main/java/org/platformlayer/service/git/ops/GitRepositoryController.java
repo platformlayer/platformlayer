@@ -3,7 +3,7 @@ package org.platformlayer.service.git.ops;
 import org.apache.log4j.Logger;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
+import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class GitRepositoryController extends OpsTreeBase {
     static final Logger log = Logger.getLogger(GitRepositoryController.class);

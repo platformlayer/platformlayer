@@ -14,8 +14,8 @@ import org.platformlayer.ops.firewall.FirewallRecord.Protocol;
 import org.platformlayer.ops.firewall.PortAddressFilter;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
 import org.platformlayer.ops.networks.NetworkPoint;
+import org.platformlayer.ops.tree.OpsTreeBase;
 
 import com.google.common.base.Strings;
 

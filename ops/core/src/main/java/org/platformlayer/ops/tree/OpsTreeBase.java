@@ -1,9 +1,10 @@
-package org.platformlayer.ops.metrics.collectd;
+package org.platformlayer.ops.tree;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.platformlayer.CastUtils;
 import org.platformlayer.ops.BindingScope;
 import org.platformlayer.ops.CustomRecursor;
@@ -16,6 +17,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public abstract class OpsTreeBase implements OpsTree, CustomRecursor {
+    static final Logger log = Logger.getLogger(OpsTreeBase.class);
+
     private List<Object> children = null;
 
     @Override
@@ -51,32 +54,59 @@ public abstract class OpsTreeBase implements OpsTree, CustomRecursor {
 
     protected abstract void addChildren() throws OpsException;
 
-    Map<Class<?>, Object> childScope;
+    RecursionState recursionState;
 
-    protected <T> T pushChildScope(Class<T> clazz, T o) {
-        if (childScope == null) {
-            childScope = Maps.newHashMap();
+    protected RecursionState getRecursionState() {
+        if (recursionState == null) {
+            recursionState = new RecursionState();
         }
-        childScope.put(clazz, o);
-        return o;
+        return recursionState;
     }
 
-    protected <T> T pushChildScope(T o) {
-        if (o == null)
-            throw new IllegalArgumentException();
-        Class<T> clazz = (Class<T>) o.getClass();
-        return pushChildScope(clazz, o);
+    public static class RecursionState {
+        Map<Class<?>, Object> childScope = Maps.newHashMap();
+        boolean preventRecursion = false;
+
+        public <T> T pushChildScope(Class<T> clazz, T o) {
+            childScope.put(clazz, o);
+            return o;
+        }
+
+        public <T> T pushChildScope(T o) {
+            if (o == null)
+                throw new IllegalArgumentException();
+            Class<T> clazz = (Class<T>) o.getClass();
+            return pushChildScope(clazz, o);
+        }
+
+        public boolean isPreventRecursion() {
+            return preventRecursion;
+        }
+
+        public void setPreventRecursion(boolean preventRecursion) {
+            this.preventRecursion = preventRecursion;
+        }
     }
 
     @Override
     public void doRecurseOperation() throws OpsException {
-        // TODO: Clear child scope???
         BindingScope scope = null;
 
         try {
-            if (childScope != null && !childScope.isEmpty()) {
-                scope = BindingScope.push(childScope.values());
+            // TODO: Is this actually safe?
+            RecursionState recursionState = this.recursionState;
+            this.recursionState = null;
+
+            if (recursionState != null) {
+                if (recursionState.preventRecursion) {
+                    log.warn("Skipping recursion into child items");
+                    return;
+                }
+                if (!recursionState.childScope.isEmpty()) {
+                    scope = BindingScope.push(recursionState.childScope.values());
+                }
             }
+
             OpsContext opsContext = OpsContext.get();
             OperationRecursor.doRecurseChildren(opsContext, this);
         } finally {
