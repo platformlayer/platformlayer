@@ -13,6 +13,7 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.UniqueTag;
 import org.platformlayer.ops.helpers.InstanceHelpers;
+import org.platformlayer.ops.items.OwnedItem;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.service.dns.v1.DnsRecord;
 

@@ -1,4 +1,4 @@
-package org.openstack.service.nginx.ops;
+package org.platformlayer.ops.items;
 
 import java.util.List;
 
