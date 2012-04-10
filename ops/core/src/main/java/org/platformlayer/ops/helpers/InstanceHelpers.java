@@ -1,5 +1,6 @@
 package org.platformlayer.ops.helpers;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -23,6 +24,8 @@ import org.platformlayer.ops.machines.ServiceProviderHelpers;
 import org.platformlayer.service.instancesupervisor.v1.PersistentInstance;
 import org.platformlayer.xaas.services.ModelClass;
 import org.platformlayer.xaas.services.ServiceProviderDictionary;
+
+import com.google.common.collect.Lists;
 
 public class InstanceHelpers {
     static final Logger log = Logger.getLogger(InstanceHelpers.class);
@@ -127,7 +130,8 @@ public class InstanceHelpers {
             MachineCluster machineCluster = (MachineCluster) controller;
             return machineCluster.getMachines(item);
         } else {
-            throw new UnsupportedOperationException();
+            Machine machine = getMachine(item);
+            return Collections.singletonList(machine);
         }
     }
 

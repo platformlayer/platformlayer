@@ -13,6 +13,14 @@ public class UniqueTag {
         return new Tag(Tag.UNIQUE_ID, s);
     }
 
+    public static Tag build(ItemBase item, ItemBase item2, String key) {
+        String s = null;
+        s = append(s, item);
+        s = append(s, item2);
+        s = join(s, key);
+        return new Tag(Tag.UNIQUE_ID, s);
+    }
+
     public static Tag build(ItemBase item, ItemBase item2) {
         String s = null;
         s = append(s, item);

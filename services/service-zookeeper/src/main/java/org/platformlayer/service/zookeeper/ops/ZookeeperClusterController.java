@@ -38,7 +38,7 @@ public class ZookeeperClusterController extends OpsTreeBase implements MachineCl
 				ZookeeperServer.class, Filter.byTag(parentTag));
 
 		// Create servers so that we hit the desired cluster size
-		int clusterSize = 1;
+		int clusterSize = model.clusterSize;
 		if (servers.size() < clusterSize) {
 			for (int i = servers.size(); i < clusterSize; i++) {
 				ZookeeperServer server = new ZookeeperServer();

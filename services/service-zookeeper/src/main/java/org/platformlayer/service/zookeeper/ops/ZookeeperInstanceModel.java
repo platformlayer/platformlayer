@@ -20,86 +20,88 @@ import org.platformlayer.ops.templates.TemplateDataSource;
 import org.platformlayer.service.zookeeper.model.ZookeeperServer;
 
 public class ZookeeperInstanceModel implements TemplateDataSource {
-	static final Logger log = Logger.getLogger(ZookeeperInstanceModel.class);
-	
-	@Inject
-	PlatformLayerHelpers platformLayer;
+    static final Logger log = Logger.getLogger(ZookeeperInstanceModel.class);
 
-	@Inject
-	InstanceHelpers instances;
+    @Inject
+    PlatformLayerHelpers platformLayer;
 
-	ZookeeperServer getModel() {
-		ZookeeperServer model = OpsContext.get().getInstance(
-				ZookeeperServer.class);
-		return model;
-	}
+    @Inject
+    InstanceHelpers instances;
 
-	// A model of the cluster
-	public static class Cluster {
-		public List<ClusterServer> servers = Lists.newArrayList();
-	}
+    ZookeeperServer getModel() {
+        ZookeeperServer model = OpsContext.get().getInstance(ZookeeperServer.class);
+        return model;
+    }
 
-	public static class ClusterServer {
-		public String key;
-		public String ip;
-	}
+    // A model of the cluster
+    public static class Cluster {
+        public List<ClusterServer> servers = Lists.newArrayList();
+    }
 
-	public Cluster getCluster() throws OpsException {
-		Cluster cluster = new Cluster();
-		for (ZookeeperServer server : getClusterServers()) {
-			// TODO: Do keys need to be sequential
-			ClusterServer model = new ClusterServer();
-			model.key = server.clusterId;
+    public static class ClusterServer {
+        public String key;
+        public String ip;
+    }
 
-			// TODO: What do we do about machines that don't yet have an ip?
-			NetworkPoint targetNetworkPoint = NetworkPoint.forPublicInternet();
-			Machine sourceMachine = instances.getMachine(server);
-			String address = sourceMachine.getAddress(targetNetworkPoint, ZookeeperConstants.ZK_SYSTEM_PORT_1);
+    public Cluster getCluster() throws OpsException {
+        Cluster cluster = new Cluster();
+        for (ZookeeperServer server : getClusterServers()) {
+            // TODO: Do keys need to be sequential
+            ClusterServer model = new ClusterServer();
+            model.key = server.clusterId;
 
-			model.ip = address;
-			
-			cluster.servers.add(model);
-		}
-		return cluster;
-	}
+            // TODO: What do we do about machines that don't yet have an ip?
+            NetworkPoint targetNetworkPoint = NetworkPoint.forPublicInternet();
+            Machine sourceMachine = instances.getMachine(server);
+            String address = sourceMachine.getAddress(targetNetworkPoint, ZookeeperConstants.ZK_SYSTEM_PORT_1);
 
-	public List<ZookeeperServer> getClusterServers() throws OpsException {
-		ZookeeperServer model = getModel();
+            model.ip = address;
 
-		Tag parentTag = model.getTags().findUniqueTag(Tag.PARENT);
-		if (parentTag == null) {
-			log.warn("Parent tag not set on Zookeeper server; assuming standalone server");
-			return Lists.newArrayList(model);
-		}
+            cluster.servers.add(model);
+        }
+        return cluster;
+    }
 
-		List<ZookeeperServer> servers = platformLayer.listItems(
-				ZookeeperServer.class, Filter.byTag(parentTag));
-		return servers;
-	}
+    public List<ZookeeperServer> getClusterServers() throws OpsException {
+        ZookeeperServer model = getModel();
 
-	public File getInstallDir() {
-		return new File("/opt/zookeeper/zookeeper-3.3.5/zookeeper-3.3.5");
-	}
+        Tag parentTag = model.getTags().findUniqueTag(Tag.PARENT);
+        if (parentTag == null) {
+            log.warn("Parent tag not set on Zookeeper server; assuming standalone server");
+            return Lists.newArrayList(model);
+        }
 
-	public File getInstanceDir() {
-		return new File(new File("/var/zookeeper"), getInstanceKey());
-	}
+        List<ZookeeperServer> servers = platformLayer.listItems(ZookeeperServer.class, Filter.byTag(parentTag));
+        return servers;
+    }
 
-	public String getInstanceKey() {
-		// TOOD: Should this be the cluster unique id??
-		String instanceKey = "default";
-		return instanceKey;
-	}
+    public String getMyId() {
+        return getModel().clusterId;
+    }
 
-	@Override
-	public void buildTemplateModel(Map<String, Object> model)
-			throws OpsException {
-		// TODO: Build by reflection? Rely on bean reflection in our templating
-		// library?
+    public File getInstallDir() {
+        return new File("/opt/zookeeper/zookeeper-3.3.5/zookeeper-3.3.5");
+    }
 
-		model.put("installDir", getInstallDir());
-		model.put("instanceDir", getInstanceDir());
-		model.put("cluster", getCluster());
-	}
+    public File getInstanceDir() {
+        return new File(new File("/var/zookeeper"), getInstanceKey());
+    }
+
+    public String getInstanceKey() {
+        // TOOD: Should this be the cluster unique id??
+        String instanceKey = "default";
+        return instanceKey;
+    }
+
+    @Override
+    public void buildTemplateModel(Map<String, Object> model) throws OpsException {
+        // TODO: Build by reflection? Rely on bean reflection in our templating
+        // library?
+
+        model.put("installDir", getInstallDir());
+        model.put("instanceDir", getInstanceDir());
+        model.put("cluster", getCluster());
+        model.put("myid", getMyId());
+    }
 
 }
