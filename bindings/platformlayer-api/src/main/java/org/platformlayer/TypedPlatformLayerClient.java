@@ -91,6 +91,10 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
         return promoteToTyped(cloudItemUntyped);
     }
 
+    /**
+     * If using directly, consider using OwnedItem instead
+     */
+    @Deprecated
     public <T extends ItemBase> T putItemByTag(T item, Tag uniqueTag) throws OpsException {
         JaxbHelper jaxbHelper = PlatformLayerClientBase.toJaxbHelper(item);
 
@@ -103,6 +107,10 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 
     }
 
+    /**
+     * Consider using putItemByTag instead (or OwnedItem) for idempotency
+     */
+    @Deprecated
     public <T> T putItem(T item) throws OpsException {
         JaxbHelper jaxbHelper = PlatformLayerClientBase.toJaxbHelper(item);
 
@@ -192,11 +200,19 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
         return platformLayerClient.doAction(key, action);
     }
 
+    /**
+     * Consider using putItemByTag instead (or OwnedItem) for idempotency
+     */
+    @Deprecated
     @Override
     public UntypedItem putItem(PlatformLayerKey key, String data, Format dataFormat) throws PlatformLayerClientException {
         return platformLayerClient.putItem(key, data, dataFormat);
     }
 
+    /**
+     * If using directly, consider using OwnedItem instead
+     */
+    @Deprecated
     @Override
     public UntypedItem putItemByTag(PlatformLayerKey key, Tag uniqueTag, String data, Format dataFormat) throws PlatformLayerClientException {
         return platformLayerClient.putItemByTag(key, uniqueTag, data, dataFormat);
