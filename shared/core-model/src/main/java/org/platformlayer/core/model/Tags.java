@@ -59,6 +59,10 @@ public class Tags implements Iterable<Tag> {
         return matches;
     }
 
+    public boolean remove(Tag removeTag) {
+        return tags.remove(removeTag);
+    }
+
     public String findUnique(String key) {
         Tag tag = findUniqueTag(key);
         if (tag == null)

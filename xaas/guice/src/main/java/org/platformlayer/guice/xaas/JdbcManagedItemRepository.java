@@ -52,6 +52,11 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 public class JdbcManagedItemRepository implements ManagedItemRepository {
+    /**
+     * We originally weren't de-duplicating tags, but I think we want to
+     */
+    static final boolean REMOVE_DUPLICATE_TAGS = true;
+
     @Inject
     ServiceProviderDictionary serviceProviderDirectory;
 
@@ -374,6 +379,12 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
         }
 
         public void insertTags(int itemId, Tags tags) throws SQLException {
+            for (Tag tag : tags) {
+                insertTag(itemId, tag);
+            }
+        }
+
+        public void insertTag(int itemId, Tag tag) throws SQLException {
             final String sql = "INSERT INTO item_tags (service, model, project, item, key, data) VALUES (?, ?, ?, ?, ?, ?)";
 
             PreparedStatement ps = prepareStatement(sql);
@@ -382,18 +393,22 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
             setAtom(ps, 3, ProjectId.class);
             ps.setInt(4, itemId);
 
-            for (Tag tag : tags) {
-                ps.setString(5, tag.key);
-                ps.setString(6, tag.value);
+            ps.setString(5, tag.key);
+            ps.setString(6, tag.value);
 
-                int updateCount = ps.executeUpdate();
-                if (updateCount != 1) {
-                    throw new IllegalStateException("Unexpected number of rows inserted");
-                }
+            int updateCount = ps.executeUpdate();
+            if (updateCount != 1) {
+                throw new IllegalStateException("Unexpected number of rows inserted");
             }
         }
 
         public void removeTags(int itemId, Tags tags) throws SQLException {
+            for (Tag tag : tags) {
+                removeTag(itemId, tag);
+            }
+        }
+
+        public void removeTag(int itemId, Tag tag) throws SQLException {
             final String sql = "DELETE FROM item_tags WHERE service = ? and model=? and project=? and item=? and key=? and data=?";
 
             PreparedStatement ps = prepareStatement(sql);
@@ -402,12 +417,10 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
             setAtom(ps, 3, ProjectId.class);
             ps.setInt(4, itemId);
 
-            for (Tag tag : tags) {
-                ps.setString(5, tag.key);
-                ps.setString(6, tag.value);
+            ps.setString(5, tag.key);
+            ps.setString(6, tag.value);
 
-                ps.executeUpdate();
-            }
+            ps.executeUpdate();
         }
 
         public int insertItem(ItemBase item, byte[] data, byte[] secretData) throws SQLException {
@@ -623,16 +636,27 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 
             int itemId = rs.id;
 
+            Tags tags = new Tags();
+            mapToTags(db.listTagsForItem(itemId), tags);
+
             if (changeTags.addTags != null) {
-                db.insertTags(itemId, changeTags.addTags);
+                for (Tag addTag : changeTags.addTags) {
+                    if (tags.hasTag(addTag))
+                        continue;
+                    db.insertTag(itemId, addTag);
+                    tags.add(addTag);
+                }
             }
 
             if (changeTags.removeTags != null) {
-                db.removeTags(itemId, changeTags.removeTags);
+                for (Tag removeTag : changeTags.removeTags) {
+                    boolean removed = tags.remove(removeTag);
+                    if (!removed)
+                        continue;
+                    db.removeTag(itemId, removeTag);
+                }
             }
 
-            Tags tags = new Tags();
-            mapToTags(db.listTagsForItem(itemId), tags);
             return tags;
         } catch (SQLException e) {
             throw new RepositoryException("Error running query", e);
@@ -642,9 +666,26 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
     }
 
     private void mapToTags(List<TagEntity> tagEntities, Tags tags) {
+        // Once REMOVE_DUPLICATE_TAGS is false, we can add direct to tags
+        List<Tag> addList = Lists.newArrayList();
+
         for (TagEntity tag : tagEntities) {
-            tags.add(new Tag(tag.key, tag.data));
+            addList.add(new Tag(tag.key, tag.data));
         }
+
+        if (REMOVE_DUPLICATE_TAGS) {
+            List<Tag> deduplicated = Lists.newArrayList();
+            HashMultimap<String, String> valueMap = HashMultimap.create();
+            for (Tag tag : addList) {
+                if (valueMap.put(tag.getKey(), tag.getValue())) {
+                    deduplicated.add(tag);
+                }
+            }
+
+            addList = deduplicated;
+        }
+
+        tags.addAll(addList);
     }
 
     byte[] serialize(ItemBase item, SecretKey itemSecret) {
