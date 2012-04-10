@@ -1,5 +1,7 @@
 package org.platformlayer.ops.helpers;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
@@ -19,6 +21,8 @@ import org.platformlayer.ops.machines.PlatformLayerCloudHelpers;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.machines.ServiceProviderHelpers;
 import org.platformlayer.service.instancesupervisor.v1.PersistentInstance;
+import org.platformlayer.xaas.services.ModelClass;
+import org.platformlayer.xaas.services.ServiceProviderDictionary;
 
 public class InstanceHelpers {
     static final Logger log = Logger.getLogger(InstanceHelpers.class);
@@ -37,6 +41,15 @@ public class InstanceHelpers {
 
     @Inject
     PlatformLayerCloudHelpers cloudHelpers;
+
+    @Inject
+    ServiceProviderHelpers serviceProviders;
+
+    @Inject
+    ServiceProviderDictionary serviceProviderDictionary;
+
+    @Inject
+    SshKeys sshKeys;
 
     public InstanceBase findInstance(Tags tags, PlatformLayerKey modelKey) throws OpsException {
         // We have to connect to the underlying machine not-via-DNS for Dns service => use instance id
@@ -104,11 +117,19 @@ public class InstanceHelpers {
         return machine;
     }
 
-    @Inject
-    SshKeys sshKeys;
+    public List<Machine> getMachines(ItemBase item) throws OpsException {
+        Class<? extends ItemBase> javaClass = item.getClass();
+        ModelClass<?> modelClass = serviceProviderDictionary.getModelClass(javaClass);
+        Object controller = modelClass.getProvider().getController(javaClass);
 
-    @Inject
-    ServiceProviderHelpers serviceProviders;
+        // TODO: Should we just recurse down through children?
+        if (controller instanceof MachineCluster) {
+            MachineCluster machineCluster = (MachineCluster) controller;
+            return machineCluster.getMachines(item);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
 
     public OpsTarget getTarget(ItemBase item) throws OpsException {
         Machine machine = getMachine(item);

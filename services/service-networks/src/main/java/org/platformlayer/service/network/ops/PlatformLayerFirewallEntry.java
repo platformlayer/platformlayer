@@ -38,6 +38,7 @@ public class PlatformLayerFirewallEntry extends OpsTreeBase {
 
     @Override
     protected void addChildren() throws OpsException {
+    	// TODO: Need to register a dependency on destItem?
         MachineResolver dest = MachineResolver.build(destItem);
         addChild(dest);
 

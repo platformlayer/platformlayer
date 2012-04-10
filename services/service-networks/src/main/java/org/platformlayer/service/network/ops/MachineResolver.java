@@ -48,15 +48,16 @@ public class MachineResolver extends OpsTreeBase implements CustomRecursor {
     public void doRecurseOperation() throws OpsException {
         ItemBase dest = platformLayerHelpers.getItem(key);
 
-        Machine machine = instanceHelpers.getMachine(dest);
-        OpsTarget target = instanceHelpers.getTarget(dest, machine);
+        for (Machine machine : instanceHelpers.getMachines(dest)) {
+            OpsTarget target = instanceHelpers.getTarget(dest, machine);
 
-        BindingScope scope = BindingScope.push(machine, target);
-        try {
-            OpsContext opsContext = OpsContext.get();
-            OperationRecursor.doRecurseChildren(opsContext, this);
-        } finally {
-            scope.pop();
+            BindingScope scope = BindingScope.push(machine, target);
+            try {
+                OpsContext opsContext = OpsContext.get();
+                OperationRecursor.doRecurseChildren(opsContext, this);
+            } finally {
+                scope.pop();
+            }
         }
     }
 

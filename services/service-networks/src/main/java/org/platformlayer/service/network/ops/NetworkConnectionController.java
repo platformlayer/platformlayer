@@ -1,7 +1,5 @@
 package org.platformlayer.service.network.ops;
 
-import java.io.IOException;
-
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
@@ -20,8 +18,7 @@ public class NetworkConnectionController extends OpsTreeBase {
     OpsContext ops;
 
     @Handler
-    public void handler() throws OpsException, IOException {
-
+    public void handler() {
     }
 
     @Override

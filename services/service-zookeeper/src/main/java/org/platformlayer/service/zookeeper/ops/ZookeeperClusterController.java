@@ -9,19 +9,27 @@ import org.platformlayer.Filter;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.Handler;
+import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.UniqueTag;
+import org.platformlayer.ops.helpers.InstanceHelpers;
+import org.platformlayer.ops.helpers.MachineCluster;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
 import org.platformlayer.service.zookeeper.model.ZookeeperCluster;
 import org.platformlayer.service.zookeeper.model.ZookeeperServer;
 
-public class ZookeeperClusterController extends OpsTreeBase {
+import com.google.common.collect.Lists;
+
+public class ZookeeperClusterController extends OpsTreeBase implements MachineCluster {
 	static final Logger log = Logger
 			.getLogger(ZookeeperClusterController.class);
 
 	@Inject
 	PlatformLayerHelpers platformLayer;
+
+	@Inject
+	InstanceHelpers instances;
 
 	@Handler
 	public void handler(ZookeeperCluster model) throws OpsException {
@@ -57,4 +65,20 @@ public class ZookeeperClusterController extends OpsTreeBase {
 	protected void addChildren() throws OpsException {
 
 	}
+
+    @Override
+    public List<Machine> getMachines(Object modelObject) throws OpsException {
+        ZookeeperCluster model = (ZookeeperCluster) modelObject;
+        Filter parentFilter = Filter.byTag(Tag.buildParentTag(model.getKey()));
+
+        List<Machine> machines = Lists.newArrayList();
+
+        for (ZookeeperServer server : platformLayer.listItems(ZookeeperServer.class, parentFilter)) {
+            Machine machine = instances.getMachine(server);
+
+            machines.add(machine);
+        }
+
+        return machines;
+    }
 }
