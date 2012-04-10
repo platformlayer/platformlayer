@@ -39,6 +39,7 @@
         <!-- Relies on Java 7 <module>service-platformlayer</module> -->
         <module>service-zookeeper</module>
         <module>service-desktop</module>
+        <module>service-memcache</module>
     </modules>
     <build>
         <resources>
