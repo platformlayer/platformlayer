@@ -113,14 +113,18 @@ public class InstanceHelpers {
     }
 
     public Machine getMachine(ItemBase item) throws OpsException {
+        return getMachine(item, true);
+    }
+
+    public Machine getMachine(ItemBase item, boolean required) throws OpsException {
         Machine machine = findMachine(item);
-        if (machine == null) {
+        if (required && machine == null) {
             throw new OpsException("Could not determine instance for: " + item);
         }
         return machine;
     }
 
-    public List<Machine> getMachines(ItemBase item) throws OpsException {
+    public List<Machine> getMachines(ItemBase item, boolean required) throws OpsException {
         Class<? extends ItemBase> javaClass = item.getClass();
         ModelClass<?> modelClass = serviceProviderDictionary.getModelClass(javaClass);
         Object controller = modelClass.getProvider().getController(javaClass);
@@ -128,9 +132,11 @@ public class InstanceHelpers {
         // TODO: Should we just recurse down through children?
         if (controller instanceof MachineCluster) {
             MachineCluster machineCluster = (MachineCluster) controller;
-            return machineCluster.getMachines(item);
+            return machineCluster.getMachines(item, required);
         } else {
-            Machine machine = getMachine(item);
+            Machine machine = getMachine(item, required);
+            if (machine == null)
+                return Collections.emptyList();
             return Collections.singletonList(machine);
         }
     }

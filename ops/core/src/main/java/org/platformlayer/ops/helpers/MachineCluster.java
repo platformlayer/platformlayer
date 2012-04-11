@@ -6,5 +6,5 @@ import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OpsException;
 
 public interface MachineCluster {
-	List<Machine> getMachines(Object model) throws OpsException;
+	List<Machine> getMachines(Object model, boolean required) throws OpsException;
 }

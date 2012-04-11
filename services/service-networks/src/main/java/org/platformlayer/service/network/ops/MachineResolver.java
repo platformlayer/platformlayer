@@ -48,7 +48,8 @@ public class MachineResolver extends OpsTreeBase implements CustomRecursor {
     public void doRecurseOperation() throws OpsException {
         ItemBase dest = platformLayerHelpers.getItem(key);
 
-        for (Machine machine : instanceHelpers.getMachines(dest)) {
+        boolean required = !OpsContext.isDelete();
+        for (Machine machine : instanceHelpers.getMachines(dest, required)) {
             OpsTarget target = instanceHelpers.getTarget(dest, machine);
 
             BindingScope scope = BindingScope.push(machine, target);

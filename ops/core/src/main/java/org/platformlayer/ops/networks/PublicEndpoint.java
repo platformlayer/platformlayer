@@ -25,6 +25,7 @@ import org.platformlayer.ops.machines.PlatformLayerCloudHelpers;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.tagger.Tagger;
 import org.platformlayer.ops.tree.OpsTreeBase;
+import org.platformlayer.ops.tree.OwnedItem;
 
 import com.google.common.base.Strings;
 
@@ -59,22 +60,8 @@ public class PublicEndpoint extends OpsTreeBase {
     private PublicEndpointBase endpoint;
 
     @Handler
-    public void handler(InstanceBase instance) throws OpsException {
-        PlatformLayerKey instanceKey = OpsSystem.toKey(instance);
+    public void handler() {
 
-        PublicEndpointBase publicEndpoint = platformLayerCloudHelpers.createPublicEndpoint(instance, parentItem);
-        // publicEndpoint.network = network;
-        publicEndpoint.publicPort = publicPort;
-        publicEndpoint.backendPort = backendPort;
-        publicEndpoint.instance = instanceKey;
-        publicEndpoint.key = PlatformLayerKey.fromId(instance.getId() + "_" + publicPort);
-
-        // publicEndpoint.getTags().add(OpsSystem.get().createParentTag(instance));
-
-        Tag uniqueTag = UniqueTag.build(instance);
-        publicEndpoint.getTags().add(uniqueTag);
-
-        this.endpoint = platformLayerClient.putItemByTag(publicEndpoint, uniqueTag);
     }
 
     @Override
@@ -119,6 +106,14 @@ public class PublicEndpoint extends OpsTreeBase {
         if (defaultBlocked) {
             // Block on machine's firewall
             addChild(FirewallEntry.build(FirewallRecord.buildBlockPort(protocol, backendPort)));
+        }
+
+        {
+            OwnedEndpoint endpoint = injected(OwnedEndpoint.class);
+            endpoint.publicPort = publicPort;
+            endpoint.backendPort = backendPort;
+            endpoint.parentItem = parentItem;
+            addChild(endpoint);
         }
     }
 }

@@ -74,16 +74,17 @@ public class ZookeeperClusterController extends OpsTreeBase implements MachineCl
     }
 
     @Override
-    public List<Machine> getMachines(Object modelObject) throws OpsException {
+    public List<Machine> getMachines(Object modelObject, boolean required) throws OpsException {
         ZookeeperCluster model = (ZookeeperCluster) modelObject;
         Filter parentFilter = Filter.byTag(Tag.buildParentTag(model.getKey()));
 
         List<Machine> machines = Lists.newArrayList();
 
         for (ZookeeperServer server : platformLayer.listItems(ZookeeperServer.class, parentFilter)) {
-            Machine machine = instances.getMachine(server);
-
-            machines.add(machine);
+            Machine machine = instances.getMachine(server, required);
+            if (machine != null) {
+                machines.add(machine);
+            }
         }
 
         return machines;
