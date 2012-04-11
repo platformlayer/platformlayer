@@ -9,6 +9,7 @@ import org.openstack.docs.identity.api.v2.ValidateAccess;
 import org.openstack.docs.identity.api.v2.ValidateTokenResponse;
 import org.openstack.keystone.auth.client.Keystone;
 import org.platformlayer.PlatformLayerClientException;
+import org.platformlayer.WellKnownPorts;
 import org.platformlayer.http.SimpleHttpRequest;
 import org.platformlayer.model.Authentication;
 import org.slf4j.Logger;
@@ -19,7 +20,7 @@ import com.google.common.collect.Lists;
 public class KeystoneTokenValidator extends RestfulClient implements AuthenticationTokenValidator {
     static final Logger log = LoggerFactory.getLogger(KeystoneTokenValidator.class);
 
-    public static final String DEFAULT_AUTHENTICATION_URL = "http://127.0.0.1:35357/";
+    public static final String DEFAULT_AUTHENTICATION_URL = "http://127.0.0.1:" + WellKnownPorts.PORT_PLATFORMLAYER_AUTH_ADMIN + "/";
 
     final String authenticationToken;
 

@@ -8,19 +8,18 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.platformlayer.WellKnownPorts;
 
 import com.google.inject.servlet.GuiceFilter;
 
 public class KeystoneUserServer {
-    static final int PORT = 5000;
-
     private Server server;
 
     public static void main(String[] args) throws Exception {
         File base = new File(".").getCanonicalFile();
 
         KeystoneUserServer server = new KeystoneUserServer();
-        server.start(base, PORT);
+        server.start(base, WellKnownPorts.PORT_PLATFORMLAYER_AUTH_USER);
     }
 
     public void start(File base, int port) throws Exception {

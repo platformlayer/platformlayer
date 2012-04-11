@@ -7,17 +7,16 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.platformlayer.WellKnownPorts;
 
 import com.google.inject.servlet.GuiceFilter;
 
 public class KeystoneAdminServer {
-    static final int PORT = 35357;
-
     private Server server;
 
     public static void main(String[] args) throws Exception {
         KeystoneAdminServer server = new KeystoneAdminServer();
-        server.start(PORT);
+        server.start(WellKnownPorts.PORT_PLATFORMLAYER_AUTH_ADMIN);
     }
 
     public void start(int port) throws Exception {

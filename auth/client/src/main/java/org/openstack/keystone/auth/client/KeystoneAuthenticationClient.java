@@ -16,6 +16,7 @@ import org.openstack.docs.identity.api.v2.TenantsList;
 import org.openstack.utils.Utf8;
 import org.platformlayer.CastUtils;
 import org.platformlayer.IoUtils;
+import org.platformlayer.WellKnownPorts;
 import org.platformlayer.http.SimpleHttpRequest;
 import org.platformlayer.http.SimpleHttpRequest.SimpleHttpResponse;
 import org.platformlayer.xml.JaxbHelper;
@@ -28,7 +29,7 @@ public class KeystoneAuthenticationClient {
 
     final String authenticationUrl;
 
-    public static final String DEFAULT_AUTHENTICATION_URL = "http://127.0.0.1:5000/v2.0/";
+    public static final String DEFAULT_AUTHENTICATION_URL = "http://127.0.0.1:" + WellKnownPorts.PORT_PLATFORMLAYER_AUTH_USER + "/v2.0/";
 
     public static final Integer HTTP_500_ERROR = new Integer(500);
 
