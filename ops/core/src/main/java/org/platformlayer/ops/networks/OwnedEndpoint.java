@@ -3,7 +3,6 @@ package org.platformlayer.ops.networks;
 import javax.inject.Inject;
 
 import org.platformlayer.core.model.InstanceBase;
-import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.PublicEndpointBase;
 import org.platformlayer.core.model.Tag;
@@ -14,7 +13,7 @@ import org.platformlayer.ops.UniqueTag;
 import org.platformlayer.ops.machines.PlatformLayerCloudHelpers;
 import org.platformlayer.ops.tree.OwnedItem;
 
-public class OwnedEndpoint extends OwnedItem {
+public class OwnedEndpoint extends OwnedItem<PublicEndpointBase> {
     public int publicPort;
     public int backendPort;
     public PlatformLayerKey parentItem;
@@ -23,7 +22,7 @@ public class OwnedEndpoint extends OwnedItem {
     PlatformLayerCloudHelpers platformLayerCloudHelpers;
 
     @Override
-    protected ItemBase buildItemTemplate() throws OpsException {
+    protected PublicEndpointBase buildItemTemplate() throws OpsException {
         InstanceBase instance = OpsContext.get().getInstance(InstanceBase.class);
 
         PlatformLayerKey instanceKey = OpsSystem.toKey(instance);

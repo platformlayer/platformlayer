@@ -3,6 +3,7 @@ package org.platformlayer.ops.networks;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
+import org.apache.log4j.Logger;
 import org.platformlayer.core.model.InstanceBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.PublicEndpointBase;
@@ -30,6 +31,8 @@ import org.platformlayer.ops.tree.OwnedItem;
 import com.google.common.base.Strings;
 
 public class PublicEndpoint extends OpsTreeBase {
+    static final Logger log = Logger.getLogger(PublicEndpoint.class);
+    
     // public String network;
     public int publicPort;
     public int backendPort;
@@ -57,8 +60,6 @@ public class PublicEndpoint extends OpsTreeBase {
     @Inject
     EndpointHelpers endpointHelpers;
 
-    private PublicEndpointBase endpoint;
-
     @Handler
     public void handler() {
 
@@ -66,13 +67,23 @@ public class PublicEndpoint extends OpsTreeBase {
 
     @Override
     protected void addChildren() throws OpsException {
+        final OwnedEndpoint endpoint;
+        
+        {
+            endpoint = injected(OwnedEndpoint.class);
+            endpoint.publicPort = publicPort;
+            endpoint.backendPort = backendPort;
+            endpoint.parentItem = parentItem;
+            addChild(endpoint);
+        }
+        
         if (!Strings.isNullOrEmpty(dnsName)) {
             EndpointDnsRecord dns = injected(EndpointDnsRecord.class);
             dns.destinationPort = publicPort;
             dns.endpointProvider = new Provider<PublicEndpointBase>() {
                 @Override
                 public PublicEndpointBase get() {
-                    return endpoint;
+                    return endpoint.getItem();
                 }
             };
 
@@ -88,7 +99,16 @@ public class PublicEndpoint extends OpsTreeBase {
                 public TagChanges get() throws OpsException {
                     TagChanges tagChanges = new TagChanges();
 
-                    EndpointInfo endpointInfo = endpointHelpers.findEndpoint(endpoint.getTags(), publicPort);
+                    PublicEndpointBase item = endpoint.getItem();
+                    if (item == null) {
+                        if (!OpsContext.isDelete()) {
+                            throw new OpsException("Endpoint not created");
+                        } else {
+                            log.warn("No endpoint => no tagging to be done");
+                            return null;
+                        }
+                    }
+                    EndpointInfo endpointInfo = endpointHelpers.findEndpoint(item.getTags(), publicPort);
                     if (endpointInfo == null) {
                         throw new OpsException("Cannot find endpoint for port: " + publicPort);
                     }
@@ -108,12 +128,5 @@ public class PublicEndpoint extends OpsTreeBase {
             addChild(FirewallEntry.build(FirewallRecord.buildBlockPort(protocol, backendPort)));
         }
 
-        {
-            OwnedEndpoint endpoint = injected(OwnedEndpoint.class);
-            endpoint.publicPort = publicPort;
-            endpoint.backendPort = backendPort;
-            endpoint.parentItem = parentItem;
-            addChild(endpoint);
-        }
     }
 }

@@ -13,18 +13,24 @@ import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 
-public abstract class OwnedItem {
+public abstract class OwnedItem<T extends ItemBase> {
     @Inject
     PlatformLayerHelpers platformLayer;
+    
+    private T item;
+
+    public T getItem() {
+        return item;
+    }
 
     @Handler
     public void handler() throws OpsException {
-        ItemBase itemTemplate = buildItemTemplate();
+        T itemTemplate = buildItemTemplate();
         Tag uniqueTag = getUniqueTag(itemTemplate);
 
         if (OpsContext.isConfigure()) {
             try {
-                platformLayer.putItemByTag(itemTemplate, uniqueTag);
+                item = platformLayer.putItemByTag(itemTemplate, uniqueTag);
             } catch (PlatformLayerClientException e) {
                 throw new OpsException("Error creating owned item", e);
             }
@@ -37,6 +43,8 @@ public abstract class OwnedItem {
                     throw new OpsException("Found multiple items with unique tag: " + uniqueTag);
                 }
 
+                item = (T) items.get(0);
+
                 try {
                     platformLayer.deleteItem(items.get(0).getKey());
                 } catch (PlatformLayerClientException e) {
@@ -46,7 +54,7 @@ public abstract class OwnedItem {
         }
     }
 
-    protected abstract ItemBase buildItemTemplate() throws OpsException;
+    protected abstract T buildItemTemplate() throws OpsException;
 
     protected Tag getUniqueTag(ItemBase item) throws OpsException {
         for (Tag tag : item.getTags()) {
