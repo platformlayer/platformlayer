@@ -38,7 +38,7 @@ public class RawPublicEndpointController extends OpsTreeBase {
             OpsProvider<TagChanges> tagChanges = new OpsProvider<TagChanges>() {
                 @Override
                 public TagChanges get() throws OpsException {
-                    RawInstance instance = platformLayerClient.getItem(RawInstance.class, model.instance);
+                    RawInstance instance = platformLayerClient.getItem(model.instance, RawInstance.class);
 
                     String publicAddress = null;
                     for (String tagValue : instance.getTags().find(Tag.NETWORK_ADDRESS)) {

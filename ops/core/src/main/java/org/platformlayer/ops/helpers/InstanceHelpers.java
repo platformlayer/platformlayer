@@ -84,7 +84,8 @@ public class InstanceHelpers {
             // }
             // }
 
-            for (PersistentInstance persistentInstance : platformLayer.listItems(PersistentInstance.class, Filter.byTag(parentTag))) {
+            for (PersistentInstance persistentInstance : platformLayer.listItems(PersistentInstance.class,
+                    Filter.byTag(parentTag))) {
                 String instanceKey = persistentInstance.getTags().findUnique(Tag.INSTANCE_KEY);
                 if (instanceKey != null) {
                     return cloud.findInstanceByInstanceKey(PlatformLayerKey.parse(instanceKey));

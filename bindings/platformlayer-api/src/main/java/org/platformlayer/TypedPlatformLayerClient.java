@@ -186,11 +186,6 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
         return platformLayerClient.changeTags(key, tagChanges);
     }
 
-    public <T> T getItem(Class<T> itemClass, PlatformLayerKey key) throws OpsException {
-        UntypedItem untypedItem = platformLayerClient.getItemUntyped(key);
-        return promoteToTyped(untypedItem, itemClass);
-    }
-
     public ProjectId getProject() {
         return platformLayerClient.getProject();
     }

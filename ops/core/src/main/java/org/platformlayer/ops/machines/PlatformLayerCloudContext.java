@@ -47,7 +47,7 @@ public class PlatformLayerCloudContext implements CloudContext {
     public InstanceBase findInstanceByInstanceKey(PlatformLayerKey instanceKey) throws OpsException {
         ModelClass<?> modelClass = serviceProviders.getModelClass(instanceKey);
 
-        InstanceBase machine = (InstanceBase) platformLayerClient.getItem(modelClass.getJavaClass(), instanceKey);
+        InstanceBase machine = (InstanceBase) platformLayerClient.getItem(instanceKey, modelClass.getJavaClass());
         return machine;
     }
 

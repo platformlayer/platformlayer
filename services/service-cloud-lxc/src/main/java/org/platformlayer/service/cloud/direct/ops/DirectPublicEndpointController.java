@@ -26,7 +26,7 @@ public class DirectPublicEndpointController extends OpsTreeBase {
     @Override
     protected void addChildren() throws OpsException {
         DirectPublicEndpoint model = OpsContext.get().getInstance(DirectPublicEndpoint.class);
-        DirectInstance directInstance = platformLayerClient.getItem(DirectInstance.class, model.instance);
+        DirectInstance directInstance = platformLayerClient.getItem(model.instance, DirectInstance.class);
 
         {
             PublicPorts publicPorts = injected(PublicPorts.class);

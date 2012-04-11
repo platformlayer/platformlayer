@@ -138,7 +138,7 @@ public class PublicPorts extends OpsTreeBase {
                 @Override
                 public String get() throws OpsException {
                     // Refresh item to pick up new tags
-                    backendItem = platformLayerClient.getItem(DirectInstance.class, OpsSystem.toKey(backendItem));
+                    backendItem = platformLayerClient.getItem(OpsSystem.toKey(backendItem), DirectInstance.class);
 
                     PlatformLayerCloudMachine instanceMachine = (PlatformLayerCloudMachine) instanceHelpers.getMachine(backendItem);
                     DirectInstance instance = (DirectInstance) instanceMachine.getInstance();

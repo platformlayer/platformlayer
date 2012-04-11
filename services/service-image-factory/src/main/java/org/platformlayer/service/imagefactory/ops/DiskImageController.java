@@ -105,7 +105,7 @@ public class DiskImageController {
         opsContext.setFailure(true);
 
         MachineCloudBase cloudModel = cloudHelpers.getCloud(image.cloud);
-        DiskImageRecipe recipe = platformLayer.getItem(DiskImageRecipe.class, image.recipeId);
+        DiskImageRecipe recipe = platformLayer.getItem(image.recipeId, DiskImageRecipe.class);
 
         OperatingSystem operatingSystem = getRequestedOperatingSystem(recipe);
 

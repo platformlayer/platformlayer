@@ -76,7 +76,7 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
             host = hosts.get(0);
         }
 
-        this.cloud = platformLayer.getItem(DirectCloud.class, host.cloud);
+        this.cloud = platformLayer.getItem(host.cloud, DirectCloud.class);
 
         Machine machine = instanceHelpers.findMachine(host);
 

@@ -238,7 +238,7 @@ public class OpenstackCloudContext {
 
                 DiskImageRecipe recipe = null;
                 if (request.recipeId != null) {
-                    recipe = platformLayerClient.getItem(DiskImageRecipe.class, request.recipeId);
+                    recipe = platformLayerClient.getItem(request.recipeId, DiskImageRecipe.class);
                 }
 
                 OperatingSystemRecipe operatingSystem = null;

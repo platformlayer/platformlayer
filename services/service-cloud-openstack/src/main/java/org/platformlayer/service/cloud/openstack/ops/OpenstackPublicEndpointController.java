@@ -37,7 +37,7 @@ public class OpenstackPublicEndpointController extends OpsTreeBase {
     protected void addChildren() throws OpsException {
         final OpenstackPublicEndpoint model = OpsContext.get().getInstance(OpenstackPublicEndpoint.class);
 
-        OpenstackInstance instance = client.getItem(OpenstackInstance.class, model.instance);
+        OpenstackInstance instance = client.getItem(model.instance, OpenstackInstance.class);
 
         CloudInstanceMapper instanceMapper;
         {

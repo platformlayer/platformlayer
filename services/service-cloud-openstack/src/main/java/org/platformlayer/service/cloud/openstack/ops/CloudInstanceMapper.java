@@ -161,7 +161,7 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
     private OpenstackCloud findCloud() throws OpsException {
         OpenstackCloud cloud = null;
         {
-            cloud = platformLayer.getItem(OpenstackCloud.class, instance.cloud);
+            cloud = platformLayer.getItem(instance.cloud, OpenstackCloud.class);
         }
         return cloud;
     }
