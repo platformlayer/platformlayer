@@ -49,13 +49,20 @@ if [[ "$CONFIG_FILE" == "" ]]; then
 	CONFIG_FILE=~/.credentials/${PROFILE}
 fi
 
+if [[ "$JAVA_HOME" == "" ]]; then
+	JAVA=java
+else
+	JAVA=${JAVA_HOME}/bin/java
+fi
+
+
 
 if [[ "${USE_NAILGUN}" == "1" ]]; then
 	export NAILGUN_PORT=2101
 	cmd=(${NAILGUN} org.platformlayer.keystone.cli.KeystoneCli)
 	args=(--format "${FORMAT}" --config -)
 else
-	cmd=(${JAVA_HOME}/bin/java -jar ${BASEDIR}/auth-cli-standalone.jar)
+	cmd=(${JAVA} -jar ${BASEDIR}/auth-cli-standalone.jar)
 	args=(--format "${FORMAT}" --config "${CONFIG_FILE}")
 fi
 
