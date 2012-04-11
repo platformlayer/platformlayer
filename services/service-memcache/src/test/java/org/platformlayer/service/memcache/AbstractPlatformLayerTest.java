@@ -2,7 +2,6 @@ package org.platformlayer.service.memcache;
 
 import java.io.IOException;
 
-import org.openstack.client.OpenstackException;
 import org.openstack.client.utils.RandomUtil;
 import org.platformlayer.TypedItemMapper;
 import org.platformlayer.TypedPlatformLayerClient;

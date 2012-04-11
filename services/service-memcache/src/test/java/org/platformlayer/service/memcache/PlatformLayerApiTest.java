@@ -6,6 +6,7 @@ import org.testng.annotations.Test;
 public class PlatformLayerApiTest extends AbstractPlatformLayerTest {
     SimpleTypedItemMapper typedItemMapper;
 
+    @Override
     protected void reset() {
         typedItemMapper = null;
 

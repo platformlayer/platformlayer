@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.platformlayer.TypedItemMapper;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.service.memcache.model.MemcacheServer;
 import org.platformlayer.xml.XmlHelper;
 import org.platformlayer.xml.XmlHelper.ElementInfo;
 

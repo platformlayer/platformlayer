@@ -9,7 +9,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.List;
 
-import org.platformlayer.PlatformLayerClientException;
 import org.platformlayer.PlatformLayerUtils;
 import org.platformlayer.TypedPlatformLayerClient;
 import org.platformlayer.core.model.ItemBase;
@@ -89,8 +88,9 @@ public class ITMemcacheService extends PlatformLayerApiTest {
             socket.connect(socketAddress, timeout);
         } catch (IOException e) {
             String message = e.getMessage();
-            if (message.equals("connect timed out"))
+            if (message.equals("connect timed out")) {
                 return;
+            }
         } finally {
             socket.close();
         }
@@ -116,8 +116,9 @@ public class ITMemcacheService extends PlatformLayerApiTest {
 
     private InetSocketAddress parseSocketAddress(String s) {
         int lastColon = s.lastIndexOf(':');
-        if (lastColon == -1)
+        if (lastColon == -1) {
             throw new IllegalStateException();
+        }
 
         String host = s.substring(0, lastColon);
         int port = Integer.parseInt(s.substring(lastColon + 1));

@@ -51,8 +51,9 @@ public class PlatformLayerTestContext {
 
         InputStream is = null;
         try {
-            if (!configFile.exists())
+            if (!configFile.exists()) {
                 throw new FileNotFoundException("Configuration file not found: " + configFile);
+            }
 
             is = new FileInputStream(configFile);
 
