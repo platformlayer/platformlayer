@@ -39,5 +39,4 @@ public abstract class TypedItemMapper {
 
         return typedItem;
     }
-
 }

@@ -78,7 +78,7 @@ public class ManagedItemResource extends XaasResourceBase {
             if (key.getServiceType() != null && !equal(key.getServiceType(), serviceType)) {
                 throw new OpsException("Service type mismatch");
             }
-            if (key.getItemType() != null && !equal(key.getItemType(), itemType)) {
+            if (key.getItemType() != null && !key.getItemType().isEmpty() && !equal(key.getItemType(), itemType)) {
                 throw new OpsException("Item type mismatch");
             }
             if (key.getProject() != null && !equal(key.getProject(), project)) {
