@@ -1,7 +1,5 @@
 #!/bin/bash
 
-export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64/
-
 PRG="$0"
 while [ -h "$PRG" ] ; do
    PRG=`readlink "$PRG"`
@@ -104,13 +102,19 @@ fi
 
 args=(--format "${FORMAT}" --config -)
 
+if [[ "$JAVA_HOME" == "" ]]; then
+	JAVA=java
+else
+	JAVA=${JAVA_HOME}/bin/java
+fi
+
 if [[ "${USE_NAILGUN}" == "1" ]]; then
 	export NAILGUN_PORT=2100
 
 	cmd=(${NAILGUN} org.platformlayer.client.cli.PlatformLayerCli)
 	args=(--format "${FORMAT}" --config -)
 else
-	cmd=(${JAVA_HOME}/bin/java -jar ${BASEDIR}/platformlayer-cli-standalone.jar)
+	cmd=(${JAVA} -jar ${BASEDIR}/platformlayer-cli-standalone.jar)
 	args=(--format "${FORMAT}" --config "${CONFIG_FILE}")
 fi
 
