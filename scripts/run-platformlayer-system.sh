@@ -8,7 +8,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 SERVICE_CP=""
 
 # For now, enable services one by one
-for s in  service-cloud-openstack service-apt-cache; do
+for s in  service-cloud-openstack service-memcache; do
 SERVICE_CP="${SERVICE_CP}:${BASE_DIR}/services/${s}/target/${s}-${VERSION}.jar"
 done
 
