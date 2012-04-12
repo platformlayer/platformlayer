@@ -15,8 +15,8 @@ public class KeystoneCliContext extends CliContextBase {
     final KeystoneCliOptions options;
     private Injector injector;
 
-    public KeystoneCliContext(KeystoneCliOptions options) {
-        super(new KeystoneCommandRegistry(), new KeystoneFormatterRegistry());
+    public KeystoneCliContext(KeystoneCommandRegistry commandRegistry, KeystoneCliOptions options) {
+        super(commandRegistry, new KeystoneFormatterRegistry());
         this.options = options;
     }
 

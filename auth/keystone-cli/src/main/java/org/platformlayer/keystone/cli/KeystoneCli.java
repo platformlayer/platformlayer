@@ -1,14 +1,16 @@
 package org.platformlayer.keystone.cli;
 
 import org.kohsuke.args4j.CmdLineParser;
+import org.platformlayer.keystone.cli.commands.KeystoneCommandRegistry;
+import org.platformlayer.keystone.cli.model.ProjectName;
+import org.platformlayer.keystone.cli.model.UserName;
+
 import com.fathomdb.cli.CliBase;
 import com.fathomdb.cli.CliContext;
 import com.fathomdb.cli.CliHandler;
 import com.fathomdb.cli.CliOptions;
 import com.fathomdb.cli.StringWrapperOptionHandler;
-import org.platformlayer.keystone.cli.model.ProjectName;
-import org.platformlayer.keystone.cli.model.UserName;
-
+import com.fathomdb.cli.commands.CommandRegistry;
 import com.martiansoftware.nailgun.NGContext;
 
 public class KeystoneCli extends CliBase {
@@ -19,10 +21,14 @@ public class KeystoneCli extends CliBase {
         }
 
         @Override
-        public CliContext buildContext(CliOptions options) throws Exception {
-            return new KeystoneCliContext((KeystoneCliOptions) options);
+        public CliContext buildContext(CommandRegistry commandRegistry, CliOptions options) throws Exception {
+            return new KeystoneCliContext((KeystoneCommandRegistry) commandRegistry, (KeystoneCliOptions) options);
         }
 
+        @Override
+        public CommandRegistry buildCommandRegistry() {
+            return new KeystoneCommandRegistry();
+        }
     }
 
     static {

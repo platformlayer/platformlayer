@@ -33,8 +33,9 @@ public class PlatformLayerCliContext extends CliContextBase {
     final ConfigurationOptions options;
     final PlatformLayerClient platformLayer;
 
-    public PlatformLayerCliContext(ConfigurationOptions options) throws IOException, OpsException {
-        super(new PlatformLayerCommandRegistry(), new PlatformLayerFormatterRegistry());
+    public PlatformLayerCliContext(PlatformLayerCommandRegistry commandRegistry, ConfigurationOptions options)
+            throws IOException, OpsException {
+        super(commandRegistry, new PlatformLayerFormatterRegistry());
 
         this.options = options;
         this.platformLayer = options.buildPlatformLayerClient();
@@ -48,6 +49,7 @@ public class PlatformLayerCliContext extends CliContextBase {
         return options;
     }
 
+    @Override
     public void connect() throws PlatformLayerAuthenticationException {
         getPlatformLayerClient().ensureLoggedIn();
     }
@@ -93,8 +95,9 @@ public class PlatformLayerCliContext extends CliContextBase {
 
         List<String> components = Lists.newArrayList(path.split("/"));
 
-        if (components.size() <= 1)
+        if (components.size() <= 1) {
             throw new IllegalArgumentException("Cannot resolve path: " + path);
+        }
 
         String head = components.get(0);
 
