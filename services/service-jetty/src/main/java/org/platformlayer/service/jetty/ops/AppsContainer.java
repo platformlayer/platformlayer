@@ -1,10 +1,13 @@
 package org.platformlayer.service.jetty.ops;
 
 import org.platformlayer.ops.Handler;
-import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
+/**
+ * A 'well known' object, into which we can add Jetty apps
+ * 
+ */
 public class AppsContainer extends OpsTreeBase {
 
     @Handler
@@ -15,10 +18,6 @@ public class AppsContainer extends OpsTreeBase {
     @Override
     protected void addChildren() throws OpsException {
 
-    }
-
-    public static AppsContainer build() {
-        return Injection.getInstance(AppsContainer.class);
     }
 
 }

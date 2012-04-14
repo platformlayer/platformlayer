@@ -1,7 +1,5 @@
 package org.platformlayer.service.jetty.ops;
 
-import java.io.IOException;
-
 import org.apache.log4j.Logger;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
@@ -13,22 +11,26 @@ import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.jetty.model.JettyService;
 
 public class JettyServiceController extends OpsTreeBase {
-    static final Logger log = Logger.getLogger(JettyServiceController.class);
+	static final Logger log = Logger.getLogger(JettyServiceController.class);
 
-    @Handler
-    public void doOperation() throws OpsException, IOException {
-    }
+	@Handler
+	public void doOperation() {
+	}
 
-    @Override
-    protected void addChildren() throws OpsException {
-        JettyService model = OpsContext.get().getInstance(JettyService.class);
+	@Override
+	protected void addChildren() throws OpsException {
+		JettyService model = OpsContext.get().getInstance(JettyService.class);
 
-        InstanceBuilder instance = InstanceBuilder.build(model.dnsName, DiskImageRecipeBuilder.buildDiskImageRecipe(this));
-        instance.minimumMemoryMb = 2048;
-        addChild(instance);
+		InstanceBuilder instance = InstanceBuilder.build(model.dnsName,
+				DiskImageRecipeBuilder.buildDiskImageRecipe(this));
+		// TODO: Make configurable
+		instance.minimumMemoryMb = 2048;
+		addChild(instance);
 
-        instance.addChild(JettyInstance.build());
+		instance.addChild(injected(JettyInstall.class));
 
-        instance.addChild(CollectdCollector.build());
-    }
+		instance.addChild(injected(JettyInstance.class));
+
+		instance.addChild(CollectdCollector.build());
+	}
 }
