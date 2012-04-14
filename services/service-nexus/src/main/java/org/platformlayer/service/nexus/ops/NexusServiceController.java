@@ -14,26 +14,30 @@ import org.platformlayer.service.jetty.ops.JettyInstance;
 import org.platformlayer.service.nexus.model.NexusService;
 
 public class NexusServiceController extends OpsTreeBase {
-    static final Logger log = Logger.getLogger(NexusServiceController.class);
+	static final Logger log = Logger.getLogger(NexusServiceController.class);
 
-    @Handler
-    public void doOperation() throws OpsException, IOException {
-    }
+	@Handler
+	public void doOperation() throws OpsException, IOException {
+	}
 
-    @Override
-    protected void addChildren() throws OpsException {
-        NexusService model = OpsContext.get().getInstance(NexusService.class);
+	@Override
+	protected void addChildren() throws OpsException {
+		NexusService model = OpsContext.get().getInstance(NexusService.class);
 
-        InstanceBuilder instance = InstanceBuilder.build(model.dnsName, DiskImageRecipeBuilder.buildDiskImageRecipe(this));
-        instance.minimumMemoryMb = 2048;
-        addChild(instance);
+		InstanceBuilder vm;
 
-        instance.addChild(NexusBootstrap.build());
+		{
+			vm = InstanceBuilder.build(model.dnsName, DiskImageRecipeBuilder.buildDiskImageRecipe(this));
+			vm.minimumMemoryMb = 2048;
+			addChild(vm);
+		}
 
-        JettyInstance jetty = instance.addChild(JettyInstance.build());
-        jetty.addApp(NexusApp.build());
+		vm.addChild(NexusBootstrap.build());
 
-        instance.addChild(CollectdCollector.build());
-    }
+		JettyInstance jetty = vm.addChild(injected(JettyInstance.class));
+		jetty.addApp(NexusApp.build());
+
+		vm.addChild(CollectdCollector.build());
+	}
 
 }
