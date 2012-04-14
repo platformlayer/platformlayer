@@ -13,106 +13,112 @@ import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTree;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public abstract class OpsTreeBase implements OpsTree, CustomRecursor {
-    static final Logger log = Logger.getLogger(OpsTreeBase.class);
+	static final Logger log = Logger.getLogger(OpsTreeBase.class);
 
-    private List<Object> children = null;
+	private List<Object> children = null;
 
-    @Override
-    public List<Object> getChildren() throws OpsException {
-        if (children == null) {
-            children = Lists.newArrayList();
-            addChildren();
-        }
-        return children;
-    }
+	@Override
+	public List<Object> getChildren() throws OpsException {
+		if (children == null) {
+			children = Lists.newArrayList();
+			addChildren();
+		}
+		return children;
+	}
 
-    public <T> T addChild(T child) throws OpsException {
-        getChildren().add(child);
-        return child;
-    }
+	public <T> Iterable<T> getChildren(Class<T> filterByClass) throws OpsException {
+		return Iterables.filter(getChildren(), filterByClass);
+	}
 
-    public void addChildren(Collection<?> children) throws OpsException {
-        getChildren().addAll(children);
-    }
+	public <T> T addChild(T child) throws OpsException {
+		getChildren().add(child);
+		return child;
+	}
 
-    protected <T> T getChild(Class<T> findClass) throws OpsException {
-        for (Object child : getChildren()) {
-            if (findClass.isInstance(child)) {
-                return CastUtils.as(child, findClass);
-            }
-        }
-        throw new OpsException("Could not find child matching type: " + findClass);
-    }
+	public void addChildren(Collection<?> children) throws OpsException {
+		getChildren().addAll(children);
+	}
 
-    public static <T> T injected(Class<T> clazz) {
-        return OpsContext.get().getInjector().getInstance(clazz);
-    }
+	protected <T> T getChild(Class<T> findClass) throws OpsException {
+		for (Object child : getChildren()) {
+			if (findClass.isInstance(child)) {
+				return CastUtils.as(child, findClass);
+			}
+		}
+		throw new OpsException("Could not find child matching type: " + findClass);
+	}
 
-    protected abstract void addChildren() throws OpsException;
+	public static <T> T injected(Class<T> clazz) {
+		return OpsContext.get().getInjector().getInstance(clazz);
+	}
 
-    RecursionState recursionState;
+	protected abstract void addChildren() throws OpsException;
 
-    protected RecursionState getRecursionState() {
-        if (recursionState == null) {
-            recursionState = new RecursionState();
-        }
-        return recursionState;
-    }
+	RecursionState recursionState;
 
-    public static class RecursionState {
-        Map<Class<?>, Object> childScope = Maps.newHashMap();
-        boolean preventRecursion = false;
+	protected RecursionState getRecursionState() {
+		if (recursionState == null) {
+			recursionState = new RecursionState();
+		}
+		return recursionState;
+	}
 
-        public <T> T pushChildScope(Class<T> clazz, T o) {
-            childScope.put(clazz, o);
-            return o;
-        }
+	public static class RecursionState {
+		Map<Class<?>, Object> childScope = Maps.newHashMap();
+		boolean preventRecursion = false;
 
-        public <T> T pushChildScope(T o) {
-            if (o == null)
-                throw new IllegalArgumentException();
-            Class<T> clazz = (Class<T>) o.getClass();
-            return pushChildScope(clazz, o);
-        }
+		public <T> T pushChildScope(Class<T> clazz, T o) {
+			childScope.put(clazz, o);
+			return o;
+		}
 
-        public boolean isPreventRecursion() {
-            return preventRecursion;
-        }
+		public <T> T pushChildScope(T o) {
+			if (o == null) {
+				throw new IllegalArgumentException();
+			}
+			Class<T> clazz = (Class<T>) o.getClass();
+			return pushChildScope(clazz, o);
+		}
 
-        public void setPreventRecursion(boolean preventRecursion) {
-            this.preventRecursion = preventRecursion;
-        }
-    }
+		public boolean isPreventRecursion() {
+			return preventRecursion;
+		}
 
-    @Override
-    public void doRecurseOperation() throws OpsException {
-        BindingScope scope = null;
+		public void setPreventRecursion(boolean preventRecursion) {
+			this.preventRecursion = preventRecursion;
+		}
+	}
 
-        try {
-            // TODO: Is this actually safe?
-            RecursionState recursionState = this.recursionState;
-            this.recursionState = null;
+	@Override
+	public void doRecurseOperation() throws OpsException {
+		BindingScope scope = null;
 
-            if (recursionState != null) {
-                if (recursionState.preventRecursion) {
-                    log.warn("Skipping recursion into child items");
-                    return;
-                }
-                if (!recursionState.childScope.isEmpty()) {
-                    scope = BindingScope.push(recursionState.childScope.values());
-                }
-            }
+		try {
+			// TODO: Is this actually safe?
+			RecursionState recursionState = this.recursionState;
+			this.recursionState = null;
 
-            OpsContext opsContext = OpsContext.get();
-            OperationRecursor.doRecurseChildren(opsContext, this);
-        } finally {
-            if (scope != null) {
-                scope.pop();
-            }
-        }
-    }
+			if (recursionState != null) {
+				if (recursionState.preventRecursion) {
+					log.warn("Skipping recursion into child items");
+					return;
+				}
+				if (!recursionState.childScope.isEmpty()) {
+					scope = BindingScope.push(recursionState.childScope.values());
+				}
+			}
+
+			OpsContext opsContext = OpsContext.get();
+			OperationRecursor.doRecurseChildren(opsContext, this);
+		} finally {
+			if (scope != null) {
+				scope.pop();
+			}
+		}
+	}
 }
