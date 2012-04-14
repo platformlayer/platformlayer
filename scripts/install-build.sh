@@ -9,7 +9,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 BASE_DIR=${SCRIPT_DIR}/../
 
 pushd ${BASE_DIR}
-mvn clean package install
+mvn clean package install -Dmaven.test.skip=true
 mvn dependency:build-classpath -Dmdep.outputFile=target/classpath.def
 popd
 
