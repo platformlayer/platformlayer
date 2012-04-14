@@ -1,4 +1,4 @@
-package org.platformlayer.service.memcache;
+package org.platformlayer.tests;
 
 import java.io.IOException;
 
