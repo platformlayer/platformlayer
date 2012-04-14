@@ -23,9 +23,19 @@ public class JobGraph {
 	public PlatformLayerKey trigger(JobRecord jobRecord) {
 		JobKey key = jobRecord.key;
 
-		JobRecord existing = jobs.putIfAbsent(key, jobRecord);
-		if (existing != null) {
-			return existing.getJobKey();
+		while (true) {
+			JobRecord existing = jobs.putIfAbsent(key, jobRecord);
+			if (existing == null) {
+				break;
+
+			}
+			if (existing.willExecute()) {
+				return existing.getJobKey();
+			}
+
+			if (jobs.replace(key, existing, jobRecord)) {
+				break;
+			}
 		}
 
 		OperationWorker operationWorker = new OperationWorker(opsSystem, jobRecord);

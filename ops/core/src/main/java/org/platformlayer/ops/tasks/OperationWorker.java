@@ -59,7 +59,7 @@ public class OperationWorker implements Callable<Object> {
 			return OpsContext.runInContext(opsContext, new CheckedCallable<Object, Exception>() {
 				@Override
 				public Object call() throws Exception {
-					jobRecord.setState(JobState.RUNNING);
+					jobRecord.setState(JobState.RUNNING, false);
 
 					ItemBase item;
 					ManagedItemRepository repository = opsSystem.getManagedItemRepository();
@@ -127,7 +127,7 @@ public class OperationWorker implements Callable<Object> {
 					}
 
 					log.info("Job finished with SUCCESS");
-					jobRecord.setState(JobState.SUCCESS);
+					jobRecord.setState(JobState.SUCCESS, true);
 					return null;
 				}
 			});
@@ -135,7 +135,8 @@ public class OperationWorker implements Callable<Object> {
 			log.warn("Error running operation", e);
 			log.warn("Job finished with FAILED");
 
-			jobRecord.setState(JobState.FAILED);
+			boolean isDone = false; // We will retry
+			jobRecord.setState(JobState.FAILED, isDone);
 
 			TimeSpan retry = null;
 

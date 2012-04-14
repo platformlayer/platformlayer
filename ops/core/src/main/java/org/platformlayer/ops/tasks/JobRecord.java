@@ -22,6 +22,8 @@ public class JobRecord {
 
 	JobState state;
 
+	boolean isDone;
+
 	public JobRecord(PlatformLayerKey itemKey, OperationType operationType, OpsAuthentication auth) {
 		this(new JobKey(itemKey, operationType), itemKey.getServiceType(), auth);
 	}
@@ -77,12 +79,17 @@ public class JobRecord {
 		return jobData;
 	}
 
-	public void setState(JobState state) {
+	public void setState(JobState state, boolean isDone) {
 		this.state = state;
+		this.isDone = isDone;
 	}
 
 	public JobState getState() {
 		return state;
+	}
+
+	public boolean willExecute() {
+		return !isDone;
 	}
 
 }
