@@ -13,45 +13,50 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 public class PosixUser {
-    public String userName;
-    public String primaryGroup;
+	public String userName;
+	public String primaryGroup;
 
-    public List<String> secondaryGroups = Lists.newArrayList();
+	public List<String> secondaryGroups = Lists.newArrayList();
 
-    @Handler
-    public void doOperation() throws OpsException {
-        OpsTarget target = OpsContext.get().getInstance(OpsTarget.class);
+	@Handler
+	public void doOperation() throws OpsException {
+		OpsTarget target = OpsContext.get().getInstance(OpsTarget.class);
 
-        // TODO: Only if user not found
-        {
-            Command command = Command.build("adduser");
-            command.addLiteral("--system");
-            command.addLiteral("--no-create-home");
+		// TODO: Only if user not found
+		{
+			Command command = Command.build("adduser");
+			command.addLiteral("--system");
+			command.addLiteral("--no-create-home");
 
-            if (!Strings.isNullOrEmpty(primaryGroup)) {
-                command.addLiteral("--ingroup");
-                command.addQuoted(primaryGroup);
-            }
+			if (!Strings.isNullOrEmpty(primaryGroup)) {
+				command.addLiteral("--ingroup");
+				command.addQuoted(primaryGroup);
+			}
 
-            command.addQuoted(userName);
+			command.addQuoted(userName);
 
-            target.executeCommand(command);
-        }
+			target.executeCommand(command);
+		}
 
-        for (String secondaryGroup : secondaryGroups) {
-            Command command = Command.build("adduser");
+		for (String secondaryGroup : secondaryGroups) {
+			Command command = Command.build("adduser");
 
-            command.addQuoted(userName);
-            command.addQuoted(secondaryGroup);
+			command.addQuoted(userName);
+			command.addQuoted(secondaryGroup);
 
-            target.executeCommand(command);
-        }
-    }
+			target.executeCommand(command);
+		}
+	}
 
-    public static PosixUser build(String userName) {
-        PosixUser user = Injection.getInstance(PosixUser.class);
-        user.userName = userName;
-        return user;
-    }
+	public static PosixUser build(String userName) {
+		return build(userName, null);
+	}
+
+	public static PosixUser build(String userName, String primaryGroup) {
+		PosixUser user = Injection.getInstance(PosixUser.class);
+		user.userName = userName;
+		user.primaryGroup = primaryGroup;
+		return user;
+	}
 
 }
