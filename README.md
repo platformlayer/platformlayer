@@ -48,11 +48,13 @@ Installation notes
 Debian / Ubuntu
 
 ```bash
-which mvn || apt-get install maven2
-apt-get install git openjdk-6-jdk postgresql
+which mvn || sudo apt-get install maven2
+sudo apt-get install git openjdk-6-jdk postgresql
+
+cd ~
 git clone https://github.com/platformlayer/platformlayer.git
 cd platformlayer
 # (This will give you a sudo prompt, needed to install the DB)
-./install.sh
+./scripts/install-prereqs.sh
 ```
 

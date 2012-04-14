@@ -25,137 +25,151 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.Lists;
 
 public abstract class PlatformLayerClientBase implements PlatformLayerClient {
-    static final Logger log = LoggerFactory.getLogger(PlatformLayerClientBase.class);
+	static final Logger log = LoggerFactory.getLogger(PlatformLayerClientBase.class);
 
-    static Class<?>[] objectFactories = { org.platformlayer.service.dns.v1.ObjectFactory.class, org.platformlayer.service.imagefactory.v1.ObjectFactory.class,
-            org.platformlayer.service.instancesupervisor.v1.ObjectFactory.class, };
+	static Class<?>[] objectFactories = { org.platformlayer.service.dns.v1.ObjectFactory.class,
+			org.platformlayer.service.imagefactory.v1.ObjectFactory.class,
+			org.platformlayer.service.instancesupervisor.v1.ObjectFactory.class, };
 
-    public static <T> JaxbHelper toJaxbHelper(Class<?> clazz, Class<?>... extraClasses) {
-        List<Class<?>> extraClassesLists = Arrays.asList(extraClasses);
+	public static <T> JaxbHelper toJaxbHelper(Class<?> clazz, Class<?>... extraClasses) {
+		List<Class<?>> extraClassesLists = Arrays.asList(extraClasses);
 
-        // Package clazzPackage = clazz.getPackage();
-        // for (Class<?> objectFactoryClass : objectFactories) {
-        // if (clazzPackage.equals(objectFactoryClass.getPackage())) {
-        // extraClassesLists.add(objectFactoryClass);
-        // return JaxbHelper.get(objectFactoryClass, extraClassesLists);
-        // }
-        // }
+		// Package clazzPackage = clazz.getPackage();
+		// for (Class<?> objectFactoryClass : objectFactories) {
+		// if (clazzPackage.equals(objectFactoryClass.getPackage())) {
+		// extraClassesLists.add(objectFactoryClass);
+		// return JaxbHelper.get(objectFactoryClass, extraClassesLists);
+		// }
+		// }
 
-        return JaxbHelper.get(clazz, extraClassesLists);
-    }
+		return JaxbHelper.get(clazz, extraClassesLists);
+	}
 
-    public static <T> JaxbHelper toJaxbHelper(T jaxbObject) {
-        Class<?> clazz = jaxbObject.getClass();
-        return toJaxbHelper(clazz, new Class[] {});
-    }
+	public static <T> JaxbHelper toJaxbHelper(T jaxbObject) {
+		Class<?> clazz = jaxbObject.getClass();
+		return toJaxbHelper(clazz, new Class[] {});
+	}
 
-    public static <T> String serialize(JaxbHelper jaxbHelper, T item) {
-        String xml;
-        try {
-            xml = jaxbHelper.marshal(item, false);
-        } catch (JAXBException e) {
-            throw new IllegalArgumentException("Error marshalling object to XML", e);
-        }
-        return xml;
-    }
+	public static <T> String serialize(JaxbHelper jaxbHelper, T item) {
+		String xml;
+		try {
+			xml = jaxbHelper.marshal(item, false);
+		} catch (JAXBException e) {
+			throw new IllegalArgumentException("Error marshalling object to XML", e);
+		}
+		return xml;
+	}
 
-    public static <T> T deserializeItem(Class<? extends T> itemClass, String retval) throws PlatformLayerClientException {
-        T created;
+	public static <T> T deserializeItem(Class<? extends T> itemClass, String retval)
+			throws PlatformLayerClientException {
+		T created;
 
-        try {
-            created = (T) JaxbHelper.deserializeXmlObject(retval, itemClass);
-        } catch (UnmarshalException e) {
-            throw new PlatformLayerClientException("Error parsing returned data", e);
-        }
+		try {
+			created = JaxbHelper.deserializeXmlObject(retval, itemClass);
+		} catch (UnmarshalException e) {
+			throw new PlatformLayerClientException("Error parsing returned data", e);
+		}
 
-        return created;
-    }
+		return created;
+	}
 
-    protected <T> PlatformLayerKey toKey(JaxbHelper jaxbHelper, T item) throws PlatformLayerClientException {
-        return toKey(jaxbHelper, item, listServices(true));
-    }
+	protected <T> PlatformLayerKey toKey(JaxbHelper jaxbHelper, T item) throws PlatformLayerClientException {
+		return toKey(jaxbHelper, item, listServices(true));
+	}
 
-    public static <T> PlatformLayerKey toKey(JaxbHelper jaxbHelper, T item, Collection<ServiceInfo> services) throws PlatformLayerClientException {
-        String namespaceURI = jaxbHelper.getPrimaryNamespace();
-        String nodeName = jaxbHelper.getXmlElementName();
+	public static <T> PlatformLayerKey toKey(JaxbHelper jaxbHelper, T item, Collection<ServiceInfo> services)
+			throws PlatformLayerClientException {
+		ManagedItemId id = item != null ? findId(item) : null;
 
-        if (namespaceURI == null) {
-            throw new IllegalArgumentException("Namespace could not be determined");
-        }
+		return toKey(jaxbHelper, id, item != null ? item.getClass() : null, services);
+	}
 
-        ServiceInfo service = getServiceInfo(services, namespaceURI);
-        if (service == null) {
-            throw new PlatformLayerClientException("Cannot find service for " + namespaceURI);
-        }
+	protected <T> PlatformLayerKey toKey(JaxbHelper jaxbHelper, ManagedItemId id, Class<T> itemClass)
+			throws PlatformLayerClientException {
+		return toKey(jaxbHelper, id, itemClass, listServices(true));
+	}
 
-        ServiceType serviceType = new ServiceType(service.getServiceType());
-        ItemType itemType = new ItemType(nodeName);
+	public static <T> PlatformLayerKey toKey(JaxbHelper jaxbHelper, ManagedItemId id, Class<T> itemClass,
+			Collection<ServiceInfo> services) throws PlatformLayerClientException {
+		String namespaceURI = jaxbHelper.getPrimaryNamespace();
+		String nodeName = jaxbHelper.getXmlElementName();
 
-        ManagedItemId id = item != null ? findId(item) : null;
+		if (namespaceURI == null) {
+			throw new IllegalArgumentException("Namespace could not be determined");
+		}
 
-        FederationKey host = null;
-        ProjectId project = null;
-        return new PlatformLayerKey(host, project, serviceType, itemType, id);
-    }
+		ServiceInfo service = getServiceInfo(services, namespaceURI);
+		if (service == null) {
+			throw new PlatformLayerClientException("Cannot find service for " + namespaceURI);
+		}
 
-    public static <T> ManagedItemId findId(T item) throws PlatformLayerClientException {
-        String v;
+		ServiceType serviceType = new ServiceType(service.getServiceType());
+		ItemType itemType = new ItemType(nodeName);
 
-        try {
-            Method method = item.getClass().getMethod("getId");
-            v = (String) method.invoke(item, null);
-        } catch (SecurityException e) {
-            throw new IllegalArgumentException("Cannot get id", e);
-        } catch (NoSuchMethodException e) {
-            throw new IllegalArgumentException("Cannot get id", e);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Cannot get id", e);
-        } catch (IllegalAccessException e) {
-            throw new IllegalArgumentException("Cannot get id", e);
-        } catch (InvocationTargetException e) {
-            throw new IllegalArgumentException("Cannot get id", e);
-        }
+		FederationKey host = null;
+		ProjectId project = null;
+		return new PlatformLayerKey(host, project, serviceType, itemType, id);
+	}
 
-        if (v == null || v.isEmpty()) {
-            return null;
+	public static <T> ManagedItemId findId(T item) throws PlatformLayerClientException {
+		String v;
 
-            // We could ask the server to figure it out for us (PUT on collection?)
-            // throw new PlatformLayerClientException("Cannot determine item id");
-        }
+		try {
+			Method method = item.getClass().getMethod("getId");
+			v = (String) method.invoke(item, null);
+		} catch (SecurityException e) {
+			throw new IllegalArgumentException("Cannot get id", e);
+		} catch (NoSuchMethodException e) {
+			throw new IllegalArgumentException("Cannot get id", e);
+		} catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException("Cannot get id", e);
+		} catch (IllegalAccessException e) {
+			throw new IllegalArgumentException("Cannot get id", e);
+		} catch (InvocationTargetException e) {
+			throw new IllegalArgumentException("Cannot get id", e);
+		}
 
-        return new ManagedItemId(v);
-    }
+		if (v == null || v.isEmpty()) {
+			return null;
 
-    protected <T> PlatformLayerKey toKey(JaxbHelper jaxbHelper) throws PlatformLayerClientException {
-        return toKey(jaxbHelper, null);
-    }
+			// We could ask the server to figure it out for us (PUT on collection?)
+			// throw new PlatformLayerClientException("Cannot determine item id");
+		}
 
-    public ServiceInfo getServiceInfo(String namespace) throws PlatformLayerClientException {
-        List<ServiceInfo> services = Lists.newArrayList(listServices(true));
-        return getServiceInfo(services, namespace);
-    }
+		return new ManagedItemId(v);
+	}
 
-    public static ServiceInfo getServiceInfo(Collection<ServiceInfo> services, String namespace) throws PlatformLayerClientException {
-        return ServiceUtils.findByNamespace(services, namespace);
-    }
+	protected <T> PlatformLayerKey toKey(JaxbHelper jaxbHelper) throws PlatformLayerClientException {
+		return toKey(jaxbHelper, null);
+	}
 
-    public static String buildRelativePath(PlatformLayerKey key) {
-        return buildRelativePath(key.getServiceType(), key.getItemType(), key.getItemId());
-    }
+	public ServiceInfo getServiceInfo(String namespace) throws PlatformLayerClientException {
+		List<ServiceInfo> services = Lists.newArrayList(listServices(true));
+		return getServiceInfo(services, namespace);
+	}
 
-    public static String buildRelativePath(ServiceType serviceType, ItemType itemType, ManagedItemId id) {
-        String s = urlEncode(serviceType.getKey()) + "/" + urlEncode(itemType.getKey());
-        if (id != null) {
-            s += "/" + urlEncode(id.getKey());
-        }
-        return s;
-    }
+	public static ServiceInfo getServiceInfo(Collection<ServiceInfo> services, String namespace)
+			throws PlatformLayerClientException {
+		return ServiceUtils.findByNamespace(services, namespace);
+	}
 
-    public static String urlEncode(String s) {
-        try {
-            return URLEncoder.encode(s, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalStateException("UTF-8 Encoding not found", e);
-        }
-    }
+	public static String buildRelativePath(PlatformLayerKey key) {
+		return buildRelativePath(key.getServiceType(), key.getItemType(), key.getItemId());
+	}
+
+	public static String buildRelativePath(ServiceType serviceType, ItemType itemType, ManagedItemId id) {
+		String s = urlEncode(serviceType.getKey()) + "/" + urlEncode(itemType.getKey());
+		if (id != null) {
+			s += "/" + urlEncode(id.getKey());
+		}
+		return s;
+	}
+
+	public static String urlEncode(String s) {
+		try {
+			return URLEncoder.encode(s, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new IllegalStateException("UTF-8 Encoding not found", e);
+		}
+	}
 }
