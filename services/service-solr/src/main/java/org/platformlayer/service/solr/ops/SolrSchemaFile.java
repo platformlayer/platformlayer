@@ -48,7 +48,6 @@ public class SolrSchemaFile extends SyntheticXmlFile {
 
 		// TODO: Turn off default dynamic fields??
 		for (SolrSchemaField field : template.getFields()) {
-			String fieldName = field.name;
 			boolean isDynamic = field.name.contains("*");
 
 			Element el = dom.createElement(isDynamic ? "dynamicField" : "field");

@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ServiceInfo;
@@ -244,22 +245,12 @@ public class OpsSystem {
 		return INSTANCE;
 	}
 
-	// private <T> PlatformLayerKey toKey(Class<T> itemClass) throws OpsException {
-	// for (ServiceInfo service : serviceDictionary.getAllServices(false)) {
-	// ServiceType serviceType = new ServiceType(service.getServiceType());
-	// ServiceProvider serviceProvider = serviceDictionary.getServiceProvider(serviceType);
-	// for (ModelClass<?> model : serviceProvider.getModels().all()) {
-	// if (model.getJavaClass() == itemClass) {
-	// return new PlatformLayerKey(null, null, serviceType, model.getItemType(), null);
-	// }
-	// }
-	// }
-	//
-	// throw new OpsException("Cannot find provider: " + itemClass);
-	// }
-	//
-	// public static <T> PlatformLayerKey toKey(Class<T> itemClass, String itemId) throws OpsException {
-	// PlatformLayerKey plk = OpsSystem.get().toKey(itemClass);
-	// return plk.withId(new ManagedItemId(itemId));
-	// }
+	public static void safeSleep(TimeSpan timeSpan) throws OpsException {
+		try {
+			Thread.sleep(timeSpan.getTotalMilliseconds());
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new OpsException("Interrupted", e);
+		}
+	}
 }
