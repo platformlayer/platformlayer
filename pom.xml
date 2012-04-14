@@ -26,7 +26,7 @@
         <maven.compiler.source>1.6</maven.compiler.source>
         <maven.compiler.target>1.6</maven.compiler.target>
 
-    <!-- Don't let your Mac use a crazy non-standard encoding -->
+        <!-- Don't let your Mac use a crazy non-standard encoding -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
@@ -45,7 +45,7 @@
 
     <dependencyManagement>
         <dependencies>
-			<!-- Declare our own projects -->
+            <!-- Declare our own projects -->
 
             <dependency>
                 <groupId>org.platformlayer</groupId>
@@ -139,17 +139,24 @@
                 <version>${version.project}</version>
             </dependency>
 
-<dependency>
+            <dependency>
                 <groupId>org.platformlayer</groupId>
                 <artifactId>service-networks</artifactId>
                 <version>${version.project}</version>
             </dependency>
 
-<dependency>
+            <dependency>
                 <groupId>org.platformlayer</groupId>
                 <artifactId>service-postgresql</artifactId>
                 <version>${version.project}</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>service-jetty</artifactId>
+                <version>${version.project}</version>
+            </dependency>
+
 
 
             <dependency>
@@ -158,13 +165,13 @@
                 <version>${version.project}</version>
             </dependency>
 
-     <dependency>
+            <dependency>
                 <groupId>org.platformlayer</groupId>
                 <artifactId>keystone-webapp-user</artifactId>
                 <version>${version.project}</version>
             </dependency>
 
-     <dependency>
+            <dependency>
                 <groupId>org.platformlayer</groupId>
                 <artifactId>keystone-webapp-admin</artifactId>
                 <version>${version.project}</version>
@@ -217,11 +224,11 @@
                 <version>4.2.0.Final</version>
             </dependency>
 
-      <dependency>
-            <groupId>org.platformlayer</groupId>
-            <artifactId>openstack-fileprovider</artifactId>
-          <version>${version.openstack}</version>
-              </dependency>
+            <dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>openstack-fileprovider</artifactId>
+                <version>${version.openstack}</version>
+            </dependency>
 
 
             <dependency>
@@ -317,7 +324,16 @@
                 <scope>test</scope>
             </dependency>
 
-			<!-- Jetty WebServer -->
+            <!-- TestNG -->
+            <dependency>
+                <groupId>org.testng</groupId>
+                <artifactId>testng</artifactId>
+                <version>6.5.1</version>
+                <scope>test</scope>
+            </dependency>
+
+
+            <!-- Jetty WebServer -->
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-webapp</artifactId>
@@ -335,21 +351,22 @@
             </dependency>
 
 
-			<!-- Database drivers -->
+            <!-- Database drivers -->
             <dependency>
                 <groupId>commons-dbcp</groupId>
                 <artifactId>commons-dbcp</artifactId>
                 <version>1.4</version>
             </dependency>
-			<!-- <dependency> <groupId>mysql</groupId> <artifactId>mysql-connector-java</artifactId> 
-				<version>5.1.14</version> </dependency> -->
+            <!-- <dependency> <groupId>mysql</groupId> <artifactId>mysql-connector-java</artifactId> 
+                <version>5.1.14</version> </dependency> -->
             <dependency>
                 <groupId>postgresql</groupId>
                 <artifactId>postgresql</artifactId>
                 <version>${version.postgresql}</version>
             </dependency>
 
-			<!-- Jersey Spring integration; this would normally pull in Spring 2.5 -->
+            <!-- Jersey Spring integration; this would normally pull in Spring 
+                2.5 -->
             <dependency>
                 <groupId>com.sun.jersey.contribs</groupId>
                 <artifactId>jersey-spring</artifactId>
@@ -378,8 +395,8 @@
                 </exclusions>
             </dependency>
 
-			<!-- Jackson is better at serializing collections than the built in Jersey 
-				stuff -->
+            <!-- Jackson is better at serializing collections than the built 
+                in Jersey stuff -->
             <dependency>
                 <groupId>org.codehaus.jackson</groupId>
                 <artifactId>jackson-xc</artifactId>
@@ -391,7 +408,7 @@
                 <version>${version.jackson}</version>
             </dependency>
 
-			<!-- JSP support for Jetty -->
+            <!-- JSP support for Jetty -->
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-jsp-2.1</artifactId>
@@ -433,7 +450,7 @@
             </dependency>
 
 
-			<!-- Spring Security dependencies -->
+            <!-- Spring Security dependencies -->
             <dependency>
                 <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-web</artifactId>
@@ -520,17 +537,17 @@
                 <version>2.3.8</version>
             </dependency>
 
-<!-- Google Web Toolkit (GWT) -->
+            <!-- Google Web Toolkit (GWT) -->
 
             <dependency>
                 <groupId>com.google.gwt</groupId>
                 <artifactId>gwt-user</artifactId>
                 <version>${version.gwt}</version>
-      <!-- "provided" so that we don't deploy -->
+                <!-- "provided" so that we don't deploy -->
                 <scope>provided</scope>
             </dependency>
 
-    <!-- RequestFactory server -->
+            <!-- RequestFactory server -->
 
             <dependency>
                 <groupId>com.google.web.bindery</groupId>
@@ -554,20 +571,12 @@
         </repository>
     </repositories>
 
-    <build> <!--
-        <extensions>
-            <extension>
-                <groupId>org.platformlayer</groupId>
-                <artifactId>openstack-maven</artifactId>
-            </extension>
-        </extensions>
--->
+    <build> <!-- <extensions> <extension> <groupId>org.platformlayer</groupId> <artifactId>openstack-maven</artifactId> 
+            </extension> </extensions> -->
 
         <resources>
             <resource>
-                <!--
-                    It's nice to put supporting resources right by the code
-                -->
+                <!-- It's nice to put supporting resources right by the code -->
                 <directory>src/main/java</directory>
             </resource>
             <resource>
@@ -594,10 +603,10 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
                 <configuration>
- <source>${maven.compiler.source}</source>
-          <target>${maven.compiler.target}</target>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
                     <encoding>UTF-8</encoding>
-					<!-- We invoke our compiler plugins manually -->
+                    <!-- We invoke our compiler plugins manually -->
                     <compilerArgument>-proc:none</compilerArgument>
                 </configuration>
             </plugin>
@@ -617,7 +626,8 @@
 
         <pluginManagement>
             <plugins>
-	            <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+                <!--This plugin's configuration is used to store Eclipse 
+                    m2e settings only. It has no influence on the Maven build itself. -->
                 <plugin>
                     <groupId>org.eclipse.m2e</groupId>
                     <artifactId>lifecycle-mapping</artifactId>
