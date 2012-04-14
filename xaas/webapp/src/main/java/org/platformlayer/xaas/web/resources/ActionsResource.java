@@ -12,13 +12,13 @@ import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.ops.EnumUtils;
 import org.platformlayer.ops.OperationType;
-import org.platformlayer.ops.tasks.OperationHelper;
+import org.platformlayer.ops.tasks.JobRegistry;
 
 import com.google.common.base.Strings;
 
 public class ActionsResource extends XaasResourceBase {
     @Inject
-    OperationHelper operations;
+    JobRegistry operations;
 
     @POST
     @Consumes({ XML, JSON })

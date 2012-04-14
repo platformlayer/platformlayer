@@ -30,71 +30,73 @@ import org.platformlayer.xml.MemorySchemaOutputResolver;
 import com.google.common.collect.Lists;
 
 public class ServiceResource extends XaasResourceBase {
-    @Inject
-    Provider<OpsContextBuilder> opsContextBuilderFactory;
+	@Inject
+	Provider<OpsContextBuilder> opsContextBuilderFactory;
 
-    @GET
-    @Path("schema")
-    @Produces({ XML })
-    public String getSchema() throws IOException, JAXBException {
-        ServiceProvider serviceProvider = getServiceProvider();
+	@GET
+	@Path("schema")
+	@Produces({ XML })
+	public String getSchema() throws IOException, JAXBException {
+		ServiceProvider serviceProvider = getServiceProvider();
 
-        String namespace = null;
+		String namespace = null;
 
-        List<Class<?>> javaClasses = Lists.newArrayList();
-        for (ModelClass<?> modelClass : serviceProvider.getModels().all()) {
-            javaClasses.add(modelClass.getJavaClass());
-            String modelNamespace = modelClass.getPrimaryNamespace();
-            if (namespace == null) {
-                namespace = modelNamespace;
-            } else if (!namespace.equals(modelNamespace)) {
-                throw new IllegalStateException();
-            }
-        }
+		List<Class<?>> javaClasses = Lists.newArrayList();
+		for (ModelClass<?> modelClass : serviceProvider.getModels().all()) {
+			javaClasses.add(modelClass.getJavaClass());
+			String modelNamespace = modelClass.getPrimaryNamespace();
+			if (namespace == null) {
+				namespace = modelNamespace;
+			} else if (!namespace.equals(modelNamespace)) {
+				throw new IllegalStateException();
+			}
+		}
 
-        JAXBContext jaxbContext = JAXBContext.newInstance(javaClasses.toArray(new Class<?>[javaClasses.size()]));
+		JAXBContext jaxbContext = JAXBContext.newInstance(javaClasses.toArray(new Class<?>[javaClasses.size()]));
 
-        MemorySchemaOutputResolver schemaOutputResolver = new MemorySchemaOutputResolver();
-        jaxbContext.generateSchema(schemaOutputResolver);
+		MemorySchemaOutputResolver schemaOutputResolver = new MemorySchemaOutputResolver();
+		jaxbContext.generateSchema(schemaOutputResolver);
 
-        Map<String, StringWriter> writers = schemaOutputResolver.getWriters();
-        StringWriter writer = writers.get(namespace);
-        if (writer == null)
-            throw new IllegalArgumentException();
+		Map<String, StringWriter> writers = schemaOutputResolver.getWriters();
+		StringWriter writer = writers.get(namespace);
+		if (writer == null) {
+			throw new IllegalArgumentException();
+		}
 
-        return writer.getBuffer().toString();
-    }
+		return writer.getBuffer().toString();
+	}
 
-    @GET
-    @Path("sshkey")
-    @Produces({ TEXT_PLAIN })
-    public String getSshPublicKey() throws RepositoryException, OpsException, IOException {
-        final ServiceProvider serviceProvider = getServiceProvider();
+	@GET
+	@Path("sshkey")
+	@Produces({ TEXT_PLAIN })
+	public String getSshPublicKey() throws RepositoryException, OpsException, IOException {
+		final ServiceProvider serviceProvider = getServiceProvider();
 
-        OpsContextBuilder opsContextBuilder = opsContextBuilderFactory.get();
-        final OpsContext opsContext = opsContextBuilder.buildOpsContext(serviceProvider.getServiceType(), getAuthentication(), null);
+		OpsContextBuilder opsContextBuilder = opsContextBuilderFactory.get();
+		final OpsContext opsContext = opsContextBuilder.buildTemporaryOpsContext(serviceProvider.getServiceType(),
+				getAuthentication());
 
-        PublicKey publicKey = OpsContext.runInContext(opsContext, new CheckedCallable<PublicKey, Exception>() {
-            @Override
-            public PublicKey call() throws Exception {
-                PublicKey publicKey = serviceProvider.getSshPublicKey();
-                return publicKey;
-            }
-        });
+		PublicKey publicKey = OpsContext.runInContext(opsContext, new CheckedCallable<PublicKey, Exception>() {
+			@Override
+			public PublicKey call() throws Exception {
+				PublicKey publicKey = serviceProvider.getSshPublicKey();
+				return publicKey;
+			}
+		});
 
-        if (publicKey == null) {
-            throw new WebApplicationException(404);
-        }
+		if (publicKey == null) {
+			throw new WebApplicationException(404);
+		}
 
-        return OpenSshUtils.serialize(publicKey);
-    }
+		return OpenSshUtils.serialize(publicKey);
+	}
 
-    @Path("{itemType}")
-    public XaasResourceBase getManagedCollectionResource(@PathParam("itemType") String itemType) {
-        getScope().put(new ItemType(itemType));
+	@Path("{itemType}")
+	public XaasResourceBase getManagedCollectionResource(@PathParam("itemType") String itemType) {
+		getScope().put(new ItemType(itemType));
 
-        XaasResourceBase resources = objectInjector.getInstance(ManagedItemCollectionResource.class);
-        return resources;
-    }
+		XaasResourceBase resources = objectInjector.getInstance(ManagedItemCollectionResource.class);
+		return resources;
+	}
 
 }

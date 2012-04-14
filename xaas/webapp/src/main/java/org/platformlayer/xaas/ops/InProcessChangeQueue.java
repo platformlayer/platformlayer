@@ -7,7 +7,7 @@ import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.OperationType;
 import org.platformlayer.ops.auth.OpsAuthentication;
-import org.platformlayer.ops.tasks.OperationHelper;
+import org.platformlayer.ops.tasks.JobRegistry;
 import org.platformlayer.xaas.repository.ManagedItemRepository;
 import org.platformlayer.xaas.services.ChangeQueue;
 
@@ -15,7 +15,7 @@ public class InProcessChangeQueue implements ChangeQueue {
     static final Logger log = Logger.getLogger(InProcessChangeQueue.class);
 
     @Inject
-    OperationHelper operations;
+    JobRegistry operations;
 
     @Inject
     ManagedItemRepository repository;
