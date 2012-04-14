@@ -50,7 +50,12 @@ create index item_tags_index on item_tags (project, service, model, item);
 grant all on item_tags to platformlayer_ops;
 grant all on item_tags_id_seq to platformlayer_ops;
 
-create table job_logs (service int, model int, account int, item int, jobstate int, data text);
+-- item is type text so that (1) we can see logs for deleted items and (2) so that we can split this db
+create table job_logs (service int, model int, account int, item text, jobstate int, data text);
 create index job_logs_index on job_logs (account, service, model, item);
 grant all on job_logs to platformlayer_ops;
+
+
+-- Fix up old schema versions
+ALTER TABLE job_logs ALTER COLUMN item TYPE text;
 

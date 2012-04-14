@@ -8,3 +8,4 @@ logs/
 .settings
 target/
 workspace/
+.DS_Store
