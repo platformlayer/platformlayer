@@ -55,6 +55,6 @@ cd ~
 git clone https://github.com/platformlayer/platformlayer.git
 cd platformlayer
 # (This will give you a sudo prompt, needed to install the DB)
-./scripts/install-prereqs.sh
+./install.sh
 ```
 
