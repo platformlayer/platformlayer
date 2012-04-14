@@ -7,15 +7,10 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 SERVICE_CP=""
 
-# For now, enable services one by one
-for s in  service-cloud-openstack service-memcache; do
-SERVICE_CP="${SERVICE_CP}:${BASE_DIR}/services/${s}/target/${s}-${VERSION}.jar"
-done
-
 # We could enable them all like this
-#for f in ${BASE_DIR}/services/service-*/target/service*.jar; do
-#SERVICE_CP="${SERVICE_CP}:${f}"
-#done
+for f in ${BASE_DIR}/services/service-*/target/service*.jar; do
+SERVICE_CP="${SERVICE_CP}:${f}"
+done
 
 echo "Services: ${SERVICE_CP}"
 
