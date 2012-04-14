@@ -7,7 +7,7 @@ import org.platformlayer.auth.UserRepository;
 import org.platformlayer.keystone.cli.model.UserName;
 
 public class ListProjects extends KeystoneCommandRunnerBase {
-	@Argument(index = 0)
+	@Argument(index = 0, required = true, metaVar = "username", usage = "Name of user")
 	public UserName username;
 
 	public ListProjects() {
