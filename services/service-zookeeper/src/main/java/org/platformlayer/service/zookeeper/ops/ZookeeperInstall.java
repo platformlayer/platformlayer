@@ -6,6 +6,7 @@ import org.platformlayer.crypto.Md5Hash;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.DownloadFile;
+import org.platformlayer.ops.filesystem.ExpandArchive;
 import org.platformlayer.ops.java.JavaVirtualMachine;
 import org.platformlayer.ops.supervisor.SupervisordService;
 import org.platformlayer.ops.tree.OpsTreeBase;
