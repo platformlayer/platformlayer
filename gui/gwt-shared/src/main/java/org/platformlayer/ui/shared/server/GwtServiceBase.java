@@ -14,36 +14,36 @@ import org.platformlayer.xaas.web.resources.ItemService;
 
 public abstract class GwtServiceBase<T extends ItemBase> {
 
-    @Inject
-    ItemService itemService;
+	@Inject
+	ItemService itemService;
 
-    @Inject
-    Provider<Scope> scopeProvider;
+	@Inject
+	Provider<Scope> scopeProvider;
 
-    @Inject
-    Provider<OpsAuthentication> authenticationProvider;
+	@Inject
+	Provider<OpsAuthentication> authenticationProvider;
 
-    final Class<T> proxyClass;
+	final Class<T> proxyClass;
 
-    public GwtServiceBase(Class<T> proxyClass) {
-        super();
-        this.proxyClass = proxyClass;
-    }
+	public GwtServiceBase(Class<T> proxyClass) {
+		super();
+		this.proxyClass = proxyClass;
+	}
 
-    public List<T> findAll() throws OpsException {
-        OpsAuthentication authentication = authenticationProvider.get();
+	public List<T> findAll() throws OpsException {
+		OpsAuthentication authentication = authenticationProvider.get();
 
-        return itemService.findAll(authentication, proxyClass);
-    }
+		return itemService.findAll(authentication, proxyClass);
+	}
 
-    public T persist(T managedItem) throws OpsException {
-        OpsAuthentication authentication = authenticationProvider.get();
+	public T persist(T managedItem) throws OpsException {
+		OpsAuthentication authentication = authenticationProvider.get();
 
-        T created = itemService.createItem(authentication, managedItem);
+		T created = itemService.createItem(authentication, managedItem);
 
-        PlatformLayerLiveObjects liveObjects = PlatformLayerLiveObjects.get();
-        liveObjects.notifyCreated(created, created.getId());
+		PlatformLayerLiveObjects liveObjects = PlatformLayerLiveObjects.get();
+		liveObjects.notifyCreated(created, created.getId());
 
-        return created;
-    }
+		return created;
+	}
 }

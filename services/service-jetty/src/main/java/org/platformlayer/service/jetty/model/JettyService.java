@@ -11,5 +11,5 @@ import org.platformlayer.xaas.Controller;
 @XmlRootElement
 @Controller(JettyServiceController.class)
 public class JettyService {
-    public String dnsName;
+	public String dnsName;
 }

@@ -14,24 +14,24 @@ import org.platformlayer.ids.ServiceType;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class JobData {
-    public static final ServiceType SERVICE_TYPE = new ServiceType("jobs");
-    public static final ItemType ITEM_TYPE = new ItemType("job");
+	public static final ServiceType SERVICE_TYPE = new ServiceType("jobs");
+	public static final ItemType ITEM_TYPE = new ItemType("job");
 
-    public PlatformLayerKey key;
-    public String targetId;
-    public Action action;
+	public PlatformLayerKey key;
+	public String targetId;
+	public Action action;
 
-    public JobState state;
+	public JobState state;
 
-    public void setState(JobState state) {
-        this.state = state;
-    }
+	public void setState(JobState state) {
+		this.state = state;
+	}
 
-    public JobState getState() {
-        return state;
-    }
+	public JobState getState() {
+		return state;
+	}
 
-    public static PlatformLayerKey buildKey(ProjectId projectId, ManagedItemId jobId) {
-        return new PlatformLayerKey(null, projectId, JobData.SERVICE_TYPE, JobData.ITEM_TYPE, jobId);
-    }
+	public static PlatformLayerKey buildKey(ProjectId projectId, ManagedItemId jobId) {
+		return new PlatformLayerKey(null, projectId, JobData.SERVICE_TYPE, JobData.ITEM_TYPE, jobId);
+	}
 }

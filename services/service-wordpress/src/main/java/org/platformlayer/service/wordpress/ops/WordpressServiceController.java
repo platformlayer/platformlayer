@@ -19,81 +19,82 @@ import org.platformlayer.service.network.ops.PlatformLayerFirewallEntry;
 import org.platformlayer.service.wordpress.model.WordpressService;
 
 public class WordpressServiceController extends OpsTreeBase {
-    static final Logger log = Logger.getLogger(WordpressServiceController.class);
+	static final Logger log = Logger.getLogger(WordpressServiceController.class);
 
-    @Handler
-    public void doOperation() throws OpsException, IOException {
-    }
+	@Handler
+	public void doOperation() throws OpsException, IOException {
+	}
 
-    @Override
-    protected void addChildren() throws OpsException {
-        WordpressService model = OpsContext.get().getInstance(WordpressService.class);
+	@Override
+	protected void addChildren() throws OpsException {
+		WordpressService model = OpsContext.get().getInstance(WordpressService.class);
 
-        InstanceBuilder instance = InstanceBuilder.build(model.dnsName, DiskImageRecipeBuilder.buildDiskImageRecipe(this));
-        // instance.minimumMemoryMb = 2048;
-        addChild(instance);
+		InstanceBuilder instance = InstanceBuilder.build(model.dnsName,
+				DiskImageRecipeBuilder.buildDiskImageRecipe(this));
+		// instance.minimumMemoryMb = 2048;
+		addChild(instance);
 
-        instance.addChild(PackageDependency.build("wordpress"));
+		instance.addChild(PackageDependency.build("wordpress"));
 
-        instance.addChild(ApacheBootstrap.build());
+		instance.addChild(ApacheBootstrap.build());
 
-        {
-            PlatformLayerFirewallEntry net = injected(PlatformLayerFirewallEntry.class);
+		{
+			PlatformLayerFirewallEntry net = injected(PlatformLayerFirewallEntry.class);
 
-            net.destItem = model.databaseItem;
-            net.port = 3306;
+			net.destItem = model.databaseItem;
+			net.port = 3306;
 
-            PlatformLayerKey sourceKey = OpsSystem.toKey(model);
-            net.sourceItemKey = sourceKey;
+			PlatformLayerKey sourceKey = OpsSystem.toKey(model);
+			net.sourceItemKey = sourceKey;
 
-            instance.addChild(net);
-        }
+			instance.addChild(net);
+		}
 
-        WordpressTemplateData templateData = Injection.getInstance(WordpressTemplateData.class);
+		WordpressTemplateData templateData = Injection.getInstance(WordpressTemplateData.class);
 
-        MysqlConnection mysql = instance.addChild(MysqlConnection.build(model.databaseItem));
-        mysql.password = model.databasePassword;
+		MysqlConnection mysql = instance.addChild(MysqlConnection.build(model.databaseItem));
+		mysql.password = model.databasePassword;
 
-        {
-            MysqlDatabase db = injected(MysqlDatabase.class);
-            db.databaseName = templateData.getDatabaseName();
-            mysql.addChild(db);
-        }
+		{
+			MysqlDatabase db = injected(MysqlDatabase.class);
+			db.databaseName = templateData.getDatabaseName();
+			mysql.addChild(db);
+		}
 
-        {
-            MysqlUser db = injected(MysqlUser.class);
-            db.databaseName = templateData.getDatabaseName();
-            db.databaseUser = templateData.getDatabaseUser();
-            db.databasePassword = templateData.getDatabasePassword();
-            mysql.addChild(db);
-        }
+		{
+			MysqlUser db = injected(MysqlUser.class);
+			db.databaseName = templateData.getDatabaseName();
+			db.databaseUser = templateData.getDatabaseUser();
+			db.databasePassword = templateData.getDatabasePassword();
+			mysql.addChild(db);
+		}
 
-        instance.addChild(WordpressBootstrap.build());
-        instance.addChild(WordpressAdminUser.build());
+		instance.addChild(WordpressBootstrap.build());
+		instance.addChild(WordpressAdminUser.build());
 
-        instance.addChild(WordpressApacheSite.build());
+		instance.addChild(WordpressApacheSite.build());
 
-        // instance.addChild(CollectdCollector.build());
+		// instance.addChild(CollectdCollector.build());
 
-        // TODO: How do we bring up wordpress securely??
-        // We don't have the tables until we run install.php
-        // Maybe we could POST to the install.php form
+		// TODO: How do we bring up wordpress securely??
+		// We don't have the tables until we run install.php
+		// Maybe we could POST to the install.php form
 
-        {
-            PublicEndpoint endpoint = injected(PublicEndpoint.class);
-            // endpoint.network = null;
-            endpoint.publicPort = 80;
-            endpoint.backendPort = 80;
+		{
+			PublicEndpoint endpoint = injected(PublicEndpoint.class);
+			// endpoint.network = null;
+			endpoint.publicPort = 80;
+			endpoint.backendPort = 80;
 
-            // We expect nginx to front-end us, so we don't put the dnsName
-            // endpoint.dnsName = model.dnsName;
+			// We expect nginx to front-end us, so we don't put the dnsName
+			// endpoint.dnsName = model.dnsName;
 
-            endpoint.tagItem = OpsSystem.toKey(model);
-            endpoint.parentItem = OpsSystem.toKey(model);
+			endpoint.tagItem = OpsSystem.toKey(model);
+			endpoint.parentItem = OpsSystem.toKey(model);
 
-            instance.addChild(endpoint);
-        }
+			instance.addChild(endpoint);
+		}
 
-        instance.addChild(ManagedService.build("apache2"));
-    }
+		instance.addChild(ManagedService.build("apache2"));
+	}
 }

@@ -10,16 +10,16 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ServiceInfoCollection implements Iterable<ServiceInfo> {
-    public List<ServiceInfo> services;
+	public List<ServiceInfo> services;
 
-    @Override
-    public Iterator<ServiceInfo> iterator() {
-        return services.iterator();
-    }
+	@Override
+	public Iterator<ServiceInfo> iterator() {
+		return services.iterator();
+	}
 
-    @Override
-    public String toString() {
-        return "ServiceInfoCollection [services=" + services + "]";
-    }
+	@Override
+	public String toString() {
+		return "ServiceInfoCollection [services=" + services + "]";
+	}
 
 }

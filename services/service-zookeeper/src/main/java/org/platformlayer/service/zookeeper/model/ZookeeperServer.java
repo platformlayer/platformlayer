@@ -13,6 +13,6 @@ import org.platformlayer.xaas.Controller;
 @Controller(ZookeeperServerController.class)
 public class ZookeeperServer extends ItemBase {
 	public String clusterDnsName;
-	
+
 	public String clusterId;
 }

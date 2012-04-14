@@ -7,10 +7,10 @@ import javax.xml.bind.annotation.XmlAccessorType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class UserValidation {
-    public String id;
-    public String name;
+	public String id;
+	public String name;
 
-    public byte[] secret;
+	public byte[] secret;
 
-    public List<Role> roles;
+	public List<Role> roles;
 }

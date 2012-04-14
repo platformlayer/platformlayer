@@ -16,7 +16,7 @@ import org.platformlayer.xaas.Controller;
 @Controller(DnsRecordController.class)
 @GwtModel
 public class DnsRecord extends ItemBase {
-    public String dnsName;
-    public String recordType;
-    public List<String> address;
+	public String dnsName;
+	public String recordType;
+	public List<String> address;
 }

@@ -14,27 +14,27 @@ import org.platformlayer.service.cloud.direct.model.DirectInstance;
 import org.platformlayer.service.cloud.direct.model.DirectPublicEndpoint;
 
 public class DirectPublicEndpointController extends OpsTreeBase {
-    static final Logger log = Logger.getLogger(DirectPublicEndpointController.class);
+	static final Logger log = Logger.getLogger(DirectPublicEndpointController.class);
 
-    @Handler
-    public void handler() throws OpsException, IOException {
-    }
+	@Handler
+	public void handler() throws OpsException, IOException {
+	}
 
-    @Inject
-    PlatformLayerHelpers platformLayerClient;
+	@Inject
+	PlatformLayerHelpers platformLayerClient;
 
-    @Override
-    protected void addChildren() throws OpsException {
-        DirectPublicEndpoint model = OpsContext.get().getInstance(DirectPublicEndpoint.class);
-        DirectInstance directInstance = platformLayerClient.getItem(model.instance, DirectInstance.class);
+	@Override
+	protected void addChildren() throws OpsException {
+		DirectPublicEndpoint model = OpsContext.get().getInstance(DirectPublicEndpoint.class);
+		DirectInstance directInstance = platformLayerClient.getItem(model.instance, DirectInstance.class);
 
-        {
-            PublicPorts publicPorts = injected(PublicPorts.class);
-            publicPorts.backendItem = directInstance;
-            publicPorts.backendPort = model.backendPort;
-            publicPorts.publicPort = model.publicPort;
-            addChild(publicPorts);
-        }
-    }
+		{
+			PublicPorts publicPorts = injected(PublicPorts.class);
+			publicPorts.backendItem = directInstance;
+			publicPorts.backendPort = model.backendPort;
+			publicPorts.publicPort = model.publicPort;
+			addChild(publicPorts);
+		}
+	}
 
 }

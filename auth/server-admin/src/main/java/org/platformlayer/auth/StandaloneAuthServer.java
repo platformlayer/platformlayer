@@ -7,45 +7,46 @@ import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.webapp.WebAppContext;
 
 public class StandaloneAuthServer {
-    static final int PORT = 8081;
+	static final int PORT = 8081;
 
-    private Server server;
+	private Server server;
 
-    public static void main(String[] args) throws Exception {
-        System.setProperty("application.mode", "development");
+	public static void main(String[] args) throws Exception {
+		System.setProperty("application.mode", "development");
 
-        StandaloneAuthServer server = new StandaloneAuthServer();
-        server.start();
+		StandaloneAuthServer server = new StandaloneAuthServer();
+		server.start();
 
-        // try {
-        // while (true) {
-        // Thread.sleep(5000);
-        // }
-        // } finally {
-        // server.stop();
-        // }
-    }
+		// try {
+		// while (true) {
+		// Thread.sleep(5000);
+		// }
+		// } finally {
+		// server.stop();
+		// }
+	}
 
-    public void start() throws Exception {
-        this.server = new Server(PORT);
-        ContextHandlerCollection contextHandlerCollection = new ContextHandlerCollection();
+	public void start() throws Exception {
+		this.server = new Server(PORT);
+		ContextHandlerCollection contextHandlerCollection = new ContextHandlerCollection();
 
-        WebAppContext root = new WebAppContext();
+		WebAppContext root = new WebAppContext();
 
-        File base = new File(".").getCanonicalFile();
-        root.setWar(new File(base, "src/main/webapp").getCanonicalPath());
-        root.setContextPath("/");
-        contextHandlerCollection.addHandler(root);
+		File base = new File(".").getCanonicalFile();
+		root.setWar(new File(base, "src/main/webapp").getCanonicalPath());
+		root.setContextPath("/");
+		contextHandlerCollection.addHandler(root);
 
-        server.setHandler(contextHandlerCollection);
+		server.setHandler(contextHandlerCollection);
 
-        server.start();
+		server.start();
 
-    }
+	}
 
-    public void stop() throws Exception {
-        if (server != null)
-            server.stop();
-    }
+	public void stop() throws Exception {
+		if (server != null) {
+			server.stop();
+		}
+	}
 
 }

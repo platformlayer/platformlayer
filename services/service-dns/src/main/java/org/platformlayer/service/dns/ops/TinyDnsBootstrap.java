@@ -10,17 +10,17 @@ import org.platformlayer.ops.OpsTarget;
 
 public class TinyDnsBootstrap {
 
-    @Handler
-    public void handler() throws OpsException {
-        OpsTarget target = OpsContext.get().getInstance(OpsTarget.class);
+	@Handler
+	public void handler() throws OpsException {
+		OpsTarget target = OpsContext.get().getInstance(OpsTarget.class);
 
-        if (target.getFilesystemInfoFile(new File("/var/tinydns")) == null) {
-            target.executeCommand("tinydns-conf tinydns dnslog /var/tinydns 0.0.0.0");
-        }
-    }
+		if (target.getFilesystemInfoFile(new File("/var/tinydns")) == null) {
+			target.executeCommand("tinydns-conf tinydns dnslog /var/tinydns 0.0.0.0");
+		}
+	}
 
-    public static TinyDnsBootstrap build() {
-        return Injection.getInstance(TinyDnsBootstrap.class);
-    }
+	public static TinyDnsBootstrap build() {
+		return Injection.getInstance(TinyDnsBootstrap.class);
+	}
 
 }

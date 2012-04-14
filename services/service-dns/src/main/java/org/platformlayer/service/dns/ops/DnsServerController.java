@@ -29,97 +29,98 @@ import org.platformlayer.ops.users.PosixUser;
 import org.platformlayer.service.dns.model.DnsServer;
 
 public class DnsServerController extends OpsTreeBase {
-    static final Logger log = Logger.getLogger(DnsServerController.class);
+	static final Logger log = Logger.getLogger(DnsServerController.class);
 
-    @Inject
-    OpsContext opsContext;
+	@Inject
+	OpsContext opsContext;
 
-    @Inject
-    CloudContext cloud;
+	@Inject
+	CloudContext cloud;
 
-    @Inject
-    ImageFactory imageFactory;
+	@Inject
+	ImageFactory imageFactory;
 
-    @Inject
-    ServiceContext service;
+	@Inject
+	ServiceContext service;
 
-    @Handler
-    public void doOperation() throws OpsException, IOException {
-    }
+	@Handler
+	public void doOperation() throws OpsException, IOException {
+	}
 
-    @Override
-    protected void addChildren() throws OpsException {
-        DnsServer model = OpsContext.get().getInstance(DnsServer.class);
-        if (Strings.isEmpty(model.dnsName)) {
-            throw new IllegalArgumentException("dnsName must be specified");
-        }
+	@Override
+	protected void addChildren() throws OpsException {
+		DnsServer model = OpsContext.get().getInstance(DnsServer.class);
+		if (Strings.isEmpty(model.dnsName)) {
+			throw new IllegalArgumentException("dnsName must be specified");
+		}
 
-        // We'd like to auto-gen the disk image, but there's no way to auto-specify the OS at the moment
-        InstanceBuilder instance = InstanceBuilder.build(model.dnsName, DiskImageRecipeBuilder.loadDiskImageResource(getClass(), "DiskImageRecipe.xml"));
-        instance.addTagToManaged = true;
-        instance.hostPolicy.allowRunInContainer = true;
+		// We'd like to auto-gen the disk image, but there's no way to auto-specify the OS at the moment
+		InstanceBuilder instance = InstanceBuilder.build(model.dnsName,
+				DiskImageRecipeBuilder.loadDiskImageResource(getClass(), "DiskImageRecipe.xml"));
+		instance.addTagToManaged = true;
+		instance.hostPolicy.allowRunInContainer = true;
 
-        instance.publicPorts.add(53);
+		instance.publicPorts.add(53);
 
-        addChild(instance);
+		addChild(instance);
 
-        // Not included by default on older debian (lenny)
-        // Is this really needed??
-        // instance.addChild(PackageDependency.build("sysvconfig"));
+		// Not included by default on older debian (lenny)
+		// Is this really needed??
+		// instance.addChild(PackageDependency.build("sysvconfig"));
 
-        instance.addChild(PackageDependency.build("dbndns"));
-        instance.addChild(PackageDependency.build("daemontools"));
+		instance.addChild(PackageDependency.build("dbndns"));
+		instance.addChild(PackageDependency.build("daemontools"));
 
-        instance.addChild(CollectdCollector.build());
+		instance.addChild(CollectdCollector.build());
 
-        {
-            PublicEndpoint endpoint = injected(PublicEndpoint.class);
-            // endpoint.network = null;
-            endpoint.publicPort = 53;
-            endpoint.backendPort = 53;
-            endpoint.dnsName = model.dnsName;
-            endpoint.protocol = Protocol.Udp;
+		{
+			PublicEndpoint endpoint = injected(PublicEndpoint.class);
+			// endpoint.network = null;
+			endpoint.publicPort = 53;
+			endpoint.backendPort = 53;
+			endpoint.dnsName = model.dnsName;
+			endpoint.protocol = Protocol.Udp;
 
-            endpoint.tagItem = OpsSystem.toKey(model);
-            endpoint.parentItem = OpsSystem.toKey(model);
+			endpoint.tagItem = OpsSystem.toKey(model);
+			endpoint.parentItem = OpsSystem.toKey(model);
 
-            instance.addChild(endpoint);
-        }
+			instance.addChild(endpoint);
+		}
 
-        instance.addChild(ManagedDirectory.build("/opt/scripts", "755"));
-        instance.addChild(ManagedDirectory.build("/var/dns/records", "755"));
+		instance.addChild(ManagedDirectory.build("/opt/scripts", "755"));
+		instance.addChild(ManagedDirectory.build("/var/dns/records", "755"));
 
-        instance.addChild(PackageDependency.build("monit"));
+		instance.addChild(PackageDependency.build("monit"));
 
-        // Not created by default on older debian (e.g. lenny)
-        instance.addChild(ManagedDirectory.build("/etc/monit/conf.d", "755"));
+		// Not created by default on older debian (e.g. lenny)
+		instance.addChild(ManagedDirectory.build("/etc/monit/conf.d", "755"));
 
-        instance.addChild(SimpleFile.build(getClass(), new File("/etc/default/monit")));
-        instance.addChild(SimpleFile.build(getClass(), new File("/opt/scripts/dnsdatabasemonitor")).setFileMode("550"));
+		instance.addChild(SimpleFile.build(getClass(), new File("/etc/default/monit")));
+		instance.addChild(SimpleFile.build(getClass(), new File("/opt/scripts/dnsdatabasemonitor")).setFileMode("550"));
 
-        instance.addChild(SimpleFile.build(getClass(), new File("/opt/scripts/tinydns")).setFileMode("550"));
+		instance.addChild(SimpleFile.build(getClass(), new File("/opt/scripts/tinydns")).setFileMode("550"));
 
-        instance.addChild(TinyDnsRecordBootstrap.build());
+		instance.addChild(TinyDnsRecordBootstrap.build());
 
-        instance.addChild(SimpleFile.build(getClass(), new File("/etc/monit/monitrc")));
-        instance.addChild(SimpleFile.build(getClass(), new File("/etc/monit/conf.d/dnsdatabasemonitor.monit")));
+		instance.addChild(SimpleFile.build(getClass(), new File("/etc/monit/monitrc")));
+		instance.addChild(SimpleFile.build(getClass(), new File("/etc/monit/conf.d/dnsdatabasemonitor.monit")));
 
-        {
-            String groupName = "dbndns";
+		{
+			String groupName = "dbndns";
 
-            instance.addChild(PosixGroup.build(groupName));
+			instance.addChild(PosixGroup.build(groupName));
 
-            for (String userName : new String[] { "dnscache", "dnslog", "tinydns" }) {
-                PosixUser user = PosixUser.build(userName);
-                user.primaryGroup = groupName;
-                instance.addChild(user);
-            }
-        }
+			for (String userName : new String[] { "dnscache", "dnslog", "tinydns" }) {
+				PosixUser user = PosixUser.build(userName);
+				user.primaryGroup = groupName;
+				instance.addChild(user);
+			}
+		}
 
-        instance.addChild(TinyDnsBootstrap.build());
+		instance.addChild(TinyDnsBootstrap.build());
 
-        instance.addChild(ManagedService.build("monit"));
+		instance.addChild(ManagedService.build("monit"));
 
-        // TODO: Refresh other DNS servers so they also point to this server
-    }
+		// TODO: Refresh other DNS servers so they also point to this server
+	}
 }

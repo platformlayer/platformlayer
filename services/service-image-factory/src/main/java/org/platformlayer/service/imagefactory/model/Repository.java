@@ -8,6 +8,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Repository {
 	public String key;
-	
+
 	public List<String> source;
 }

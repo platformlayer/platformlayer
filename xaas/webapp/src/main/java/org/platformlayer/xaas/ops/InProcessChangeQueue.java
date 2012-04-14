@@ -12,30 +12,30 @@ import org.platformlayer.xaas.repository.ManagedItemRepository;
 import org.platformlayer.xaas.services.ChangeQueue;
 
 public class InProcessChangeQueue implements ChangeQueue {
-    static final Logger log = Logger.getLogger(InProcessChangeQueue.class);
+	static final Logger log = Logger.getLogger(InProcessChangeQueue.class);
 
-    @Inject
-    JobRegistry operations;
+	@Inject
+	JobRegistry operations;
 
-    @Inject
-    ManagedItemRepository repository;
+	@Inject
+	ManagedItemRepository repository;
 
-    @Override
-    public void notifyChange(OpsAuthentication auth, PlatformLayerKey itemKey, ManagedItemState newState) {
-        switch (newState) {
-        case CREATION_REQUESTED: {
-            operations.enqueueOperation(OperationType.Configure, auth, itemKey);
-            break;
-        }
+	@Override
+	public void notifyChange(OpsAuthentication auth, PlatformLayerKey itemKey, ManagedItemState newState) {
+		switch (newState) {
+		case CREATION_REQUESTED: {
+			operations.enqueueOperation(OperationType.Configure, auth, itemKey);
+			break;
+		}
 
-        case DELETE_REQUESTED: {
-            operations.enqueueOperation(OperationType.Delete, auth, itemKey);
-            break;
-        }
+		case DELETE_REQUESTED: {
+			operations.enqueueOperation(OperationType.Delete, auth, itemKey);
+			break;
+		}
 
-        default: {
-            throw new IllegalStateException("Unknown state for action: " + newState);
-        }
-        }
-    }
+		default: {
+			throw new IllegalStateException("Unknown state for action: " + newState);
+		}
+		}
+	}
 }

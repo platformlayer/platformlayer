@@ -8,17 +8,17 @@ import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tags;
 
 public class MachineCreationRequest {
-    public PlatformLayerKey cloud;
+	public PlatformLayerKey cloud;
 
-    public PublicKey sshPublicKey;
-    public Tags tags;
-    public PlatformLayerKey recipeId;
-    public List<String> securityGroups;
-    public int minimumMemoryMB;
+	public PublicKey sshPublicKey;
+	public Tags tags;
+	public PlatformLayerKey recipeId;
+	public List<String> securityGroups;
+	public int minimumMemoryMB;
 
-    public HostPolicy hostPolicy;
+	public HostPolicy hostPolicy;
 
-    public String hostname;
+	public String hostname;
 
-    public List<Integer> publicPorts;
+	public List<Integer> publicPorts;
 }

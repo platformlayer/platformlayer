@@ -7,18 +7,18 @@ import org.platformlayer.TypedPlatformLayerClient;
 import org.platformlayer.ops.Injection;
 
 public class PlatformLayerHelpers extends TypedPlatformLayerClient {
-    @Inject
-    ServiceProviderHelpers serviceProviderHelpers;
+	@Inject
+	ServiceProviderHelpers serviceProviderHelpers;
 
-    @Inject
-    public PlatformLayerHelpers(PlatformLayerClient platformLayerClient, ServiceProviderHelpers serviceProviderHelpers) {
-        super(platformLayerClient, new PlatformLayerTypedItemMapper(serviceProviderHelpers));
-        this.serviceProviderHelpers = serviceProviderHelpers;
-    }
+	@Inject
+	public PlatformLayerHelpers(PlatformLayerClient platformLayerClient, ServiceProviderHelpers serviceProviderHelpers) {
+		super(platformLayerClient, new PlatformLayerTypedItemMapper(serviceProviderHelpers));
+		this.serviceProviderHelpers = serviceProviderHelpers;
+	}
 
-    public static PlatformLayerHelpers build(PlatformLayerClient client) {
-        ServiceProviderHelpers serviceProviderHelpers = Injection.getInstance(ServiceProviderHelpers.class);
-        return new PlatformLayerHelpers(client, serviceProviderHelpers);
-    }
+	public static PlatformLayerHelpers build(PlatformLayerClient client) {
+		ServiceProviderHelpers serviceProviderHelpers = Injection.getInstance(ServiceProviderHelpers.class);
+		return new PlatformLayerHelpers(client, serviceProviderHelpers);
+	}
 
 }

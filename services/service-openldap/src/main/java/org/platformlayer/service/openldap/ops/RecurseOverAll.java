@@ -17,51 +17,52 @@ import org.platformlayer.ops.helpers.SshKey;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 
 public class RecurseOverAll {
-    static final Logger log = Logger.getLogger(RecurseOverAll.class);
+	static final Logger log = Logger.getLogger(RecurseOverAll.class);
 
-    @Inject
-    InstanceHelpers instances;
+	@Inject
+	InstanceHelpers instances;
 
-    @Inject
-    PlatformLayerHelpers platformLayer;
+	@Inject
+	PlatformLayerHelpers platformLayer;
 
-    public void doRecursion(Object controller, SshKey sshKey, Class<? extends ItemBase> machineItemClass) throws OpsException {
-        boolean failed = false;
+	public void doRecursion(Object controller, SshKey sshKey, Class<? extends ItemBase> machineItemClass)
+			throws OpsException {
+		boolean failed = false;
 
-        for (ItemBase machineItem : platformLayer.listItems(machineItemClass)) {
-            if (machineItem.getState() != ManagedItemState.ACTIVE) {
-                log.warn("Item not yet active: " + machineItem);
-                failed = true;
-                continue;
-            }
+		for (ItemBase machineItem : platformLayer.listItems(machineItemClass)) {
+			if (machineItem.getState() != ManagedItemState.ACTIVE) {
+				log.warn("Item not yet active: " + machineItem);
+				failed = true;
+				continue;
+			}
 
-            Machine machine = instances.findMachine(machineItem);
-            if (machine == null) {
-                log.warn("Server instance not found: " + machineItem);
-                failed = true;
-                continue;
-            }
+			Machine machine = instances.findMachine(machineItem);
+			if (machine == null) {
+				log.warn("Server instance not found: " + machineItem);
+				failed = true;
+				continue;
+			}
 
-            OpsTarget target = machine.getTarget(sshKey);
+			OpsTarget target = machine.getTarget(sshKey);
 
-            try {
-                // Execute the children in a scope with the paired item and machine
-                BindingScope scope = BindingScope.push(machine, target, machineItem);
-                try {
-                    OpsContext opsContext = OpsContext.get();
-                    OperationRecursor.doRecurseChildren(opsContext, controller);
-                } finally {
-                    scope.pop();
-                }
-            } catch (OpsException e) {
-                failed = true;
-                log.warn("Error updating machine: " + machine, e);
-            }
-        }
+			try {
+				// Execute the children in a scope with the paired item and machine
+				BindingScope scope = BindingScope.push(machine, target, machineItem);
+				try {
+					OpsContext opsContext = OpsContext.get();
+					OperationRecursor.doRecurseChildren(opsContext, controller);
+				} finally {
+					scope.pop();
+				}
+			} catch (OpsException e) {
+				failed = true;
+				log.warn("Error updating machine: " + machine, e);
+			}
+		}
 
-        if (failed) {
-            throw new OpsException("Could not update all servers").setRetry(TimeSpan.ONE_MINUTE);
-        }
+		if (failed) {
+			throw new OpsException("Could not update all servers").setRetry(TimeSpan.ONE_MINUTE);
+		}
 
-    }
+	}
 }

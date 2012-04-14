@@ -23,16 +23,11 @@ public class ExpandArchive {
 			if (archiveFileName.endsWith(".zip")) {
 				// -u = update, for (something close to) idempotency
 				// -o = overwrite (no prompt)
-				Command unzipCommand = Command.build("unzip -u -o {0} -d {1}",
-						zipFile, extractPath);
-				target.executeCommand(unzipCommand
-						.setTimeout(TimeSpan.FIVE_MINUTES));
-			} else if (archiveFileName.endsWith(".tgz")
-					|| archiveFileName.endsWith(".tar.gz")) {
-				Command unzipCommand = Command.build("cd {0}; tar zxf {1}",
-						extractPath, zipFile);
-				target.executeCommand(unzipCommand
-						.setTimeout(TimeSpan.FIVE_MINUTES));
+				Command unzipCommand = Command.build("unzip -u -o {0} -d {1}", zipFile, extractPath);
+				target.executeCommand(unzipCommand.setTimeout(TimeSpan.FIVE_MINUTES));
+			} else if (archiveFileName.endsWith(".tgz") || archiveFileName.endsWith(".tar.gz")) {
+				Command unzipCommand = Command.build("cd {0}; tar zxf {1}", extractPath, zipFile);
+				target.executeCommand(unzipCommand.setTimeout(TimeSpan.FIVE_MINUTES));
 
 			} else {
 				throw new UnsupportedOperationException();

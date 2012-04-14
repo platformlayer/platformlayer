@@ -11,19 +11,19 @@ import org.platformlayer.xaas.discovery.AnnotationDiscovery;
 import com.google.inject.Injector;
 
 public class AnnotationServiceProviderDictionary extends ServiceProviderDirectoryBase {
-    final AnnotationDiscovery discovery;
+	final AnnotationDiscovery discovery;
 
-    @Inject
-    public AnnotationServiceProviderDictionary(Injector injector, AnnotationDiscovery discovery) {
-        super(injector);
+	@Inject
+	public AnnotationServiceProviderDictionary(Injector injector, AnnotationDiscovery discovery) {
+		super(injector);
 
-        this.discovery = discovery;
+		this.discovery = discovery;
 
-        List<AnnotatedClass> annotatedClasses = discovery.findAnnotatedClasses(Service.class);
+		List<AnnotatedClass> annotatedClasses = discovery.findAnnotatedClasses(Service.class);
 
-        for (AnnotatedClass annotatedClass : annotatedClasses) {
-            addService(annotatedClass.getSubjectClass());
-        }
-    }
+		for (AnnotatedClass annotatedClass : annotatedClasses) {
+			addService(annotatedClass.getSubjectClass());
+		}
+	}
 
 }

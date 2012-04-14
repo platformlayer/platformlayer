@@ -8,14 +8,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "user")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class User {
-    @XmlAttribute
-    public boolean enabled;
+	@XmlAttribute
+	public boolean enabled;
 
-    @XmlAttribute
-    public String email;
+	@XmlAttribute
+	public String email;
 
-    public String username;
+	public String username;
 
-    @XmlAttribute
-    public String id;
+	@XmlAttribute
+	public String id;
 }

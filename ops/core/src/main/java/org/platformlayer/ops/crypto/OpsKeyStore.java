@@ -5,13 +5,13 @@ import java.security.PublicKey;
 
 public interface OpsKeyStore {
 
-    public PrivateKey findPrivateKey(int keyId);
+	public PrivateKey findPrivateKey(int keyId);
 
-    public PublicKey findPublicKey(int backendId);
+	public PublicKey findPublicKey(int backendId);
 
-    public Iterable<Integer> getBackends();
+	public Iterable<Integer> getBackends();
 
-    // public Iterable<Integer> getProjectIds();
+	// public Iterable<Integer> getProjectIds();
 
-    // public SecretKey findUserSecret(int userId);
+	// public SecretKey findUserSecret(int userId);
 }

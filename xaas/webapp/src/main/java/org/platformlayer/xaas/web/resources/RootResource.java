@@ -16,39 +16,39 @@ import org.platformlayer.model.RoleId;
 @Path("/")
 @Singleton
 public class RootResource extends XaasResourceBase {
-    static final Logger LOG = Logger.getLogger(RootResource.class);
+	static final Logger LOG = Logger.getLogger(RootResource.class);
 
-    @Context
-    HttpHeaders requestHeaders;
+	@Context
+	HttpHeaders requestHeaders;
 
-    @Context
-    UriInfo uriInfo;
+	@Context
+	UriInfo uriInfo;
 
-    @Context
-    HttpServletRequest request;
+	@Context
+	HttpServletRequest request;
 
-    @Inject
-    ObjectInjector objectInjector;
+	@Inject
+	ObjectInjector objectInjector;
 
-    public RootResource() {
-        notifyRootResource();
-    }
+	public RootResource() {
+		notifyRootResource();
+	}
 
-    @Path("{accountId}")
-    public ServicesCollectionResource retrieveServiceList(@PathParam("accountId") String accountId) {
-        checkIsInRole(RoleId.READ);
+	@Path("{accountId}")
+	public ServicesCollectionResource retrieveServiceList(@PathParam("accountId") String accountId) {
+		checkIsInRole(RoleId.READ);
 
-        ServicesCollectionResource resources = objectInjector.getInstance(ServicesCollectionResource.class);
-        return resources;
-    }
+		ServicesCollectionResource resources = objectInjector.getInstance(ServicesCollectionResource.class);
+		return resources;
+	}
 
-    @Override
-    protected UriInfo getUriInfo() {
-        return uriInfo;
-    }
+	@Override
+	protected UriInfo getUriInfo() {
+		return uriInfo;
+	}
 
-    @Override
-    protected HttpServletRequest getRequest() {
-        return request;
-    }
+	@Override
+	protected HttpServletRequest getRequest() {
+		return request;
+	}
 }

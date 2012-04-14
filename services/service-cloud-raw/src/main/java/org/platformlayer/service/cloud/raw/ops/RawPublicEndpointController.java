@@ -16,49 +16,49 @@ import org.platformlayer.service.cloud.raw.model.RawInstance;
 import org.platformlayer.service.cloud.raw.model.RawPublicEndpoint;
 
 public class RawPublicEndpointController extends OpsTreeBase {
-    @Inject
-    PlatformLayerHelpers platformLayerClient;
+	@Inject
+	PlatformLayerHelpers platformLayerClient;
 
-    @Inject
-    InstanceHelpers instanceHelpers;
+	@Inject
+	InstanceHelpers instanceHelpers;
 
-    @Override
-    protected void addChildren() throws OpsException {
-        // We can't actually do anything; we can tag it to mark that the port is open
+	@Override
+	protected void addChildren() throws OpsException {
+		// We can't actually do anything; we can tag it to mark that the port is open
 
-        final RawPublicEndpoint model = OpsContext.get().getInstance(RawPublicEndpoint.class);
+		final RawPublicEndpoint model = OpsContext.get().getInstance(RawPublicEndpoint.class);
 
-        if (model.publicPort != model.backendPort) {
-            throw new OpsException("Port remapping not supported by raw cloud");
-        }
+		if (model.publicPort != model.backendPort) {
+			throw new OpsException("Port remapping not supported by raw cloud");
+		}
 
-        {
-            Tagger tagger = injected(Tagger.class);
+		{
+			Tagger tagger = injected(Tagger.class);
 
-            OpsProvider<TagChanges> tagChanges = new OpsProvider<TagChanges>() {
-                @Override
-                public TagChanges get() throws OpsException {
-                    RawInstance instance = platformLayerClient.getItem(model.instance, RawInstance.class);
+			OpsProvider<TagChanges> tagChanges = new OpsProvider<TagChanges>() {
+				@Override
+				public TagChanges get() throws OpsException {
+					RawInstance instance = platformLayerClient.getItem(model.instance, RawInstance.class);
 
-                    String publicAddress = null;
-                    for (String tagValue : instance.getTags().find(Tag.NETWORK_ADDRESS)) {
-                        publicAddress = tagValue;
-                    }
+					String publicAddress = null;
+					for (String tagValue : instance.getTags().find(Tag.NETWORK_ADDRESS)) {
+						publicAddress = tagValue;
+					}
 
-                    if (publicAddress == null) {
-                        throw new OpsException("Cannot find address for instance: " + model.instance);
-                    }
+					if (publicAddress == null) {
+						throw new OpsException("Cannot find address for instance: " + model.instance);
+					}
 
-                    TagChanges tagChanges = new TagChanges();
-                    tagChanges.addTags.add(new Tag(Tag.PUBLIC_ENDPOINT, publicAddress + ":" + model.publicPort));
-                    return tagChanges;
-                }
-            };
-            tagger.platformLayerKey = OpsSystem.toKey(model);
-            tagger.tagChangesProvider = tagChanges;
+					TagChanges tagChanges = new TagChanges();
+					tagChanges.addTags.add(new Tag(Tag.PUBLIC_ENDPOINT, publicAddress + ":" + model.publicPort));
+					return tagChanges;
+				}
+			};
+			tagger.platformLayerKey = OpsSystem.toKey(model);
+			tagger.tagChangesProvider = tagChanges;
 
-            addChild(tagger);
-        }
-    }
+			addChild(tagger);
+		}
+	}
 
 }

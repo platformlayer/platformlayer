@@ -14,13 +14,13 @@ import com.google.common.collect.Lists;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class MetricInfoCollection implements Iterable<MetricInfo> {
-    @XmlElementWrapper(name = "metricInfos")
-    @XmlElement(name = "metricInfo")
-    public List<MetricInfo> metricInfoList = Lists.newArrayList();
+	@XmlElementWrapper(name = "metricInfos")
+	@XmlElement(name = "metricInfo")
+	public List<MetricInfo> metricInfoList = Lists.newArrayList();
 
-    @Override
-    public Iterator<MetricInfo> iterator() {
-        return metricInfoList.iterator();
-    }
+	@Override
+	public Iterator<MetricInfo> iterator() {
+		return metricInfoList.iterator();
+	}
 
 }

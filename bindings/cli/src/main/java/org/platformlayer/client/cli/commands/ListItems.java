@@ -15,37 +15,37 @@ import com.fathomdb.cli.autocomplete.SimpleAutoCompleter;
 import com.fathomdb.cli.commands.Ansi;
 
 public class ListItems extends PlatformLayerCommandRunnerBase {
-    @Argument
-    public String path;
+	@Argument
+	public String path;
 
-    public ListItems() {
-        super("list", "items");
-    }
+	public ListItems() {
+		super("list", "items");
+	}
 
-    @Override
-    public Object runCommand() throws PlatformLayerClientException {
-        PlatformLayerClient client = getPlatformLayerClient();
+	@Override
+	public Object runCommand() throws PlatformLayerClientException {
+		PlatformLayerClient client = getPlatformLayerClient();
 
-        PlatformLayerKey key = pathToKey(client, path);
+		PlatformLayerKey key = pathToKey(client, path);
 
-        return client.listItemsUntyped(key);
-    }
+		return client.listItemsUntyped(key);
+	}
 
-    @Override
-    public AutoCompletor getAutoCompleter() {
-        return new SimpleAutoCompleter(new AutoCompleteItemType());
-    }
+	@Override
+	public AutoCompletor getAutoCompleter() {
+		return new SimpleAutoCompleter(new AutoCompleteItemType());
+	}
 
-    @Override
-    public void formatRaw(Object o, PrintWriter writer) {
-        Ansi ansi = new Ansi(writer);
+	@Override
+	public void formatRaw(Object o, PrintWriter writer) {
+		Ansi ansi = new Ansi(writer);
 
-        Iterable<UntypedItem> items = (Iterable<UntypedItem>) o;
-        for (UntypedItem item : items) {
-            UntypedItemFormatter.formatItem(item, ansi, false);
-        }
+		Iterable<UntypedItem> items = (Iterable<UntypedItem>) o;
+		for (UntypedItem item : items) {
+			UntypedItemFormatter.formatItem(item, ansi, false);
+		}
 
-        ansi.reset();
-    }
+		ansi.reset();
+	}
 
 }

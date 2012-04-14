@@ -12,9 +12,9 @@ import com.google.common.collect.Lists;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "federation")
 public class FederationConfiguration {
-    @XmlElement(name = "rule")
-    public List<FederationRule> rules = Lists.newArrayList();
+	@XmlElement(name = "rule")
+	public List<FederationRule> rules = Lists.newArrayList();
 
-    @XmlElement(name = "system")
-    public List<PlatformLayerConnectionConfiguration> systems = Lists.newArrayList();
+	@XmlElement(name = "system")
+	public List<PlatformLayerConnectionConfiguration> systems = Lists.newArrayList();
 }

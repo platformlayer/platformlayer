@@ -7,5 +7,5 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class AuthenticateResponse {
-    public Access access;
+	public Access access;
 }

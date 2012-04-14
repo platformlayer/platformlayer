@@ -12,11 +12,11 @@ import org.platformlayer.xaas.Controller;
 @XmlAccessorType(XmlAccessType.FIELD)
 @Controller(FederatedServiceController.class)
 public class FederatedService extends ItemBase {
-    public String server;
+	public String server;
 
-    public String tenant;
+	public String tenant;
 
-    public String username;
+	public String username;
 
-    public String secret;
+	public String secret;
 }

@@ -5,6 +5,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PasswordCredentials {
-    public String username;
-    public String password;
+	public String username;
+	public String password;
 }

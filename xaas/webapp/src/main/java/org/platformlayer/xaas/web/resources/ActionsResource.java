@@ -17,25 +17,26 @@ import org.platformlayer.ops.tasks.JobRegistry;
 import com.google.common.base.Strings;
 
 public class ActionsResource extends XaasResourceBase {
-    @Inject
-    JobRegistry operations;
+	@Inject
+	JobRegistry operations;
 
-    @POST
-    @Consumes({ XML, JSON })
-    @Produces({ XML, JSON })
-    public JobData doAction(Action action) throws RepositoryException {
-        boolean fetchTags = true;
-        ItemBase managedItem = getManagedItem(fetchTags);
+	@POST
+	@Consumes({ XML, JSON })
+	@Produces({ XML, JSON })
+	public JobData doAction(Action action) throws RepositoryException {
+		boolean fetchTags = true;
+		ItemBase managedItem = getManagedItem(fetchTags);
 
-        String actionName = action.getName();
-        if (Strings.isNullOrEmpty(actionName))
-            throw new IllegalArgumentException("Action is required");
-        OperationType operationType = EnumUtils.valueOfCaseInsensitive(OperationType.class, actionName);
-        PlatformLayerKey itemKey = getPlatformLayerKey();
-        PlatformLayerKey jobKey = operations.enqueueOperation(operationType, getAuthentication(), itemKey);
+		String actionName = action.getName();
+		if (Strings.isNullOrEmpty(actionName)) {
+			throw new IllegalArgumentException("Action is required");
+		}
+		OperationType operationType = EnumUtils.valueOfCaseInsensitive(OperationType.class, actionName);
+		PlatformLayerKey itemKey = getPlatformLayerKey();
+		PlatformLayerKey jobKey = operations.enqueueOperation(operationType, getAuthentication(), itemKey);
 
-        JobData jobData = new JobData();
-        jobData.key = jobKey;
-        return jobData;
-    }
+		JobData jobData = new JobData();
+		jobData.key = jobKey;
+		return jobData;
+	}
 }

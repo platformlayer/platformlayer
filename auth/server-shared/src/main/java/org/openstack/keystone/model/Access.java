@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Access {
-    public Token token;
+	public Token token;
 
-    public List<Service> serviceCatalog;
+	public List<Service> serviceCatalog;
 }

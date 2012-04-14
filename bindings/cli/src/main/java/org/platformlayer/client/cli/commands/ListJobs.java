@@ -11,51 +11,51 @@ import com.fathomdb.cli.autocomplete.SimpleAutoCompleter;
 import com.fathomdb.cli.commands.Ansi;
 
 public class ListJobs extends PlatformLayerCommandRunnerBase {
-    public ListJobs() {
-        super("list", "jobs");
-    }
+	public ListJobs() {
+		super("list", "jobs");
+	}
 
-    @Override
-    public Object runCommand() throws PlatformLayerClientException {
-        PlatformLayerClient client = getPlatformLayerClient();
+	@Override
+	public Object runCommand() throws PlatformLayerClientException {
+		PlatformLayerClient client = getPlatformLayerClient();
 
-        return client.listJobs();
-    }
+		return client.listJobs();
+	}
 
-    @Override
-    public AutoCompletor getAutoCompleter() {
-        return new SimpleAutoCompleter();
-    }
+	@Override
+	public AutoCompletor getAutoCompleter() {
+		return new SimpleAutoCompleter();
+	}
 
-    @Override
-    public void formatRaw(Object o, PrintWriter writer) {
-        Iterable<JobData> jobs = (Iterable<JobData>) o;
+	@Override
+	public void formatRaw(Object o, PrintWriter writer) {
+		Iterable<JobData> jobs = (Iterable<JobData>) o;
 
-        Ansi ansi = new Ansi(writer);
+		Ansi ansi = new Ansi(writer);
 
-        for (JobData job : jobs) {
-            switch (job.state) {
-            case FAILED:
-                ansi.setColorRed();
-                break;
+		for (JobData job : jobs) {
+			switch (job.state) {
+			case FAILED:
+				ansi.setColorRed();
+				break;
 
-            case SUCCESS:
-                ansi.setColorGreen();
-                break;
+			case SUCCESS:
+				ansi.setColorGreen();
+				break;
 
-            case RUNNING:
-                ansi.setColorBlue();
-                break;
+			case RUNNING:
+				ansi.setColorBlue();
+				break;
 
-            default:
-                ansi.setColorBlue();
-                break;
-            }
+			default:
+				ansi.setColorBlue();
+				break;
+			}
 
-            writer.println(job.key);
-        }
+			writer.println(job.key);
+		}
 
-        ansi.reset();
-    }
+		ansi.reset();
+	}
 
 }

@@ -14,12 +14,12 @@ import org.platformlayer.xaas.Controller;
 @XmlAccessorType(XmlAccessType.FIELD)
 @Controller(DiskImageRecipeController.class)
 public class DiskImageRecipe extends ItemBase {
-    public List<String> addPackage;
-    public OperatingSystemRecipe operatingSystem;
+	public List<String> addPackage;
+	public OperatingSystemRecipe operatingSystem;
 
-    public List<Repository> repository;
+	public List<Repository> repository;
 
-    public List<RepositoryKey> repositoryKey;
+	public List<RepositoryKey> repositoryKey;
 
-    public List<ConfigurePackage> configurePackage;
+	public List<ConfigurePackage> configurePackage;
 }

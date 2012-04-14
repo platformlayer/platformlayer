@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SettingCollection {
-    @XmlElementWrapper(name = "items")
-    @XmlElement(name = "item")
-    public List<Setting> items;
+	@XmlElementWrapper(name = "items")
+	@XmlElement(name = "item")
+	public List<Setting> items;
 }

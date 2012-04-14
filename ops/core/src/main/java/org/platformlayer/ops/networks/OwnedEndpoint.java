@@ -14,32 +14,32 @@ import org.platformlayer.ops.machines.PlatformLayerCloudHelpers;
 import org.platformlayer.ops.tree.OwnedItem;
 
 public class OwnedEndpoint extends OwnedItem<PublicEndpointBase> {
-    public int publicPort;
-    public int backendPort;
-    public PlatformLayerKey parentItem;
+	public int publicPort;
+	public int backendPort;
+	public PlatformLayerKey parentItem;
 
-    @Inject
-    PlatformLayerCloudHelpers platformLayerCloudHelpers;
+	@Inject
+	PlatformLayerCloudHelpers platformLayerCloudHelpers;
 
-    @Override
-    protected PublicEndpointBase buildItemTemplate() throws OpsException {
-        InstanceBase instance = OpsContext.get().getInstance(InstanceBase.class);
+	@Override
+	protected PublicEndpointBase buildItemTemplate() throws OpsException {
+		InstanceBase instance = OpsContext.get().getInstance(InstanceBase.class);
 
-        PlatformLayerKey instanceKey = OpsSystem.toKey(instance);
+		PlatformLayerKey instanceKey = OpsSystem.toKey(instance);
 
-        PublicEndpointBase publicEndpoint = platformLayerCloudHelpers.createPublicEndpoint(instance, parentItem);
-        // publicEndpoint.network = network;
-        publicEndpoint.publicPort = publicPort;
-        publicEndpoint.backendPort = backendPort;
-        publicEndpoint.instance = instanceKey;
-        publicEndpoint.key = PlatformLayerKey.fromId(instance.getId() + "_" + publicPort);
+		PublicEndpointBase publicEndpoint = platformLayerCloudHelpers.createPublicEndpoint(instance, parentItem);
+		// publicEndpoint.network = network;
+		publicEndpoint.publicPort = publicPort;
+		publicEndpoint.backendPort = backendPort;
+		publicEndpoint.instance = instanceKey;
+		publicEndpoint.key = PlatformLayerKey.fromId(instance.getId() + "_" + publicPort);
 
-        // publicEndpoint.getTags().add(OpsSystem.get().createParentTag(instance));
+		// publicEndpoint.getTags().add(OpsSystem.get().createParentTag(instance));
 
-        Tag uniqueTag = UniqueTag.build(instance);
-        publicEndpoint.getTags().add(uniqueTag);
+		Tag uniqueTag = UniqueTag.build(instance);
+		publicEndpoint.getTags().add(uniqueTag);
 
-        return publicEndpoint;
-    }
+		return publicEndpoint;
+	}
 
 }

@@ -9,20 +9,20 @@ import com.google.common.collect.Lists;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class JobLogExceptionInfo {
-    public List<String> info;
+	public List<String> info;
 
-    public JobLogExceptionInfo(String[] info) {
-        this.info = Lists.newArrayList(info);
-    }
+	public JobLogExceptionInfo(String[] info) {
+		this.info = Lists.newArrayList(info);
+	}
 
-    public JobLogExceptionInfo() {
-    }
+	public JobLogExceptionInfo() {
+	}
 
-    public List<String> getInfo() {
-        if (info == null) {
-            info = Lists.newArrayList();
-        }
-        return info;
-    }
+	public List<String> getInfo() {
+		if (info == null) {
+			info = Lists.newArrayList();
+		}
+		return info;
+	}
 
 }

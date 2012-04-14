@@ -10,14 +10,14 @@ import org.platformlayer.ops.tree.OpsTreeBase;
  */
 public class AppsContainer extends OpsTreeBase {
 
-    @Handler
-    public void handler() {
+	@Handler
+	public void handler() {
 
-    }
+	}
 
-    @Override
-    protected void addChildren() throws OpsException {
+	@Override
+	protected void addChildren() throws OpsException {
 
-    }
+	}
 
 }

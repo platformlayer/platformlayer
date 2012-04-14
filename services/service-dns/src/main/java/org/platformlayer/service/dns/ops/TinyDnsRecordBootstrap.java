@@ -12,32 +12,32 @@ import org.platformlayer.service.dns.model.DnsRecord;
 import org.platformlayer.service.dns.model.DnsZone;
 
 public class TinyDnsRecordBootstrap {
-    @Inject
-    PlatformLayerHelpers platformLayer;
+	@Inject
+	PlatformLayerHelpers platformLayer;
 
-    @Inject
-    DnsHelpers dns;
+	@Inject
+	DnsHelpers dns;
 
-    @Handler
-    public void handler() throws OpsException {
-        Machine machine = OpsContext.get().getInstance(Machine.class);
+	@Handler
+	public void handler() throws OpsException {
+		Machine machine = OpsContext.get().getInstance(Machine.class);
 
-        // TODO: Only on bootstrap?
-        // TODO: What about deleted items?
-        for (DnsRecord record : platformLayer.listItems(DnsRecord.class)) {
-            DnsFile dnsFile = dns.buildDnsFile(record);
+		// TODO: Only on bootstrap?
+		// TODO: What about deleted items?
+		for (DnsRecord record : platformLayer.listItems(DnsRecord.class)) {
+			DnsFile dnsFile = dns.buildDnsFile(record);
 
-            dns.upload(machine, dnsFile);
-        }
+			dns.upload(machine, dnsFile);
+		}
 
-        for (DnsZone record : platformLayer.listItems(DnsZone.class)) {
-            DnsFile dnsFile = dns.buildDnsFile(record);
+		for (DnsZone record : platformLayer.listItems(DnsZone.class)) {
+			DnsFile dnsFile = dns.buildDnsFile(record);
 
-            dns.upload(machine, dnsFile);
-        }
-    }
+			dns.upload(machine, dnsFile);
+		}
+	}
 
-    public static TinyDnsRecordBootstrap build() {
-        return Injection.getInstance(TinyDnsRecordBootstrap.class);
-    }
+	public static TinyDnsRecordBootstrap build() {
+		return Injection.getInstance(TinyDnsRecordBootstrap.class);
+	}
 }

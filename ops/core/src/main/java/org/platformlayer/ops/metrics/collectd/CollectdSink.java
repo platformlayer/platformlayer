@@ -6,26 +6,26 @@ import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsException;
 
 public class CollectdSink extends CollectdCommon {
-    static final Logger log = Logger.getLogger(CollectdSink.class);
+	static final Logger log = Logger.getLogger(CollectdSink.class);
 
-    @Handler
-    public void doOperation() throws OpsException {
-    }
+	@Handler
+	public void doOperation() throws OpsException {
+	}
 
-    @Override
-    protected void addChildren() throws OpsException {
-        addBasicStructure();
+	@Override
+	protected void addChildren() throws OpsException {
+		addBasicStructure();
 
-        addStandardMetrics();
+		addStandardMetrics();
 
-        addMetricSet("rrdcached");
-        addMetricSet("network-listen");
+		addMetricSet("rrdcached");
+		addMetricSet("network-listen");
 
-        addChild(ManagedService.build("collectd"));
-    }
+		addChild(ManagedService.build("collectd"));
+	}
 
-    public static CollectdSink build() {
-        return Injection.getInstance(CollectdSink.class);
-    }
+	public static CollectdSink build() {
+		return Injection.getInstance(CollectdSink.class);
+	}
 
 }

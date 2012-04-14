@@ -13,10 +13,10 @@ import org.platformlayer.xaas.Controller;
 @XmlRootElement
 @Controller(OpenstackCloudController.class)
 public class OpenstackCloud extends MachineCloudBase {
-    public String endpoint;
+	public String endpoint;
 
-    public String username;
-    public Secret password;
+	public String username;
+	public Secret password;
 
-    public String tenant;
+	public String tenant;
 }

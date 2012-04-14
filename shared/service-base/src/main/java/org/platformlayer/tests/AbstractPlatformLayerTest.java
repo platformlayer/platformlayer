@@ -8,24 +8,24 @@ import org.platformlayer.TypedPlatformLayerClient;
 import org.platformlayer.ops.OpsException;
 
 public abstract class AbstractPlatformLayerTest {
-    protected PlatformLayerTestContext context;
-    protected RandomUtil random = new RandomUtil();
+	protected PlatformLayerTestContext context;
+	protected RandomUtil random = new RandomUtil();
 
-    protected abstract TypedItemMapper getTypedItemMapper();
+	protected abstract TypedItemMapper getTypedItemMapper();
 
-    protected void reset() {
-        context = null;
-    }
+	protected void reset() {
+		context = null;
+	}
 
-    public TypedPlatformLayerClient getTypedClient() throws IOException, OpsException {
-        return getContext().getTypedClient();
-    }
+	public TypedPlatformLayerClient getTypedClient() throws IOException, OpsException {
+		return getContext().getTypedClient();
+	}
 
-    private PlatformLayerTestContext getContext() {
-        if (context == null) {
-            context = PlatformLayerTestContext.buildFromProperties(getTypedItemMapper());
-        }
-        return context;
-    }
+	private PlatformLayerTestContext getContext() {
+		if (context == null) {
+			context = PlatformLayerTestContext.buildFromProperties(getTypedItemMapper());
+		}
+		return context;
+	}
 
 }

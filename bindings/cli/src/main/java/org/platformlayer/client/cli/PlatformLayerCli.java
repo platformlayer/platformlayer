@@ -14,37 +14,37 @@ import com.fathomdb.cli.commands.CommandRegistry;
 import com.martiansoftware.nailgun.NGContext;
 
 public class PlatformLayerCli extends CliBase {
-    static class PlatformLayerCliHandler implements CliHandler {
-        @Override
-        public CliOptions buildOptionsBean() {
-            return new ConfigurationOptions();
-        }
+	static class PlatformLayerCliHandler implements CliHandler {
+		@Override
+		public CliOptions buildOptionsBean() {
+			return new ConfigurationOptions();
+		}
 
-        @Override
-        public CliContext buildContext(CommandRegistry commandRegistry, CliOptions options) throws Exception {
-            return new PlatformLayerCliContext((PlatformLayerCommandRegistry) commandRegistry,
-                    (ConfigurationOptions) options);
-        }
+		@Override
+		public CliContext buildContext(CommandRegistry commandRegistry, CliOptions options) throws Exception {
+			return new PlatformLayerCliContext((PlatformLayerCommandRegistry) commandRegistry,
+					(ConfigurationOptions) options);
+		}
 
-        @Override
-        public CommandRegistry buildCommandRegistry() {
-            return new PlatformLayerCommandRegistry();
-        }
-    }
+		@Override
+		public CommandRegistry buildCommandRegistry() {
+			return new PlatformLayerCommandRegistry();
+		}
+	}
 
-    static {
-        CmdLineParser.registerHandler(ConfigureAction.class, StringWrapperOptionHandler.class);
-        CmdLineParser.registerHandler(ItemPath.class, StringWrapperOptionHandler.class);
+	static {
+		CmdLineParser.registerHandler(ConfigureAction.class, StringWrapperOptionHandler.class);
+		CmdLineParser.registerHandler(ItemPath.class, StringWrapperOptionHandler.class);
 
-        init(new PlatformLayerCliHandler());
-    }
+		init(new PlatformLayerCliHandler());
+	}
 
-    public static void main(String[] args) {
-        CliBase.main(args);
-    }
+	public static void main(String[] args) {
+		CliBase.main(args);
+	}
 
-    public static void nailMain(NGContext nailgunContext) {
-        CliBase.nailMain(nailgunContext);
-    }
+	public static void nailMain(NGContext nailgunContext) {
+		CliBase.nailMain(nailgunContext);
+	}
 
 }

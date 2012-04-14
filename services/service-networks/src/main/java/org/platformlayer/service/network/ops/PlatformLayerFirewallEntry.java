@@ -20,60 +20,61 @@ import org.platformlayer.ops.tree.OpsTreeBase;
 import com.google.common.base.Strings;
 
 public class PlatformLayerFirewallEntry extends OpsTreeBase {
-    public PlatformLayerKey destItem;
-    public PlatformLayerKey sourceItemKey;
-    public String sourceCidr;
-    public int port;
-    public Protocol protocol = Protocol.Tcp;
-    
-    @Inject
-    PlatformLayerHelpers platformLayerHelpers;
+	public PlatformLayerKey destItem;
+	public PlatformLayerKey sourceItemKey;
+	public String sourceCidr;
+	public int port;
+	public Protocol protocol = Protocol.Tcp;
 
-    @Inject
-    InstanceHelpers instanceHelpers;
+	@Inject
+	PlatformLayerHelpers platformLayerHelpers;
 
-    @Handler
-    public void handler() {
-    }
+	@Inject
+	InstanceHelpers instanceHelpers;
 
-    @Override
-    protected void addChildren() throws OpsException {
-    	// TODO: Need to register a dependency on destItem?
-        MachineResolver dest = MachineResolver.build(destItem);
-        addChild(dest);
+	@Handler
+	public void handler() {
+	}
 
-        if (!Strings.isNullOrEmpty(sourceCidr)) {
-            PortAddressFilter destFilter = PortAddressFilter.withPortRange(port, port);
-            PortAddressFilter srcFilter = PortAddressFilter.withCidr(sourceCidr);
-            FirewallRecord destRule = FirewallRecord.pass().protocol(protocol).in().dest(destFilter).source(srcFilter);
-            FirewallEntry entry = FirewallEntry.build(destRule);
-            dest.addChild(entry);
-        }
+	@Override
+	protected void addChildren() throws OpsException {
+		// TODO: Need to register a dependency on destItem?
+		MachineResolver dest = MachineResolver.build(destItem);
+		addChild(dest);
 
-        if (sourceItemKey != null) {
-            Provider<FirewallRecord> ruleProvider = new Provider<FirewallRecord>() {
-                @Override
-                public FirewallRecord get() {
-                    try {
-                        ItemBase sourceItem = platformLayerHelpers.getItem(sourceItemKey);
+		if (!Strings.isNullOrEmpty(sourceCidr)) {
+			PortAddressFilter destFilter = PortAddressFilter.withPortRange(port, port);
+			PortAddressFilter srcFilter = PortAddressFilter.withCidr(sourceCidr);
+			FirewallRecord destRule = FirewallRecord.pass().protocol(protocol).in().dest(destFilter).source(srcFilter);
+			FirewallEntry entry = FirewallEntry.build(destRule);
+			dest.addChild(entry);
+		}
 
-                        NetworkPoint targetNetworkPoint = NetworkPoint.forTargetInContext();
-                        Machine sourceMachine = instanceHelpers.getMachine(sourceItem);
-                        String address = sourceMachine.getAddress(targetNetworkPoint, port);
-                        PortAddressFilter destFilter = PortAddressFilter.withPortRange(port, port);
-                        PortAddressFilter srcFilter = PortAddressFilter.withCidr(address + "/32");
-                        FirewallRecord destRule = FirewallRecord.pass().protocol(protocol).in().dest(destFilter).source(srcFilter);
-                        return destRule;
-                    } catch (OpsException e) {
-                        throw new IllegalArgumentException("Error building network rule", e);
-                    }
-                }
-            };
+		if (sourceItemKey != null) {
+			Provider<FirewallRecord> ruleProvider = new Provider<FirewallRecord>() {
+				@Override
+				public FirewallRecord get() {
+					try {
+						ItemBase sourceItem = platformLayerHelpers.getItem(sourceItemKey);
 
-            FirewallEntry entry = FirewallEntry.build(ruleProvider);
-            dest.addChild(entry);
-        }
+						NetworkPoint targetNetworkPoint = NetworkPoint.forTargetInContext();
+						Machine sourceMachine = instanceHelpers.getMachine(sourceItem);
+						String address = sourceMachine.getAddress(targetNetworkPoint, port);
+						PortAddressFilter destFilter = PortAddressFilter.withPortRange(port, port);
+						PortAddressFilter srcFilter = PortAddressFilter.withCidr(address + "/32");
+						FirewallRecord destRule = FirewallRecord.pass().protocol(protocol).in().dest(destFilter)
+								.source(srcFilter);
+						return destRule;
+					} catch (OpsException e) {
+						throw new IllegalArgumentException("Error building network rule", e);
+					}
+				}
+			};
 
-        // TODO: Add source rules??
-    }
+			FirewallEntry entry = FirewallEntry.build(ruleProvider);
+			dest.addChild(entry);
+		}
+
+		// TODO: Add source rules??
+	}
 }

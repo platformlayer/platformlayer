@@ -14,5 +14,5 @@ import org.platformlayer.xaas.Controller;
 @Controller(AptCacheServiceController.class)
 @GwtModel
 public class AptCacheService extends ItemBase {
-    public String dnsName;
+	public String dnsName;
 }

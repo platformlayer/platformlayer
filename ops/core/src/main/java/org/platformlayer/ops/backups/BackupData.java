@@ -12,8 +12,8 @@ import com.google.common.collect.Lists;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class BackupData {
-    public String id;
-    public Date timestamp;
+	public String id;
+	public Date timestamp;
 
-    public List<BackupItem> items = Lists.newArrayList();
+	public List<BackupItem> items = Lists.newArrayList();
 }

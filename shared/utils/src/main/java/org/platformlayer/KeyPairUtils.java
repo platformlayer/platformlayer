@@ -13,38 +13,38 @@ import org.platformlayer.ops.OpsException;
 
 public class KeyPairUtils {
 
-    public static KeyPair deserialize(String keyData) throws IOException {
-        PEMReader r = new PEMReader(new StringReader(keyData));
-        try {
-            return (KeyPair) r.readObject();
-        } finally {
-            IoUtils.safeClose(r);
-        }
-    }
+	public static KeyPair deserialize(String keyData) throws IOException {
+		PEMReader r = new PEMReader(new StringReader(keyData));
+		try {
+			return (KeyPair) r.readObject();
+		} finally {
+			IoUtils.safeClose(r);
+		}
+	}
 
-    public static String serialize(KeyPair keyPair) throws IOException {
-        StringWriter writer = new StringWriter();
-        PEMWriter pemWriter = new PEMWriter(writer);
-        try {
-            pemWriter.writeObject(keyPair);
-            pemWriter.flush();
-            return writer.toString();
-        } finally {
-            IoUtils.safeClose(pemWriter);
-        }
-    }
+	public static String serialize(KeyPair keyPair) throws IOException {
+		StringWriter writer = new StringWriter();
+		PEMWriter pemWriter = new PEMWriter(writer);
+		try {
+			pemWriter.writeObject(keyPair);
+			pemWriter.flush();
+			return writer.toString();
+		} finally {
+			IoUtils.safeClose(pemWriter);
+		}
+	}
 
-    public static KeyPair generateKeyPair(String algorithm, Integer keySize) throws OpsException {
-        KeyPairGenerator generator;
-        try {
-            generator = KeyPairGenerator.getInstance(algorithm);
-        } catch (NoSuchAlgorithmException e) {
-            throw new OpsException("Error building keypair generator: " + algorithm, e);
-        }
-        if (keySize != null) {
-            generator.initialize(keySize);
-        }
-        return generator.generateKeyPair();
-    }
+	public static KeyPair generateKeyPair(String algorithm, Integer keySize) throws OpsException {
+		KeyPairGenerator generator;
+		try {
+			generator = KeyPairGenerator.getInstance(algorithm);
+		} catch (NoSuchAlgorithmException e) {
+			throw new OpsException("Error building keypair generator: " + algorithm, e);
+		}
+		if (keySize != null) {
+			generator.initialize(keySize);
+		}
+		return generator.generateKeyPair();
+	}
 
 }

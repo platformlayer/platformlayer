@@ -12,6 +12,6 @@ import org.platformlayer.xaas.Controller;
 @XmlRootElement
 @Controller(RawTargetController.class)
 public class RawTarget extends ItemBase {
-    public String cloud;
-    public String host;
+	public String cloud;
+	public String host;
 }

@@ -27,78 +27,80 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 
 public class PostgresqlServerBackup extends OpsTreeBase {
-    private static final String FORMAT = "pgdump";
+	private static final String FORMAT = "pgdump";
 
-    static final Logger log = Logger.getLogger(BackupDirectory.class);
+	static final Logger log = Logger.getLogger(BackupDirectory.class);
 
-    @Inject
-    PlatformLayerCloudHelpers cloudHelpers;
+	@Inject
+	PlatformLayerCloudHelpers cloudHelpers;
 
-    @Handler
-    public void doOperation() throws OpsException, IOException {
-    }
+	@Handler
+	public void doOperation() throws OpsException, IOException {
+	}
 
-    @Handler(OperationType.Backup)
-    public void doBackup() throws OpsException, IOException {
-        OpsContext opsContext = OpsContext.get();
+	@Handler(OperationType.Backup)
+	public void doBackup() throws OpsException, IOException {
+		OpsContext opsContext = OpsContext.get();
 
-        // Machine machine = opsContext.getInstance(Machine.class);
-        OpsTarget target = opsContext.getInstance(OpsTarget.class);
+		// Machine machine = opsContext.getInstance(Machine.class);
+		OpsTarget target = opsContext.getInstance(OpsTarget.class);
 
-        // We use pg_dump, not pg_dumpall:
-        // 1) pg_dumpall doesn't support binary dumping (?)
-        // 2) pg_dumpall wouldn't let us split the dump into different files (?)
+		// We use pg_dump, not pg_dumpall:
+		// 1) pg_dumpall doesn't support binary dumping (?)
+		// 2) pg_dumpall wouldn't let us split the dump into different files (?)
 
-        List<String> databases = listDatabases(target);
+		List<String> databases = listDatabases(target);
 
-        ShellBackupClient client = ShellBackupClient.get();
+		ShellBackupClient client = ShellBackupClient.get();
 
-        String baseName = UUID.randomUUID().toString();
+		String baseName = UUID.randomUUID().toString();
 
-        PostgresqlServer server = OpsContext.get().getInstance(PostgresqlServer.class);
+		PostgresqlServer server = OpsContext.get().getInstance(PostgresqlServer.class);
 
-        BackupContext backupContext = OpsContext.get().getInstance(BackupContext.class);
-        backupContext.add(new BackupItem(server.getKey(), FORMAT, baseName));
+		BackupContext backupContext = OpsContext.get().getInstance(BackupContext.class);
+		backupContext.add(new BackupItem(server.getKey(), FORMAT, baseName));
 
-        {
-            Command dumpAll = Command.build("su postgres -c \"pg_dumpall --globals-only\"");
-            ShellBackupClient.Backup request = new Backup();
-            request.target = target;
-            request.objectName = baseName + "/pgdump_meta";
-            client.uploadStream(request, dumpAll);
-        }
+		{
+			Command dumpAll = Command.build("su postgres -c \"pg_dumpall --globals-only\"");
+			ShellBackupClient.Backup request = new Backup();
+			request.target = target;
+			request.objectName = baseName + "/pgdump_meta";
+			client.uploadStream(request, dumpAll);
+		}
 
-        for (String database : databases) {
-            // template0 cannot be backed up
-            if (database.equals("template0"))
-                continue;
+		for (String database : databases) {
+			// template0 cannot be backed up
+			if (database.equals("template0")) {
+				continue;
+			}
 
-            // template1 can be backed up, even though it isn't typically very useful
+			// template1 can be backed up, even though it isn't typically very useful
 
-            String fileName = "pgdump_db_" + database;
-            ShellBackupClient.Backup request = new Backup();
-            request.target = target;
-            request.objectName = baseName + "/" + fileName;
+			String fileName = "pgdump_db_" + database;
+			ShellBackupClient.Backup request = new Backup();
+			request.target = target;
+			request.objectName = baseName + "/" + fileName;
 
-            Command dumpDatabase = Command.build("su postgres -c \"pg_dump --oids -Fc --verbose {0}\"", database);
-            client.uploadStream(request, dumpDatabase);
-        }
-    }
+			Command dumpDatabase = Command.build("su postgres -c \"pg_dump --oids -Fc --verbose {0}\"", database);
+			client.uploadStream(request, dumpDatabase);
+		}
+	}
 
-    private List<String> listDatabases(OpsTarget target) throws OpsException {
-        Command listDatabases = Command.build("su postgres -c \"psql -A -t -c 'select datname from pg_database'\"");
-        ProcessExecution listDatabasesExecution = target.executeCommand(listDatabases);
-        List<String> databases = Lists.newArrayList();
-        for (String database : Splitter.on('\n').split(listDatabasesExecution.getStdOut())) {
-            database = database.trim();
-            if (database.isEmpty())
-                continue;
-            databases.add(database);
-        }
-        return databases;
-    }
+	private List<String> listDatabases(OpsTarget target) throws OpsException {
+		Command listDatabases = Command.build("su postgres -c \"psql -A -t -c 'select datname from pg_database'\"");
+		ProcessExecution listDatabasesExecution = target.executeCommand(listDatabases);
+		List<String> databases = Lists.newArrayList();
+		for (String database : Splitter.on('\n').split(listDatabasesExecution.getStdOut())) {
+			database = database.trim();
+			if (database.isEmpty()) {
+				continue;
+			}
+			databases.add(database);
+		}
+		return databases;
+	}
 
-    @Override
-    protected void addChildren() throws OpsException {
-    }
+	@Override
+	protected void addChildren() throws OpsException {
+	}
 }

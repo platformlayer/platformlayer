@@ -10,6 +10,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "roles")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class RoleList {
-    @XmlElement(name = "role")
-    public List<Role> roles;
+	@XmlElement(name = "role")
+	public List<Role> roles;
 }

@@ -7,6 +7,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
 public class TagChanges {
-    public Tags addTags = new Tags();
-    public Tags removeTags = new Tags();
+	public Tags addTags = new Tags();
+	public Tags removeTags = new Tags();
 }

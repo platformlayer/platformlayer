@@ -13,6 +13,6 @@ import org.platformlayer.xaas.Controller;
 @XmlRootElement
 @Controller(NginxBackendController.class)
 public class NginxBackend extends ItemBase {
-    public String hostname;
-    public PlatformLayerKey backend;
+	public String hostname;
+	public PlatformLayerKey backend;
 }

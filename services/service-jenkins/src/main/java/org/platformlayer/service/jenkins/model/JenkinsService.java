@@ -12,5 +12,5 @@ import org.platformlayer.xaas.Controller;
 @XmlRootElement
 @Controller(JenkinsServiceController.class)
 public class JenkinsService extends ItemBase {
-    public String dnsName;
+	public String dnsName;
 }

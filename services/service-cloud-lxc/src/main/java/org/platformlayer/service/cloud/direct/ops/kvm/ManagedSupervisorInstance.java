@@ -10,51 +10,51 @@ import org.platformlayer.ops.supervisor.SupervisorProcessConfig;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class ManagedSupervisorInstance extends OpsTreeBase {
-    public SupervisorProcessConfig supervisorProcess;
+	public SupervisorProcessConfig supervisorProcess;
 
-    File getConfigFile() {
-        return new File("/etc/supervisor/conf.d/", getId() + ".conf");
-    }
+	File getConfigFile() {
+		return new File("/etc/supervisor/conf.d/", getId() + ".conf");
+	}
 
-    private String getId() {
-        return supervisorProcess.getId();
-    }
+	private String getId() {
+		return supervisorProcess.getId();
+	}
 
-    SupervisorProcessConfig getSupervisorProcess() {
-        return supervisorProcess;
-    }
+	SupervisorProcessConfig getSupervisorProcess() {
+		return supervisorProcess;
+	}
 
-    public static class SupervisorConfigFile extends SyntheticFile {
-        public ManagedSupervisorInstance parent;
+	public static class SupervisorConfigFile extends SyntheticFile {
+		public ManagedSupervisorInstance parent;
 
-        @Override
-        protected byte[] getContentsBytes() throws OpsException {
-            return Utf8.getBytes(parent.getSupervisorProcess().buildConfigFile());
-        }
+		@Override
+		protected byte[] getContentsBytes() throws OpsException {
+			return Utf8.getBytes(parent.getSupervisorProcess().buildConfigFile());
+		}
 
-        public SupervisorConfigFile setParent(ManagedSupervisorInstance parent) {
-            this.parent = parent;
-            return this;
-        }
-    }
+		public SupervisorConfigFile setParent(ManagedSupervisorInstance parent) {
+			this.parent = parent;
+			return this;
+		}
+	}
 
-    @Handler
-    public void handler() {
-    }
+	@Handler
+	public void handler() {
+	}
 
-    @Override
-    protected void addChildren() throws OpsException {
-        {
-            SupervisorConfigFile conf = injected(SupervisorConfigFile.class);
-            conf.setParent(this);
-            conf.filePath = getConfigFile();
-            addChild(conf);
-        }
+	@Override
+	protected void addChildren() throws OpsException {
+		{
+			SupervisorConfigFile conf = injected(SupervisorConfigFile.class);
+			conf.setParent(this);
+			conf.filePath = getConfigFile();
+			addChild(conf);
+		}
 
-        {
-            RunSupervisorInstance run = injected(RunSupervisorInstance.class);
-            run.id = getId();
-            addChild(run);
-        }
-    }
+		{
+			RunSupervisorInstance run = injected(RunSupervisorInstance.class);
+			run.id = getId();
+			addChild(run);
+		}
+	}
 }

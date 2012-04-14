@@ -12,27 +12,27 @@ import org.platformlayer.ops.ssh.ISshContext;
 import org.platformlayer.ops.ssh.SshConnection;
 
 public abstract class MachineBase extends Machine {
-    @Override
-    public OpsTarget getTarget(String user, KeyPair sshKeyPair) throws OpsException {
-        OpsSystem opsSystem = OpsContext.get().getOpsSystem();
-        ISshContext sshContext = opsSystem.getSshContext();
+	@Override
+	public OpsTarget getTarget(String user, KeyPair sshKeyPair) throws OpsException {
+		OpsSystem opsSystem = OpsContext.get().getOpsSystem();
+		ISshContext sshContext = opsSystem.getSshContext();
 
-        SshConnection sshConnection = sshContext.getSshConnection(user);
+		SshConnection sshConnection = sshContext.getSshConnection(user);
 
-        String address = getAddress(NetworkPoint.forMe(), 22);
-        try {
-            sshConnection.setHost(InetAddress.getByName(address));
-        } catch (UnknownHostException e) {
-            throw new OpsException("Error resolving address: " + address, e);
-        }
+		String address = getAddress(NetworkPoint.forMe(), 22);
+		try {
+			sshConnection.setHost(InetAddress.getByName(address));
+		} catch (UnknownHostException e) {
+			throw new OpsException("Error resolving address: " + address, e);
+		}
 
-        sshConnection.setKeyPair(sshKeyPair);
+		sshConnection.setKeyPair(sshKeyPair);
 
-        File tempDirBase = new File("/tmp/");
+		File tempDirBase = new File("/tmp/");
 
-        // TODO: Verify the server key once we've learned it
-        IServerKeyVerifier serverKeyVerifier = new AcceptAllLearningServerKeyVerifier();
-        sshConnection.setServerKeyVerifier(serverKeyVerifier);
-        return new SshOpsTarget(tempDirBase, sshConnection);
-    }
+		// TODO: Verify the server key once we've learned it
+		IServerKeyVerifier serverKeyVerifier = new AcceptAllLearningServerKeyVerifier();
+		sshConnection.setServerKeyVerifier(serverKeyVerifier);
+		return new SshOpsTarget(tempDirBase, sshConnection);
+	}
 }

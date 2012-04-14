@@ -10,7 +10,7 @@ import com.google.inject.ImplementedBy;
 
 @ImplementedBy(SimpleMultiCloudScheduler.class)
 public interface MultiCloudScheduler {
-    MachineCloudBase pickCloud(MachineCreationRequest request) throws OpsException;
+	MachineCloudBase pickCloud(MachineCreationRequest request) throws OpsException;
 
-    List<MachineCloudBase> listClouds() throws OpsException;
+	List<MachineCloudBase> listClouds() throws OpsException;
 }

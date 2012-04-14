@@ -14,13 +14,13 @@ import com.google.common.collect.Lists;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 public class MetricValuesMetadata {
-    public long start;
-    public long step;
-    public long end;
-    public long rows;
-    public long columns;
+	public long start;
+	public long step;
+	public long end;
+	public long rows;
+	public long columns;
 
-    @XmlElementWrapper(name = "legend")
-    @XmlElement(name = "entry")
-    public List<String> columnNames = Lists.newArrayList();
+	@XmlElementWrapper(name = "legend")
+	@XmlElement(name = "entry")
+	public List<String> columnNames = Lists.newArrayList();
 }

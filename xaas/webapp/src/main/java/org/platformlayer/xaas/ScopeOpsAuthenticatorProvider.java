@@ -9,19 +9,19 @@ import com.google.inject.Provider;
 
 public class ScopeOpsAuthenticatorProvider implements Provider<OpsAuthentication> {
 
-    @Inject
-    Provider<Scope> scopeProvider;
+	@Inject
+	Provider<Scope> scopeProvider;
 
-    @Override
-    public OpsAuthentication get() {
-        OpsAuthentication authentication = null;
+	@Override
+	public OpsAuthentication get() {
+		OpsAuthentication authentication = null;
 
-        Scope scope = scopeProvider.get();
-        if (scope != null) {
-            authentication = scope.get(OpsAuthentication.class);
-        }
+		Scope scope = scopeProvider.get();
+		if (scope != null) {
+			authentication = scope.get(OpsAuthentication.class);
+		}
 
-        return authentication;
-    }
+		return authentication;
+	}
 
 }

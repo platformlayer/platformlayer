@@ -44,45 +44,46 @@ import com.google.inject.name.Names;
 
 public class GuiceXaasConfig extends AbstractModule {
 
-    @Override
-    protected void configure() {
-        File file = new File("configuration.properties");
-        try {
-            Names.bindProperties(binder(), PropertyUtils.loadProperties(file));
-        } catch (IOException e) {
-            throw new IllegalStateException("Error loading configuration file: " + file, e);
-        }
+	@Override
+	protected void configure() {
+		File file = new File("configuration.properties");
+		try {
+			Names.bindProperties(binder(), PropertyUtils.loadProperties(file));
+		} catch (IOException e) {
+			throw new IllegalStateException("Error loading configuration file: " + file, e);
+		}
 
-        bind(UserRepository.class).to(JdbcUserRepository.class).asEagerSingleton();
+		bind(UserRepository.class).to(JdbcUserRepository.class).asEagerSingleton();
 
-        bind(ResultSetMappers.class).toProvider(ResultSetMappersProvider.build(OpsUser.class, OpsProject.class, ItemEntity.class, TagEntity.class));
+		bind(ResultSetMappers.class).toProvider(
+				ResultSetMappersProvider.build(OpsUser.class, OpsProject.class, ItemEntity.class, TagEntity.class));
 
-        bind(DataSource.class).toProvider(new GuiceDataSourceProvider("platformlayer.jdbc.", null));
+		bind(DataSource.class).toProvider(new GuiceDataSourceProvider("platformlayer.jdbc.", null));
 
-        JerseyAnnotationDiscovery discovery = new JerseyAnnotationDiscovery();
-        discovery.scan();
-        bind(AnnotationDiscovery.class).toInstance(discovery);
+		JerseyAnnotationDiscovery discovery = new JerseyAnnotationDiscovery();
+		discovery.scan();
+		bind(AnnotationDiscovery.class).toInstance(discovery);
 
-        bind(ExecutorService.class).toInstance(Executors.newCachedThreadPool());
+		bind(ExecutorService.class).toInstance(Executors.newCachedThreadPool());
 
-        File base = new File(".").getAbsoluteFile();
-        bind(ServiceProviderDictionary.class).to(AnnotationServiceProviderDictionary.class).in(Scopes.SINGLETON);
+		File base = new File(".").getAbsoluteFile();
+		bind(ServiceProviderDictionary.class).to(AnnotationServiceProviderDictionary.class).in(Scopes.SINGLETON);
 
-        bind(JaxbContextHelper.class).asEagerSingleton();
+		bind(JaxbContextHelper.class).asEagerSingleton();
 
-        bind(OperationQueue.class).to(SimpleOperationQueue.class).asEagerSingleton();
+		bind(OperationQueue.class).to(SimpleOperationQueue.class).asEagerSingleton();
 
-        bind(ObjectInjector.class).to(GuiceObjectInjector.class);
+		bind(ObjectInjector.class).to(GuiceObjectInjector.class);
 
-        bind(OpsKeyStore.class).to(SimpleOpsKeyStore.class).in(Scopes.SINGLETON);
+		bind(OpsKeyStore.class).to(SimpleOpsKeyStore.class).in(Scopes.SINGLETON);
 
-        bind(JobRepository.class).to(JdbcJobRepository.class);
-        bind(ManagedItemRepository.class).to(JdbcManagedItemRepository.class);
-        bind(ServiceAuthorizationRepository.class).to(JdbcServiceAuthorizationRepository.class);
+		bind(JobRepository.class).to(JdbcJobRepository.class);
+		bind(ManagedItemRepository.class).to(JdbcManagedItemRepository.class);
+		bind(ServiceAuthorizationRepository.class).to(JdbcServiceAuthorizationRepository.class);
 
-        bind(ChangeQueue.class).to(InProcessChangeQueue.class);
+		bind(ChangeQueue.class).to(InProcessChangeQueue.class);
 
-        bind(PlatformLayerClient.class).toProvider(PlatformLayerClientProvider.class);
-    }
+		bind(PlatformLayerClient.class).toProvider(PlatformLayerClientProvider.class);
+	}
 
 }

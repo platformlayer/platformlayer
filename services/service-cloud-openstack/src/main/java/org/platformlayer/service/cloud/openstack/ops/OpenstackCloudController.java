@@ -17,34 +17,35 @@ import org.platformlayer.service.cloud.openstack.model.OpenstackCloud;
 import org.platformlayer.service.cloud.openstack.ops.openstack.OpenstackCloudContext;
 
 public class OpenstackCloudController extends OpsTreeBase implements CloudController {
-    static final Logger log = Logger.getLogger(OpenstackCloudController.class);
+	static final Logger log = Logger.getLogger(OpenstackCloudController.class);
 
-    @Handler
-    public void handler() throws OpsException, IOException {
-    }
+	@Handler
+	public void handler() throws OpsException, IOException {
+	}
 
-    @Inject
-    OpenstackCloudContext cloudContext;
+	@Inject
+	OpenstackCloudContext cloudContext;
 
-    @Override
-    public ImageStore getImageStore(MachineCloudBase cloudObject) throws OpsException {
-        OpenstackCloud cloud = (OpenstackCloud) cloudObject;
+	@Override
+	public ImageStore getImageStore(MachineCloudBase cloudObject) throws OpsException {
+		OpenstackCloud cloud = (OpenstackCloud) cloudObject;
 
-        return cloudContext.getImageStore(cloud);
-    }
+		return cloudContext.getImageStore(cloud);
+	}
 
-    @Override
-    protected void addChildren() throws OpsException {
-    }
+	@Override
+	protected void addChildren() throws OpsException {
+	}
 
-    @Override
-    public StorageConfiguration getStorageConfiguration(MachineCloudBase cloudObject) throws OpsException {
-        OpenstackCloud cloud = (OpenstackCloud) cloudObject;
+	@Override
+	public StorageConfiguration getStorageConfiguration(MachineCloudBase cloudObject) throws OpsException {
+		OpenstackCloud cloud = (OpenstackCloud) cloudObject;
 
-        String authUrl = cloud.endpoint;
+		String authUrl = cloud.endpoint;
 
-        OpenstackCredentials credentials = new OpenstackCredentials(authUrl, cloud.username, cloud.password.plaintext(), cloud.tenant);
-        StorageConfiguration config = new StorageConfiguration(credentials);
-        return config;
-    }
+		OpenstackCredentials credentials = new OpenstackCredentials(authUrl, cloud.username,
+				cloud.password.plaintext(), cloud.tenant);
+		StorageConfiguration config = new StorageConfiguration(credentials);
+		return config;
+	}
 }

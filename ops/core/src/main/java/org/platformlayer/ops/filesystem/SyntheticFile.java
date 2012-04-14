@@ -13,72 +13,72 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 
 public abstract class SyntheticFile extends ManagedFile {
-    static final Logger log = Logger.getLogger(SyntheticFile.class);
+	static final Logger log = Logger.getLogger(SyntheticFile.class);
 
-    // String contents;
+	// String contents;
 
-    @Override
-    protected Md5Hash getSourceMd5(OpsTarget target) throws OpsException {
-        InputStream input = null;
-        try {
-            input = openSourceStream();
-            return CryptoUtils.md5(input);
-        } catch (IOException e) {
-            throw new OpsException("Error computing hash", e);
-        } finally {
-            IoUtils.safeClose(input);
-        }
-    }
+	@Override
+	protected Md5Hash getSourceMd5(OpsTarget target) throws OpsException {
+		InputStream input = null;
+		try {
+			input = openSourceStream();
+			return CryptoUtils.md5(input);
+		} catch (IOException e) {
+			throw new OpsException("Error computing hash", e);
+		} finally {
+			IoUtils.safeClose(input);
+		}
+	}
 
-    protected abstract byte[] getContentsBytes() throws OpsException;
+	protected abstract byte[] getContentsBytes() throws OpsException;
 
-    // {
-    // return getContents().getBytes();
-    // }
+	// {
+	// return getContents().getBytes();
+	// }
 
-    protected InputStream openSourceStream() throws OpsException {
-        InputStream input = new ByteArrayInputStream(getContentsBytes());
-        return input;
-    }
+	protected InputStream openSourceStream() throws OpsException {
+		InputStream input = new ByteArrayInputStream(getContentsBytes());
+		return input;
+	}
 
-    @Override
-    protected void uploadFile(OpsTarget target, File remoteFilePath) throws OpsException {
-        InputStream sourceStream = null;
-        try {
-            sourceStream = openSourceStream();
+	@Override
+	protected void uploadFile(OpsTarget target, File remoteFilePath) throws OpsException {
+		InputStream sourceStream = null;
+		try {
+			sourceStream = openSourceStream();
 
-            byte[] data;
-            try {
-                data = IoUtils.readAllBinary(sourceStream);
-            } catch (IOException e) {
-                throw new OpsException("Error reading source stream", e);
-            }
+			byte[] data;
+			try {
+				data = IoUtils.readAllBinary(sourceStream);
+			} catch (IOException e) {
+				throw new OpsException("Error reading source stream", e);
+			}
 
-            // Md5Hash dataHash = CryptoUtils.md5(data);
+			// Md5Hash dataHash = CryptoUtils.md5(data);
 
-            // smartGetServer(true).getAgent().uploadFile(bais, dataHash, remoteFilePath, getFileMetadata());
-            target.setFileContents(remoteFilePath, data);
-        } finally {
-            IoUtils.safeClose(sourceStream);
-        }
-    }
+			// smartGetServer(true).getAgent().uploadFile(bais, dataHash, remoteFilePath, getFileMetadata());
+			target.setFileContents(remoteFilePath, data);
+		} finally {
+			IoUtils.safeClose(sourceStream);
+		}
+	}
 
-    // public String getContents() throws OpsException {
-    // return contents;
-    // }
-    //
-    // public void setContents(String contents) {
-    // this.contents = contents;
-    // }
+	// public String getContents() throws OpsException {
+	// return contents;
+	// }
+	//
+	// public void setContents(String contents) {
+	// this.contents = contents;
+	// }
 
-    public static String getDefaultResourceName(Class<?> contextClass, File filePath) {
-        return getDefaultResourceName(contextClass, filePath.getName());
-    }
+	public static String getDefaultResourceName(Class<?> contextClass, File filePath) {
+		return getDefaultResourceName(contextClass, filePath.getName());
+	}
 
-    public static String getDefaultResourceName(Class<?> contextClass, String name) {
-        String templateName = contextClass.getPackage().getName().replace(".", "/");
-        templateName += "/" + name;
-        return templateName;
-    }
+	public static String getDefaultResourceName(Class<?> contextClass, String name) {
+		String templateName = contextClass.getPackage().getName().replace(".", "/");
+		templateName += "/" + name;
+		return templateName;
+	}
 
 }

@@ -6,23 +6,23 @@ import org.platformlayer.auth.OpsUser;
 import org.platformlayer.auth.UserRepository;
 
 public class CreateUser extends KeystoneCommandRunnerBase {
-    @Argument(index = 0)
-    public String username;
+	@Argument(index = 0)
+	public String username;
 
-    @Argument(index = 1)
-    public String password;
+	@Argument(index = 1)
+	public String password;
 
-    public CreateUser() {
-        super("create", "user");
-    }
+	public CreateUser() {
+		super("create", "user");
+	}
 
-    @Override
-    public Object runCommand() throws RepositoryException {
-        UserRepository userRepository = getContext().getUserRepository();
+	@Override
+	public Object runCommand() throws RepositoryException {
+		UserRepository userRepository = getContext().getUserRepository();
 
-        OpsUser user = userRepository.createUser(username, password);
+		OpsUser user = userRepository.createUser(username, password);
 
-        return user;
-    }
+		return user;
+	}
 
 }

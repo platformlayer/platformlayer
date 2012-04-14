@@ -10,22 +10,22 @@ import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.users.PosixGroupManagement.Group;
 
 public class PosixGroup {
-    public String groupName;
+	public String groupName;
 
-    @Handler
-    public void doOperation() throws OpsException {
-        OpsTarget target = OpsContext.get().getInstance(OpsTarget.class);
+	@Handler
+	public void doOperation() throws OpsException {
+		OpsTarget target = OpsContext.get().getInstance(OpsTarget.class);
 
-        Map<String, Group> groups = PosixGroupManagement.getGroups(target);
-        Group group = groups.get(groupName);
-        if (group == null) {
-            target.executeCommand("groupadd {0}", groupName);
-        }
-    }
+		Map<String, Group> groups = PosixGroupManagement.getGroups(target);
+		Group group = groups.get(groupName);
+		if (group == null) {
+			target.executeCommand("groupadd {0}", groupName);
+		}
+	}
 
-    public static PosixGroup build(String groupName) {
-        PosixGroup group = Injection.getInstance(PosixGroup.class);
-        group.groupName = groupName;
-        return group;
-    }
+	public static PosixGroup build(String groupName) {
+		PosixGroup group = Injection.getInstance(PosixGroup.class);
+		group.groupName = groupName;
+		return group;
+	}
 }

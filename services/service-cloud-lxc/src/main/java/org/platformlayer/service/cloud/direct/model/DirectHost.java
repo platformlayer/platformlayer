@@ -13,8 +13,8 @@ import org.platformlayer.xaas.Controller;
 @XmlRootElement
 @Controller(DirectHostController.class)
 public class DirectHost extends ItemBase {
-    public PlatformLayerKey cloud;
+	public PlatformLayerKey cloud;
 
-    public PlatformLayerKey machineSource;
-    public String ipRange;
+	public PlatformLayerKey machineSource;
+	public String ipRange;
 }

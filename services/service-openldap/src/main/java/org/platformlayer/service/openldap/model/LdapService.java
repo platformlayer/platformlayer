@@ -17,6 +17,6 @@ import org.platformlayer.xaas.SingletonService;
 @SingletonService
 @GwtModel
 public class LdapService extends ItemBase {
-    public String dnsName;
-    public Secret ldapServerPassword;
+	public String dnsName;
+	public Secret ldapServerPassword;
 }

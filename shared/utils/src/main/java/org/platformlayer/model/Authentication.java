@@ -1,11 +1,11 @@
 package org.platformlayer.model;
 
 public interface Authentication {
-    String getProject();
+	String getProject();
 
-    String getUserKey();
+	String getUserKey();
 
-    boolean isInRole(String project, RoleId role);
+	boolean isInRole(String project, RoleId role);
 
-    byte[] getUserSecret();
+	byte[] getUserSecret();
 }

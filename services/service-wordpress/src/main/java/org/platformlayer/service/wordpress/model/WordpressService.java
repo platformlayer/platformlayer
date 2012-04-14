@@ -14,12 +14,12 @@ import org.platformlayer.xaas.Controller;
 @XmlRootElement
 @Controller(WordpressServiceController.class)
 public class WordpressService extends ItemBase {
-    public String dnsName;
+	public String dnsName;
 
-    public Secret adminPassword;
-    public Secret wordpressSecretKey;
+	public Secret adminPassword;
+	public Secret wordpressSecretKey;
 
-    public Secret databasePassword;
+	public Secret databasePassword;
 
-    public PlatformLayerKey databaseItem;
+	public PlatformLayerKey databaseItem;
 }

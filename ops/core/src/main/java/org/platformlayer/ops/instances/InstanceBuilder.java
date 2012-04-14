@@ -41,205 +41,206 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 public class InstanceBuilder extends OpsTreeBase implements CustomRecursor {
-    public String dnsName;
-    public Tags tags;
-    public Provider<DiskImageRecipe> diskImageRecipe;
+	public String dnsName;
+	public Tags tags;
+	public Provider<DiskImageRecipe> diskImageRecipe;
 
-    public int minimumMemoryMb = 256;
+	public int minimumMemoryMb = 256;
 
-    public PlatformLayerKey cloud;
+	public PlatformLayerKey cloud;
 
-    public HostPolicy hostPolicy = new HostPolicy();
+	public HostPolicy hostPolicy = new HostPolicy();
 
-    @Deprecated
-    // PublicPorts = make a reservation on a "public" IP
-    // This can be a tag / hostPolicy
-    public List<Integer> publicPorts = Lists.newArrayList();
+	@Deprecated
+	// PublicPorts = make a reservation on a "public" IP
+	// This can be a tag / hostPolicy
+	public List<Integer> publicPorts = Lists.newArrayList();
 
-    public boolean addTagToManaged = false;
+	public boolean addTagToManaged = false;
 
-    @Inject
-    InstanceSupervisor instanceSupervisor;
+	@Inject
+	InstanceSupervisor instanceSupervisor;
 
-    @Inject
-    ImageFactory imageFactory;
+	@Inject
+	ImageFactory imageFactory;
 
-    @Inject
-    ServiceContext service;
+	@Inject
+	ServiceContext service;
 
-    @Inject
-    OpsContext ops;
+	@Inject
+	OpsContext ops;
 
-    @Inject
-    PlatformLayerHelpers platformLayer;
+	@Inject
+	PlatformLayerHelpers platformLayer;
 
-    @Inject
-    CloudContext cloudContext;
+	@Inject
+	CloudContext cloudContext;
 
-    @Inject
-    PlatformLayerCloudHelpers cloudHelpers;
+	@Inject
+	PlatformLayerCloudHelpers cloudHelpers;
 
-    @Inject
-    InstanceHelpers instances;
-    
-    @Handler
-    public void doOperation() throws OpsException, IOException {
-        ItemBase item = ops.getInstance(ItemBase.class);
+	@Inject
+	InstanceHelpers instances;
 
-        Tag parentTag = ops.getOpsSystem().createParentTag(item);
+	@Handler
+	public void doOperation() throws OpsException, IOException {
+		ItemBase item = ops.getInstance(ItemBase.class);
 
-        PersistentInstance persistentInstanceTemplate = buildPersistentInstanceTemplate();
+		Tag parentTag = ops.getOpsSystem().createParentTag(item);
 
-        persistentInstanceTemplate.getTags().add(parentTag);
+		PersistentInstance persistentInstanceTemplate = buildPersistentInstanceTemplate();
 
-        // Set during doOperation
-        Machine machine = null;
-        PersistentInstance persistentInstance = null;
-        InstanceBase instance = null;
-        OpsTarget target = null;
+		persistentInstanceTemplate.getTags().add(parentTag);
 
-        persistentInstance = getOrCreate(parentTag, persistentInstanceTemplate);
+		// Set during doOperation
+		Machine machine = null;
+		PersistentInstance persistentInstance = null;
+		InstanceBase instance = null;
+		OpsTarget target = null;
 
-        if (persistentInstance != null) {
-            // We have to connect to the underlying machine not-via-DNS for Dns service => use instance id
-            // TODO: Should we always use the instance id??
+		persistentInstance = getOrCreate(parentTag, persistentInstanceTemplate);
 
-            instance = instances.findInstance(persistentInstance);
-            if (instance == null && !OpsContext.isDelete()) {
-                // A machine has not (yet) been assigned
-                throw new OpsException("Machine is not yet built").setRetry(TimeSpan.ONE_MINUTE);
-            }
-        }
+		if (persistentInstance != null) {
+			// We have to connect to the underlying machine not-via-DNS for Dns service => use instance id
+			// TODO: Should we always use the instance id??
 
-        if (instance != null) {
-            machine = cloudHelpers.toMachine(instance);
-        }
+			instance = instances.findInstance(persistentInstance);
+			if (instance == null && !OpsContext.isDelete()) {
+				// A machine has not (yet) been assigned
+				throw new OpsException("Machine is not yet built").setRetry(TimeSpan.ONE_MINUTE);
+			}
+		}
 
-        if (addTagToManaged && !OpsContext.isDelete()) {
-            // Add tag with instance id to persistent instance (very helpful for
-            // DNS service!)
-            PlatformLayerKey machineKey = machine.getKey();
-            platformLayer.addTag(OpsSystem.toKey(item), new Tag(Tag.INSTANCE_KEY, machineKey.getUrl()));
-        }
+		if (instance != null) {
+			machine = cloudHelpers.toMachine(instance);
+		}
 
-        SshKey sshKey = service.getSshKey();
-        if (machine != null) {
-            target = machine.getTarget(sshKey);
-        }
+		if (addTagToManaged && !OpsContext.isDelete()) {
+			// Add tag with instance id to persistent instance (very helpful for
+			// DNS service!)
+			PlatformLayerKey machineKey = machine.getKey();
+			platformLayer.addTag(OpsSystem.toKey(item), new Tag(Tag.INSTANCE_KEY, machineKey.getUrl()));
+		}
 
-        RecursionState recursion = getRecursionState();
-        
-        if (OpsContext.isDelete() && machine == null) {
-            // Don't recurse into no machine :-)
-            recursion.setPreventRecursion(true);
-        }
-        
-        recursion.pushChildScope(Machine.class, machine);
-        recursion.pushChildScope(PersistentInstance.class, persistentInstance);
-        recursion.pushChildScope(InstanceBase.class, instance);
-        recursion.pushChildScope(OpsTarget.class, target);
-    }
+		SshKey sshKey = service.getSshKey();
+		if (machine != null) {
+			target = machine.getTarget(sshKey);
+		}
 
-    private PersistentInstance buildPersistentInstanceTemplate() throws OpsException {
-        SshKey sshKey = service.getSshKey();
-        String securityGroup = service.getSecurityGroupName();
-        DiskImageRecipe recipeTemplate = diskImageRecipe.get();
-        if (recipeTemplate.getKey() == null) {
-            // TODO: Something nicer than a UUID
-            String recipeId = UUID.randomUUID().toString();
-            recipeTemplate.setKey(PlatformLayerKey.fromId(recipeId));
-        }
+		RecursionState recursion = getRecursionState();
 
-        DiskImageRecipe recipe = imageFactory.getOrCreateRecipe(recipeTemplate);
+		if (OpsContext.isDelete() && machine == null) {
+			// Don't recurse into no machine :-)
+			recursion.setPreventRecursion(true);
+		}
 
-        PersistentInstance persistentInstanceTemplate = new PersistentInstance();
-        persistentInstanceTemplate.setDnsName(dnsName);
-        persistentInstanceTemplate.setSshPublicKey(SshKeys.serialize(sshKey.getKeyPair().getPublic()));
-        persistentInstanceTemplate.setSecurityGroup(securityGroup);
-        persistentInstanceTemplate.setMinimumRam(minimumMemoryMb);
-        persistentInstanceTemplate.setCloud(cloud);
-        persistentInstanceTemplate.setHostPolicy(hostPolicy);
-        persistentInstanceTemplate.setRecipe(OpsSystem.toKey(recipe));
+		recursion.pushChildScope(Machine.class, machine);
+		recursion.pushChildScope(PersistentInstance.class, persistentInstance);
+		recursion.pushChildScope(InstanceBase.class, instance);
+		recursion.pushChildScope(OpsTarget.class, target);
+	}
 
-        String id = dnsName;
-        if (Strings.isNullOrEmpty(id)) {
-            id = UUID.randomUUID().toString();
-        }
-        persistentInstanceTemplate.setKey(PlatformLayerKey.fromId(id));
+	private PersistentInstance buildPersistentInstanceTemplate() throws OpsException {
+		SshKey sshKey = service.getSshKey();
+		String securityGroup = service.getSecurityGroupName();
+		DiskImageRecipe recipeTemplate = diskImageRecipe.get();
+		if (recipeTemplate.getKey() == null) {
+			// TODO: Something nicer than a UUID
+			String recipeId = UUID.randomUUID().toString();
+			recipeTemplate.setKey(PlatformLayerKey.fromId(recipeId));
+		}
 
-        for (int publicPort : publicPorts) {
-            persistentInstanceTemplate.getPublicPorts().add(publicPort);
-        }
-        return persistentInstanceTemplate;
-    }
+		DiskImageRecipe recipe = imageFactory.getOrCreateRecipe(recipeTemplate);
 
-    PersistentInstance getOrCreate(Tag tag, PersistentInstance persistentInstance) throws PlatformLayerClientException, OpsException {
-        PersistentInstance foundPersistentInstance = instanceSupervisor.findPersistentInstance(tag);
+		PersistentInstance persistentInstanceTemplate = new PersistentInstance();
+		persistentInstanceTemplate.setDnsName(dnsName);
+		persistentInstanceTemplate.setSshPublicKey(SshKeys.serialize(sshKey.getKeyPair().getPublic()));
+		persistentInstanceTemplate.setSecurityGroup(securityGroup);
+		persistentInstanceTemplate.setMinimumRam(minimumMemoryMb);
+		persistentInstanceTemplate.setCloud(cloud);
+		persistentInstanceTemplate.setHostPolicy(hostPolicy);
+		persistentInstanceTemplate.setRecipe(OpsSystem.toKey(recipe));
 
-        if (!OpsContext.isDelete()) {
-            // We always PUT it (should be idempotent)
-            // if (foundPersistentInstance == null) {
-            PersistentInstance created = platformLayer.putItemByTag(persistentInstance, tag);
-            foundPersistentInstance = created;
-            // }
+		String id = dnsName;
+		if (Strings.isNullOrEmpty(id)) {
+			id = UUID.randomUUID().toString();
+		}
+		persistentInstanceTemplate.setKey(PlatformLayerKey.fromId(id));
 
-            // if (foundPersistentInstance == null) {
-            // // String imageId = imageFactory.getOrCreateImage(recipe);
-            // // persistentInstance.setImageId(imageId);
-            //
-            // Tags tags = persistentInstance.getTags();
-            // tags.add(tag);
-            //
-            // try {
-            // // TODO: Parent tag isn't getting set??
-            // PersistentInstance created = platformLayer.createItem(persistentInstance);
-            // foundPersistentInstance = created;
-            // } catch (PlatformLayerClientException e) {
-            // throw new OpsException("Error registering persistent instance", e);
-            // }
-            // }
-            //
-            // if (foundPersistentInstance == null) {
-            // throw new IllegalStateException();
-            // }
-        }
+		for (int publicPort : publicPorts) {
+			persistentInstanceTemplate.getPublicPorts().add(publicPort);
+		}
+		return persistentInstanceTemplate;
+	}
 
-        if (OpsContext.isDelete()) {
-            if (foundPersistentInstance != null) {
-                try {
-                    platformLayer.deleteItem(OpsSystem.toKey(foundPersistentInstance));
-                } catch (PlatformLayerClientException e) {
-                    throw new OpsException("Error deleting persistent instance", e);
-                }
-            }
-        }
+	PersistentInstance getOrCreate(Tag tag, PersistentInstance persistentInstance) throws PlatformLayerClientException,
+			OpsException {
+		PersistentInstance foundPersistentInstance = instanceSupervisor.findPersistentInstance(tag);
 
-        return foundPersistentInstance;
-    }
+		if (!OpsContext.isDelete()) {
+			// We always PUT it (should be idempotent)
+			// if (foundPersistentInstance == null) {
+			PersistentInstance created = platformLayer.putItemByTag(persistentInstance, tag);
+			foundPersistentInstance = created;
+			// }
 
-    public static InstanceBuilder build(String dnsName, Provider<DiskImageRecipe> diskImageRecipe) {
-        InstanceBuilder instance = Injection.getInstance(InstanceBuilder.class);
-        instance.dnsName = dnsName;
-        instance.diskImageRecipe = diskImageRecipe;
-        return instance;
-    }
+			// if (foundPersistentInstance == null) {
+			// // String imageId = imageFactory.getOrCreateImage(recipe);
+			// // persistentInstance.setImageId(imageId);
+			//
+			// Tags tags = persistentInstance.getTags();
+			// tags.add(tag);
+			//
+			// try {
+			// // TODO: Parent tag isn't getting set??
+			// PersistentInstance created = platformLayer.createItem(persistentInstance);
+			// foundPersistentInstance = created;
+			// } catch (PlatformLayerClientException e) {
+			// throw new OpsException("Error registering persistent instance", e);
+			// }
+			// }
+			//
+			// if (foundPersistentInstance == null) {
+			// throw new IllegalStateException();
+			// }
+		}
 
-    @Override
-    protected void addChildren() throws OpsException {
-        addChild(injected(InstanceBootstrap.class));
+		if (OpsContext.isDelete()) {
+			if (foundPersistentInstance != null) {
+				try {
+					platformLayer.deleteItem(OpsSystem.toKey(foundPersistentInstance));
+				} catch (PlatformLayerClientException e) {
+					throw new OpsException("Error deleting persistent instance", e);
+				}
+			}
+		}
 
-        addChild(injected(DnsResolver.class));
+		return foundPersistentInstance;
+	}
 
-        String hostname = dnsName;
-        if (Strings.isNullOrEmpty(hostname)) {
-            // We always want to set a valid hostname
-            ItemBase item = ops.getInstance(ItemBase.class);
-            hostname = item.getId();
-        }
+	public static InstanceBuilder build(String dnsName, Provider<DiskImageRecipe> diskImageRecipe) {
+		InstanceBuilder instance = Injection.getInstance(InstanceBuilder.class);
+		instance.dnsName = dnsName;
+		instance.diskImageRecipe = diskImageRecipe;
+		return instance;
+	}
 
-        if (hostname != null) {
-            addChild(ConfigureHostname.build(hostname));
-        }
-    }
+	@Override
+	protected void addChildren() throws OpsException {
+		addChild(injected(InstanceBootstrap.class));
+
+		addChild(injected(DnsResolver.class));
+
+		String hostname = dnsName;
+		if (Strings.isNullOrEmpty(hostname)) {
+			// We always want to set a valid hostname
+			ItemBase item = ops.getInstance(ItemBase.class);
+			hostname = item.getId();
+		}
+
+		if (hostname != null) {
+			addChild(ConfigureHostname.build(hostname));
+		}
+	}
 
 }

@@ -8,15 +8,15 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "item_tags")
 public class TagEntity {
-    @Id
-    public int id;
+	@Id
+	public int id;
 
-    @Column
-    public int item;
+	@Column
+	public int item;
 
-    @Column
-    public String key;
+	@Column
+	public String key;
 
-    @Column
-    public String data;
+	@Column
+	public String data;
 }

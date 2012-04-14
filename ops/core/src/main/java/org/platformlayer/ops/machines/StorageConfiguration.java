@@ -4,13 +4,13 @@ import org.openstack.client.OpenstackCredentials;
 
 public class StorageConfiguration {
 
-    private final OpenstackCredentials credentials;
+	private final OpenstackCredentials credentials;
 
-    public StorageConfiguration(OpenstackCredentials credentials) {
-        this.credentials = credentials;
-    }
+	public StorageConfiguration(OpenstackCredentials credentials) {
+		this.credentials = credentials;
+	}
 
-    public OpenstackCredentials getOpenstackCredentials() {
-        return credentials;
-    }
+	public OpenstackCredentials getOpenstackCredentials() {
+		return credentials;
+	}
 }

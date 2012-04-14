@@ -25,55 +25,58 @@ import com.google.common.base.Objects;
 
 @Path("v2.0/tokens")
 public class TokensResource extends KeystoneResourceBase {
-    static final Logger log = Logger.getLogger(TokensResource.class);
+	static final Logger log = Logger.getLogger(TokensResource.class);
 
-    @POST
-    @Produces({ APPLICATION_XML, APPLICATION_JSON })
-    @Consumes({ APPLICATION_XML, APPLICATION_JSON })
-    public Access authenticate(Auth request) {
-        throw new UnsupportedOperationException();
+	@POST
+	@Produces({ APPLICATION_XML, APPLICATION_JSON })
+	@Consumes({ APPLICATION_XML, APPLICATION_JSON })
+	public Access authenticate(Auth request) {
+		throw new UnsupportedOperationException();
 
-        // boolean isSystem = true;
-        // TokenInfo tokenInfo = doAuthenticate(isSystem, request);
-    }
+		// boolean isSystem = true;
+		// TokenInfo tokenInfo = doAuthenticate(isSystem, request);
+	}
 
-    @GET
-    // @HEAD support is automatic from the @GET
-    @Path("{tokenId}")
-    public ValidateTokenResponse validateToken(@HeaderParam("X-Auth-Token") String myToken, @PathParam("tokenId") String checkToken, @QueryParam("belongsTo") String tenantId) {
-        requireSystemToken();
+	@GET
+	// @HEAD support is automatic from the @GET
+	@Path("{tokenId}")
+	public ValidateTokenResponse validateToken(@HeaderParam("X-Auth-Token") String myToken,
+			@PathParam("tokenId") String checkToken, @QueryParam("belongsTo") String tenantId) {
+		requireSystemToken();
 
-        TokenInfo checkTokenInfo = authentication.validateToken(false, checkToken);
-        if (checkTokenInfo == null) {
-            throw404NotFound();
-        }
+		TokenInfo checkTokenInfo = authentication.validateToken(false, checkToken);
+		if (checkTokenInfo == null) {
+			throw404NotFound();
+		}
 
-        if (tenantId != null) {
-            if (!Objects.equal(tenantId, checkTokenInfo.scope))
-                throw404NotFound();
-        }
+		if (tenantId != null) {
+			if (!Objects.equal(tenantId, checkTokenInfo.scope)) {
+				throw404NotFound();
+			}
+		}
 
-        UserInfo userInfo = null;
-        try {
-            userInfo = authentication.getUserInfo(checkTokenInfo.isSystem(), checkTokenInfo.userId, checkTokenInfo.tokenSecret);
-        } catch (AuthenticatorException e) {
-            log.warn("Error while listing groups", e);
-            throwInternalError();
-        }
+		UserInfo userInfo = null;
+		try {
+			userInfo = authentication.getUserInfo(checkTokenInfo.isSystem(), checkTokenInfo.userId,
+					checkTokenInfo.tokenSecret);
+		} catch (AuthenticatorException e) {
+			log.warn("Error while listing groups", e);
+			throwInternalError();
+		}
 
-        ValidateTokenResponse response = new ValidateTokenResponse();
-        response.access = new ValidateAccess();
-        response.access.user = new UserValidation();
-        response.access.user.id = userInfo.userId;
-        response.access.user.name = userInfo.username;
-        response.access.user.roles = authentication.getRoles(userInfo, checkTokenInfo.scope);
+		ValidateTokenResponse response = new ValidateTokenResponse();
+		response.access = new ValidateAccess();
+		response.access.user = new UserValidation();
+		response.access.user.id = userInfo.userId;
+		response.access.user.name = userInfo.username;
+		response.access.user.roles = authentication.getRoles(userInfo, checkTokenInfo.scope);
 
-        response.access.user.secret = userInfo.secret;
+		response.access.user.secret = userInfo.secret;
 
-        response.access.token = Mapping.mapToResponse(checkTokenInfo);
-        response.access.token.id = checkToken;
+		response.access.token = Mapping.mapToResponse(checkTokenInfo);
+		response.access.token.id = checkToken;
 
-        return response;
-    }
+		return response;
+	}
 
 }

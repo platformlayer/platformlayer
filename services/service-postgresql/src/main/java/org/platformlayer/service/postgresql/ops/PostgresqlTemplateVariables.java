@@ -7,9 +7,9 @@ import org.platformlayer.ops.templates.TemplateDataSource;
 
 public class PostgresqlTemplateVariables implements TemplateDataSource {
 
-    @Override
-    public void buildTemplateModel(Map<String, Object> model) throws OpsException {
+	@Override
+	public void buildTemplateModel(Map<String, Object> model) throws OpsException {
 
-    }
+	}
 
 }

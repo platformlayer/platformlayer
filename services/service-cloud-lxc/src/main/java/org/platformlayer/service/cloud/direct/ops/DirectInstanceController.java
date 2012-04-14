@@ -18,74 +18,74 @@ import org.platformlayer.service.cloud.direct.ops.kvm.KvmInstance;
 import org.platformlayer.service.cloud.direct.ops.lxc.LxcInstanceController;
 
 public class DirectInstanceController extends OpsTreeBase {
-    static final Logger log = Logger.getLogger(DirectInstanceController.class);
+	static final Logger log = Logger.getLogger(DirectInstanceController.class);
 
-    @Handler
-    public void handler() throws OpsException, IOException {
-    }
+	@Handler
+	public void handler() throws OpsException, IOException {
+	}
 
-    @Inject
-    ImageFactory imageFactory;
+	@Inject
+	ImageFactory imageFactory;
 
-    @Override
-    protected void addChildren() throws OpsException {
-        DirectInstance model = OpsContext.get().getInstance(DirectInstance.class);
+	@Override
+	protected void addChildren() throws OpsException {
+		DirectInstance model = OpsContext.get().getInstance(DirectInstance.class);
 
-        HostPolicy hostPolicy = model.hostPolicy;
-        if (hostPolicy == null) {
-            hostPolicy = new HostPolicy();
-        }
+		HostPolicy hostPolicy = model.hostPolicy;
+		if (hostPolicy == null) {
+			hostPolicy = new HostPolicy();
+		}
 
-        if (hostPolicy.allowRunInContainer) {
-            // TODO: The variable initialization probably doesn't belong here
-            LxcInstanceController lxc = injected(LxcInstanceController.class);
-            String id = model.getId();
-            lxc.id = id;
-            lxc.instanceDir = new File(DirectCloudUtils.LXC_BASE_DIR, id);
+		if (hostPolicy.allowRunInContainer) {
+			// TODO: The variable initialization probably doesn't belong here
+			LxcInstanceController lxc = injected(LxcInstanceController.class);
+			String id = model.getId();
+			lxc.id = id;
+			lxc.instanceDir = new File(DirectCloudUtils.LXC_BASE_DIR, id);
 
-            lxc.minimumMemoryMB = model.minimumMemoryMb;
+			lxc.minimumMemoryMB = model.minimumMemoryMb;
 
-            addChild(lxc);
+			addChild(lxc);
 
-            if (model.publicPorts != null) {
-                for (int publicPort : model.publicPorts) {
-                    throw new UnsupportedOperationException();
+			if (model.publicPorts != null) {
+				for (int publicPort : model.publicPorts) {
+					throw new UnsupportedOperationException();
 
-                    // PublicPorts publicPortForward = injected(PublicPorts.class);
-                    // publicPortForward.port = publicPort;
-                    // publicPortForward.backendItem = model;
-                    // lxc.addChild(publicPortForward);
-                }
-            }
-        } else {
-            // TODO: The variable initialization probably doesn't belong here
-            KvmInstance kvm = injected(KvmInstance.class);
-            String id = model.getId();
-            kvm.id = id;
-            kvm.instanceDir = new File(DirectCloudUtils.KVM_BASE_DIR, id);
+					// PublicPorts publicPortForward = injected(PublicPorts.class);
+					// publicPortForward.port = publicPort;
+					// publicPortForward.backendItem = model;
+					// lxc.addChild(publicPortForward);
+				}
+			}
+		} else {
+			// TODO: The variable initialization probably doesn't belong here
+			KvmInstance kvm = injected(KvmInstance.class);
+			String id = model.getId();
+			kvm.id = id;
+			kvm.instanceDir = new File(DirectCloudUtils.KVM_BASE_DIR, id);
 
-            kvm.minimumMemoryMB = model.minimumMemoryMb;
-            kvm.recipeId = model.recipeId;
-            try {
-                kvm.sshPublicKey = OpenSshUtils.readSshPublicKey(model.sshPublicKey);
-            } catch (IOException e) {
-                throw new OpsException("Error deserializing SSH key", e);
-            }
+			kvm.minimumMemoryMB = model.minimumMemoryMb;
+			kvm.recipeId = model.recipeId;
+			try {
+				kvm.sshPublicKey = OpenSshUtils.readSshPublicKey(model.sshPublicKey);
+			} catch (IOException e) {
+				throw new OpsException("Error deserializing SSH key", e);
+			}
 
-            addChild(kvm);
+			addChild(kvm);
 
-            // TODO: Remove this... it's only supposed to be a hint
-            if (model.publicPorts != null) {
-                for (int publicPort : model.publicPorts) {
-                    throw new UnsupportedOperationException();
-                    //
-                    // PublicPorts publicPortForward = injected(PublicPorts.class);
-                    // publicPortForward.publicPort = publicPort;
-                    // publicPortForward.backendItem = model;
-                    // kvm.addChild(publicPortForward);
-                }
-            }
-        }
-    }
+			// TODO: Remove this... it's only supposed to be a hint
+			if (model.publicPorts != null) {
+				for (int publicPort : model.publicPorts) {
+					throw new UnsupportedOperationException();
+					//
+					// PublicPorts publicPortForward = injected(PublicPorts.class);
+					// publicPortForward.publicPort = publicPort;
+					// publicPortForward.backendItem = model;
+					// kvm.addChild(publicPortForward);
+				}
+			}
+		}
+	}
 
 }

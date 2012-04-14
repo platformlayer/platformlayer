@@ -7,13 +7,13 @@ import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class SupervisordService extends OpsTreeBase {
 
-    @Handler
-    public void handler() {
-    }
+	@Handler
+	public void handler() {
+	}
 
-    @Override
-    protected void addChildren() throws OpsException {
-        addChild(PackageDependency.build("supervisor"));
-    }
+	@Override
+	protected void addChildren() throws OpsException {
+		addChild(PackageDependency.build("supervisor"));
+	}
 
 }

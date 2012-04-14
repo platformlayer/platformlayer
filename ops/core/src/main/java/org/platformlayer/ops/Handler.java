@@ -5,5 +5,5 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Handler {
-    OperationType[] value() default {};
+	OperationType[] value() default {};
 }

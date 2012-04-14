@@ -9,5 +9,5 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "tenants")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class TenantEndpointList {
-    public List<Tenant> tenants;
+	public List<Tenant> tenants;
 }

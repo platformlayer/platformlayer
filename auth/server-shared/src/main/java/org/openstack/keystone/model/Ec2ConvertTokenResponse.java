@@ -7,5 +7,5 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Ec2ConvertTokenResponse {
-    public Ec2Credentials credentials;
+	public Ec2Credentials credentials;
 }

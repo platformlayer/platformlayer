@@ -9,10 +9,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
 public class InstanceBase extends ItemBase {
-    public PlatformLayerKey cloud;
-    public PlatformLayerKey recipeId;
-    public String sshPublicKey;
-    public HostPolicy hostPolicy;
+	public PlatformLayerKey cloud;
+	public PlatformLayerKey recipeId;
+	public String sshPublicKey;
+	public HostPolicy hostPolicy;
 
-    public List<Integer> publicPorts;
+	public List<Integer> publicPorts;
 }

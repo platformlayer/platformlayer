@@ -5,15 +5,15 @@ import org.platformlayer.ops.CloudImage;
 
 public class GlanceImage implements CloudImage {
 
-    private final Image image;
+	private final Image image;
 
-    public GlanceImage(Image image) {
-        this.image = image;
-    }
+	public GlanceImage(Image image) {
+		this.image = image;
+	}
 
-    @Override
-    public String getId() {
-        return image.getId();
-    }
+	@Override
+	public String getId() {
+		return image.getId();
+	}
 
 }

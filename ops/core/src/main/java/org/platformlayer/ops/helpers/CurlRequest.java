@@ -17,131 +17,132 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 public class CurlRequest {
-    final String url;
+	final String url;
 
-    public final Multimap<String, String> headers = HashMultimap.create();
-    static final String metadataDelimiter = "\n\n";;
+	public final Multimap<String, String> headers = HashMultimap.create();
+	static final String metadataDelimiter = "\n\n";;
 
-    public TimeSpan timeout;
+	public TimeSpan timeout;
 
-    public String proxy;
+	public String proxy;
 
-    public String method;
+	public String method;
 
-    public String body;
-    public boolean bodyFromStdin;
-    public boolean bareRequest;
+	public String body;
+	public boolean bodyFromStdin;
+	public boolean bareRequest;
 
-    public CurlRequest(String url) {
-        this.url = url;
-    }
+	public CurlRequest(String url) {
+		this.url = url;
+	}
 
-    public String getUrl() {
-        return url;
-    }
+	public String getUrl() {
+		return url;
+	}
 
-    public CurlResult executeRequest(OpsTarget target) throws ProcessExecutionException {
-        Command command = toCommand();
+	public CurlResult executeRequest(OpsTarget target) throws ProcessExecutionException {
+		Command command = toCommand();
 
-        ProcessExecution execution = target.executeCommand(command);
+		ProcessExecution execution = target.executeCommand(command);
 
-        return parseResponse(execution);
-    }
+		return parseResponse(execution);
+	}
 
-    public CurlResult parseResponse(ProcessExecution execution) {
-        if (bareRequest)
-            throw new IllegalStateException();
+	public CurlResult parseResponse(ProcessExecution execution) {
+		if (bareRequest) {
+			throw new IllegalStateException();
+		}
 
-        List<String> tags = buildTags();
+		List<String> tags = buildTags();
 
-        String stdout = execution.getStdOut();
+		String stdout = execution.getStdOut();
 
-        String bodyDelimiter = "\r\n\r\n";
-        int bodyStart = stdout.indexOf(bodyDelimiter);
-        int metadataStart = stdout.lastIndexOf(metadataDelimiter);
-        if (bodyStart == -1 || metadataStart == -1) {
-            throw new IllegalStateException("Unexpected format for curl output: " + stdout);
-        }
+		String bodyDelimiter = "\r\n\r\n";
+		int bodyStart = stdout.indexOf(bodyDelimiter);
+		int metadataStart = stdout.lastIndexOf(metadataDelimiter);
+		if (bodyStart == -1 || metadataStart == -1) {
+			throw new IllegalStateException("Unexpected format for curl output: " + stdout);
+		}
 
-        String headers = stdout.substring(0, bodyStart);
-        String contents = stdout.substring(bodyStart + bodyDelimiter.length(), metadataStart);
-        String metadata = stdout.substring(metadataStart + metadataDelimiter.length());
+		String headers = stdout.substring(0, bodyStart);
+		String contents = stdout.substring(bodyStart + bodyDelimiter.length(), metadataStart);
+		String metadata = stdout.substring(metadataStart + metadataDelimiter.length());
 
-        String[] metadataLines = metadata.split("\n");
+		String[] metadataLines = metadata.split("\n");
 
-        if (metadataLines.length != tags.size()) {
-            throw new IllegalStateException("Unable to match up curl metadata: " + metadata);
-        }
+		if (metadataLines.length != tags.size()) {
+			throw new IllegalStateException("Unable to match up curl metadata: " + metadata);
+		}
 
-        Map<String, String> metadataMap = Maps.newHashMap();
+		Map<String, String> metadataMap = Maps.newHashMap();
 
-        for (int i = 0; i < metadataLines.length; i++) {
-            String tag = tags.get(i);
-            metadataMap.put(tag, metadataLines[i]);
-        }
+		for (int i = 0; i < metadataLines.length; i++) {
+			String tag = tags.get(i);
+			metadataMap.put(tag, metadataLines[i]);
+		}
 
-        return new CurlResult(contents, headers, metadataMap);
-    }
+		return new CurlResult(contents, headers, metadataMap);
+	}
 
-    public Multimap<String, String> getHeaders() {
-        return headers;
-    }
+	public Multimap<String, String> getHeaders() {
+		return headers;
+	}
 
-    public Command toCommand() {
-        List<String> tags = buildTags();
+	public Command toCommand() {
+		List<String> tags = buildTags();
 
-        List<String> escaped = Lists.newArrayList();
-        for (String tag : tags) {
-            escaped.add("%{" + tag + "}");
-        }
+		List<String> escaped = Lists.newArrayList();
+		for (String tag : tags) {
+			escaped.add("%{" + tag + "}");
+		}
 
-        String format = metadataDelimiter.replace("\n", "\\n") + Joiner.on("\\n").join(escaped);
+		String format = metadataDelimiter.replace("\n", "\\n") + Joiner.on("\\n").join(escaped);
 
-        Command command = Command.build("curl");
-        if (!bareRequest) {
-            command.addLiteral("--include");
-            command.addLiteral("--write-out");
-            command.addQuoted(format);
-        }
+		Command command = Command.build("curl");
+		if (!bareRequest) {
+			command.addLiteral("--include");
+			command.addLiteral("--write-out");
+			command.addQuoted(format);
+		}
 
-        if (proxy != null) {
-            command.addLiteral("--proxy");
-            command.addQuoted(proxy);
-        }
+		if (proxy != null) {
+			command.addLiteral("--proxy");
+			command.addQuoted(proxy);
+		}
 
-        if (timeout != null) {
-            command.addLiteral("--max-time");
-            command.addQuoted(Long.toString(timeout.getTotalSeconds() + 1));
-        }
+		if (timeout != null) {
+			command.addLiteral("--max-time");
+			command.addQuoted(Long.toString(timeout.getTotalSeconds() + 1));
+		}
 
-        for (Entry<String, String> entry : headers.entries()) {
-            command.addLiteral("-H");
-            command.addQuoted(entry.getKey() + ": " + entry.getValue());
-        }
+		for (Entry<String, String> entry : headers.entries()) {
+			command.addLiteral("-H");
+			command.addQuoted(entry.getKey() + ": " + entry.getValue());
+		}
 
-        if (body != null) {
-            command.addLiteral("--data");
-            command.addQuoted(body);
-        }
+		if (body != null) {
+			command.addLiteral("--data");
+			command.addQuoted(body);
+		}
 
-        if (bodyFromStdin) {
-            command.addLiteral("--data-binary");
-            command.addLiteral("@-");
-        }
+		if (bodyFromStdin) {
+			command.addLiteral("--data-binary");
+			command.addLiteral("@-");
+		}
 
-        if (method != null) {
-            command.addLiteral("--request");
-            command.addQuoted(method);
-        }
+		if (method != null) {
+			command.addLiteral("--request");
+			command.addQuoted(method);
+		}
 
-        command.addQuoted(getUrl());
-        return command;
-    }
+		command.addQuoted(getUrl());
+		return command;
+	}
 
-    private List<String> buildTags() {
-        List<String> tags = Lists.newArrayList();
-        tags.add(CurlResult.METADATA_HTTP_CODE);
-        tags.add(CurlResult.METADATA_TIME_TOTAL);
-        return tags;
-    }
+	private List<String> buildTags() {
+		List<String> tags = Lists.newArrayList();
+		tags.add(CurlResult.METADATA_HTTP_CODE);
+		tags.add(CurlResult.METADATA_TIME_TOTAL);
+		return tags;
+	}
 }

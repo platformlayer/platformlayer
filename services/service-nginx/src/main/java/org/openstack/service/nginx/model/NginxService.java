@@ -12,5 +12,5 @@ import org.platformlayer.xaas.Controller;
 @XmlRootElement
 @Controller(NginxServiceController.class)
 public class NginxService extends ItemBase {
-    public String dnsName;
+	public String dnsName;
 }

@@ -10,19 +10,19 @@ import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class ApacheBootstrap extends OpsTreeBase {
-    @Handler
-    public void handler() throws OpsException {
-        OpsTarget target = OpsContext.get().getInstance(OpsTarget.class);
+	@Handler
+	public void handler() throws OpsException {
+		OpsTarget target = OpsContext.get().getInstance(OpsTarget.class);
 
-        target.rm(new File("/etc/apache2/sites-enabled/000-default"));
-    }
+		target.rm(new File("/etc/apache2/sites-enabled/000-default"));
+	}
 
-    public static ApacheBootstrap build() {
-        ApacheBootstrap apacheModule = Injection.getInstance(ApacheBootstrap.class);
-        return apacheModule;
-    }
+	public static ApacheBootstrap build() {
+		ApacheBootstrap apacheModule = Injection.getInstance(ApacheBootstrap.class);
+		return apacheModule;
+	}
 
-    @Override
-    protected void addChildren() throws OpsException {
-    }
+	@Override
+	protected void addChildren() throws OpsException {
+	}
 }

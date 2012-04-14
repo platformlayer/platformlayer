@@ -11,35 +11,35 @@ import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.git.model.GitRepository;
 
 public class GitRepositoryDirectory extends OpsTreeBase {
-    @Handler
-    public void handler(GitRepository model) {
-    }
+	@Handler
+	public void handler(GitRepository model) {
+	}
 
-    @Override
-    protected void addChildren() throws OpsException {
-        GitRepository model = OpsContext.get().getInstance(GitRepository.class);
+	@Override
+	protected void addChildren() throws OpsException {
+		GitRepository model = OpsContext.get().getInstance(GitRepository.class);
 
-        File gitBase = new File("/var/git");
-        File repoDir = new File(gitBase, model.name);
+		File gitBase = new File("/var/git");
+		File repoDir = new File(gitBase, model.name);
 
-        {
-            ManagedDirectory dir = ManagedDirectory.build(repoDir, "755");
-            addChild(dir);
-        }
+		{
+			ManagedDirectory dir = ManagedDirectory.build(repoDir, "755");
+			addChild(dir);
+		}
 
-        {
-            GitRepoInit initRepo = injected(GitRepoInit.class);
-            initRepo.repoDir = repoDir;
-            addChild(initRepo);
-        }
+		{
+			GitRepoInit initRepo = injected(GitRepoInit.class);
+			initRepo.repoDir = repoDir;
+			addChild(initRepo);
+		}
 
-        {
-            BackupDirectory backup = injected(BackupDirectory.class);
-            backup.itemKey = model.getKey();
+		{
+			BackupDirectory backup = injected(BackupDirectory.class);
+			backup.itemKey = model.getKey();
 
-            backup.backupRoot = repoDir;
+			backup.backupRoot = repoDir;
 
-            addChild(backup);
-        }
-    }
+			addChild(backup);
+		}
+	}
 }

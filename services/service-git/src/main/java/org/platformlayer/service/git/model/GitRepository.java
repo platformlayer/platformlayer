@@ -12,7 +12,7 @@ import org.platformlayer.xaas.Controller;
 @XmlRootElement
 @Controller(GitRepositoryController.class)
 public class GitRepository extends ItemBase {
-    // We do allow public read (for now)
-    // public boolean allowPublicRead = true;
-    public String name;
+	// We do allow public read (for now)
+	// public boolean allowPublicRead = true;
+	public String name;
 }

@@ -5,6 +5,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Firewall {
-    public int port;
-    public String protocol;
+	public int port;
+	public String protocol;
 }

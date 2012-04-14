@@ -12,6 +12,6 @@ import org.platformlayer.xaas.Controller;
 @XmlRootElement
 @Controller(DirectInstanceController.class)
 public class DirectInstance extends InstanceBase {
-    public String hostname;
-    public int minimumMemoryMb;
+	public String hostname;
+	public int minimumMemoryMb;
 }

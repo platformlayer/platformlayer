@@ -12,5 +12,5 @@ import org.platformlayer.xaas.Controller;
 @XmlRootElement
 @Controller(GitlabServiceController.class)
 public class GitlabService extends ItemBase {
-    public String dnsName;
+	public String dnsName;
 }

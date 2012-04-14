@@ -6,14 +6,14 @@ import javax.xml.bind.annotation.XmlAttribute;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Tenant {
-    @XmlAttribute
-    public boolean enabled;
+	@XmlAttribute
+	public boolean enabled;
 
-    @XmlAttribute
-    public String id;
+	@XmlAttribute
+	public String id;
 
-    @XmlAttribute
-    public String name;
+	@XmlAttribute
+	public String name;
 
-    public String description;
+	public String description;
 }

@@ -13,7 +13,7 @@ import org.platformlayer.xaas.Controller;
 @XmlAccessorType(XmlAccessType.FIELD)
 @Controller(DiskImageController.class)
 public class DiskImage extends ItemBase {
-    public PlatformLayerKey cloud;
-    public PlatformLayerKey recipeId;
-    public String format;
+	public PlatformLayerKey cloud;
+	public PlatformLayerKey recipeId;
+	public String format;
 }

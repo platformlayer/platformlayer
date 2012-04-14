@@ -22,91 +22,93 @@ import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
 public class ForEach {
-    static final Logger log = Logger.getLogger(ForEach.class);
+	static final Logger log = Logger.getLogger(ForEach.class);
 
-    @Inject
-    InstanceHelpers instances;
+	@Inject
+	InstanceHelpers instances;
 
-    @Inject
-    PlatformLayerHelpers platformLayer;
+	@Inject
+	PlatformLayerHelpers platformLayer;
 
-    public void doRecursion(Object controller, SshKey sshKey, Class<? extends ItemBase> machineItemClass, Class<? extends ItemBase> dataItemClass) throws OpsException {
-        boolean failed = false;
+	public void doRecursion(Object controller, SshKey sshKey, Class<? extends ItemBase> machineItemClass,
+			Class<? extends ItemBase> dataItemClass) throws OpsException {
+		boolean failed = false;
 
-        OpsContext ops = OpsContext.get();
+		OpsContext ops = OpsContext.get();
 
-        List<ItemBase> dataItems = Lists.newArrayList();
-        ItemBase contextDataItem = ops.getInstance(dataItemClass);
-        if (contextDataItem != null) {
-            dataItems.add(contextDataItem);
-        } else {
-            for (ItemBase dataItem : platformLayer.listItems(dataItemClass)) {
-                dataItems.add(dataItem);
-            }
-        }
+		List<ItemBase> dataItems = Lists.newArrayList();
+		ItemBase contextDataItem = ops.getInstance(dataItemClass);
+		if (contextDataItem != null) {
+			dataItems.add(contextDataItem);
+		} else {
+			for (ItemBase dataItem : platformLayer.listItems(dataItemClass)) {
+				dataItems.add(dataItem);
+			}
+		}
 
-        Object contextMachine = ops.getInstance(machineItemClass);
-        if (contextMachine != null) {
-            // We are presumably building the machine item
-            ItemBase machineItem = ops.getInstance(ItemBase.class);
-            if (!Objects.equal(machineItem, contextMachine)) {
-                throw new OpsException("Expected to find same model");
-            }
+		Object contextMachine = ops.getInstance(machineItemClass);
+		if (contextMachine != null) {
+			// We are presumably building the machine item
+			ItemBase machineItem = ops.getInstance(ItemBase.class);
+			if (!Objects.equal(machineItem, contextMachine)) {
+				throw new OpsException("Expected to find same model");
+			}
 
-            Machine machine = instances.findMachine(machineItem);
-            if (machine == null) {
-                log.warn("Server instance not found: " + machineItem);
-                failed = true;
-            } else {
-                OpsTarget target = machine.getTarget(sshKey);
-                failed |= processDataItems(controller, dataItems, machineItem, machine, target);
-            }
-        } else {
-            // We are building a data item
-            for (ItemBase machineItem : platformLayer.listItems(machineItemClass)) {
-                if (machineItem.getState() != ManagedItemState.ACTIVE) {
-                    log.warn("Machine not yet active: " + machineItem);
-                    failed = true;
-                    continue;
-                }
+			Machine machine = instances.findMachine(machineItem);
+			if (machine == null) {
+				log.warn("Server instance not found: " + machineItem);
+				failed = true;
+			} else {
+				OpsTarget target = machine.getTarget(sshKey);
+				failed |= processDataItems(controller, dataItems, machineItem, machine, target);
+			}
+		} else {
+			// We are building a data item
+			for (ItemBase machineItem : platformLayer.listItems(machineItemClass)) {
+				if (machineItem.getState() != ManagedItemState.ACTIVE) {
+					log.warn("Machine not yet active: " + machineItem);
+					failed = true;
+					continue;
+				}
 
-                Machine machine = instances.findMachine(machineItem);
-                if (machine == null) {
-                    log.warn("Server instance not found: " + machineItem);
-                    failed = true;
-                    continue;
-                }
+				Machine machine = instances.findMachine(machineItem);
+				if (machine == null) {
+					log.warn("Server instance not found: " + machineItem);
+					failed = true;
+					continue;
+				}
 
-                OpsTarget target = machine.getTarget(sshKey);
+				OpsTarget target = machine.getTarget(sshKey);
 
-                failed |= processDataItems(controller, dataItems, machineItem, machine, target);
-            }
-        }
+				failed |= processDataItems(controller, dataItems, machineItem, machine, target);
+			}
+		}
 
-        if (failed) {
-            throw new OpsException("Could not update all servers").setRetry(TimeSpan.ONE_MINUTE);
-        }
+		if (failed) {
+			throw new OpsException("Could not update all servers").setRetry(TimeSpan.ONE_MINUTE);
+		}
 
-    }
+	}
 
-    private boolean processDataItems(Object controller, List<ItemBase> dataItems, ItemBase machineItem, Machine machine, OpsTarget target) {
-        boolean failed = false;
+	private boolean processDataItems(Object controller, List<ItemBase> dataItems, ItemBase machineItem,
+			Machine machine, OpsTarget target) {
+		boolean failed = false;
 
-        for (ItemBase dataItem : dataItems) {
-            try {
-                // Execute the children in a scope
-                BindingScope scope = BindingScope.push(machine, target, machineItem, dataItem);
-                try {
-                    OpsContext opsContext = OpsContext.get();
-                    OperationRecursor.doRecurseChildren(opsContext, controller);
-                } finally {
-                    scope.pop();
-                }
-            } catch (OpsException e) {
-                failed = true;
-                log.warn("Error updating machine: " + machine + " with item " + dataItem, e);
-            }
-        }
-        return failed;
-    }
+		for (ItemBase dataItem : dataItems) {
+			try {
+				// Execute the children in a scope
+				BindingScope scope = BindingScope.push(machine, target, machineItem, dataItem);
+				try {
+					OpsContext opsContext = OpsContext.get();
+					OperationRecursor.doRecurseChildren(opsContext, controller);
+				} finally {
+					scope.pop();
+				}
+			} catch (OpsException e) {
+				failed = true;
+				log.warn("Error updating machine: " + machine + " with item " + dataItem, e);
+			}
+		}
+		return failed;
+	}
 }

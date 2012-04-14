@@ -4,8 +4,8 @@ import org.platformlayer.model.StringWrapper;
 
 public class ItemType extends StringWrapper {
 
-    public ItemType(String key) {
-        super(key);
-    }
+	public ItemType(String key) {
+		super(key);
+	}
 
 }

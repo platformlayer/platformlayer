@@ -12,5 +12,5 @@ import org.platformlayer.xaas.Controller;
 @XmlRootElement
 @Controller(ImageStoreController.class)
 public class ImageStore extends ItemBase {
-    public String dnsName;
+	public String dnsName;
 }

@@ -8,16 +8,16 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.service.dns.model.DnsZone;
 
 public class DnsZoneController {
-    static final Logger log = Logger.getLogger(DnsZoneController.class);
+	static final Logger log = Logger.getLogger(DnsZoneController.class);
 
-    @Inject
-    DnsHelpers dns;
+	@Inject
+	DnsHelpers dns;
 
-    @Handler
-    public void handler(DnsZone dnsDomain) throws OpsException {
-        DnsFile dnsFile = dns.buildDnsFile(dnsDomain);
+	@Handler
+	public void handler(DnsZone dnsDomain) throws OpsException {
+		DnsFile dnsFile = dns.buildDnsFile(dnsDomain);
 
-        dns.uploadToAllDnsServers(dnsFile);
-    }
+		dns.uploadToAllDnsServers(dnsFile);
+	}
 
 }

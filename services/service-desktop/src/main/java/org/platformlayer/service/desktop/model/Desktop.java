@@ -12,5 +12,5 @@ import org.platformlayer.xaas.Controller;
 @XmlRootElement
 @Controller(DesktopController.class)
 public class Desktop extends ItemBase {
-    public String dnsName;
+	public String dnsName;
 }

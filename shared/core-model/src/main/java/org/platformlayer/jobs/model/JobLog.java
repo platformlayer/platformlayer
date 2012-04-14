@@ -12,14 +12,14 @@ import com.google.common.collect.Lists;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class JobLog implements Iterable<JobLogLine> {
-    public List<JobLogLine> lines = Lists.newArrayList();
+	public List<JobLogLine> lines = Lists.newArrayList();
 
-    public Iterable<JobLogLine> getLines() {
-        return lines;
-    }
+	public Iterable<JobLogLine> getLines() {
+		return lines;
+	}
 
-    @Override
-    public Iterator<JobLogLine> iterator() {
-        return lines.iterator();
-    }
+	@Override
+	public Iterator<JobLogLine> iterator() {
+		return lines.iterator();
+	}
 }

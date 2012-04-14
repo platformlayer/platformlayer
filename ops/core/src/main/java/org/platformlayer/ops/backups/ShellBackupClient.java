@@ -22,123 +22,127 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;
 
 public class ShellBackupClient {
-    static final Logger log = Logger.getLogger(ShellBackupClient.class);
+	static final Logger log = Logger.getLogger(ShellBackupClient.class);
 
-    public final BackupContext context;
+	public final BackupContext context;
 
-    public static ShellBackupClient get() {
-        BackupContext context = OpsContext.get().getInstance(BackupContext.class);
-        if (context == null)
-            throw new IllegalStateException();
-        return new ShellBackupClient(context);
-    }
+	public static ShellBackupClient get() {
+		BackupContext context = OpsContext.get().getInstance(BackupContext.class);
+		if (context == null) {
+			throw new IllegalStateException();
+		}
+		return new ShellBackupClient(context);
+	}
 
-    private ShellBackupClient(BackupContext context) {
-        super();
-        this.context = context;
-    }
+	private ShellBackupClient(BackupContext context) {
+		super();
+		this.context = context;
+	}
 
-    public static class Backup {
-        public OpsTarget target;
-        public String objectName;
-        public Map<String, String> objectProperties = Maps.newHashMap();
-    }
+	public static class Backup {
+		public OpsTarget target;
+		public String objectName;
+		public Map<String, String> objectProperties = Maps.newHashMap();
+	}
 
-    public static class DirectoryBackup extends Backup {
-        public File rootDirectory;
-        public List<File> exclude;
-    }
+	public static class DirectoryBackup extends Backup {
+		public File rootDirectory;
+		public List<File> exclude;
+	}
 
-    // private RemoteCurlOpenstackSession openstackSession = null;
-    //
-    // private RemoteCurlOpenstackSession getOpenstackSession(OpsTarget target) {
-    // if (openstackSession == null) {
-    // RemoteCurlOpenstackSession session = new RemoteCurlOpenstackSession(target);
-    //
-    // session.authenticate(credentials, false);
-    //
-    // openstackSession = session;
-    // }
-    // return openstackSession;
-    // }
+	// private RemoteCurlOpenstackSession openstackSession = null;
+	//
+	// private RemoteCurlOpenstackSession getOpenstackSession(OpsTarget target) {
+	// if (openstackSession == null) {
+	// RemoteCurlOpenstackSession session = new RemoteCurlOpenstackSession(target);
+	//
+	// session.authenticate(credentials, false);
+	//
+	// openstackSession = session;
+	// }
+	// return openstackSession;
+	// }
 
-    private OpenstackStorageClient storageClient = null;
+	private OpenstackStorageClient storageClient = null;
 
-    private OpenstackStorageClient getStorageClient(OpsTarget target) {
-        if (storageClient == null) {
-            RemoteCurlOpenstackSession session = RemoteCurlOpenstackSession.build(target, context.getOpenstackSession());
+	private OpenstackStorageClient getStorageClient(OpsTarget target) {
+		if (storageClient == null) {
+			RemoteCurlOpenstackSession session = RemoteCurlOpenstackSession
+					.build(target, context.getOpenstackSession());
 
-            storageClient = session.getStorageClient();
-        }
-        return storageClient;
-    }
+			storageClient = session.getStorageClient();
+		}
+		return storageClient;
+	}
 
-    public void doBackup(DirectoryBackup request) throws OpsException {
-        File tempDir = request.target.createTempDir();
-        File excludeFile = new File(tempDir, "exclude.txt");
+	public void doBackup(DirectoryBackup request) throws OpsException {
+		File tempDir = request.target.createTempDir();
+		File excludeFile = new File(tempDir, "exclude.txt");
 
-        if (request.objectName == null) {
-            request.objectName = UUID.randomUUID().toString();
-        }
-        request.objectName += ".tgz";
+		if (request.objectName == null) {
+			request.objectName = UUID.randomUUID().toString();
+		}
+		request.objectName += ".tgz";
 
-        // TODO: Set content type?
+		// TODO: Set content type?
 
-        request.target.setFileContents(excludeFile, Joiner.on("\n").join(request.exclude));
+		request.target.setFileContents(excludeFile, Joiner.on("\n").join(request.exclude));
 
-        Command tarCommand = Command.build("tar zcf - -X {0} {1}", excludeFile, request.rootDirectory);
+		Command tarCommand = Command.build("tar zcf - -X {0} {1}", excludeFile, request.rootDirectory);
 
-        log.info("Backing up " + request.rootDirectory);
+		log.info("Backing up " + request.rootDirectory);
 
-        uploadStream(request, tarCommand);
+		uploadStream(request, tarCommand);
 
-        request.target.rmdir(tempDir);
+		request.target.rmdir(tempDir);
 
-        log.info("Backup complete");
-    }
+		log.info("Backup complete");
+	}
 
-    public void uploadStream(Backup request, Command dataSourceCommand) throws OpsException {
-        ObjectProperties openstackProperties = new ObjectProperties();
+	public void uploadStream(Backup request, Command dataSourceCommand) throws OpsException {
+		ObjectProperties openstackProperties = new ObjectProperties();
 
-        if (request.objectName == null) {
-            throw new IllegalArgumentException("objectName is required");
-        }
+		if (request.objectName == null) {
+			throw new IllegalArgumentException("objectName is required");
+		}
 
-        String objectPath = context.toPath(request.objectName);
-        openstackProperties.setName(objectPath);
+		String objectPath = context.toPath(request.objectName);
+		openstackProperties.setName(objectPath);
 
-        for (Map.Entry<String, String> entry : request.objectProperties.entrySet()) {
-            String key = entry.getKey();
-            openstackProperties.getCustomProperties().put(key, entry.getValue());
-        }
+		for (Map.Entry<String, String> entry : request.objectProperties.entrySet()) {
+			String key = entry.getKey();
+			openstackProperties.getCustomProperties().put(key, entry.getValue());
+		}
 
-        log.info("Uploading to " + getContainerName() + "/" + objectPath);
+		log.info("Uploading to " + getContainerName() + "/" + objectPath);
 
-        RequestBuilder requestBuilder = getStorageClient(request.target).root().containers().id(getContainerName()).objects().buildPutRequest(openstackProperties);
+		RequestBuilder requestBuilder = getStorageClient(request.target).root().containers().id(getContainerName())
+				.objects().buildPutRequest(openstackProperties);
 
-        CurlRequest curlRequest = ((RemoteCurlOpenstackRequest) requestBuilder).toCurlRequest();
-        curlRequest.bodyFromStdin = true;
+		CurlRequest curlRequest = ((RemoteCurlOpenstackRequest) requestBuilder).toCurlRequest();
+		curlRequest.bodyFromStdin = true;
 
-        Command curlCommand = curlRequest.toCommand();
-        Command pipedCommand = dataSourceCommand.pipeTo(curlCommand);
+		Command curlCommand = curlRequest.toCommand();
+		Command pipedCommand = dataSourceCommand.pipeTo(curlCommand);
 
-        ProcessExecution execution = request.target.executeCommand(pipedCommand);
+		ProcessExecution execution = request.target.executeCommand(pipedCommand);
 
-        CurlResult curlResult = curlRequest.parseResponse(execution);
+		CurlResult curlResult = curlRequest.parseResponse(execution);
 
-        int httpResult = curlResult.getHttpResult();
-        switch (httpResult) {
-        case 200:
-            break;
-        case 201:
-            break;
-        default:
-            throw new OpsException("Unexpected result code while uploading backup: " + httpResult + " Result=" + curlResult);
-        }
+		int httpResult = curlResult.getHttpResult();
+		switch (httpResult) {
+		case 200:
+			break;
+		case 201:
+			break;
+		default:
+			throw new OpsException("Unexpected result code while uploading backup: " + httpResult + " Result="
+					+ curlResult);
+		}
 
-    }
+	}
 
-    private String getContainerName() {
-        return context.getContainerName();
-    }
+	private String getContainerName() {
+		return context.getContainerName();
+	}
 }

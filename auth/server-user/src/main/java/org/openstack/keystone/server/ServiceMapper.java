@@ -16,32 +16,33 @@ import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
 public class ServiceMapper {
-    static final Logger log = Logger.getLogger(ServiceMapper.class);
+	static final Logger log = Logger.getLogger(ServiceMapper.class);
 
-    @Inject
-    ServiceDictionary serviceDictionary;
+	@Inject
+	ServiceDictionary serviceDictionary;
 
-    @Inject
-    GroupToTenantMapper groupToTenantMapper;
+	@Inject
+	GroupToTenantMapper groupToTenantMapper;
 
-    public List<Service> getServices(UserInfo userInfo, String filterTenantId) {
-        Collection<String> groups = userInfo.groups;
-        List<Service> services = Lists.newArrayList();
-        for (String group : groups) {
-            TenantInfo tenantInfo = groupToTenantMapper.mapGroupToTenant(group);
-            if (tenantInfo != null) {
-                if (filterTenantId != null && !Objects.equal(filterTenantId, tenantInfo.tenantId))
-                    continue;
+	public List<Service> getServices(UserInfo userInfo, String filterTenantId) {
+		Collection<String> groups = userInfo.groups;
+		List<Service> services = Lists.newArrayList();
+		for (String group : groups) {
+			TenantInfo tenantInfo = groupToTenantMapper.mapGroupToTenant(group);
+			if (tenantInfo != null) {
+				if (filterTenantId != null && !Objects.equal(filterTenantId, tenantInfo.tenantId)) {
+					continue;
+				}
 
-                Service service = serviceDictionary.getServiceInfo(tenantInfo.serviceKey, tenantInfo.tenantId);
-                if (service == null) {
-                    log.warn("Could not resolve service: " + tenantInfo.serviceKey);
-                } else {
-                    services.add(service);
-                }
-            }
-        }
+				Service service = serviceDictionary.getServiceInfo(tenantInfo.serviceKey, tenantInfo.tenantId);
+				if (service == null) {
+					log.warn("Could not resolve service: " + tenantInfo.serviceKey);
+				} else {
+					services.add(service);
+				}
+			}
+		}
 
-        return services;
-    }
+		return services;
+	}
 }

@@ -12,36 +12,36 @@ import org.platformlayer.ops.filesystem.FilesystemInfo;
 
 public class MountCgroups {
 
-    public static MountCgroups build() {
-        return new MountCgroups();
-    }
+	public static MountCgroups build() {
+		return new MountCgroups();
+	}
 
-    @Handler
-    public void handler() throws OpsException, IOException {
-        // TODO: Only if not installed
-        OpsTarget target = OpsContext.get().getInstance(OpsTarget.class);
+	@Handler
+	public void handler() throws OpsException, IOException {
+		// TODO: Only if not installed
+		OpsTarget target = OpsContext.get().getInstance(OpsTarget.class);
 
-        File cgroupsFile = new File("/cgroup");
-        FilesystemInfo info = target.getFilesystemInfoFile(cgroupsFile);
-        if (info != null) {
-            // TODO: Better idempotency
-            return;
-        }
+		File cgroupsFile = new File("/cgroup");
+		FilesystemInfo info = target.getFilesystemInfoFile(cgroupsFile);
+		if (info != null) {
+			// TODO: Better idempotency
+			return;
+		}
 
-        String fstabLine = "\ncgroup\t/cgroup\tcgroup\tdefaults\t0\t0";
-        File fstabFile = new File("/etc/fstab");
-        String fstab = target.readTextFile(fstabFile);
-        fstab += fstabLine;
-        target.setFileContents(fstabFile, fstab);
+		String fstabLine = "\ncgroup\t/cgroup\tcgroup\tdefaults\t0\t0";
+		File fstabFile = new File("/etc/fstab");
+		String fstab = target.readTextFile(fstabFile);
+		fstab += fstabLine;
+		target.setFileContents(fstabFile, fstab);
 
-        target.mkdir(cgroupsFile);
+		target.mkdir(cgroupsFile);
 
-        Command mountCommand = Command.build("mount cgroup");
-        target.executeCommand(mountCommand);
+		Command mountCommand = Command.build("mount cgroup");
+		target.executeCommand(mountCommand);
 
-        // mkdir /cgroup
-        // echo -e "cgroup\t/cgroup\tcgroup\tdefaults\t0\t0" >> /etc/fstab
-        // mount cgroup
-    }
+		// mkdir /cgroup
+		// echo -e "cgroup\t/cgroup\tcgroup\tdefaults\t0\t0" >> /etc/fstab
+		// mount cgroup
+	}
 
 }

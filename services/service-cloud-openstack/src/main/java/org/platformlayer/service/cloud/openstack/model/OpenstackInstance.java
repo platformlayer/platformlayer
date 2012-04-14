@@ -12,6 +12,6 @@ import org.platformlayer.xaas.Controller;
 @XmlRootElement
 @Controller(OpenstackInstanceController.class)
 public class OpenstackInstance extends InstanceBase {
-    public String hostname;
-    public int minimumMemoryMb;
+	public String hostname;
+	public int minimumMemoryMb;
 }

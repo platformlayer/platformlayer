@@ -16,33 +16,34 @@ import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.tomcat.model.TomcatService;
 
 public class TomcatServiceController extends OpsTreeBase {
-    static final Logger log = Logger.getLogger(TomcatServiceController.class);
+	static final Logger log = Logger.getLogger(TomcatServiceController.class);
 
-    @Handler
-    public void doOperation() throws OpsException, IOException {
-    }
+	@Handler
+	public void doOperation() throws OpsException, IOException {
+	}
 
-    @Override
-    protected void addChildren() throws OpsException {
-        TomcatService model = OpsContext.get().getInstance(TomcatService.class);
+	@Override
+	protected void addChildren() throws OpsException {
+		TomcatService model = OpsContext.get().getInstance(TomcatService.class);
 
-        InstanceBuilder instance = InstanceBuilder.build(model.dnsName, DiskImageRecipeBuilder.buildDiskImageRecipe(this));
-        instance.minimumMemoryMb = 2048;
-        addChild(instance);
+		InstanceBuilder instance = InstanceBuilder.build(model.dnsName,
+				DiskImageRecipeBuilder.buildDiskImageRecipe(this));
+		instance.minimumMemoryMb = 2048;
+		addChild(instance);
 
-        instance.addChild(JavaVirtualMachine.buildJava6());
+		instance.addChild(JavaVirtualMachine.buildJava6());
 
-        instance.addChild(PackageDependency.build("libtcnative-1"));
-        instance.addChild(PackageDependency.build("tomcat6"));
-        // tomcat6-admin contains the 'manager' app for remote deploys
-        instance.addChild(PackageDependency.build("tomcat6-admin"));
+		instance.addChild(PackageDependency.build("libtcnative-1"));
+		instance.addChild(PackageDependency.build("tomcat6"));
+		// tomcat6-admin contains the 'manager' app for remote deploys
+		instance.addChild(PackageDependency.build("tomcat6-admin"));
 
-        instance.addChild(TomcatUsers.build());
+		instance.addChild(TomcatUsers.build());
 
-        instance.addChild(TomcatServerBootstrap.build());
+		instance.addChild(TomcatServerBootstrap.build());
 
-        instance.addChild(CollectdCollector.build());
+		instance.addChild(CollectdCollector.build());
 
-        instance.addChild(ManagedService.build("tomcat6"));
-    }
+		instance.addChild(ManagedService.build("tomcat6"));
+	}
 }

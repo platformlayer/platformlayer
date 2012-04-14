@@ -24,149 +24,154 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 public class OpenstackCloudHelpers {
-    public OpenstackComputeClient buildOpenstackComputeClient(OpenstackCloud cloud) throws OpsException {
-        try {
-            OpenstackSession session = buildOpenstackSession(cloud);
+	public OpenstackComputeClient buildOpenstackComputeClient(OpenstackCloud cloud) throws OpsException {
+		try {
+			OpenstackSession session = buildOpenstackSession(cloud);
 
-            return session.getComputeClient();
-        } catch (OpenstackException e) {
-            throw new OpsException("Error connecting to OpenStack compute API", e);
-        }
-    }
+			return session.getComputeClient();
+		} catch (OpenstackException e) {
+			throw new OpsException("Error connecting to OpenStack compute API", e);
+		}
+	}
 
-    public OpenstackImageClient buildOpenstackImageClient(OpenstackCloud cloud) throws OpsException {
-        try {
-            OpenstackSession session = buildOpenstackSession(cloud);
+	public OpenstackImageClient buildOpenstackImageClient(OpenstackCloud cloud) throws OpsException {
+		try {
+			OpenstackSession session = buildOpenstackSession(cloud);
 
-            return session.getImageClient();
-        } catch (OpenstackException e) {
-            throw new OpsException("Error connecting to OpenStack image API", e);
-        }
-    }
+			return session.getImageClient();
+		} catch (OpenstackException e) {
+			throw new OpsException("Error connecting to OpenStack image API", e);
+		}
+	}
 
-    private OpenstackSession buildOpenstackSession(OpenstackCloud cloud) throws OpsException {
-        String authUrl = cloud.endpoint;
+	private OpenstackSession buildOpenstackSession(OpenstackCloud cloud) throws OpsException {
+		String authUrl = cloud.endpoint;
 
-        String username = cloud.username;
-        String secret = cloud.password.plaintext();
-        String tenant = cloud.tenant;
+		String username = cloud.username;
+		String secret = cloud.password.plaintext();
+		String tenant = cloud.tenant;
 
-        OpenstackCredentials credentials = new OpenstackCredentials(authUrl, username, secret, tenant);
-        OpenstackSession session = OpenstackSession.create();
-        session.authenticate(credentials, true);
+		OpenstackCredentials credentials = new OpenstackCredentials(authUrl, username, secret, tenant);
+		OpenstackSession session = OpenstackSession.create();
+		session.authenticate(credentials, true);
 
-        session.enable(OpenstackSession.Feature.VERBOSE);
+		session.enable(OpenstackSession.Feature.VERBOSE);
 
-        return session;
-    }
+		return session;
+	}
 
-    public List<Ip> findPublicIps(OpenstackCloud cloud, Server server) {
-        List<Ip> ips = Lists.newArrayList();
+	public List<Ip> findPublicIps(OpenstackCloud cloud, Server server) {
+		List<Ip> ips = Lists.newArrayList();
 
-        // {
-        // String ip = server.getAccessIpV4();
-        // if (!Strings.isNullOrEmpty(ip)) {
-        // tags.add(new Tag(Tag.NETWORK_ADDRESS, ip));
-        // }
-        // }
+		// {
+		// String ip = server.getAccessIpV4();
+		// if (!Strings.isNullOrEmpty(ip)) {
+		// tags.add(new Tag(Tag.NETWORK_ADDRESS, ip));
+		// }
+		// }
 
-        Addresses addresses = server.getAddresses();
-        for (Network network : addresses.getNetworks()) {
-            if ("public".equals(network.getId())) {
-                for (Ip ip : network.getIps()) {
-                    if (Strings.isNullOrEmpty(ip.getAddr()))
-                        continue;
+		Addresses addresses = server.getAddresses();
+		for (Network network : addresses.getNetworks()) {
+			if ("public".equals(network.getId())) {
+				for (Ip ip : network.getIps()) {
+					if (Strings.isNullOrEmpty(ip.getAddr())) {
+						continue;
+					}
 
-                    ips.add(ip);
-                }
-            }
-        }
+					ips.add(ip);
+				}
+			}
+		}
 
-        CloudBehaviours behaviours = new CloudBehaviours(cloud);
-        if (behaviours.publicIpsReportedAsPrivate()) {
-            for (Network network : addresses.getNetworks()) {
-                if ("private".equals(network.getId())) {
-                    for (Ip ip : network.getIps()) {
-                        if (Strings.isNullOrEmpty(ip.getAddr()))
-                            continue;
+		CloudBehaviours behaviours = new CloudBehaviours(cloud);
+		if (behaviours.publicIpsReportedAsPrivate()) {
+			for (Network network : addresses.getNetworks()) {
+				if ("private".equals(network.getId())) {
+					for (Ip ip : network.getIps()) {
+						if (Strings.isNullOrEmpty(ip.getAddr())) {
+							continue;
+						}
 
-                        if (behaviours.isPublic(ip))
-                            ips.add(ip);
-                    }
-                }
-            }
-        }
+						if (behaviours.isPublic(ip)) {
+							ips.add(ip);
+						}
+					}
+				}
+			}
+		}
 
-        return ips;
-    }
+		return ips;
+	}
 
-    public SecurityGroup getMachineSecurityGroup(OpenstackComputeClient openstackComputeClient, Server server) throws OpsException {
-        // SecurityGroupList securityGroups;
-        // try {
-        // securityGroups = openstackComputeClient.root().servers().server(server.getId()).listSecurityGroups();
-        // } catch (OpenstackException e) {
-        // throw new OpsException("Error getting security groups for server", e);
-        // }
+	public SecurityGroup getMachineSecurityGroup(OpenstackComputeClient openstackComputeClient, Server server)
+			throws OpsException {
+		// SecurityGroupList securityGroups;
+		// try {
+		// securityGroups = openstackComputeClient.root().servers().server(server.getId()).listSecurityGroups();
+		// } catch (OpenstackException e) {
+		// throw new OpsException("Error getting security groups for server", e);
+		// }
 
-        SecurityGroupList securityGroups;
-        try {
-            securityGroups = openstackComputeClient.root().securityGroups().list();
-        } catch (OpenstackException e) {
-            throw new OpsException("Error getting security groups for server", e);
-        }
+		SecurityGroupList securityGroups;
+		try {
+			securityGroups = openstackComputeClient.root().securityGroups().list();
+		} catch (OpenstackException e) {
+			throw new OpsException("Error getting security groups for server", e);
+		}
 
-        SecurityGroup securityGroup = null;
-        if (securityGroups != null && securityGroups.getList() != null) {
-            for (SecurityGroup candidate : securityGroups.getList()) {
-                if (candidate.getName() == null)
-                    continue;
+		SecurityGroup securityGroup = null;
+		if (securityGroups != null && securityGroups.getList() != null) {
+			for (SecurityGroup candidate : securityGroups.getList()) {
+				if (candidate.getName() == null) {
+					continue;
+				}
 
-                if (candidate.getName().equals(OpenstackCloudContext.SECURITY_GROUP_PREFIX + server.getName())) {
-                    securityGroup = candidate;
-                    break;
-                }
+				if (candidate.getName().equals(OpenstackCloudContext.SECURITY_GROUP_PREFIX + server.getName())) {
+					securityGroup = candidate;
+					break;
+				}
 
-                // if (candidate.getName().startsWith(OpenstackCloudContext.SECURITY_GROUP_PREFIX)) {
-                // securityGroup = candidate;
-                // break;
-                // }
-            }
-        }
+				// if (candidate.getName().startsWith(OpenstackCloudContext.SECURITY_GROUP_PREFIX)) {
+				// securityGroup = candidate;
+				// break;
+				// }
+			}
+		}
 
-        if (securityGroup == null) {
-            throw new OpsException("Could not find platform layer security group for server: " + server);
-        }
+		if (securityGroup == null) {
+			throw new OpsException("Could not find platform layer security group for server: " + server);
+		}
 
-        return securityGroup;
-    }
+		return securityGroup;
+	}
 
-    public KeyPair findPublicKey(OpenstackComputeClient compute, PublicKey sshPublicKey) throws OpsException {
-        String publicKey = SshKeys.serialize(sshPublicKey);
-        for (KeyPair keyPair : compute.root().keyPairs().list()) {
-            if (publicKey.equals(keyPair.getPublicKey())) {
-                return keyPair;
-            }
-        }
-        return null;
-    }
+	public KeyPair findPublicKey(OpenstackComputeClient compute, PublicKey sshPublicKey) throws OpsException {
+		String publicKey = SshKeys.serialize(sshPublicKey);
+		for (KeyPair keyPair : compute.root().keyPairs().list()) {
+			if (publicKey.equals(keyPair.getPublicKey())) {
+				return keyPair;
+			}
+		}
+		return null;
+	}
 
-    public KeyPair ensurePublicKeyUploaded(OpenstackComputeClient compute, PublicKey sshPublicKey) throws OpsException {
-        KeyPair keyPair = findPublicKey(compute, sshPublicKey);
+	public KeyPair ensurePublicKeyUploaded(OpenstackComputeClient compute, PublicKey sshPublicKey) throws OpsException {
+		KeyPair keyPair = findPublicKey(compute, sshPublicKey);
 
-        if (keyPair == null) {
-            String publicKey = SshKeys.serialize(sshPublicKey);
-            KeyPair create = new KeyPair();
-            create.setName(UUID.randomUUID().toString());
-            create.setPublicKey(publicKey);
-            compute.root().keyPairs().create(create);
-        }
+		if (keyPair == null) {
+			String publicKey = SshKeys.serialize(sshPublicKey);
+			KeyPair create = new KeyPair();
+			create.setName(UUID.randomUUID().toString());
+			create.setPublicKey(publicKey);
+			compute.root().keyPairs().create(create);
+		}
 
-        keyPair = findPublicKey(compute, sshPublicKey);
-        if (keyPair == null) {
-            throw new OpsException("Created key pair was not found");
-        }
+		keyPair = findPublicKey(compute, sshPublicKey);
+		if (keyPair == null) {
+			throw new OpsException("Created key pair was not found");
+		}
 
-        return keyPair;
-    }
+		return keyPair;
+	}
 
 }

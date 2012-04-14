@@ -11,25 +11,25 @@ import com.google.common.collect.Multimap;
 
 public class AutoCompleteItemPath extends PlatformLayerSimpleAutoCompleter {
 
-    @Override
-    public List<String> doComplete(CliContext context, String prefix) throws Exception {
-        if (!prefix.contains("/")) {
-            Multimap<String, ServiceInfo> itemTypeMap = ((PlatformLayerCliContext) context).listItemTypes();
+	@Override
+	public List<String> doComplete(CliContext context, String prefix) throws Exception {
+		if (!prefix.contains("/")) {
+			Multimap<String, ServiceInfo> itemTypeMap = ((PlatformLayerCliContext) context).listItemTypes();
 
-            List<String> itemTypes = Lists.newArrayList(itemTypeMap.keySet());
-            addSuffix(itemTypes, "/");
-            return itemTypes;
-        } else {
-            String[] pathTokens = prefix.split("/");
-            if (pathTokens.length == 1 || pathTokens.length == 2) {
-                List<String> items = listItems(context, pathTokens[0]);
-                addPrefix(items, pathTokens[0] + "/");
-                addSuffix(items, " ");
-                return items;
-            }
-        }
+			List<String> itemTypes = Lists.newArrayList(itemTypeMap.keySet());
+			addSuffix(itemTypes, "/");
+			return itemTypes;
+		} else {
+			String[] pathTokens = prefix.split("/");
+			if (pathTokens.length == 1 || pathTokens.length == 2) {
+				List<String> items = listItems(context, pathTokens[0]);
+				addPrefix(items, pathTokens[0] + "/");
+				addSuffix(items, " ");
+				return items;
+			}
+		}
 
-        return null;
-    }
+		return null;
+	}
 
 }

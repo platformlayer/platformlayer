@@ -10,27 +10,27 @@ import org.platformlayer.client.cli.output.UntypedItemFormatter;
 import com.fathomdb.cli.commands.Ansi;
 
 public class ListRoots extends PlatformLayerCommandRunnerBase {
-    public ListRoots() {
-        super("list", "roots");
-    }
+	public ListRoots() {
+		super("list", "roots");
+	}
 
-    @Override
-    public Object runCommand() throws PlatformLayerClientException {
-        PlatformLayerClient client = getPlatformLayerClient();
+	@Override
+	public Object runCommand() throws PlatformLayerClientException {
+		PlatformLayerClient client = getPlatformLayerClient();
 
-        return client.listRoots();
-    }
+		return client.listRoots();
+	}
 
-    @Override
-    public void formatRaw(Object o, PrintWriter writer) {
-        Ansi ansi = new Ansi(writer);
+	@Override
+	public void formatRaw(Object o, PrintWriter writer) {
+		Ansi ansi = new Ansi(writer);
 
-        Iterable<UntypedItem> items = (Iterable<UntypedItem>) o;
-        for (UntypedItem item : items) {
-            UntypedItemFormatter.formatItem(item, ansi, true);
-        }
+		Iterable<UntypedItem> items = (Iterable<UntypedItem>) o;
+		for (UntypedItem item : items) {
+			UntypedItemFormatter.formatItem(item, ansi, true);
+		}
 
-        ansi.reset();
-    }
+		ansi.reset();
+	}
 
 }

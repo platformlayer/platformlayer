@@ -10,12 +10,12 @@ import com.fathomdb.cli.autocomplete.HasAutoCompletor;
 
 @HasAutoCompletor(AutoCompleteItemPath.class)
 public class ItemPath extends StringWrapper {
-    public ItemPath(String key) {
-        super(key);
-    }
+	public ItemPath(String key) {
+		super(key);
+	}
 
-    public PlatformLayerKey resolve(PlatformLayerCliContext context) throws PlatformLayerClientException {
-        return context.pathToItem(this.getKey());
-    }
+	public PlatformLayerKey resolve(PlatformLayerCliContext context) throws PlatformLayerClientException {
+		return context.pathToItem(this.getKey());
+	}
 
 }

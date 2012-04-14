@@ -7,24 +7,24 @@ import org.platformlayer.ops.helpers.SshKey;
 import org.platformlayer.ops.networks.NetworkPoint;
 
 public abstract class Machine {
-    public abstract void terminate() throws OpsException;
+	public abstract void terminate() throws OpsException;
 
-    public abstract OpsTarget getTarget(String user, KeyPair sshKeyPair) throws OpsException;
+	public abstract OpsTarget getTarget(String user, KeyPair sshKeyPair) throws OpsException;
 
-    public OpsTarget getTarget(SshKey sshKey) throws OpsException {
-        return getTarget(sshKey.getUser(), sshKey.getKeyPair());
-    }
+	public OpsTarget getTarget(SshKey sshKey) throws OpsException {
+		return getTarget(sshKey.getUser(), sshKey.getKeyPair());
+	}
 
-    public abstract PlatformLayerKey getKey();
+	public abstract PlatformLayerKey getKey();
 
-    public abstract String findAddress(NetworkPoint src, int destinationPort);
+	public abstract String findAddress(NetworkPoint src, int destinationPort);
 
-    public String getAddress(NetworkPoint src, int destinationPort) throws OpsException {
-        String address = findAddress(src, destinationPort);
-        if (address == null) {
-            throw new OpsException("Cannot determine appropriate network address");
-        }
-        return address;
-    }
+	public String getAddress(NetworkPoint src, int destinationPort) throws OpsException {
+		String address = findAddress(src, destinationPort);
+		if (address == null) {
+			throw new OpsException("Cannot determine appropriate network address");
+		}
+		return address;
+	}
 
 }

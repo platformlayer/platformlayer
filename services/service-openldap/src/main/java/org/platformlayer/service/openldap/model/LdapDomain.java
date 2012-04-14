@@ -15,6 +15,6 @@ import org.platformlayer.xaas.Controller;
 @Controller(LdapDomainController.class)
 @GwtModel
 public class LdapDomain extends ItemBase {
-    public String organizationName;
-    public Secret adminPassword;
+	public String organizationName;
+	public Secret adminPassword;
 }

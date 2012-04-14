@@ -11,8 +11,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ServiceAuthorizationCollection {
-    @XmlElementWrapper(name = "items")
-    @XmlElement(name = "item")
-    public List<ServiceAuthorization> items;
+	@XmlElementWrapper(name = "items")
+	@XmlElement(name = "item")
+	public List<ServiceAuthorization> items;
 
 }

@@ -5,15 +5,15 @@ import java.sql.SQLException;
 
 public class SimpleKeyMapper extends KeyMapper {
 
-    final int columnNumber;
+	final int columnNumber;
 
-    public SimpleKeyMapper(int columnNumber) {
-        this.columnNumber = columnNumber;
-    }
+	public SimpleKeyMapper(int columnNumber) {
+		this.columnNumber = columnNumber;
+	}
 
-    @Override
-    public Object getKey(ResultSet rs) throws SQLException {
-        return rs.getObject(columnNumber);
-    }
+	@Override
+	public Object getKey(ResultSet rs) throws SQLException {
+		return rs.getObject(columnNumber);
+	}
 
 }

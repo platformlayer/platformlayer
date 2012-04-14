@@ -26,190 +26,199 @@ import org.platformlayer.xaas.repository.ServiceAuthorizationRepository;
 import com.google.common.collect.Lists;
 
 public class JdbcServiceAuthorizationRepository implements ServiceAuthorizationRepository {
-    @Inject
-    Provider<Connection> connectionProvider;
+	@Inject
+	Provider<Connection> connectionProvider;
 
-    @Override
-    @JdbcTransaction
-    public ServiceAuthorization findServiceAuthorization(ServiceType serviceType, ProjectId project) throws RepositoryException {
-        try {
-            Connection connection = connectionProvider.get();
-            int serviceId = JdbcRepositoryHelpers.getServiceKey(connection, serviceType);
-            int projectId = JdbcRepositoryHelpers.getProjectKey(connection, project);
+	@Override
+	@JdbcTransaction
+	public ServiceAuthorization findServiceAuthorization(ServiceType serviceType, ProjectId project)
+			throws RepositoryException {
+		try {
+			Connection connection = connectionProvider.get();
+			int serviceId = JdbcRepositoryHelpers.getServiceKey(connection, serviceType);
+			int projectId = JdbcRepositoryHelpers.getProjectKey(connection, project);
 
-            String sql = "SELECT data FROM service_authorizations WHERE service=? and project=?";
+			String sql = "SELECT data FROM service_authorizations WHERE service=? and project=?";
 
-            List<ServiceAuthorization> items = Lists.newArrayList();
+			List<ServiceAuthorization> items = Lists.newArrayList();
 
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ResultSet rs = null;
-            try {
-                ps.setInt(1, serviceId);
-                ps.setInt(2, projectId);
-                rs = ps.executeQuery();
-                while (rs.next()) {
-                    items.add(mapRow(serviceType, rs));
-                }
-            } finally {
-                JdbcUtils.safeClose(rs);
-                JdbcUtils.safeClose(ps);
-            }
+			PreparedStatement ps = connection.prepareStatement(sql);
+			ResultSet rs = null;
+			try {
+				ps.setInt(1, serviceId);
+				ps.setInt(2, projectId);
+				rs = ps.executeQuery();
+				while (rs.next()) {
+					items.add(mapRow(serviceType, rs));
+				}
+			} finally {
+				JdbcUtils.safeClose(rs);
+				JdbcUtils.safeClose(ps);
+			}
 
-            if (items.size() == 0)
-                return null;
-            if (items.size() != 1)
-                throw new IllegalStateException("Found duplicate results for primary key: " + serviceType + ":" + project);
-            return items.get(0);
-        } catch (SQLException e) {
-            throw new RepositoryException("Error running query", e);
-        }
-    }
+			if (items.size() == 0) {
+				return null;
+			}
+			if (items.size() != 1) {
+				throw new IllegalStateException("Found duplicate results for primary key: " + serviceType + ":"
+						+ project);
+			}
+			return items.get(0);
+		} catch (SQLException e) {
+			throw new RepositoryException("Error running query", e);
+		}
+	}
 
-    @Override
-    @JdbcTransaction
-    public ServiceAuthorization createAuthorization(ProjectId project, ServiceAuthorization authorization) throws RepositoryException {
-        try {
-            ServiceType serviceType = new ServiceType(authorization.serviceType);
+	@Override
+	@JdbcTransaction
+	public ServiceAuthorization createAuthorization(ProjectId project, ServiceAuthorization authorization)
+			throws RepositoryException {
+		try {
+			ServiceType serviceType = new ServiceType(authorization.serviceType);
 
-            Connection connection = connectionProvider.get();
-            int serviceId = JdbcRepositoryHelpers.getServiceKey(connection, serviceType);
-            int projectId = JdbcRepositoryHelpers.getProjectKey(connection, project);
+			Connection connection = connectionProvider.get();
+			int serviceId = JdbcRepositoryHelpers.getServiceKey(connection, serviceType);
+			int projectId = JdbcRepositoryHelpers.getProjectKey(connection, project);
 
-            final String sql = "INSERT INTO service_authorizations (service, project, data) VALUES (?, ?, ?)";
+			final String sql = "INSERT INTO service_authorizations (service, project, data) VALUES (?, ?, ?)";
 
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ResultSet rs = null;
-            try {
-                ps.setInt(1, serviceId);
-                ps.setInt(2, projectId);
-                ps.setString(3, authorization.data);
+			PreparedStatement ps = connection.prepareStatement(sql);
+			ResultSet rs = null;
+			try {
+				ps.setInt(1, serviceId);
+				ps.setInt(2, projectId);
+				ps.setString(3, authorization.data);
 
-                int updateCount = ps.executeUpdate();
-                if (updateCount != 1) {
-                    throw new IllegalStateException("Unexpected number of rows inserted");
-                }
-            } finally {
-                JdbcUtils.safeClose(rs);
-                JdbcUtils.safeClose(ps);
-            }
+				int updateCount = ps.executeUpdate();
+				if (updateCount != 1) {
+					throw new IllegalStateException("Unexpected number of rows inserted");
+				}
+			} finally {
+				JdbcUtils.safeClose(rs);
+				JdbcUtils.safeClose(ps);
+			}
 
-            return authorization;
-        } catch (SQLException e) {
-            throw new RepositoryException("Error running query", e);
-        }
-    }
+			return authorization;
+		} catch (SQLException e) {
+			throw new RepositoryException("Error running query", e);
+		}
+	}
 
-    static ServiceAuthorization mapRow(ServiceType serviceType, ResultSet rs) throws SQLException {
-        String data = rs.getString("data");
+	static ServiceAuthorization mapRow(ServiceType serviceType, ResultSet rs) throws SQLException {
+		String data = rs.getString("data");
 
-        ServiceAuthorization authorization = new ServiceAuthorization();
-        authorization.data = data;
-        authorization.serviceType = serviceType.getKey();
+		ServiceAuthorization authorization = new ServiceAuthorization();
+		authorization.data = data;
+		authorization.serviceType = serviceType.getKey();
 
-        return authorization;
-    }
+		return authorization;
+	}
 
-    @Override
-    @JdbcTransaction
-    public String findPrivateData(ServiceType serviceType, ProjectId project, ServiceMetadataKey metadataKey) throws RepositoryException {
-        DbHelper db = new DbHelper(serviceType, project, metadataKey);
+	@Override
+	@JdbcTransaction
+	public String findPrivateData(ServiceType serviceType, ProjectId project, ServiceMetadataKey metadataKey)
+			throws RepositoryException {
+		DbHelper db = new DbHelper(serviceType, project, metadataKey);
 
-        List<String> values = Lists.newArrayList();
+		List<String> values = Lists.newArrayList();
 
-        ResultSet rs = null;
-        try {
-            rs = db.selectMetadata();
-            while (rs.next()) {
-                byte[] plaintext = secretHelper.decryptSecret(rs.getBytes("data"), rs.getBytes("secret"));
-                String value = Utf8.toString(plaintext);
-                values.add(value);
-            }
-        } catch (SQLException e) {
-            throw new RepositoryException("Error running query", e);
-        } finally {
-            JdbcUtils.safeClose(rs);
+		ResultSet rs = null;
+		try {
+			rs = db.selectMetadata();
+			while (rs.next()) {
+				byte[] plaintext = secretHelper.decryptSecret(rs.getBytes("data"), rs.getBytes("secret"));
+				String value = Utf8.toString(plaintext);
+				values.add(value);
+			}
+		} catch (SQLException e) {
+			throw new RepositoryException("Error running query", e);
+		} finally {
+			JdbcUtils.safeClose(rs);
 
-            db.close();
-        }
+			db.close();
+		}
 
-        if (values.size() == 0)
-            return null;
-        if (values.size() != 1)
-            throw new IllegalStateException("Found duplicate results for primary key");
-        return values.get(0);
-    }
+		if (values.size() == 0) {
+			return null;
+		}
+		if (values.size() != 1) {
+			throw new IllegalStateException("Found duplicate results for primary key");
+		}
+		return values.get(0);
+	}
 
-    @Inject
-    SecretHelper secretHelper;
+	@Inject
+	SecretHelper secretHelper;
 
-    @Override
-    @JdbcTransaction
-    public void setPrivateData(ServiceType serviceType, ProjectId project, ServiceMetadataKey metadataKey, String value) throws RepositoryException {
-        DbHelper db = new DbHelper(serviceType, project, metadataKey);
+	@Override
+	@JdbcTransaction
+	public void setPrivateData(ServiceType serviceType, ProjectId project, ServiceMetadataKey metadataKey, String value)
+			throws RepositoryException {
+		DbHelper db = new DbHelper(serviceType, project, metadataKey);
 
-        // TODO: Handle updates
+		// TODO: Handle updates
 
-        try {
-            SecretKey secret = AesUtils.generateKey();
+		try {
+			SecretKey secret = AesUtils.generateKey();
 
-            byte[] plaintext = Utf8.getBytes(value);
-            byte[] ciphertext = AesUtils.encrypt(secret, plaintext);
+			byte[] plaintext = Utf8.getBytes(value);
+			byte[] ciphertext = AesUtils.encrypt(secret, plaintext);
 
-            // TODO: Encode this differently from items??
-            byte[] secretData = secretHelper.encodeItemSecret(secret);
+			// TODO: Encode this differently from items??
+			byte[] secretData = secretHelper.encodeItemSecret(secret);
 
-            db.insertMetadata(ciphertext, secretData);
-        } catch (SQLException e) {
-            throw new RepositoryException("Error running query", e);
-        } finally {
-            db.close();
-        }
-    }
+			db.insertMetadata(ciphertext, secretData);
+		} catch (SQLException e) {
+			throw new RepositoryException("Error running query", e);
+		} finally {
+			db.close();
+		}
+	}
 
-    static interface Queries {
-    }
+	static interface Queries {
+	}
 
-    class DbHelper extends DbHelperBase {
+	class DbHelper extends DbHelperBase {
 
-        public DbHelper(ServiceType serviceType, ProjectId project, ServiceMetadataKey metadataKey) {
-            super(connectionProvider.get());
-            setAtom(serviceType);
-            setAtom(project);
-            setAtom(metadataKey);
-        }
+		public DbHelper(ServiceType serviceType, ProjectId project, ServiceMetadataKey metadataKey) {
+			super(connectionProvider.get());
+			setAtom(serviceType);
+			setAtom(project);
+			setAtom(metadataKey);
+		}
 
-        public ResultSet selectMetadata() throws SQLException {
-            String sql = "SELECT data, secret FROM service_metadata WHERE service=? and project=? and metadata_key=?";
-            PreparedStatement ps = prepareStatement(sql);
+		public ResultSet selectMetadata() throws SQLException {
+			String sql = "SELECT data, secret FROM service_metadata WHERE service=? and project=? and metadata_key=?";
+			PreparedStatement ps = prepareStatement(sql);
 
-            setAtom(ps, 1, ServiceType.class);
-            setAtom(ps, 2, ProjectId.class);
-            setAtom(ps, 3, ServiceMetadataKey.class);
+			setAtom(ps, 1, ServiceType.class);
+			setAtom(ps, 2, ProjectId.class);
+			setAtom(ps, 3, ServiceMetadataKey.class);
 
-            return ps.executeQuery();
-        }
+			return ps.executeQuery();
+		}
 
-        public void insertMetadata(byte[] data, byte[] secret) throws SQLException {
-            final String sql = "INSERT INTO service_metadata (service, project, metadata_key, data, secret) VALUES (?, ?, ?, ?, ?)";
+		public void insertMetadata(byte[] data, byte[] secret) throws SQLException {
+			final String sql = "INSERT INTO service_metadata (service, project, metadata_key, data, secret) VALUES (?, ?, ?, ?, ?)";
 
-            PreparedStatement ps = prepareStatement(sql);
-            ResultSet rs = null;
-            try {
-                setAtom(ps, 1, ServiceType.class);
-                setAtom(ps, 2, ProjectId.class);
-                setAtom(ps, 3, ServiceMetadataKey.class);
-                ps.setBytes(4, data);
-                ps.setBytes(5, secret);
+			PreparedStatement ps = prepareStatement(sql);
+			ResultSet rs = null;
+			try {
+				setAtom(ps, 1, ServiceType.class);
+				setAtom(ps, 2, ProjectId.class);
+				setAtom(ps, 3, ServiceMetadataKey.class);
+				ps.setBytes(4, data);
+				ps.setBytes(5, secret);
 
-                int updateCount = ps.executeUpdate();
-                if (updateCount != 1) {
-                    throw new IllegalStateException("Unexpected number of rows inserted");
-                }
-            } finally {
-                JdbcUtils.safeClose(rs);
-            }
-        }
+				int updateCount = ps.executeUpdate();
+				if (updateCount != 1) {
+					throw new IllegalStateException("Unexpected number of rows inserted");
+				}
+			} finally {
+				JdbcUtils.safeClose(rs);
+			}
+		}
 
-    }
+	}
 
 }

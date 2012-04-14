@@ -20,43 +20,43 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
 public class MinaSshContext implements ISshContext {
-    // public static final MinaSshContext INSTANCE = new MinaSshContext();
+	// public static final MinaSshContext INSTANCE = new MinaSshContext();
 
-    final SshClient client;
+	final SshClient client;
 
-    @Inject
-    public MinaSshContext(ExecutorService executorService) {
-        this.client = SshClient.setUpDefaultClient();
+	@Inject
+	public MinaSshContext(ExecutorService executorService) {
+		this.client = SshClient.setUpDefaultClient();
 
-        // this.client = SshClient.setUpDefaultClient(executorService, false, true);
+		// this.client = SshClient.setUpDefaultClient(executorService, false, true);
 
-        // Use compression
-        List<NamedFactory<Compression>> compressionFactories = Lists.newArrayList();
-        compressionFactories.add(new CompressionZlib.Factory());
-        compressionFactories.add(new CompressionDelayedZlib.Factory());
-        compressionFactories.add(new CompressionNone.Factory());
-        client.setCompressionFactories(compressionFactories);
+		// Use compression
+		List<NamedFactory<Compression>> compressionFactories = Lists.newArrayList();
+		compressionFactories.add(new CompressionZlib.Factory());
+		compressionFactories.add(new CompressionDelayedZlib.Factory());
+		compressionFactories.add(new CompressionNone.Factory());
+		client.setCompressionFactories(compressionFactories);
 
-        // Don't use SSH agent
-        client.setChannelFactories(Collections.<NamedFactory<Channel>> emptyList());
+		// Don't use SSH agent
+		client.setChannelFactories(Collections.<NamedFactory<Channel>> emptyList());
 
-        client.setServerKeyVerifier(new DelegatingServerKeyVerifier());
+		client.setServerKeyVerifier(new DelegatingServerKeyVerifier());
 
-        // Add some better ciphers
-        client.getCipherFactories().add(new AES128CTR.Factory());
+		// Add some better ciphers
+		client.getCipherFactories().add(new AES128CTR.Factory());
 
-        client.start();
-    }
+		client.start();
+	}
 
-    public void stop() {
-        client.stop();
-    }
+	public void stop() {
+		client.stop();
+	}
 
-    @Override
-    public SshConnection getSshConnection(String user) {
-        MinaSshConnection sshConnection = new MinaSshConnection(this);
-        sshConnection.setUser(user);
-        return sshConnection;
-    }
+	@Override
+	public SshConnection getSshConnection(String user) {
+		MinaSshConnection sshConnection = new MinaSshConnection(this);
+		sshConnection.setUser(user);
+		return sshConnection;
+	}
 
 }

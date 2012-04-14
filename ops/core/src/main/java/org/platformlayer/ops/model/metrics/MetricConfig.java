@@ -10,9 +10,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
 public class MetricConfig {
-    @XmlAttribute(required = true)
-    public String key;
+	@XmlAttribute(required = true)
+	public String key;
 
-    public List<MetricConfig> metrics;
-    public List<Metric> metric;
+	public List<MetricConfig> metrics;
+	public List<Metric> metric;
 }

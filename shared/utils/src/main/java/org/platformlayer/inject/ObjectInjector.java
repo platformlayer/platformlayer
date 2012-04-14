@@ -1,7 +1,7 @@
 package org.platformlayer.inject;
 
 public interface ObjectInjector {
-    <T> T getInstance(Class<T> clazz);
+	<T> T getInstance(Class<T> clazz);
 
-    void injectMembers(Object o);
+	void injectMembers(Object o);
 }

@@ -20,46 +20,46 @@ import org.platformlayer.service.git.model.GitRepository;
 import org.platformlayer.service.git.model.GitService;
 
 public class GitServerAssignment extends OpsTreeBase implements CustomRecursor {
-    static final Logger log = Logger.getLogger(GitServerAssignment.class);
+	static final Logger log = Logger.getLogger(GitServerAssignment.class);
 
-    @Inject
-    PlatformLayerHelpers platformLayer;
+	@Inject
+	PlatformLayerHelpers platformLayer;
 
-    @Inject
-    InstanceHelpers instances;
+	@Inject
+	InstanceHelpers instances;
 
-    @Inject
-    ServiceContext service;
+	@Inject
+	ServiceContext service;
 
-    @Handler
-    public void handler(GitRepository model) throws Exception {
-        // TODO: Support backup on that GitServer
-        List<GitService> gitServices = platformLayer.listItems(GitService.class);
+	@Handler
+	public void handler(GitRepository model) throws Exception {
+		// TODO: Support backup on that GitServer
+		List<GitService> gitServices = platformLayer.listItems(GitService.class);
 
-        if (gitServices.size() != 1) {
-            // TODO: Assign to a single git server
-            throw new OpsException("Only 1 git server implemented at the moment");
-        }
+		if (gitServices.size() != 1) {
+			// TODO: Assign to a single git server
+			throw new OpsException("Only 1 git server implemented at the moment");
+		}
 
-        GitService gitService = gitServices.get(0);
-        if (gitService.getState() != ManagedItemState.ACTIVE) {
-            throw new OpsException("Server not yet active: " + gitService);
-        }
+		GitService gitService = gitServices.get(0);
+		if (gitService.getState() != ManagedItemState.ACTIVE) {
+			throw new OpsException("Server not yet active: " + gitService);
+		}
 
-        Machine machine = instances.findMachine(gitService);
-        if (machine == null) {
-            throw new OpsException("Server machine not found:" + gitService);
-        }
+		Machine machine = instances.findMachine(gitService);
+		if (machine == null) {
+			throw new OpsException("Server machine not found:" + gitService);
+		}
 
-        SshKey sshKey = service.getSshKey();
-        OpsTarget target = machine.getTarget(sshKey);
+		SshKey sshKey = service.getSshKey();
+		OpsTarget target = machine.getTarget(sshKey);
 
-        getRecursionState().pushChildScope(OpsTarget.class, target);
-    }
+		getRecursionState().pushChildScope(OpsTarget.class, target);
+	}
 
-    @Override
-    protected void addChildren() throws OpsException {
+	@Override
+	protected void addChildren() throws OpsException {
 
-    }
+	}
 
 }

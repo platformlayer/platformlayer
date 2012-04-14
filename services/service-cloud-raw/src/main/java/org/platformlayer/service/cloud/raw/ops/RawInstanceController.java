@@ -27,65 +27,67 @@ import org.platformlayer.service.cloud.raw.model.RawInstance;
 import org.platformlayer.service.cloud.raw.model.RawTarget;
 
 public class RawInstanceController extends OpsTreeBase {
-    static final Logger log = Logger.getLogger(RawInstanceController.class);
+	static final Logger log = Logger.getLogger(RawInstanceController.class);
 
-    @Inject
-    PlatformLayerHelpers platformLayer;
+	@Inject
+	PlatformLayerHelpers platformLayer;
 
-    @Inject
-    ServiceContext service;
+	@Inject
+	ServiceContext service;
 
-    @Inject
-    InstanceHelpers instances;
+	@Inject
+	InstanceHelpers instances;
 
-    @Inject
-    OpsSystem ops;
+	@Inject
+	OpsSystem ops;
 
-    @Handler
-    public void handler(RawInstance rawMachine) throws OpsException, IOException {
-        String instanceKey = rawMachine.getTags().findUnique(Tag.INSTANCE_KEY);
-        if (instanceKey == null) {
-            RawTarget targetMachine = null;
+	@Handler
+	public void handler(RawInstance rawMachine) throws OpsException, IOException {
+		String instanceKey = rawMachine.getTags().findUnique(Tag.INSTANCE_KEY);
+		if (instanceKey == null) {
+			RawTarget targetMachine = null;
 
-            for (RawTarget candidate : platformLayer.listItems(RawTarget.class)) {
-                // TODO: Optimize this test
-                Tags tags = candidate.getTags();
-                String allocated = tags.findUnique(Tag.ASSIGNED);
-                if (allocated != null)
-                    continue;
+			for (RawTarget candidate : platformLayer.listItems(RawTarget.class)) {
+				// TODO: Optimize this test
+				Tags tags = candidate.getTags();
+				String allocated = tags.findUnique(Tag.ASSIGNED);
+				if (allocated != null) {
+					continue;
+				}
 
-                targetMachine = candidate;
-                break;
-            }
+				targetMachine = candidate;
+				break;
+			}
 
-            if (targetMachine == null) {
-                throw new OpsException("Unable to allocate raw machine");
-            }
+			if (targetMachine == null) {
+				throw new OpsException("Unable to allocate raw machine");
+			}
 
-            platformLayer.addUniqueTag(OpsSystem.toKey(targetMachine), Tag.buildTag(Tag.ASSIGNED, OpsSystem.toKey(rawMachine)));
+			platformLayer.addUniqueTag(OpsSystem.toKey(targetMachine),
+					Tag.buildTag(Tag.ASSIGNED, OpsSystem.toKey(rawMachine)));
 
-            PlatformLayerKey serverId = OpsSystem.toKey(targetMachine);
+			PlatformLayerKey serverId = OpsSystem.toKey(targetMachine);
 
-            OpaqueMachine machine = new OpaqueMachine(NetworkPoint.forPublicHostname(targetMachine.host));
-            SshKey serviceSshKey = service.getSshKey();
-            OpsTarget target = machine.getTarget(serviceSshKey);
+			OpaqueMachine machine = new OpaqueMachine(NetworkPoint.forPublicHostname(targetMachine.host));
+			SshKey serviceSshKey = service.getSshKey();
+			OpsTarget target = machine.getTarget(serviceSshKey);
 
-            PublicKey sshPublicKey = OpenSshUtils.readSshPublicKey(rawMachine.sshPublicKey);
-            SshAuthorizedKey.ensureSshAuthorization(target, "root", sshPublicKey);
+			PublicKey sshPublicKey = OpenSshUtils.readSshPublicKey(rawMachine.sshPublicKey);
+			SshAuthorizedKey.ensureSshAuthorization(target, "root", sshPublicKey);
 
-            {
-                TagChanges tagChanges = new TagChanges();
+			{
+				TagChanges tagChanges = new TagChanges();
 
-                tagChanges.addTags.add(new Tag(Tag.INSTANCE_KEY, serverId.getUrl()));
-                tagChanges.addTags.add(new Tag(Tag.NETWORK_ADDRESS, targetMachine.host));
+				tagChanges.addTags.add(new Tag(Tag.INSTANCE_KEY, serverId.getUrl()));
+				tagChanges.addTags.add(new Tag(Tag.NETWORK_ADDRESS, targetMachine.host));
 
-                platformLayer.changeTags(OpsSystem.toKey(rawMachine), tagChanges);
-            }
-        }
-    }
+				platformLayer.changeTags(OpsSystem.toKey(rawMachine), tagChanges);
+			}
+		}
+	}
 
-    @Override
-    protected void addChildren() throws OpsException {
-    }
+	@Override
+	protected void addChildren() throws OpsException {
+	}
 
 }

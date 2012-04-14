@@ -12,5 +12,5 @@ import org.platformlayer.xaas.Controller;
 @XmlRootElement
 @Controller(CollectdServiceController.class)
 public class CollectdService extends ItemBase {
-    public String dnsName;
+	public String dnsName;
 }

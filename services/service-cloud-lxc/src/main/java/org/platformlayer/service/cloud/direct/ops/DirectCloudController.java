@@ -15,26 +15,26 @@ import org.platformlayer.ops.machines.StorageConfiguration;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class DirectCloudController extends OpsTreeBase implements CloudController {
-    static final Logger log = Logger.getLogger(DirectCloudController.class);
+	static final Logger log = Logger.getLogger(DirectCloudController.class);
 
-    @Handler
-    public void handler() throws OpsException, IOException {
-    }
+	@Handler
+	public void handler() throws OpsException, IOException {
+	}
 
-    @Override
-    protected void addChildren() throws OpsException {
-    }
+	@Override
+	protected void addChildren() throws OpsException {
+	}
 
-    @Inject
-    PlatformLayerCloudHelpers cloudHelpers;
+	@Inject
+	PlatformLayerCloudHelpers cloudHelpers;
 
-    @Override
-    public ImageStore getImageStore(MachineCloudBase cloudBase) throws OpsException {
-        return cloudHelpers.getGenericImageStore();
-    }
+	@Override
+	public ImageStore getImageStore(MachineCloudBase cloudBase) throws OpsException {
+		return cloudHelpers.getGenericImageStore();
+	}
 
-    @Override
-    public StorageConfiguration getStorageConfiguration(MachineCloudBase cloud) throws OpsException {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public StorageConfiguration getStorageConfiguration(MachineCloudBase cloud) throws OpsException {
+		throw new UnsupportedOperationException();
+	}
 }

@@ -12,7 +12,6 @@ import org.platformlayer.client.cli.model.ItemPath;
 import org.platformlayer.core.model.PlatformLayerKey;
 
 import com.fathomdb.cli.output.ClientAction;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 public class SshItem extends PlatformLayerCommandRunnerBase {

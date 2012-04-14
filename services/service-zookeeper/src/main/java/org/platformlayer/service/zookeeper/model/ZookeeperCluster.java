@@ -12,7 +12,7 @@ import org.platformlayer.xaas.Controller;
 @XmlRootElement
 @Controller(ZookeeperClusterController.class)
 public class ZookeeperCluster extends ItemBase {
-    public String dnsName;
+	public String dnsName;
 
-    public int clusterSize = 3;
+	public int clusterSize = 3;
 }

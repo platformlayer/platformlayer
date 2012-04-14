@@ -9,53 +9,53 @@ import org.platformlayer.EqualsUtils;
 import org.platformlayer.HasIdentityValues;
 
 public class SshConnectionInfo implements HasIdentityValues {
-    InetAddress host;
-    int port;
-    String username;
-    KeyPair keyPair;
+	InetAddress host;
+	int port;
+	String username;
+	KeyPair keyPair;
 
-    public SocketAddress getSocketAddress() {
-        return new InetSocketAddress(host, port);
-    }
+	public SocketAddress getSocketAddress() {
+		return new InetSocketAddress(host, port);
+	}
 
-    public InetAddress getHost() {
-        return host;
-    }
+	public InetAddress getHost() {
+		return host;
+	}
 
-    public int getPort() {
-        return port;
-    }
+	public int getPort() {
+		return port;
+	}
 
-    public String getUsername() {
-        return username;
-    }
+	public String getUsername() {
+		return username;
+	}
 
-    public SshConnectionInfo(InetAddress host, int port, String username, KeyPair keyPair) {
-        super();
-        this.host = host;
-        this.port = port;
-        this.username = username;
-        this.keyPair = keyPair;
-    }
+	public SshConnectionInfo(InetAddress host, int port, String username, KeyPair keyPair) {
+		super();
+		this.host = host;
+		this.port = port;
+		this.username = username;
+		this.keyPair = keyPair;
+	}
 
-    @Override
-    public int hashCode() {
-        return EqualsUtils.computeHashCode(this);
-    }
+	@Override
+	public int hashCode() {
+		return EqualsUtils.computeHashCode(this);
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        return EqualsUtils.equals(this, obj);
-    }
+	@Override
+	public boolean equals(Object obj) {
+		return EqualsUtils.equals(this, obj);
+	}
 
-    @Override
-    public String toString() {
-        return "Host: " + host + ", port: " + port + ", username:" + username;
-    }
+	@Override
+	public String toString() {
+		return "Host: " + host + ", port: " + port + ", username:" + username;
+	}
 
-    @Override
-    public Object[] getIdentityValues() {
-        return new Object[] { host, port, username, keyPair };
-    }
+	@Override
+	public Object[] getIdentityValues() {
+		return new Object[] { host, port, username, keyPair };
+	}
 
 }

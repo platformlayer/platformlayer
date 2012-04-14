@@ -18,92 +18,94 @@ import org.platformlayer.auth.UserRepository;
 import com.google.common.collect.Lists;
 
 public class KeystoneOpsAuthenticator implements UserAuthenticator {
-    @Inject
-    UserRepository repository;
+	@Inject
+	UserRepository repository;
 
-    @Override
-    public AuthenticationInfo authenticate(String username, String password) throws AuthenticatorException {
-        OpsUser user;
-        try {
-            user = repository.findUser(username);
-        } catch (RepositoryException e) {
-            throw new AuthenticatorException("Error while authenticating user", e);
-        }
+	@Override
+	public AuthenticationInfo authenticate(String username, String password) throws AuthenticatorException {
+		OpsUser user;
+		try {
+			user = repository.findUser(username);
+		} catch (RepositoryException e) {
+			throw new AuthenticatorException("Error while authenticating user", e);
+		}
 
-        if (user != null) {
-            if (!user.isPasswordMatch(password)) {
-                user = null;
-            }
-        }
+		if (user != null) {
+			if (!user.isPasswordMatch(password)) {
+				user = null;
+			}
+		}
 
-        if (user == null)
-            return null;
+		if (user == null) {
+			return null;
+		}
 
-        user.unlockWithPassword(password);
+		user.unlockWithPassword(password);
 
-        String userKey = "" + user.id;
+		String userKey = "" + user.id;
 
-        byte[] tokenSecret = user.getTokenSecret();
-        AuthenticationInfo authentication = new AuthenticationInfo(userKey, tokenSecret);
-        return authentication;
-    }
+		byte[] tokenSecret = user.getTokenSecret();
+		AuthenticationInfo authentication = new AuthenticationInfo(userKey, tokenSecret);
+		return authentication;
+	}
 
-    @Override
-    public byte[] getUserSecret(String userIdString, byte[] tokenSecret) throws AuthenticatorException {
-        int userId;
-        try {
-            userId = Integer.parseInt(userIdString);
-        } catch (NumberFormatException e) {
-            throw new AuthenticatorException("Invalid user id", e);
-        }
+	@Override
+	public byte[] getUserSecret(String userIdString, byte[] tokenSecret) throws AuthenticatorException {
+		int userId;
+		try {
+			userId = Integer.parseInt(userIdString);
+		} catch (NumberFormatException e) {
+			throw new AuthenticatorException("Invalid user id", e);
+		}
 
-        OpsUser user;
-        try {
-            user = repository.findUserById(userId);
-        } catch (RepositoryException e) {
-            throw new AuthenticatorException("Error while authenticating user", e);
-        }
+		OpsUser user;
+		try {
+			user = repository.findUserById(userId);
+		} catch (RepositoryException e) {
+			throw new AuthenticatorException("Error while authenticating user", e);
+		}
 
-        if (user != null) {
-            user.unlockWithToken(OpsUser.TOKEN_ID_DEFAULT, tokenSecret);
-            // TODO: Verify the item secret somehow??
-        }
+		if (user != null) {
+			user.unlockWithToken(OpsUser.TOKEN_ID_DEFAULT, tokenSecret);
+			// TODO: Verify the item secret somehow??
+		}
 
-        if (user == null) {
-            throw new AuthenticatorException("User not found");
-        }
+		if (user == null) {
+			throw new AuthenticatorException("User not found");
+		}
 
-        SecretKey secretKey = user.getUserSecret();
-        if (secretKey != null)
-            return secretKey.getEncoded();
-        return null;
-    }
+		SecretKey secretKey = user.getUserSecret();
+		if (secretKey != null) {
+			return secretKey.getEncoded();
+		}
+		return null;
+	}
 
-    class SqlGroupMembershipOracle implements GroupMembershipOracle {
-        @Override
-        public List<String> getGroups(String key, boolean isGroup) throws AuthenticatorException {
-            if (!isGroup) {
-                int userId = Integer.parseInt(key);
-                List<OpsProject> groups;
-                try {
-                    groups = repository.listProjectsByUserId(userId);
-                } catch (RepositoryException e) {
-                    throw new AuthenticatorException("Error while listing user groups", e);
-                }
-                List<String> groupIds = Lists.newArrayList();
-                for (OpsProject group : groups) {
-                    groupIds.add(group.key);
-                }
-                return groupIds;
-            } else {
-                return Collections.emptyList();
-            }
-        }
+	class SqlGroupMembershipOracle implements GroupMembershipOracle {
+		@Override
+		public List<String> getGroups(String key, boolean isGroup) throws AuthenticatorException {
+			if (!isGroup) {
+				int userId = Integer.parseInt(key);
+				List<OpsProject> groups;
+				try {
+					groups = repository.listProjectsByUserId(userId);
+				} catch (RepositoryException e) {
+					throw new AuthenticatorException("Error while listing user groups", e);
+				}
+				List<String> groupIds = Lists.newArrayList();
+				for (OpsProject group : groups) {
+					groupIds.add(group.key);
+				}
+				return groupIds;
+			} else {
+				return Collections.emptyList();
+			}
+		}
 
-    };
+	};
 
-    @Override
-    public GroupMembershipOracle getGroupMembership() {
-        return new SqlGroupMembershipOracle();
-    }
+	@Override
+	public GroupMembershipOracle getGroupMembership() {
+		return new SqlGroupMembershipOracle();
+	}
 }

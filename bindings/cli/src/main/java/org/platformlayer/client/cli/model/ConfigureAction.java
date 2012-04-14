@@ -6,8 +6,8 @@ import com.fathomdb.cli.autocomplete.HasAutoCompletor;
 
 @HasAutoCompletor(AutoCompleteAction.class)
 public class ConfigureAction extends StringWrapper {
-    public ConfigureAction(String key) {
-        super(key);
-    }
+	public ConfigureAction(String key) {
+		super(key);
+	}
 
 }

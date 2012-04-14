@@ -15,7 +15,8 @@ public class PackageHelpers {
 	OpsContext opsContext;
 
 	public String findPackageFor(String command, OperatingSystem operatingSystem) {
-		List<String> keys = Lists.newArrayList(command, operatingSystem.getDistribution().toString(), operatingSystem.getVersion());
+		List<String> keys = Lists.newArrayList(command, operatingSystem.getDistribution().toString(),
+				operatingSystem.getVersion());
 		return doKeyLookup(keys);
 	}
 

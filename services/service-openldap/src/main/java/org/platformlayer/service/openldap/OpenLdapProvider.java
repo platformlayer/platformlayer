@@ -11,28 +11,28 @@ import org.platformlayer.xaas.Service;
 
 @Service("openldap")
 public class OpenLdapProvider extends ServiceProviderBase {
-    @Override
-    public void beforeCreateItem(ItemBase item) throws OpsException {
-        super.beforeCreateItem(item);
+	@Override
+	public void beforeCreateItem(ItemBase item) throws OpsException {
+		super.beforeCreateItem(item);
 
-        // TODO: This doesn't feel like the right place for this
-        if (item instanceof LdapService) {
-            LdapService ldapService = (LdapService) item;
-            Passwords passwords = new Passwords();
+		// TODO: This doesn't feel like the right place for this
+		if (item instanceof LdapService) {
+			LdapService ldapService = (LdapService) item;
+			Passwords passwords = new Passwords();
 
-            if (Secret.isNullOrEmpty(ldapService.ldapServerPassword)) {
-                ldapService.ldapServerPassword = passwords.generateRandomPassword(12);
-            }
-        }
+			if (Secret.isNullOrEmpty(ldapService.ldapServerPassword)) {
+				ldapService.ldapServerPassword = passwords.generateRandomPassword(12);
+			}
+		}
 
-        if (item instanceof LdapDomain) {
-            LdapDomain ldapService = (LdapDomain) item;
-            Passwords passwords = new Passwords();
+		if (item instanceof LdapDomain) {
+			LdapDomain ldapService = (LdapDomain) item;
+			Passwords passwords = new Passwords();
 
-            if (Secret.isNullOrEmpty(ldapService.adminPassword)) {
-                ldapService.adminPassword = passwords.generateRandomPassword(12);
-            }
-        }
-    }
+			if (Secret.isNullOrEmpty(ldapService.adminPassword)) {
+				ldapService.adminPassword = passwords.generateRandomPassword(12);
+			}
+		}
+	}
 
 }

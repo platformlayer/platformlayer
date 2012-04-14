@@ -14,5 +14,5 @@ import org.platformlayer.xaas.Controller;
 @GwtModel
 @Controller(DnsResolverServiceController.class)
 public class DnsResolverService extends ItemBase {
-    public String dnsName;
+	public String dnsName;
 }

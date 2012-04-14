@@ -14,43 +14,44 @@ import org.platformlayer.xaas.GuiceServletConfig;
 import com.google.inject.servlet.GuiceFilter;
 
 class StandaloneXaasWebserver {
-    static final Logger log = Logger.getLogger(StandaloneXaasWebserver.class);
+	static final Logger log = Logger.getLogger(StandaloneXaasWebserver.class);
 
-    static final int PORT = 8082;
+	static final int PORT = 8082;
 
-    private Server server;
+	private Server server;
 
-    public static void main(String[] args) throws Exception {
-        StandaloneXaasWebserver server = new StandaloneXaasWebserver();
-        server.start();
-    }
+	public static void main(String[] args) throws Exception {
+		StandaloneXaasWebserver server = new StandaloneXaasWebserver();
+		server.start();
+	}
 
-    public void start() throws Exception {
-        PerJobAppender.attachToRootLogger();
+	public void start() throws Exception {
+		PerJobAppender.attachToRootLogger();
 
-        this.server = new Server(PORT);
+		this.server = new Server(PORT);
 
-        ServletContextHandler context = new ServletContextHandler();
-        context.setContextPath("/");
-        server.setHandler(context);
+		ServletContextHandler context = new ServletContextHandler();
+		context.setContextPath("/");
+		server.setHandler(context);
 
-        context.addEventListener(new GuiceServletConfig());
+		context.addEventListener(new GuiceServletConfig());
 
-        // Must add DefaultServlet for embedded Jetty
-        // Failing to do this will cause 404 errors.
-        context.addServlet(DefaultServlet.class, "/");
+		// Must add DefaultServlet for embedded Jetty
+		// Failing to do this will cause 404 errors.
+		context.addServlet(DefaultServlet.class, "/");
 
-        FilterHolder filterHolder = new FilterHolder(GuiceFilter.class);
-        context.addFilter(filterHolder, "*", EnumSet.of(DispatcherType.REQUEST));
+		FilterHolder filterHolder = new FilterHolder(GuiceFilter.class);
+		context.addFilter(filterHolder, "*", EnumSet.of(DispatcherType.REQUEST));
 
-        context.setClassLoader(Thread.currentThread().getContextClassLoader());
+		context.setClassLoader(Thread.currentThread().getContextClassLoader());
 
-        server.start();
-    }
+		server.start();
+	}
 
-    public void stop() throws Exception {
-        if (server != null)
-            server.stop();
-    }
+	public void stop() throws Exception {
+		if (server != null) {
+			server.stop();
+		}
+	}
 
 }

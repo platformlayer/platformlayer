@@ -11,17 +11,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class MetricValue {
-    @XmlElement(name = "t")
-    public long time;
+	@XmlElement(name = "t")
+	public long time;
 
-    @XmlElement(name = "v")
-    public float value;
+	@XmlElement(name = "v")
+	public float value;
 
-    public long getTime() {
-        return time;
-    }
+	public long getTime() {
+		return time;
+	}
 
-    public float getValue() {
-        return value;
-    }
+	public float getValue() {
+		return value;
+	}
 }

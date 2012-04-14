@@ -32,205 +32,206 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class KvmInstance extends OpsTreeBase {
-    public File instanceDir;
-    public String id;
-    public int minimumMemoryMB;
-    public PlatformLayerKey recipeId;
-    public PublicKey sshPublicKey;
+	public File instanceDir;
+	public String id;
+	public int minimumMemoryMB;
+	public PlatformLayerKey recipeId;
+	public PublicKey sshPublicKey;
 
-    // public MachineCreationRequest request;
+	// public MachineCreationRequest request;
 
-    private File getInstanceDir() {
-        return instanceDir;
-    }
+	private File getInstanceDir() {
+		return instanceDir;
+	}
 
-    String getEthernetDeviceName() {
-        return "tun_" + id + "_0";
-    }
+	String getEthernetDeviceName() {
+		return "tun_" + id + "_0";
+	}
 
-    File getImagePath() {
-        return new File(getInstanceDir(), "drive0");
-    }
+	File getImagePath() {
+		return new File(getInstanceDir(), "drive0");
+	}
 
-    File getConfigIsoPath() {
-        return new File(getInstanceDir(), "config.iso");
-    }
+	File getConfigIsoPath() {
+		return new File(getInstanceDir(), "config.iso");
+	}
 
-    @Handler
-    public void handler() {
-    }
+	@Handler
+	public void handler() {
+	}
 
-    @Override
-    protected void addChildren() throws OpsException {
-        CloudInstanceMapper instance;
-        {
-            instance = injected(CloudInstanceMapper.class);
-            instance.instance = OpsContext.get().getInstance(DirectInstance.class);
-            addChild(instance);
-        }
+	@Override
+	protected void addChildren() throws OpsException {
+		CloudInstanceMapper instance;
+		{
+			instance = injected(CloudInstanceMapper.class);
+			instance.instance = OpsContext.get().getInstance(DirectInstance.class);
+			addChild(instance);
+		}
 
-        instance.addChild(ManagedDirectory.build(getInstanceDir(), "700"));
+		instance.addChild(ManagedDirectory.build(getInstanceDir(), "700"));
 
-        final PoolAssignment assignNetworkAddress;
-        {
-            assignNetworkAddress = injected(PoolAssignment.class);
-            assignNetworkAddress.holder = getInstanceDir();
-            assignNetworkAddress.poolProvider = DirectCloudUtils.getPoolProvider("network");
-            instance.addChild(assignNetworkAddress);
-        }
+		final PoolAssignment assignNetworkAddress;
+		{
+			assignNetworkAddress = injected(PoolAssignment.class);
+			assignNetworkAddress.holder = getInstanceDir();
+			assignNetworkAddress.poolProvider = DirectCloudUtils.getPoolProvider("network");
+			instance.addChild(assignNetworkAddress);
+		}
 
-        {
-            NetworkTunDevice tun = injected(NetworkTunDevice.class);
-            tun.interfaceName = getEthernetDeviceName();
-            tun.bridgeName = OpsProvider.getProperty(assignNetworkAddress, "bridge");
-            instance.addChild(tun);
-        }
+		{
+			NetworkTunDevice tun = injected(NetworkTunDevice.class);
+			tun.interfaceName = getEthernetDeviceName();
+			tun.bridgeName = OpsProvider.getProperty(assignNetworkAddress, "bridge");
+			instance.addChild(tun);
+		}
 
-        final PoolAssignment assignMonitorPort;
-        {
-            assignMonitorPort = injected(PoolAssignment.class);
-            assignMonitorPort.holder = getInstanceDir();
-            assignMonitorPort.poolProvider = DirectCloudUtils.getPoolProvider("monitor");
-            instance.addChild(assignMonitorPort);
-        }
+		final PoolAssignment assignMonitorPort;
+		{
+			assignMonitorPort = injected(PoolAssignment.class);
+			assignMonitorPort.holder = getInstanceDir();
+			assignMonitorPort.poolProvider = DirectCloudUtils.getPoolProvider("monitor");
+			instance.addChild(assignMonitorPort);
+		}
 
-        final PoolAssignment assignVncPort;
-        {
-            assignVncPort = injected(PoolAssignment.class);
-            assignVncPort.holder = getInstanceDir();
-            assignVncPort.poolProvider = DirectCloudUtils.getPoolProvider("vnc");
-            instance.addChild(assignVncPort);
-        }
+		final PoolAssignment assignVncPort;
+		{
+			assignVncPort = injected(PoolAssignment.class);
+			assignVncPort.holder = getInstanceDir();
+			assignVncPort.poolProvider = DirectCloudUtils.getPoolProvider("vnc");
+			instance.addChild(assignVncPort);
+		}
 
-        {
-            ConfigIso iso = injected(ConfigIso.class);
-            iso.isoFile = getConfigIsoPath();
-            iso.buildDir = new File(getInstanceDir(), "config_iso_src");
-            iso.model = new TemplateDataSource() {
-                @Override
-                public void buildTemplateModel(Map<String, Object> model) throws OpsException {
-                    List<Map<String, String>> interfaces = Lists.newArrayList();
-                    {
-                        Map<String, String> conf = asMap(assignNetworkAddress.getAssigned());
-                        conf.put("name", "eth0");
-                        interfaces.add(conf);
-                    }
-                    model.put("interfaces", interfaces);
+		{
+			ConfigIso iso = injected(ConfigIso.class);
+			iso.isoFile = getConfigIsoPath();
+			iso.buildDir = new File(getInstanceDir(), "config_iso_src");
+			iso.model = new TemplateDataSource() {
+				@Override
+				public void buildTemplateModel(Map<String, Object> model) throws OpsException {
+					List<Map<String, String>> interfaces = Lists.newArrayList();
+					{
+						Map<String, String> conf = asMap(assignNetworkAddress.getAssigned());
+						conf.put("name", "eth0");
+						interfaces.add(conf);
+					}
+					model.put("interfaces", interfaces);
 
-                    List<String> authorizedKeys = Lists.newArrayList();
-                    try {
-                        authorizedKeys.add(OpenSshUtils.serialize(sshPublicKey));
-                    } catch (IOException e) {
-                        throw new OpsException("Error serializing ssh key", e);
-                    }
-                    model.put("authorizedKeys", authorizedKeys);
-                }
-            };
+					List<String> authorizedKeys = Lists.newArrayList();
+					try {
+						authorizedKeys.add(OpenSshUtils.serialize(sshPublicKey));
+					} catch (IOException e) {
+						throw new OpsException("Error serializing ssh key", e);
+					}
+					model.put("authorizedKeys", authorizedKeys);
+				}
+			};
 
-            instance.addChild(iso);
-        }
+			instance.addChild(iso);
+		}
 
-        {
-            DownloadImage download = injected(DownloadImage.class);
-            download.imageFile = getImagePath();
-            download.recipeKey = recipeId;
-            download.imageFormat = ImageFactory.ImageFormat.DiskRaw;
-            instance.addChild(download);
-        }
+		{
+			DownloadImage download = injected(DownloadImage.class);
+			download.imageFile = getImagePath();
+			download.recipeKey = recipeId;
+			download.imageFormat = ImageFactory.ImageFormat.DiskRaw;
+			instance.addChild(download);
+		}
 
-        {
-            ManagedKvmInstance kvmInstance = injected(ManagedKvmInstance.class);
+		{
+			ManagedKvmInstance kvmInstance = injected(ManagedKvmInstance.class);
 
-            kvmInstance.id = id;
-            kvmInstance.memoryMb = Math.max(256, minimumMemoryMB);
-            kvmInstance.vcpus = 1;
-            kvmInstance.base = getInstanceDir();
-            kvmInstance.monitor = assignMonitorPort;
-            kvmInstance.vnc = assignVncPort;
-            kvmInstance.nics = buildVnics();
-            kvmInstance.drives = buildDrives();
+			kvmInstance.id = id;
+			kvmInstance.memoryMb = Math.max(256, minimumMemoryMB);
+			kvmInstance.vcpus = 1;
+			kvmInstance.base = getInstanceDir();
+			kvmInstance.monitor = assignMonitorPort;
+			kvmInstance.vnc = assignVncPort;
+			kvmInstance.nics = buildVnics();
+			kvmInstance.drives = buildDrives();
 
-            instance.addChild(kvmInstance);
-        }
+			instance.addChild(kvmInstance);
+		}
 
-        {
-            final DirectInstance model = OpsContext.get().getInstance(DirectInstance.class);
+		{
+			final DirectInstance model = OpsContext.get().getInstance(DirectInstance.class);
 
-            OpsProvider<TagChanges> tagChanges = new OpsProvider<TagChanges>() {
-                @Override
-                public TagChanges get() {
-                    TagChanges tagChanges = new TagChanges();
+			OpsProvider<TagChanges> tagChanges = new OpsProvider<TagChanges>() {
+				@Override
+				public TagChanges get() {
+					TagChanges tagChanges = new TagChanges();
 
-                    tagChanges.addTags.add(new Tag(Tag.INSTANCE_KEY, OpsSystem.toKey(model).getUrl()));
+					tagChanges.addTags.add(new Tag(Tag.INSTANCE_KEY, OpsSystem.toKey(model).getUrl()));
 
-                    String address = assignNetworkAddress.getAssigned().getProperty("address");
-                    tagChanges.addTags.add(new Tag(Tag.NETWORK_ADDRESS, address));
-                    return tagChanges;
-                }
-            };
+					String address = assignNetworkAddress.getAssigned().getProperty("address");
+					tagChanges.addTags.add(new Tag(Tag.NETWORK_ADDRESS, address));
+					return tagChanges;
+				}
+			};
 
-            addChild(Tagger.build(model, tagChanges));
-        }
-    }
+			addChild(Tagger.build(model, tagChanges));
+		}
+	}
 
-    protected Map<String, String> asMap(Properties properties) {
-        Map<String, String> map = Maps.newHashMap();
-        for (Object key : properties.keySet()) {
-            map.put((String) key, (String) properties.get(key));
-        }
-        return map;
-    }
+	protected Map<String, String> asMap(Properties properties) {
+		Map<String, String> map = Maps.newHashMap();
+		for (Object key : properties.keySet()) {
+			map.put((String) key, (String) properties.get(key));
+		}
+		return map;
+	}
 
-    private List<KvmNic> buildVnics() {
-        List<KvmNic> nics = Lists.newArrayList();
+	private List<KvmNic> buildVnics() {
+		List<KvmNic> nics = Lists.newArrayList();
 
-        {
-            KvmNic nic = new KvmNic();
-            nic.device = getEthernetDeviceName();
-            // nic.mac ;
-            // Also verify that the guest's running Kernel has CONFIG_PCI_MSI enabled:
-            //
-            // grep CONFIG_PCI_MSI /boot/config-`uname -r`
-            // If both conditions are met, use the vhost-net driver by starting the guest with the following example command line:
-            //
-            // qemu-kvm [...] -netdev tap,id=guest0,vhost=on,script=no
-            // -net nic,model=virtio,netdev=guest0,macaddr=00:16:35:AF:94:4B
-            //
-            // qemu: Supported NIC models: ne2k_pci,i82551,i82557b,i82559er,rtl8139,e1000,pcnet,virtio
-            nic.model = "virtio"; // "e1000";
-            nic.name = "nic0";
-            nics.add(nic);
-        }
+		{
+			KvmNic nic = new KvmNic();
+			nic.device = getEthernetDeviceName();
+			// nic.mac ;
+			// Also verify that the guest's running Kernel has CONFIG_PCI_MSI enabled:
+			//
+			// grep CONFIG_PCI_MSI /boot/config-`uname -r`
+			// If both conditions are met, use the vhost-net driver by starting the guest with the following example
+			// command line:
+			//
+			// qemu-kvm [...] -netdev tap,id=guest0,vhost=on,script=no
+			// -net nic,model=virtio,netdev=guest0,macaddr=00:16:35:AF:94:4B
+			//
+			// qemu: Supported NIC models: ne2k_pci,i82551,i82557b,i82559er,rtl8139,e1000,pcnet,virtio
+			nic.model = "virtio"; // "e1000";
+			nic.name = "nic0";
+			nics.add(nic);
+		}
 
-        return nics;
-    }
+		return nics;
+	}
 
-    private List<KvmDrive> buildDrives() {
-        List<KvmDrive> drives = Lists.newArrayList();
+	private List<KvmDrive> buildDrives() {
+		List<KvmDrive> drives = Lists.newArrayList();
 
-        {
-            KvmDrive drive = new KvmDrive();
+		{
+			KvmDrive drive = new KvmDrive();
 
-            drive.path = getImagePath().getAbsolutePath();
-            drive.id = "0";
-            drive.boot = true;
-            drive.format = "raw";
-            drive.media = "disk";
+			drive.path = getImagePath().getAbsolutePath();
+			drive.id = "0";
+			drive.boot = true;
+			drive.format = "raw";
+			drive.media = "disk";
 
-            drives.add(drive);
-        }
-        {
-            KvmDrive drive = new KvmDrive();
+			drives.add(drive);
+		}
+		{
+			KvmDrive drive = new KvmDrive();
 
-            drive.path = getConfigIsoPath().getAbsolutePath();
-            drive.id = "config_cd";
-            drive.boot = false;
-            drive.format = "raw";
-            drive.media = "cdrom";
+			drive.path = getConfigIsoPath().getAbsolutePath();
+			drive.id = "config_cd";
+			drive.boot = false;
+			drive.format = "raw";
+			drive.media = "cdrom";
 
-            drives.add(drive);
-        }
+			drives.add(drive);
+		}
 
-        return drives;
-    }
+		return drives;
+	}
 }

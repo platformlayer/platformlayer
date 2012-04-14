@@ -24,199 +24,201 @@ import com.google.common.collect.Maps;
  */
 public class FederationMap {
 
-    // FederationKey privateCloud = new FederationKey("private");
-    // FederationKey publicCloud = new FederationKey("public");
-    private final FederationConfiguration config;
-    private final Map<FederationMapping, PlatformLayerConnectionConfiguration> allKeys;
-    private TypedPlatformLayerClient localClient;
-    private final TypedItemMapper mapper;
+	// FederationKey privateCloud = new FederationKey("private");
+	// FederationKey publicCloud = new FederationKey("public");
+	private final FederationConfiguration config;
+	private final Map<FederationMapping, PlatformLayerConnectionConfiguration> allKeys;
+	private TypedPlatformLayerClient localClient;
+	private final TypedItemMapper mapper;
 
-    FederationMap(TypedItemMapper mapper, FederationConfiguration config) {
-        this.mapper = mapper;
-        this.config = config;
+	FederationMap(TypedItemMapper mapper, FederationConfiguration config) {
+		this.mapper = mapper;
+		this.config = config;
 
-        this.allKeys = collectSystems();
-    }
+		this.allKeys = collectSystems();
+	}
 
-    // private Collection<FederationKey> collectFederationKeys() {
-    // Set<FederationKey> keys = Sets.newHashSet();
-    //
-    // for (FederationRule rule : config.rules) {
-    // FederationKey key = toKey(rule);
-    // keys.add(key);
-    // }
-    //
-    // return keys;
-    // }
+	// private Collection<FederationKey> collectFederationKeys() {
+	// Set<FederationKey> keys = Sets.newHashSet();
+	//
+	// for (FederationRule rule : config.rules) {
+	// FederationKey key = toKey(rule);
+	// keys.add(key);
+	// }
+	//
+	// return keys;
+	// }
 
-    private Map<FederationMapping, PlatformLayerConnectionConfiguration> collectSystems() {
-        Map<FederationMapping, PlatformLayerConnectionConfiguration> keys = Maps.newHashMap();
+	private Map<FederationMapping, PlatformLayerConnectionConfiguration> collectSystems() {
+		Map<FederationMapping, PlatformLayerConnectionConfiguration> keys = Maps.newHashMap();
 
-        for (PlatformLayerConnectionConfiguration child : config.systems) {
-            FederationKey host = new FederationKey(child.server);
-            ProjectId project = new ProjectId(child.tenant);
-            FederationMapping key = new FederationMapping(host, project);
-            if (keys.containsKey(key)) {
-                throw new IllegalArgumentException("Duplicate key: " + key);
-            }
+		for (PlatformLayerConnectionConfiguration child : config.systems) {
+			FederationKey host = new FederationKey(child.server);
+			ProjectId project = new ProjectId(child.tenant);
+			FederationMapping key = new FederationMapping(host, project);
+			if (keys.containsKey(key)) {
+				throw new IllegalArgumentException("Duplicate key: " + key);
+			}
 
-            keys.put(key, child);
-        }
+			keys.put(key, child);
+		}
 
-        return keys;
-    }
+		return keys;
+	}
 
-    private FederationMapping toKey(PlatformLayerKey original, FederationRule rule) {
-        FederationKey targetHost = original.getHost();
-        ProjectId targetProject = original.getProject();
+	private FederationMapping toKey(PlatformLayerKey original, FederationRule rule) {
+		FederationKey targetHost = original.getHost();
+		ProjectId targetProject = original.getProject();
 
-        if (rule.target != null) {
-            PlatformLayerConnectionConfiguration found = null;
-            for (PlatformLayerConnectionConfiguration system : this.config.systems) {
-                if (Objects.equal(system.key, rule.target)) {
-                    found = system;
-                }
-            }
+		if (rule.target != null) {
+			PlatformLayerConnectionConfiguration found = null;
+			for (PlatformLayerConnectionConfiguration system : this.config.systems) {
+				if (Objects.equal(system.key, rule.target)) {
+					found = system;
+				}
+			}
 
-            if (found == null) {
-                throw new IllegalStateException("Cannot find target: " + rule.target);
-            }
+			if (found == null) {
+				throw new IllegalStateException("Cannot find target: " + rule.target);
+			}
 
-            targetHost = new FederationKey(found.server);
-            targetProject = new ProjectId(found.tenant);
-        }
+			targetHost = new FederationKey(found.server);
+			targetProject = new ProjectId(found.tenant);
+		}
 
-        return new FederationMapping(targetHost, targetProject);
-    }
+		return new FederationMapping(targetHost, targetProject);
+	}
 
-    private FederationMapping buildLocal(PlatformLayerKey original) {
-        FederationKey targetHost = original.getHost();
-        if (targetHost == null) {
-            targetHost = FederationKey.LOCAL_FEDERATION_KEY;
-        }
+	private FederationMapping buildLocal(PlatformLayerKey original) {
+		FederationKey targetHost = original.getHost();
+		if (targetHost == null) {
+			targetHost = FederationKey.LOCAL_FEDERATION_KEY;
+		}
 
-        ProjectId targetProject = original.getProject();
+		ProjectId targetProject = original.getProject();
 
-        return new FederationMapping(targetHost, targetProject);
-    }
+		return new FederationMapping(targetHost, targetProject);
+	}
 
-    public Iterable<FederationMapping> getAllKeys() {
-        return allKeys.keySet();
-    }
+	public Iterable<FederationMapping> getAllKeys() {
+		return allKeys.keySet();
+	}
 
-    public TypedPlatformLayerClient buildClient(FederationMapping key) {
-        PlatformLayerConnectionConfiguration config = allKeys.get(key);
-        if (config == null) {
-            throw new IllegalArgumentException("Unknown key: " + key);
-        }
+	public TypedPlatformLayerClient buildClient(FederationMapping key) {
+		PlatformLayerConnectionConfiguration config = allKeys.get(key);
+		if (config == null) {
+			throw new IllegalArgumentException("Unknown key: " + key);
+		}
 
-        PlatformLayerClient client = DirectPlatformLayerClient.buildUsingConfiguration(config);
+		PlatformLayerClient client = DirectPlatformLayerClient.buildUsingConfiguration(config);
 
-        TypedPlatformLayerClient typedClient = new TypedPlatformLayerClient(client, mapper);
-        return typedClient;
-    }
+		TypedPlatformLayerClient typedClient = new TypedPlatformLayerClient(client, mapper);
+		return typedClient;
+	}
 
-    public List<FederationMapping> getClients(PlatformLayerKey path) {
-        if (path.getHost() != null) {
-            throw new IllegalStateException();
-        }
+	public List<FederationMapping> getClients(PlatformLayerKey path) {
+		if (path.getHost() != null) {
+			throw new IllegalStateException();
+		}
 
-        List<FederationMapping> keys = Lists.newArrayList();
+		List<FederationMapping> keys = Lists.newArrayList();
 
-        for (FederationRule rule : config.rules) {
-            if (isMatch(rule, path)) {
-                keys.add(toKey(path, rule));
-            }
-        }
+		for (FederationRule rule : config.rules) {
+			if (isMatch(rule, path)) {
+				keys.add(toKey(path, rule));
+			}
+		}
 
-        keys.add(buildLocal(path));
+		keys.add(buildLocal(path));
 
-        return keys;
+		return keys;
 
-        // return keys;
-        //
-        //
-        // ServiceType serviceType = path.getServiceType();
-        // if (serviceType.getKey().equals("dns")) {
-        // return Arrays.asList(publicCloud);
-        // }
-        //
-        // return Arrays.asList(privateCloud);
-    }
+		// return keys;
+		//
+		//
+		// ServiceType serviceType = path.getServiceType();
+		// if (serviceType.getKey().equals("dns")) {
+		// return Arrays.asList(publicCloud);
+		// }
+		//
+		// return Arrays.asList(privateCloud);
+	}
 
-    public FederationMapping getClientForCreate(PlatformLayerKey path) {
-        if (path.getHost() != null) {
-            throw new IllegalStateException();
-        }
+	public FederationMapping getClientForCreate(PlatformLayerKey path) {
+		if (path.getHost() != null) {
+			throw new IllegalStateException();
+		}
 
-        List<FederationMapping> keys = Lists.newArrayList();
+		List<FederationMapping> keys = Lists.newArrayList();
 
-        for (FederationRule rule : config.rules) {
-            if (isMatch(rule, path)) {
-                keys.add(toKey(path, rule));
-            }
-        }
+		for (FederationRule rule : config.rules) {
+			if (isMatch(rule, path)) {
+				keys.add(toKey(path, rule));
+			}
+		}
 
-        if (keys.isEmpty()) {
-            keys.add(buildLocal(path));
-        }
+		if (keys.isEmpty()) {
+			keys.add(buildLocal(path));
+		}
 
-        if (keys.size() == 0)
-            return null;
+		if (keys.size() == 0) {
+			return null;
+		}
 
-        if (keys.size() != 1) {
-            throw new IllegalArgumentException();
-        }
+		if (keys.size() != 1) {
+			throw new IllegalArgumentException();
+		}
 
-        return keys.get(0);
-    }
+		return keys.get(0);
+	}
 
-    private boolean isMatch(FederationRule rule, PlatformLayerKey path) {
-        ServiceType serviceType = path.getServiceType();
-        if (rule.serviceType != null) {
-            if (!Objects.equal(rule.serviceType, serviceType.getKey())) {
-                return false;
-            }
-        }
-        return true;
-    }
+	private boolean isMatch(FederationRule rule, PlatformLayerKey path) {
+		ServiceType serviceType = path.getServiceType();
+		if (rule.serviceType != null) {
+			if (!Objects.equal(rule.serviceType, serviceType.getKey())) {
+				return false;
+			}
+		}
+		return true;
+	}
 
-    public void setLocalClient(TypedPlatformLayerClient localClient) {
-        if (this.localClient != null)
-            throw new IllegalStateException();
+	public void setLocalClient(TypedPlatformLayerClient localClient) {
+		if (this.localClient != null) {
+			throw new IllegalStateException();
+		}
 
-        this.localClient = localClient;
-    }
+		this.localClient = localClient;
+	}
 
-    public TypedPlatformLayerClient getLocalClient() {
-        return localClient;
-    }
+	public TypedPlatformLayerClient getLocalClient() {
+		return localClient;
+	}
 
-    // public FederationKey mapToClient(PlatformLayerKey key) {
-    // if (key.getHost() != null) {
-    // throw new IllegalStateException();
-    // }
-    //
-    // ServiceType serviceType = key.getServiceType();
-    //
-    // for (FederationRule rule : config.rules) {
-    // if (isMatch(rule, key)) {
-    // return toKey(rule);
-    // }
-    // }
-    //
-    // // We rely on a default rlue
-    // throw new IllegalStateException();
-    // // if (serviceType.getKey().equals("dns")) {
-    // // return publicCloud;
-    // // }
-    // //
-    // // return privateCloud;
-    // }
+	// public FederationKey mapToClient(PlatformLayerKey key) {
+	// if (key.getHost() != null) {
+	// throw new IllegalStateException();
+	// }
+	//
+	// ServiceType serviceType = key.getServiceType();
+	//
+	// for (FederationRule rule : config.rules) {
+	// if (isMatch(rule, key)) {
+	// return toKey(rule);
+	// }
+	// }
+	//
+	// // We rely on a default rlue
+	// throw new IllegalStateException();
+	// // if (serviceType.getKey().equals("dns")) {
+	// // return publicCloud;
+	// // }
+	// //
+	// // return privateCloud;
+	// }
 
-    // public static FederationMap buildUsingProperties(Properties properties) {
-    // FederationMap map = new FederationMap(properties);
-    //
-    // return map;
-    // }
+	// public static FederationMap buildUsingProperties(Properties properties) {
+	// FederationMap map = new FederationMap(properties);
+	//
+	// return map;
+	// }
 }

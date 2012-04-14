@@ -1,4 +1,5 @@
 package org.platformlayer.ui.shared.client.model;
+
 //package org.platformlayer.ui.web.client.service.dns;
 //
 //import org.platformlayer.ui.web.client.App;

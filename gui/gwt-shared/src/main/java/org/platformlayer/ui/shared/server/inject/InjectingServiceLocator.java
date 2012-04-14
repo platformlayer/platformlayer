@@ -7,12 +7,12 @@ import com.google.web.bindery.requestfactory.shared.ServiceLocator;
 
 public class InjectingServiceLocator implements ServiceLocator {
 
-    @Inject
-    Injector injector;
+	@Inject
+	Injector injector;
 
-    @Override
-    public Object getInstance(Class<?> clazz) {
-        return injector.getInstance(clazz);
-    }
+	@Override
+	public Object getInstance(Class<?> clazz) {
+		return injector.getInstance(clazz);
+	}
 
 }

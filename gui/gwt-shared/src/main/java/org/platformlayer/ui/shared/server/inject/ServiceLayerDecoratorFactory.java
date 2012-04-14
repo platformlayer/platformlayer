@@ -10,24 +10,24 @@ import com.google.web.bindery.requestfactory.server.ServiceLayerDecorator;
 
 public class ServiceLayerDecoratorFactory {
 
-    List<ServiceLayerDecorator> decorators = Lists.newArrayList();
+	List<ServiceLayerDecorator> decorators = Lists.newArrayList();
 
-    public ServiceLayerDecorator[] buildServiceLayerDecorators() {
-        addDecorators();
+	public ServiceLayerDecorator[] buildServiceLayerDecorators() {
+		addDecorators();
 
-        return (ServiceLayerDecorator[]) decorators.toArray(new ServiceLayerDecorator[decorators.size()]);
-    }
+		return decorators.toArray(new ServiceLayerDecorator[decorators.size()]);
+	}
 
-    @Inject
-    Injector injector;
+	@Inject
+	Injector injector;
 
-    protected void addDecorators() {
-        addDecorator(InjectingServiceLayerDecorator.class);
-    }
+	protected void addDecorators() {
+		addDecorator(InjectingServiceLayerDecorator.class);
+	}
 
-    protected <T extends ServiceLayerDecorator> T addDecorator(Class<T> clazz) {
-        T instance = injector.getInstance(clazz);
-        decorators.add(instance);
-        return instance;
-    }
+	protected <T extends ServiceLayerDecorator> T addDecorator(Class<T> clazz) {
+		T instance = injector.getInstance(clazz);
+		decorators.add(instance);
+		return instance;
+	}
 }

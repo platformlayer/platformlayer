@@ -17,14 +17,14 @@ import com.google.common.collect.Lists;
 @XmlRootElement(name = "xport")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class MetricValues implements Iterable<MetricValue> {
-    @XmlElementWrapper(name = "data")
-    @XmlElement(name = "row")
-    public List<MetricValue> rows = Lists.newArrayList();
+	@XmlElementWrapper(name = "data")
+	@XmlElement(name = "row")
+	public List<MetricValue> rows = Lists.newArrayList();
 
-    public MetricValuesMetadata meta;
+	public MetricValuesMetadata meta;
 
-    @Override
-    public Iterator<MetricValue> iterator() {
-        return rows.iterator();
-    }
+	@Override
+	public Iterator<MetricValue> iterator() {
+		return rows.iterator();
+	}
 }

@@ -25,68 +25,68 @@ import org.platformlayer.service.zookeeper.model.ZookeeperServer;
 import com.google.common.collect.Lists;
 
 public class ZookeeperClusterController extends OpsTreeBase implements MachineCluster {
-    static final Logger log = Logger.getLogger(ZookeeperClusterController.class);
+	static final Logger log = Logger.getLogger(ZookeeperClusterController.class);
 
-    @Inject
-    PlatformLayerHelpers platformLayer;
+	@Inject
+	PlatformLayerHelpers platformLayer;
 
-    @Inject
-    InstanceHelpers instances;
+	@Inject
+	InstanceHelpers instances;
 
-    @Handler
-    public void handler() throws OpsException {
+	@Handler
+	public void handler() throws OpsException {
 
-    }
+	}
 
-    static class ZookeeperChildServer extends OwnedItem {
-        ZookeeperCluster cluster;
-        String clusterId;
+	static class ZookeeperChildServer extends OwnedItem {
+		ZookeeperCluster cluster;
+		String clusterId;
 
-        @Override
-        protected ItemBase buildItemTemplate() throws OpsException {
-            Tag parentTag = Tag.buildParentTag(cluster.getKey());
+		@Override
+		protected ItemBase buildItemTemplate() throws OpsException {
+			Tag parentTag = Tag.buildParentTag(cluster.getKey());
 
-            ZookeeperServer server = new ZookeeperServer();
+			ZookeeperServer server = new ZookeeperServer();
 
-            server.clusterDnsName = cluster.dnsName;
-            server.clusterId = clusterId;
+			server.clusterDnsName = cluster.dnsName;
+			server.clusterId = clusterId;
 
-            Tag uniqueTag = UniqueTag.build(cluster, clusterId);
-            server.getTags().add(uniqueTag);
-            server.getTags().add(parentTag);
+			Tag uniqueTag = UniqueTag.build(cluster, clusterId);
+			server.getTags().add(uniqueTag);
+			server.getTags().add(parentTag);
 
-            server.key = PlatformLayerKey.fromId(cluster.getId() + "-" + clusterId);
+			server.key = PlatformLayerKey.fromId(cluster.getId() + "-" + clusterId);
 
-            return server;
-        }
-    }
+			return server;
+		}
+	}
 
-    @Override
-    protected void addChildren() throws OpsException {
-        ZookeeperCluster model = OpsContext.get().getInstance(ZookeeperCluster.class);
+	@Override
+	protected void addChildren() throws OpsException {
+		ZookeeperCluster model = OpsContext.get().getInstance(ZookeeperCluster.class);
 
-        for (int i = 0; i < model.clusterSize; i++) {
-            ZookeeperChildServer childServer = injected(ZookeeperChildServer.class);
-            childServer.cluster = model;
-            childServer.clusterId = String.valueOf(i);
-            addChild(childServer);
-        }
-    }
+		for (int i = 0; i < model.clusterSize; i++) {
+			ZookeeperChildServer childServer = injected(ZookeeperChildServer.class);
+			childServer.cluster = model;
+			childServer.clusterId = String.valueOf(i);
+			addChild(childServer);
+		}
+	}
 
-    @Override
-    public List<Machine> getMachines(Object modelObject, boolean required) throws OpsException {
-        ZookeeperCluster model = (ZookeeperCluster) modelObject;
-        Filter parentFilter = Filter.byTag(Tag.buildParentTag(model.getKey()));
+	@Override
+	public List<Machine> getMachines(Object modelObject, boolean required) throws OpsException {
+		ZookeeperCluster model = (ZookeeperCluster) modelObject;
+		Filter parentFilter = Filter.byTag(Tag.buildParentTag(model.getKey()));
 
-        List<Machine> machines = Lists.newArrayList();
+		List<Machine> machines = Lists.newArrayList();
 
-        for (ZookeeperServer server : platformLayer.listItems(ZookeeperServer.class, parentFilter)) {
-            Machine machine = instances.getMachine(server, required);
-            if (machine != null) {
-                machines.add(machine);
-            }
-        }
+		for (ZookeeperServer server : platformLayer.listItems(ZookeeperServer.class, parentFilter)) {
+			Machine machine = instances.getMachine(server, required);
+			if (machine != null) {
+				machines.add(machine);
+			}
+		}
 
-        return machines;
-    }
+		return machines;
+	}
 }

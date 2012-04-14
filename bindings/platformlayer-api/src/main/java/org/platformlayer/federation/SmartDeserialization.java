@@ -11,62 +11,63 @@ import org.platformlayer.xml.UnmarshalException;
 
 public class SmartDeserialization {
 
-    enum Format {
-        XML, JSON, PROPERTIES,
-    }
+	enum Format {
+		XML, JSON, PROPERTIES,
+	}
 
-    public static <T> T deserialize(Class<T> c, InputStream is) throws OpsException {
-        // TODO: Auto-detect XML, JSON, others?
+	public static <T> T deserialize(Class<T> c, InputStream is) throws OpsException {
+		// TODO: Auto-detect XML, JSON, others?
 
-        String data;
-        try {
-            data = Io.readAll(is);
-        } catch (IOException e) {
-            throw new OpsException("Error reading data", e);
-        }
+		String data;
+		try {
+			data = Io.readAll(is);
+		} catch (IOException e) {
+			throw new OpsException("Error reading data", e);
+		}
 
-        Format format = null;
+		Format format = null;
 
-        for (int i = 0; i < data.length(); i++) {
-            char firstChar = data.charAt(i);
+		for (int i = 0; i < data.length(); i++) {
+			char firstChar = data.charAt(i);
 
-            switch (firstChar) {
-            case ' ':
-                continue;
-            case '<':
-                format = Format.XML;
-                break;
-            case '{':
-                format = Format.JSON;
-                break;
-            default: {
-                if (Character.isLetter(firstChar)) {
-                    format = Format.PROPERTIES;
-                } else {
-                    throw new IllegalArgumentException("Unhandled character: " + ((int) firstChar));
-                }
-                break;
-            }
-            }
+			switch (firstChar) {
+			case ' ':
+				continue;
+			case '<':
+				format = Format.XML;
+				break;
+			case '{':
+				format = Format.JSON;
+				break;
+			default: {
+				if (Character.isLetter(firstChar)) {
+					format = Format.PROPERTIES;
+				} else {
+					throw new IllegalArgumentException("Unhandled character: " + ((int) firstChar));
+				}
+				break;
+			}
+			}
 
-            if (format != null)
-                break;
-        }
+			if (format != null) {
+				break;
+			}
+		}
 
-        if (format == null) {
-            throw new IllegalStateException("Could not determine format");
-        }
+		if (format == null) {
+			throw new IllegalStateException("Could not determine format");
+		}
 
-        if (format == Format.XML) {
-            JaxbHelper jaxb = JaxbHelper.get(c);
-            try {
-                return (T) jaxb.deserialize(new StringReader(data), c);
-            } catch (UnmarshalException e) {
-                throw new OpsException("Error deserializing item", e);
-            }
-        } else {
-            throw new UnsupportedOperationException();
-        }
+		if (format == Format.XML) {
+			JaxbHelper jaxb = JaxbHelper.get(c);
+			try {
+				return jaxb.deserialize(new StringReader(data), c);
+			} catch (UnmarshalException e) {
+				throw new OpsException("Error deserializing item", e);
+			}
+		} else {
+			throw new UnsupportedOperationException();
+		}
 
-    }
+	}
 }

@@ -7,21 +7,21 @@ import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.metrics.model.MetricInfoCollection;
 
 public class ListMetrics extends PlatformLayerCommandRunnerBase {
-    @Argument(index = 0)
-    public String path;
+	@Argument(index = 0)
+	public String path;
 
-    public ListMetrics() {
-        super("list", "metrics");
-    }
+	public ListMetrics() {
+		super("list", "metrics");
+	}
 
-    @Override
-    public Object runCommand() throws PlatformLayerClientException {
-        PlatformLayerClient client = getPlatformLayerClient();
+	@Override
+	public Object runCommand() throws PlatformLayerClientException {
+		PlatformLayerClient client = getPlatformLayerClient();
 
-        PlatformLayerKey key = getContext().pathToItem(path);
+		PlatformLayerKey key = getContext().pathToItem(path);
 
-        MetricInfoCollection items = client.listMetrics(key);
+		MetricInfoCollection items = client.listMetrics(key);
 
-        return items;
-    }
+		return items;
+	}
 }

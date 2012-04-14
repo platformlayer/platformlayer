@@ -12,5 +12,5 @@ import org.platformlayer.xaas.Controller;
 @XmlRootElement
 @Controller(NginxFrontendController.class)
 public class NginxFrontend extends ItemBase {
-    public String hostname;
+	public String hostname;
 }

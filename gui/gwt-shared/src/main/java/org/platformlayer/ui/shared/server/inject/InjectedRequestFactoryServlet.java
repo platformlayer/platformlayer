@@ -8,10 +8,11 @@ import com.google.web.bindery.requestfactory.server.RequestFactoryServlet;
 
 @Singleton
 public class InjectedRequestFactoryServlet extends RequestFactoryServlet {
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    @Inject
-    protected InjectedRequestFactoryServlet(ExceptionHandler exceptionHandler, ServiceLayerDecoratorFactory decoratorsFactory) {
-        super(exceptionHandler, decoratorsFactory.buildServiceLayerDecorators());
-    }
+	@Inject
+	protected InjectedRequestFactoryServlet(ExceptionHandler exceptionHandler,
+			ServiceLayerDecoratorFactory decoratorsFactory) {
+		super(exceptionHandler, decoratorsFactory.buildServiceLayerDecorators());
+	}
 }

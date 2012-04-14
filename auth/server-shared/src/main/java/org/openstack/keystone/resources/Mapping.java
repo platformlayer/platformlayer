@@ -12,36 +12,36 @@ import org.openstack.keystone.services.UserInfo;
 
 public class Mapping {
 
-    public static Token mapToResponse(TokenInfo tokenInfo) {
-        Token token = new Token();
-        token.expires = tokenInfo.expiration;
-        if (tokenInfo.scope != null) {
-            token.tenant = mapToTenant(tokenInfo);
-        }
+	public static Token mapToResponse(TokenInfo tokenInfo) {
+		Token token = new Token();
+		token.expires = tokenInfo.expiration;
+		if (tokenInfo.scope != null) {
+			token.tenant = mapToTenant(tokenInfo);
+		}
 
-        return token;
-    }
+		return token;
+	}
 
-    private static Tenant mapToTenant(TokenInfo tokenInfo) {
-        Tenant tenant = new Tenant();
-        tenant.id = tokenInfo.scope;
-        tenant.name = tokenInfo.scope;
-        return tenant;
-    }
+	private static Tenant mapToTenant(TokenInfo tokenInfo) {
+		Tenant tenant = new Tenant();
+		tenant.id = tokenInfo.scope;
+		tenant.name = tokenInfo.scope;
+		return tenant;
+	}
 
-    public static RoleList mapToRoles(List<Role> roles) {
-        RoleList roleList = new RoleList();
-        roleList.roles = roles;
-        return roleList;
-    }
+	public static RoleList mapToRoles(List<Role> roles) {
+		RoleList roleList = new RoleList();
+		roleList.roles = roles;
+		return roleList;
+	}
 
-    public static User mapToUser(UserInfo userInfo) {
-        User user = new User();
-        user.enabled = true;
-        user.id = userInfo.userId;
-        user.username = userInfo.username;
-        user.email = userInfo.email;
-        return user;
-    }
+	public static User mapToUser(UserInfo userInfo) {
+		User user = new User();
+		user.enabled = true;
+		user.id = userInfo.userId;
+		user.username = userInfo.username;
+		user.email = userInfo.email;
+		return user;
+	}
 
 }

@@ -13,6 +13,6 @@ import org.platformlayer.xaas.Controller;
 @XmlRootElement
 @Controller(MysqlServerController.class)
 public class MysqlServer extends ItemBase {
-    public String dnsName;
-    public Secret rootPassword;
+	public String dnsName;
+	public Secret rootPassword;
 }

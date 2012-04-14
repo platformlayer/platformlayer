@@ -11,24 +11,24 @@ import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class EnsureItem extends OpsTreeBase {
 
-    public Provider<ItemBase> modelProvider;
+	public Provider<ItemBase> modelProvider;
 
-    public static EnsureItem build(Provider<ItemBase> model) {
-        EnsureItem item = injected(EnsureItem.class);
-        item.modelProvider = model;
-        return item;
-    }
+	public static EnsureItem build(Provider<ItemBase> model) {
+		EnsureItem item = injected(EnsureItem.class);
+		item.modelProvider = model;
+		return item;
+	}
 
-    @Override
-    protected void addChildren() throws OpsException {
+	@Override
+	protected void addChildren() throws OpsException {
 
-    }
+	}
 
-    @Inject
-    PlatformLayerHelpers client;
+	@Inject
+	PlatformLayerHelpers client;
 
-    @Handler
-    public void handler() throws OpsException {
-        client.putItem(modelProvider.get());
-    }
+	@Handler
+	public void handler() throws OpsException {
+		client.putItem(modelProvider.get());
+	}
 }

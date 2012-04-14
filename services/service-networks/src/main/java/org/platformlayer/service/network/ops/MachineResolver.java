@@ -18,48 +18,48 @@ import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class MachineResolver extends OpsTreeBase implements CustomRecursor {
 
-    public PlatformLayerKey key;
+	public PlatformLayerKey key;
 
-    @Inject
-    PlatformLayerHelpers platformLayerHelpers;
+	@Inject
+	PlatformLayerHelpers platformLayerHelpers;
 
-    @Inject
-    InstanceHelpers instanceHelpers;
+	@Inject
+	InstanceHelpers instanceHelpers;
 
-    @Override
-    protected void addChildren() throws OpsException {
+	@Override
+	protected void addChildren() throws OpsException {
 
-    }
+	}
 
-    @Handler
-    public void handler() {
-    }
+	@Handler
+	public void handler() {
+	}
 
-    public static MachineResolver build(PlatformLayerKey key) {
-        if (key == null) {
-            throw new IllegalArgumentException();
-        }
-        MachineResolver resolver = injected(MachineResolver.class);
-        resolver.key = key;
-        return resolver;
-    }
+	public static MachineResolver build(PlatformLayerKey key) {
+		if (key == null) {
+			throw new IllegalArgumentException();
+		}
+		MachineResolver resolver = injected(MachineResolver.class);
+		resolver.key = key;
+		return resolver;
+	}
 
-    @Override
-    public void doRecurseOperation() throws OpsException {
-        ItemBase dest = platformLayerHelpers.getItem(key);
+	@Override
+	public void doRecurseOperation() throws OpsException {
+		ItemBase dest = platformLayerHelpers.getItem(key);
 
-        boolean required = !OpsContext.isDelete();
-        for (Machine machine : instanceHelpers.getMachines(dest, required)) {
-            OpsTarget target = instanceHelpers.getTarget(dest, machine);
+		boolean required = !OpsContext.isDelete();
+		for (Machine machine : instanceHelpers.getMachines(dest, required)) {
+			OpsTarget target = instanceHelpers.getTarget(dest, machine);
 
-            BindingScope scope = BindingScope.push(machine, target);
-            try {
-                OpsContext opsContext = OpsContext.get();
-                OperationRecursor.doRecurseChildren(opsContext, this);
-            } finally {
-                scope.pop();
-            }
-        }
-    }
+			BindingScope scope = BindingScope.push(machine, target);
+			try {
+				OpsContext opsContext = OpsContext.get();
+				OperationRecursor.doRecurseChildren(opsContext, this);
+			} finally {
+				scope.pop();
+			}
+		}
+	}
 
 }

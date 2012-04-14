@@ -5,8 +5,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ConfigurePackage {
-    public String packageName;
-    public String type;
-    public String key;
-    public String value;
+	public String packageName;
+	public String type;
+	public String key;
+	public String value;
 }

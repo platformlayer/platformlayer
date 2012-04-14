@@ -7,16 +7,16 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
 public class Action {
-    public Action(String name) {
-        this.name = name;
-    }
+	public Action(String name) {
+		this.name = name;
+	}
 
-    public Action() {
-    }
+	public Action() {
+	}
 
-    public String name;
+	public String name;
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 }

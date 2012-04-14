@@ -11,35 +11,35 @@ import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.direct.ops.kvm.ManagedSupervisorInstance;
 
 public class ManagedLxcInstance extends OpsTreeBase {
-    public String id;
-    public File base;
+	public String id;
+	public File base;
 
-    File getRootPath() {
-        return base;
-    }
+	File getRootPath() {
+		return base;
+	}
 
-    @Handler
-    public void handler() {
-    }
+	@Handler
+	public void handler() {
+	}
 
-    @Override
-    protected void addChildren() throws OpsException {
-        addChild(buildSupervisorInstance());
-    }
+	@Override
+	protected void addChildren() throws OpsException {
+		addChild(buildSupervisorInstance());
+	}
 
-    private ManagedSupervisorInstance buildSupervisorInstance() {
-        String key = "lxc-" + id;
+	private ManagedSupervisorInstance buildSupervisorInstance() {
+		String key = "lxc-" + id;
 
-        Command command = Command.build("lxc-start");
+		Command command = Command.build("lxc-start");
 
-        command.addLiteral("--name").addQuoted(id);
+		command.addLiteral("--name").addQuoted(id);
 
-        SupervisorProcessConfig sup = new SupervisorProcessConfig(key);
-        Map<String, String> properties = sup.getProperties();
-        properties.put("command", command.buildCommandString());
+		SupervisorProcessConfig sup = new SupervisorProcessConfig(key);
+		Map<String, String> properties = sup.getProperties();
+		properties.put("command", command.buildCommandString());
 
-        ManagedSupervisorInstance instance = injected(ManagedSupervisorInstance.class);
-        instance.supervisorProcess = sup;
-        return instance;
-    }
+		ManagedSupervisorInstance instance = injected(ManagedSupervisorInstance.class);
+		instance.supervisorProcess = sup;
+		return instance;
+	}
 }

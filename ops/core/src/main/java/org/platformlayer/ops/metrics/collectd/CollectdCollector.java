@@ -5,23 +5,23 @@ import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsException;
 
 public class CollectdCollector extends CollectdCommon {
-    @Handler
-    public void doOperation() throws OpsException {
-    }
+	@Handler
+	public void doOperation() throws OpsException {
+	}
 
-    @Override
-    protected void addChildren() throws OpsException {
-        addBasicStructure();
+	@Override
+	protected void addChildren() throws OpsException {
+		addBasicStructure();
 
-        addStandardMetrics();
+		addStandardMetrics();
 
-        addMetricSet("network-send");
+		addMetricSet("network-send");
 
-        addChild(ManagedService.build("collectd"));
-    }
+		addChild(ManagedService.build("collectd"));
+	}
 
-    public static CollectdCollector build() {
-        return Injection.getInstance(CollectdCollector.class);
-    }
+	public static CollectdCollector build() {
+		return Injection.getInstance(CollectdCollector.class);
+	}
 
 }

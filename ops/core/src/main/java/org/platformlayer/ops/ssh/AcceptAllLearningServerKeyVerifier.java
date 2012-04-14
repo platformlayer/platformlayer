@@ -9,42 +9,42 @@ import java.util.Map;
 import com.google.common.collect.Maps;
 
 public class AcceptAllLearningServerKeyVerifier extends AcceptAllServerKeyVerifier {
-    private Map<SocketAddress, PublicKey> keys = Maps.newHashMap();
-    private static final int SSH_PORT = 22;
+	private Map<SocketAddress, PublicKey> keys = Maps.newHashMap();
+	private static final int SSH_PORT = 22;
 
-    // public static final AcceptAllLearningServerKeyVerifier INSTANCE = new AcceptAllLearningServerKeyVerifier();
+	// public static final AcceptAllLearningServerKeyVerifier INSTANCE = new AcceptAllLearningServerKeyVerifier();
 
-    public AcceptAllLearningServerKeyVerifier() {
-    }
+	public AcceptAllLearningServerKeyVerifier() {
+	}
 
-    @Override
-    public boolean verifyServerKey(SocketAddress remoteAddress, PublicKey serverKey) {
-        synchronized (keys) {
-            keys.put(remoteAddress, serverKey);
-        }
+	@Override
+	public boolean verifyServerKey(SocketAddress remoteAddress, PublicKey serverKey) {
+		synchronized (keys) {
+			keys.put(remoteAddress, serverKey);
+		}
 
-        return true;
-    }
+		return true;
+	}
 
-    public PublicKey getDiscoveredKey(SocketAddress remoteAddress) {
-        synchronized (keys) {
-            return keys.get(remoteAddress);
-        }
-    }
+	public PublicKey getDiscoveredKey(SocketAddress remoteAddress) {
+		synchronized (keys) {
+			return keys.get(remoteAddress);
+		}
+	}
 
-    public PublicKey getDiscoveredKey(InetAddress addr) {
-        SocketAddress socketAddress = new InetSocketAddress(addr, SSH_PORT);
-        return getDiscoveredKey(socketAddress);
-    }
+	public PublicKey getDiscoveredKey(InetAddress addr) {
+		SocketAddress socketAddress = new InetSocketAddress(addr, SSH_PORT);
+		return getDiscoveredKey(socketAddress);
+	}
 
-    @Override
-    public void verifyPooled(IServerKeyVerifier serverKeyVerifier) {
-        if (serverKeyVerifier instanceof AcceptAllLearningServerKeyVerifier) {
-            synchronized (keys) {
-                // Technically we should lock serverKeyVerifier...
-                keys.putAll(((AcceptAllLearningServerKeyVerifier) serverKeyVerifier).keys);
-            }
-        }
-    }
+	@Override
+	public void verifyPooled(IServerKeyVerifier serverKeyVerifier) {
+		if (serverKeyVerifier instanceof AcceptAllLearningServerKeyVerifier) {
+			synchronized (keys) {
+				// Technically we should lock serverKeyVerifier...
+				keys.putAll(((AcceptAllLearningServerKeyVerifier) serverKeyVerifier).keys);
+			}
+		}
+	}
 
 }

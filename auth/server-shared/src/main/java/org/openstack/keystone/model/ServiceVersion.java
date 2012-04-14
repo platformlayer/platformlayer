@@ -6,12 +6,12 @@ import javax.xml.bind.annotation.XmlAttribute;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ServiceVersion {
-    @XmlAttribute
-    public String id;
+	@XmlAttribute
+	public String id;
 
-    @XmlAttribute
-    public String info;
+	@XmlAttribute
+	public String info;
 
-    @XmlAttribute
-    public String list;
+	@XmlAttribute
+	public String list;
 }

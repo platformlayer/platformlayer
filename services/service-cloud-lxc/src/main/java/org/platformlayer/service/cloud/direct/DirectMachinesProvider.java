@@ -5,5 +5,5 @@ import org.platformlayer.xaas.Service;
 
 @Service(DirectMachinesProvider.KEY)
 public class DirectMachinesProvider extends ServiceProviderBase {
-    public static final String KEY = "machines-direct";
+	public static final String KEY = "machines-direct";
 }

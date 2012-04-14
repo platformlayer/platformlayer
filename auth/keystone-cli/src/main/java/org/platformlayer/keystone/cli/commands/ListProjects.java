@@ -7,26 +7,26 @@ import org.platformlayer.auth.UserRepository;
 import org.platformlayer.keystone.cli.model.UserName;
 
 public class ListProjects extends KeystoneCommandRunnerBase {
-    @Argument(index = 0)
-    public UserName username;
+	@Argument(index = 0)
+	public UserName username;
 
-    public ListProjects() {
-        super("list", "projects");
-    }
+	public ListProjects() {
+		super("list", "projects");
+	}
 
-    @Override
-    public Object runCommand() throws RepositoryException {
-        UserRepository userRepository = getContext().getUserRepository();
+	@Override
+	public Object runCommand() throws RepositoryException {
+		UserRepository userRepository = getContext().getUserRepository();
 
-        // if (username == null) {
-        // return userRepository.listAllProjectNames(null);
-        // } else {
-        OpsUser user = userRepository.findUser(username.getKey());
-        if (user == null) {
-            throw new IllegalArgumentException("User not found");
-        }
-        return userRepository.listProjectsByUserId(user.id);
-        // }
-    }
+		// if (username == null) {
+		// return userRepository.listAllProjectNames(null);
+		// } else {
+		OpsUser user = userRepository.findUser(username.getKey());
+		if (user == null) {
+			throw new IllegalArgumentException("User not found");
+		}
+		return userRepository.listProjectsByUserId(user.id);
+		// }
+	}
 
 }

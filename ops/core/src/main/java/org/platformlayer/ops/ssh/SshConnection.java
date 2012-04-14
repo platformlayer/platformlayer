@@ -19,101 +19,106 @@ import org.platformlayer.ops.process.ProcessExecution;
  * 
  */
 public abstract class SshConnection implements Closeable {
-    private InetAddress host;
-    private int port = 22;
-    private String user = "root";
-    private KeyPair keyPair;
-    private IServerKeyVerifier serverKeyVerifier;
+	private InetAddress host;
+	private int port = 22;
+	private String user = "root";
+	private KeyPair keyPair;
+	private IServerKeyVerifier serverKeyVerifier;
 
-    public static final TimeSpan DEFAULT_SSH_EXECUTE_TIMEOUT = new TimeSpan("15s");
+	public static final TimeSpan DEFAULT_SSH_EXECUTE_TIMEOUT = new TimeSpan("15s");
 
-    public static final TimeSpan DEFAULT_SSH_CONNECT_TIMEOUT = new TimeSpan("15s");
-    public static final TimeSpan DEFAULT_SSH_KEY_EXECUTE_TIMEOUT = new TimeSpan("15s");
+	public static final TimeSpan DEFAULT_SSH_CONNECT_TIMEOUT = new TimeSpan("15s");
+	public static final TimeSpan DEFAULT_SSH_KEY_EXECUTE_TIMEOUT = new TimeSpan("15s");
 
-    @Override
-    public abstract void close();
+	@Override
+	public abstract void close();
 
-    public interface ProcessStartListener {
-        void startedProcess(OutputStream processStdIn) throws IOException;
-    }
+	public interface ProcessStartListener {
+		void startedProcess(OutputStream processStdIn) throws IOException;
+	}
 
-    public ProcessExecution sshExecute(String command, TimeSpan timeout) throws SshException, IOException, InterruptedException {
-        ProcessExecution execution = sshExecute0(command, timeout);
+	public ProcessExecution sshExecute(String command, TimeSpan timeout) throws SshException, IOException,
+			InterruptedException {
+		ProcessExecution execution = sshExecute0(command, timeout);
 
-        return execution;
-    }
+		return execution;
+	}
 
-    protected abstract ProcessExecution sshExecute0(String command, TimeSpan timeout) throws SshException, IOException, InterruptedException;
+	protected abstract ProcessExecution sshExecute0(String command, TimeSpan timeout) throws SshException, IOException,
+			InterruptedException;
 
-    public ProcessExecution sshExecute(String command) throws SshException, IOException, InterruptedException {
-        return sshExecute(command, DEFAULT_SSH_EXECUTE_TIMEOUT);
-    }
+	public ProcessExecution sshExecute(String command) throws SshException, IOException, InterruptedException {
+		return sshExecute(command, DEFAULT_SSH_EXECUTE_TIMEOUT);
+	}
 
-    public void sshCopyData(InputStream srcData, long dataLength, String remoteFile, String mode) throws IOException, InterruptedException, SshException {
-        if (mode == null) {
-            throw new IllegalArgumentException("Mode must be specified");
-        }
+	public void sshCopyData(InputStream srcData, long dataLength, String remoteFile, String mode) throws IOException,
+			InterruptedException, SshException {
+		if (mode == null) {
+			throw new IllegalArgumentException("Mode must be specified");
+		}
 
-        sshCopyData0(srcData, dataLength, remoteFile, mode);
-    }
+		sshCopyData0(srcData, dataLength, remoteFile, mode);
+	}
 
-    protected abstract void sshCopyData0(InputStream fileData, long dataLength, String remoteFile, String mode) throws IOException, InterruptedException, SshException;
+	protected abstract void sshCopyData0(InputStream fileData, long dataLength, String remoteFile, String mode)
+			throws IOException, InterruptedException, SshException;
 
-    public byte[] sshReadFile(String remoteFilePath) throws IOException, InterruptedException, SshException {
-        byte[] retval = sshReadFile0(remoteFilePath);
-        return retval;
-    }
+	public byte[] sshReadFile(String remoteFilePath) throws IOException, InterruptedException, SshException {
+		byte[] retval = sshReadFile0(remoteFilePath);
+		return retval;
+	}
 
-    protected abstract byte[] sshReadFile0(String remoteFilePath) throws IOException, InterruptedException, SshException;
+	protected abstract byte[] sshReadFile0(String remoteFilePath) throws IOException, InterruptedException,
+			SshException;
 
-    public static void safeClose(SshConnection sshConnection) {
-        if (sshConnection != null) {
-            sshConnection.close();
-        }
-    }
+	public static void safeClose(SshConnection sshConnection) {
+		if (sshConnection != null) {
+			sshConnection.close();
+		}
+	}
 
-    public SocketAddress getRemoteAddress() {
-        return new InetSocketAddress(getHost(), getPort());
-    }
+	public SocketAddress getRemoteAddress() {
+		return new InetSocketAddress(getHost(), getPort());
+	}
 
-    public InetAddress getHost() {
-        return host;
-    }
+	public InetAddress getHost() {
+		return host;
+	}
 
-    public void setHost(InetAddress host) {
-        this.host = host;
-    }
+	public void setHost(InetAddress host) {
+		this.host = host;
+	}
 
-    public int getPort() {
-        return port;
-    }
+	public int getPort() {
+		return port;
+	}
 
-    public void setPort(int port) {
-        this.port = port;
-    }
+	public void setPort(int port) {
+		this.port = port;
+	}
 
-    public String getUser() {
-        return user;
-    }
+	public String getUser() {
+		return user;
+	}
 
-    public void setUser(String user) {
-        this.user = user;
-    }
+	public void setUser(String user) {
+		this.user = user;
+	}
 
-    public KeyPair getKeyPair() {
-        return keyPair;
-    }
+	public KeyPair getKeyPair() {
+		return keyPair;
+	}
 
-    public void setKeyPair(KeyPair privateKey) {
-        this.keyPair = privateKey;
-    }
+	public void setKeyPair(KeyPair privateKey) {
+		this.keyPair = privateKey;
+	}
 
-    public IServerKeyVerifier getServerKeyVerifier() {
-        return serverKeyVerifier;
-    }
+	public IServerKeyVerifier getServerKeyVerifier() {
+		return serverKeyVerifier;
+	}
 
-    public void setServerKeyVerifier(IServerKeyVerifier serverKeyVerifier) {
-        this.serverKeyVerifier = serverKeyVerifier;
-    }
+	public void setServerKeyVerifier(IServerKeyVerifier serverKeyVerifier) {
+		this.serverKeyVerifier = serverKeyVerifier;
+	}
 
 }

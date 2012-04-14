@@ -19,9 +19,9 @@ public class ZookeeperInstall extends OpsTreeBase {
 
 	@Override
 	protected void addChildren() throws OpsException {
-        addChild(JavaVirtualMachine.buildJava6());
+		addChild(JavaVirtualMachine.buildJava6());
 
-        addChild(injected(SupervisordService.class));
+		addChild(injected(SupervisordService.class));
 
 		{
 			// TODO: Would be nice not to hard code this mirror
@@ -35,13 +35,13 @@ public class ZookeeperInstall extends OpsTreeBase {
 			File basePath = new File("/opt/zookeeper/");
 			File zipFile = new File(basePath, "zookeeper-3.3.5.tar.gz");
 			File extractPath = new File(basePath, "zookeeper-3.3.5");
-			
+
 			DownloadFile download = injected(DownloadFile.class);
 			download.url = apacheMirror + file;
 			download.hash = hash;
 			download.filePath = zipFile;
 			addChild(download);
-			
+
 			// TODO: Only unzip if newly downloaded
 			ExpandArchive unzip = injected(ExpandArchive.class);
 			unzip.zipFile = zipFile;

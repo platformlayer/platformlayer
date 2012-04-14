@@ -10,28 +10,28 @@ import com.google.inject.ProvidedBy;
 
 @ProvidedBy(CloudContextProvider.class)
 public interface CloudContext {
-    // Instance services
-    Machine createInstance(MachineCreationRequest request, PlatformLayerKey parent) throws OpsException;
+	// Instance services
+	Machine createInstance(MachineCreationRequest request, PlatformLayerKey parent) throws OpsException;
 
-    // Machine toMachine(InstanceBase instance) throws OpsException;
+	// Machine toMachine(InstanceBase instance) throws OpsException;
 
-    InstanceBase findInstanceByInstanceKey(PlatformLayerKey instanceKey) throws OpsException;
+	InstanceBase findInstanceByInstanceKey(PlatformLayerKey instanceKey) throws OpsException;
 
-    Machine findMachine(Tag cloudInstanceTag) throws OpsException;
+	Machine findMachine(Tag cloudInstanceTag) throws OpsException;
 
-    Machine refreshMachine(Machine machine) throws OpsException;
+	Machine refreshMachine(Machine machine) throws OpsException;
 
-    // Image services
-    ImageStore getImageStore(MachineCloudBase targetCloud) throws OpsException;
+	// Image services
+	ImageStore getImageStore(MachineCloudBase targetCloud) throws OpsException;
 
-    // Misc
-    public void validate() throws OpsException;
+	// Misc
+	public void validate() throws OpsException;
 
-    // KeyPair generateSshKeyPair(String sshKeyName) throws OpsException;
+	// KeyPair generateSshKeyPair(String sshKeyName) throws OpsException;
 
-    // Security
-    // TODO: Remove??
-    void ensureCreatedSecurityGroup(String securityGroup) throws OpsException;
+	// Security
+	// TODO: Remove??
+	void ensureCreatedSecurityGroup(String securityGroup) throws OpsException;
 
-    void ensurePortOpen(String securityGroup, String protocol, int port) throws OpsException;
+	void ensurePortOpen(String securityGroup, String protocol, int port) throws OpsException;
 }

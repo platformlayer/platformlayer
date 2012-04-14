@@ -13,9 +13,9 @@ import org.platformlayer.xaas.Controller;
 @XmlRootElement
 @Controller(NetworkConnectionController.class)
 public class NetworkConnection extends ItemBase {
-    public PlatformLayerKey sourceItem;
-    public String sourceCidr;
-    public PlatformLayerKey destItem;
-    public int port;
-    public String protocol;
+	public PlatformLayerKey sourceItem;
+	public String sourceCidr;
+	public PlatformLayerKey destItem;
+	public int port;
+	public String protocol;
 }

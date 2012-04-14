@@ -11,15 +11,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Auth {
-    public PasswordCredentials passwordCredentials;
+	public PasswordCredentials passwordCredentials;
 
-    @XmlAttribute
-    public String tenantName;
+	@XmlAttribute
+	public String tenantName;
 
-    public Token token;
+	public Token token;
 
-    public List<Service> serviceCatalog;
+	public List<Service> serviceCatalog;
 
-    @XmlElement(name = "user")
-    public UserValidation userValidation;
+	@XmlElement(name = "user")
+	public UserValidation userValidation;
 }

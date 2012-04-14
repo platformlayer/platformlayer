@@ -7,9 +7,10 @@ import org.platformlayer.jobs.model.JobLog;
 import org.platformlayer.jobs.model.JobState;
 
 public interface JobRepository {
-    JobData getJob(PlatformLayerKey jobId, boolean fetchLog);
+	JobData getJob(PlatformLayerKey jobId, boolean fetchLog);
 
-    void recordJob(PlatformLayerKey jobId, PlatformLayerKey itemKey, JobState jobState, JobLog jobLog) throws RepositoryException;
+	void recordJob(PlatformLayerKey jobId, PlatformLayerKey itemKey, JobState jobState, JobLog jobLog)
+			throws RepositoryException;
 
-    // JobDataList getJobList();
+	// JobDataList getJobList();
 }

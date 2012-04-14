@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Token {
-    public Date expires;
-    public String id;
-    public Tenant tenant;
+	public Date expires;
+	public String id;
+	public Tenant tenant;
 }

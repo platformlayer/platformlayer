@@ -11,31 +11,31 @@ import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.jobs.model.JobData;
 
 public class DoAction extends PlatformLayerCommandRunnerBase {
-    @Argument(index = 0)
-    public ItemPath path;
+	@Argument(index = 0)
+	public ItemPath path;
 
-    @Argument(index = 1)
-    public ConfigureAction action;
+	@Argument(index = 1)
+	public ConfigureAction action;
 
-    public DoAction() {
-        super("do", "action");
-    }
+	public DoAction() {
+		super("do", "action");
+	}
 
-    @Override
-    public Object runCommand() throws PlatformLayerClientException {
-        PlatformLayerClient client = getPlatformLayerClient();
+	@Override
+	public Object runCommand() throws PlatformLayerClientException {
+		PlatformLayerClient client = getPlatformLayerClient();
 
-        PlatformLayerKey key = path.resolve(getContext());
+		PlatformLayerKey key = path.resolve(getContext());
 
-        Object ret = client.doAction(key, action.getKey());
+		Object ret = client.doAction(key, action.getKey());
 
-        return ret;
-    }
+		return ret;
+	}
 
-    @Override
-    public void formatRaw(Object o, PrintWriter writer) {
-        JobData jobData = (JobData) o;
-        writer.println(jobData.key);
-    }
+	@Override
+	public void formatRaw(Object o, PrintWriter writer) {
+		JobData jobData = (JobData) o;
+		writer.println(jobData.key);
+	}
 
 }

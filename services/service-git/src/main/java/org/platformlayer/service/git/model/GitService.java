@@ -12,6 +12,6 @@ import org.platformlayer.xaas.Controller;
 @XmlRootElement
 @Controller(GitServerController.class)
 public class GitService extends ItemBase {
-    public String dnsName;
-    public String ldapGroup;
+	public String dnsName;
+	public String ldapGroup;
 }

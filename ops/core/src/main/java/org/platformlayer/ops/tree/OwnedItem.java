@@ -14,54 +14,55 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 
 public abstract class OwnedItem<T extends ItemBase> {
-    @Inject
-    PlatformLayerHelpers platformLayer;
-    
-    private T item;
+	@Inject
+	PlatformLayerHelpers platformLayer;
 
-    public T getItem() {
-        return item;
-    }
+	private T item;
 
-    @Handler
-    public void handler() throws OpsException {
-        T itemTemplate = buildItemTemplate();
-        Tag uniqueTag = getUniqueTag(itemTemplate);
+	public T getItem() {
+		return item;
+	}
 
-        if (OpsContext.isConfigure()) {
-            try {
-                item = platformLayer.putItemByTag(itemTemplate, uniqueTag);
-            } catch (PlatformLayerClientException e) {
-                throw new OpsException("Error creating owned item", e);
-            }
-        }
+	@Handler
+	public void handler() throws OpsException {
+		T itemTemplate = buildItemTemplate();
+		Tag uniqueTag = getUniqueTag(itemTemplate);
 
-        if (OpsContext.isDelete()) {
-            List<? extends ItemBase> items = platformLayer.listItems(itemTemplate.getClass(), Filter.byTag(uniqueTag));
-            if (items.size() != 0) {
-                if (items.size() != 1) {
-                    throw new OpsException("Found multiple items with unique tag: " + uniqueTag);
-                }
+		if (OpsContext.isConfigure()) {
+			try {
+				item = platformLayer.putItemByTag(itemTemplate, uniqueTag);
+			} catch (PlatformLayerClientException e) {
+				throw new OpsException("Error creating owned item", e);
+			}
+		}
 
-                item = (T) items.get(0);
+		if (OpsContext.isDelete()) {
+			List<? extends ItemBase> items = platformLayer.listItems(itemTemplate.getClass(), Filter.byTag(uniqueTag));
+			if (items.size() != 0) {
+				if (items.size() != 1) {
+					throw new OpsException("Found multiple items with unique tag: " + uniqueTag);
+				}
 
-                try {
-                    platformLayer.deleteItem(items.get(0).getKey());
-                } catch (PlatformLayerClientException e) {
-                    throw new OpsException("Error deleting owned item", e);
-                }
-            }
-        }
-    }
+				item = (T) items.get(0);
 
-    protected abstract T buildItemTemplate() throws OpsException;
+				try {
+					platformLayer.deleteItem(items.get(0).getKey());
+				} catch (PlatformLayerClientException e) {
+					throw new OpsException("Error deleting owned item", e);
+				}
+			}
+		}
+	}
 
-    protected Tag getUniqueTag(ItemBase item) throws OpsException {
-        for (Tag tag : item.getTags()) {
-            if (tag.getKey().equals(Tag.UNIQUE_ID))
-                return tag;
-        }
+	protected abstract T buildItemTemplate() throws OpsException;
 
-        throw new OpsException("Cannot find unique tag for item: " + item);
-    }
+	protected Tag getUniqueTag(ItemBase item) throws OpsException {
+		for (Tag tag : item.getTags()) {
+			if (tag.getKey().equals(Tag.UNIQUE_ID)) {
+				return tag;
+			}
+		}
+
+		throw new OpsException("Cannot find unique tag for item: " + item);
+	}
 }

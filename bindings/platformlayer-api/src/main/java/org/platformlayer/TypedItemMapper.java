@@ -10,33 +10,33 @@ import org.w3c.dom.Element;
 
 public abstract class TypedItemMapper {
 
-    public <T> T promoteToTyped(UntypedItem untypedItem) throws OpsException {
+	public <T> T promoteToTyped(UntypedItem untypedItem) throws OpsException {
 
-        ElementInfo elementInfo = untypedItem.getElementInfo();
+		ElementInfo elementInfo = untypedItem.getElementInfo();
 
-        Class<T> javaClass = mapToJavaClass(elementInfo);
+		Class<T> javaClass = mapToJavaClass(elementInfo);
 
-        return promoteToTyped(untypedItem, javaClass);
-    }
+		return promoteToTyped(untypedItem, javaClass);
+	}
 
-    protected abstract <T> Class<T> mapToJavaClass(ElementInfo elementInfo) throws OpsException;
+	protected abstract <T> Class<T> mapToJavaClass(ElementInfo elementInfo) throws OpsException;
 
-    public <T> T promoteToTyped(UntypedItem untypedItem, Class<T> itemClass) throws OpsException {
-        JaxbHelper jaxbHelper = JaxbHelper.get(itemClass);
-        T typedItem;
-        try {
-            Element element = untypedItem.getDataElement();
-            T object = jaxbHelper.unmarshal(element, itemClass);
+	public <T> T promoteToTyped(UntypedItem untypedItem, Class<T> itemClass) throws OpsException {
+		JaxbHelper jaxbHelper = JaxbHelper.get(itemClass);
+		T typedItem;
+		try {
+			Element element = untypedItem.getDataElement();
+			T object = jaxbHelper.unmarshal(element, itemClass);
 
-            if (!(object.getClass().isAssignableFrom(itemClass))) {
-                System.out.println("XML = " + untypedItem.serialize());
-            }
+			if (!(object.getClass().isAssignableFrom(itemClass))) {
+				System.out.println("XML = " + untypedItem.serialize());
+			}
 
-            typedItem = Casts.checkedCast(object, itemClass);
-        } catch (JAXBException e) {
-            throw new OpsException("Error deserializing item", e);
-        }
+			typedItem = Casts.checkedCast(object, itemClass);
+		} catch (JAXBException e) {
+			throw new OpsException("Error deserializing item", e);
+		}
 
-        return typedItem;
-    }
+		return typedItem;
+	}
 }

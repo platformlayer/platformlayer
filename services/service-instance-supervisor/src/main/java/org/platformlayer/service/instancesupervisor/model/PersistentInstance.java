@@ -16,15 +16,15 @@ import org.platformlayer.xaas.Controller;
 @XmlRootElement
 @Controller(PersistentInstanceController.class)
 public class PersistentInstance extends ItemBase {
-    public PlatformLayerKey recipe;
-    public String dnsName;
-    public String sshPublicKey;
-    public String securityGroup;
-    public int minimumRam;
+	public PlatformLayerKey recipe;
+	public String dnsName;
+	public String sshPublicKey;
+	public String securityGroup;
+	public int minimumRam;
 
-    public PlatformLayerKey cloud;
+	public PlatformLayerKey cloud;
 
-    public HostPolicy hostPolicy;
+	public HostPolicy hostPolicy;
 
-    public List<Integer> publicPorts;
+	public List<Integer> publicPorts;
 }

@@ -15,167 +15,170 @@ import org.w3c.dom.Node;
 
 public class UntypedItem {
 
-    private final Element root;
-    private Tags tags;
+	private final Element root;
+	private Tags tags;
 
-    private PlatformLayerKey platformLayerKey;
+	private PlatformLayerKey platformLayerKey;
 
-    public UntypedItem(Element root) {
-        this.root = root;
-    }
+	public UntypedItem(Element root) {
+		this.root = root;
+	}
 
-    public static UntypedItem build(String xml) {
-        Element documentElement;
+	public static UntypedItem build(String xml) {
+		Element documentElement;
 
-        try {
-            Document dom = XmlHelper.parseXmlDocument(xml, true);
-            documentElement = dom.getDocumentElement();
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Error parsing XML", e);
-        }
+		try {
+			Document dom = XmlHelper.parseXmlDocument(xml, true);
+			documentElement = dom.getDocumentElement();
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Error parsing XML", e);
+		}
 
-        return new UntypedItem(documentElement);
-    }
+		return new UntypedItem(documentElement);
+	}
 
-    public Element getDataElement() {
-        return root;
+	public Element getDataElement() {
+		return root;
 
-        // String xml = o.getModelData();
-        //
-        // Element documentElement;
-        //
-        // try {
-        // Document dom = XmlHelper.parseXmlDocument(xml, false);
-        // documentElement = dom.getDocumentElement();
-        // } catch (Exception e) {
-        // throw new IllegalArgumentException("Error parsing XML", e);
-        // }
-    }
+		// String xml = o.getModelData();
+		//
+		// Element documentElement;
+		//
+		// try {
+		// Document dom = XmlHelper.parseXmlDocument(xml, false);
+		// documentElement = dom.getDocumentElement();
+		// } catch (Exception e) {
+		// throw new IllegalArgumentException("Error parsing XML", e);
+		// }
+	}
 
-    // public Object getId() {
-    // }
-    //
-    // public Object getState() {
-    // }
+	// public Object getId() {
+	// }
+	//
+	// public Object getState() {
+	// }
 
-    public Tags getTags() {
-        if (tags == null) {
-            Node tagsElement = XmlHelper.findUniqueChild(root, "tags");
-            if (tagsElement == null)
-                return null;
+	public Tags getTags() {
+		if (tags == null) {
+			Node tagsElement = XmlHelper.findUniqueChild(root, "tags");
+			if (tagsElement == null) {
+				return null;
+			}
 
-            JaxbHelper helper = JaxbHelper.get(Tags.class);
-            try {
-                tags = (Tags) helper.unmarshal(tagsElement);
-            } catch (JAXBException e) {
-                throw new IllegalStateException("Error parsing tags data", e);
-            }
-        }
-        return tags;
-    }
+			JaxbHelper helper = JaxbHelper.get(Tags.class);
+			try {
+				tags = (Tags) helper.unmarshal(tagsElement);
+			} catch (JAXBException e) {
+				throw new IllegalStateException("Error parsing tags data", e);
+			}
+		}
+		return tags;
+	}
 
-    // public String getId() {
-    // Node idElement = findIdElement();
-    // if (idElement == null)
-    // return null;
-    // return idElement.getTextContent();
-    // }
-    //
-    // public void setId(String id) {
-    // Node idElement = findIdElement();
-    // if (idElement == null)
-    // throw new IllegalStateException();
-    // idElement.setTextContent(id);
-    // }
+	// public String getId() {
+	// Node idElement = findIdElement();
+	// if (idElement == null)
+	// return null;
+	// return idElement.getTextContent();
+	// }
+	//
+	// public void setId(String id) {
+	// Node idElement = findIdElement();
+	// if (idElement == null)
+	// throw new IllegalStateException();
+	// idElement.setTextContent(id);
+	// }
 
-    // private Node findIdElement() {
-    // Node idElement = XmlHelper.findUniqueChild(root, "id");
-    // return idElement;
-    // }
+	// private Node findIdElement() {
+	// Node idElement = XmlHelper.findUniqueChild(root, "id");
+	// return idElement;
+	// }
 
-    private Node findKeyElement(boolean create) {
-        Node element = XmlHelper.findUniqueChild(root, "key", create);
-        return element;
-    }
+	private Node findKeyElement(boolean create) {
+		Node element = XmlHelper.findUniqueChild(root, "key", create);
+		return element;
+	}
 
-    public ManagedItemState getState() {
-        Node element = XmlHelper.findUniqueChild(root, "state");
-        if (element == null)
-            return null;
-        String state = element.getTextContent();
-        return ManagedItemState.valueOf(state);
-    }
+	public ManagedItemState getState() {
+		Node element = XmlHelper.findUniqueChild(root, "state");
+		if (element == null) {
+			return null;
+		}
+		String state = element.getTextContent();
+		return ManagedItemState.valueOf(state);
+	}
 
-    public String getRootNamespace() {
-        String namespace = root.getNamespaceURI();
-        return namespace;
-    }
+	public String getRootNamespace() {
+		String namespace = root.getNamespaceURI();
+		return namespace;
+	}
 
-    public String getRootElementName() {
-        String name = null;
-        if (name == null) {
-            // xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns16:networkConnection"
-            String ns = "http://www.w3.org/2001/XMLSchema-instance";
-            String xsiType = root.getAttributeNS(ns, "type");
-            if (xsiType != null) {
-                // String xsiType = xsiTypeNode.getValue();
-                String[] tokens = xsiType.split(":");
-                if (tokens.length == 1) {
-                    name = tokens[0];
-                } else if (tokens.length == 2) {
-                    // namespace = tokens[0];
-                    name = tokens[1];
-                } else {
-                    throw new IllegalStateException();
-                }
-                if (name.isEmpty()) {
-                    name = null;
-                }
-            }
-        }
-        if (name == null) {
-            name = root.getLocalName();
-        }
-        // String name = root.getNodeName();
-        return name;
-    }
+	public String getRootElementName() {
+		String name = null;
+		if (name == null) {
+			// xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns16:networkConnection"
+			String ns = "http://www.w3.org/2001/XMLSchema-instance";
+			String xsiType = root.getAttributeNS(ns, "type");
+			if (xsiType != null) {
+				// String xsiType = xsiTypeNode.getValue();
+				String[] tokens = xsiType.split(":");
+				if (tokens.length == 1) {
+					name = tokens[0];
+				} else if (tokens.length == 2) {
+					// namespace = tokens[0];
+					name = tokens[1];
+				} else {
+					throw new IllegalStateException();
+				}
+				if (name.isEmpty()) {
+					name = null;
+				}
+			}
+		}
+		if (name == null) {
+			name = root.getLocalName();
+		}
+		// String name = root.getNodeName();
+		return name;
+	}
 
-    public ElementInfo getElementInfo() {
-        String xmlNamespace = getRootNamespace();
-        String rootElement = getRootElementName();
+	public ElementInfo getElementInfo() {
+		String xmlNamespace = getRootNamespace();
+		String rootElement = getRootElementName();
 
-        return new ElementInfo(xmlNamespace, rootElement);
-    }
+		return new ElementInfo(xmlNamespace, rootElement);
+	}
 
-    public String serialize() {
-        try {
-            return XmlHelper.toXml(this.root);
-        } catch (TransformerException e) {
-            throw new IllegalStateException("Error serializing data", e);
-        }
-    }
+	public String serialize() {
+		try {
+			return XmlHelper.toXml(this.root);
+		} catch (TransformerException e) {
+			throw new IllegalStateException("Error serializing data", e);
+		}
+	}
 
-    public PlatformLayerKey getPlatformLayerKey() {
-        if (platformLayerKey == null) {
-            Node element = findKeyElement(false);
-            if (element != null)
-                platformLayerKey = PlatformLayerKey.parse(element.getTextContent());
-        }
-        return platformLayerKey;
-    }
+	public PlatformLayerKey getPlatformLayerKey() {
+		if (platformLayerKey == null) {
+			Node element = findKeyElement(false);
+			if (element != null) {
+				platformLayerKey = PlatformLayerKey.parse(element.getTextContent());
+			}
+		}
+		return platformLayerKey;
+	}
 
-    public void setPlatformLayerKey(PlatformLayerKey platformLayerKey) {
-        this.platformLayerKey = platformLayerKey;
+	public void setPlatformLayerKey(PlatformLayerKey platformLayerKey) {
+		this.platformLayerKey = platformLayerKey;
 
-        Node element = findKeyElement(true);
-        if (element == null) {
-            throw new IllegalStateException();
-        }
-        element.setTextContent(platformLayerKey.getUrl());
-        // setId(platformLayerKey.getItemId().getKey());
-    }
+		Node element = findKeyElement(true);
+		if (element == null) {
+			throw new IllegalStateException();
+		}
+		element.setTextContent(platformLayerKey.getUrl());
+		// setId(platformLayerKey.getItemId().getKey());
+	}
 
-    public Element getRoot() {
-        return root;
-    }
+	public Element getRoot() {
+		return root;
+	}
 }

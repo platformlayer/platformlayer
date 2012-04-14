@@ -17,18 +17,18 @@ import com.google.inject.AbstractModule;
 
 public class KeystoneOpsUserModule extends AbstractModule {
 
-    @Override
-    protected void configure() {
-        bind(DataSource.class).toProvider(new GuiceDataSourceProvider("auth.jdbc.", null));
+	@Override
+	protected void configure() {
+		bind(DataSource.class).toProvider(new GuiceDataSourceProvider("auth.jdbc.", null));
 
-        JdbcGuiceModule jdbcGuiceModule = new JdbcGuiceModule();
-        binder().install(jdbcGuiceModule);
+		JdbcGuiceModule jdbcGuiceModule = new JdbcGuiceModule();
+		binder().install(jdbcGuiceModule);
 
-        bind(UserRepository.class).to(JdbcUserRepository.class).asEagerSingleton();
-        bind(UserAuthenticator.class).to(KeystoneOpsAuthenticator.class).asEagerSingleton();
+		bind(UserRepository.class).to(JdbcUserRepository.class).asEagerSingleton();
+		bind(UserAuthenticator.class).to(KeystoneOpsAuthenticator.class).asEagerSingleton();
 
-        bind(SystemAuthenticator.class).to(KeystoneSystemAuthenticator.class).asEagerSingleton();
+		bind(SystemAuthenticator.class).to(KeystoneSystemAuthenticator.class).asEagerSingleton();
 
-        bind(ResultSetMappers.class).toProvider(ResultSetMappersProvider.build(OpsUser.class, OpsProject.class));
-    }
+		bind(ResultSetMappers.class).toProvider(ResultSetMappersProvider.build(OpsUser.class, OpsProject.class));
+	}
 }

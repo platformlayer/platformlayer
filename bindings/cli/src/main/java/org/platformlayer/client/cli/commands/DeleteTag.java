@@ -11,40 +11,40 @@ import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.core.model.Tags;
 
 public class DeleteTag extends PlatformLayerCommandRunnerBase {
-    @Argument(index = 0)
-    public ItemPath path;
+	@Argument(index = 0)
+	public ItemPath path;
 
-    @Argument(index = 1)
-    public String tagKey;
+	@Argument(index = 1)
+	public String tagKey;
 
-    @Argument(index = 2)
-    public String tagValue;
+	@Argument(index = 2)
+	public String tagValue;
 
-    public DeleteTag() {
-        super("delete", "tag");
-    }
+	public DeleteTag() {
+		super("delete", "tag");
+	}
 
-    @Override
-    public Object runCommand() throws PlatformLayerClientException {
-        PlatformLayerClient client = getPlatformLayerClient();
+	@Override
+	public Object runCommand() throws PlatformLayerClientException {
+		PlatformLayerClient client = getPlatformLayerClient();
 
-        PlatformLayerKey key = path.resolve(getContext());
-        UntypedItem ret = client.getItemUntyped(key);
+		PlatformLayerKey key = path.resolve(getContext());
+		UntypedItem ret = client.getItemUntyped(key);
 
-        TagChanges tagChanges = new TagChanges();
-        for (Tag tag : ret.getTags()) {
-            if (!tagKey.equals(tag.getKey())) {
-                continue;
-            }
+		TagChanges tagChanges = new TagChanges();
+		for (Tag tag : ret.getTags()) {
+			if (!tagKey.equals(tag.getKey())) {
+				continue;
+			}
 
-            if (tagValue != null && !tagValue.equals(tag.getValue())) {
-                continue;
-            }
+			if (tagValue != null && !tagValue.equals(tag.getValue())) {
+				continue;
+			}
 
-            tagChanges.removeTags.add(tag);
-        }
+			tagChanges.removeTags.add(tag);
+		}
 
-        Tags newTags = client.changeTags(key, tagChanges);
-        return newTags;
-    }
+		Tags newTags = client.changeTags(key, tagChanges);
+		return newTags;
+	}
 }

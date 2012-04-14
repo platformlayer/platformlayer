@@ -6,9 +6,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class TenantEndpoint {
-    @XmlAttribute
-    public String href;
+	@XmlAttribute
+	public String href;
 
-    @XmlAttribute
-    public String id;
+	@XmlAttribute
+	public String id;
 }

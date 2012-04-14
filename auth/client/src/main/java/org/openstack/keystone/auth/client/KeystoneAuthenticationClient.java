@@ -25,102 +25,105 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class KeystoneAuthenticationClient {
-    static final Logger log = LoggerFactory.getLogger(KeystoneAuthenticationClient.class);
+	static final Logger log = LoggerFactory.getLogger(KeystoneAuthenticationClient.class);
 
-    final String authenticationUrl;
+	final String authenticationUrl;
 
-    public static final String DEFAULT_AUTHENTICATION_URL = "http://127.0.0.1:" + WellKnownPorts.PORT_PLATFORMLAYER_AUTH_USER + "/v2.0/";
+	public static final String DEFAULT_AUTHENTICATION_URL = "http://127.0.0.1:"
+			+ WellKnownPorts.PORT_PLATFORMLAYER_AUTH_USER + "/v2.0/";
 
-    public static final Integer HTTP_500_ERROR = new Integer(500);
+	public static final Integer HTTP_500_ERROR = new Integer(500);
 
-    protected static final int MAX_RETRIES = 10;
+	protected static final int MAX_RETRIES = 10;
 
-    static Random random = new Random();
+	static Random random = new Random();
 
-    public KeystoneAuthenticationClient(String authenticationUrl) {
-        this.authenticationUrl = authenticationUrl;
-    }
+	public KeystoneAuthenticationClient(String authenticationUrl) {
+		this.authenticationUrl = authenticationUrl;
+	}
 
-    public KeystoneAuthenticationClient() {
-        this(DEFAULT_AUTHENTICATION_URL);
-    }
+	public KeystoneAuthenticationClient() {
+		this(DEFAULT_AUTHENTICATION_URL);
+	}
 
-    public TenantsList listTenants(KeystoneAuthenticationToken token) throws KeystoneAuthenticationException {
-        return doSimpleRequest(token, "GET", "tokens", null, TenantsList.class);
-    }
+	public TenantsList listTenants(KeystoneAuthenticationToken token) throws KeystoneAuthenticationException {
+		return doSimpleRequest(token, "GET", "tokens", null, TenantsList.class);
+	}
 
-    public KeystoneAuthenticationToken authenticate(String tenantName, PasswordCredentials passwordCredentials) throws KeystoneAuthenticationException {
-        Auth auth = new Auth();
-        auth.setPasswordCredentials(passwordCredentials);
-        auth.setTenantName(tenantName);
+	public KeystoneAuthenticationToken authenticate(String tenantName, PasswordCredentials passwordCredentials)
+			throws KeystoneAuthenticationException {
+		Auth auth = new Auth();
+		auth.setPasswordCredentials(passwordCredentials);
+		auth.setTenantName(tenantName);
 
-        AuthenticateRequest request = new AuthenticateRequest();
-        request.setAuth(auth);
+		AuthenticateRequest request = new AuthenticateRequest();
+		request.setAuth(auth);
 
-        AuthenticateResponse response = doSimpleRequest(null, "POST", "tokens", request, AuthenticateResponse.class);
-        return new KeystoneAuthenticationToken(response.getAccess());
-    }
+		AuthenticateResponse response = doSimpleRequest(null, "POST", "tokens", request, AuthenticateResponse.class);
+		return new KeystoneAuthenticationToken(response.getAccess());
+	}
 
-    private <T> T doSimpleRequest(KeystoneAuthenticationToken token, String method, String relativeUri, Object postObject, Class<T> responseClass) throws KeystoneAuthenticationException {
-        try {
-            URI uri = new URI(authenticationUrl + relativeUri);
+	private <T> T doSimpleRequest(KeystoneAuthenticationToken token, String method, String relativeUri,
+			Object postObject, Class<T> responseClass) throws KeystoneAuthenticationException {
+		try {
+			URI uri = new URI(authenticationUrl + relativeUri);
 
-            SimpleHttpRequest httpRequest = SimpleHttpRequest.build(method, uri);
+			SimpleHttpRequest httpRequest = SimpleHttpRequest.build(method, uri);
 
-            httpRequest.setRequestHeader("Accept", "application/xml");
+			httpRequest.setRequestHeader("Accept", "application/xml");
 
-            if (token != null) {
-                token.populateRequest(httpRequest);
-            }
+			if (token != null) {
+				token.populateRequest(httpRequest);
+			}
 
-            if (postObject != null) {
-                httpRequest.setRequestHeader("Content-Type", "application/xml");
-                String xml = serializeXml(postObject);
-                httpRequest.getOutputStream().write(Utf8.getBytes(xml));
-            }
+			if (postObject != null) {
+				httpRequest.setRequestHeader("Content-Type", "application/xml");
+				String xml = serializeXml(postObject);
+				httpRequest.getOutputStream().write(Utf8.getBytes(xml));
+			}
 
-            SimpleHttpResponse response = httpRequest.doRequest();
+			SimpleHttpResponse response = httpRequest.doRequest();
 
-            int responseCode = response.getHttpResponseCode();
-            switch (responseCode) {
-            case 401:
-                throw new KeystoneAuthenticationException("Platformlayer credentials were not correct");
+			int responseCode = response.getHttpResponseCode();
+			switch (responseCode) {
+			case 401:
+				throw new KeystoneAuthenticationException("Platformlayer credentials were not correct");
 
-            case 200:
-            case 203: {
-                if (responseClass.equals(String.class)) {
-                    return CastUtils.as(IoUtils.readAll(response.getInputStream()), responseClass);
-                } else {
-                    return deserializeXml(response.getInputStream(), responseClass);
-                }
-            }
+			case 200:
+			case 203: {
+				if (responseClass.equals(String.class)) {
+					return CastUtils.as(IoUtils.readAll(response.getInputStream()), responseClass);
+				} else {
+					return deserializeXml(response.getInputStream(), responseClass);
+				}
+			}
 
-            default:
-                throw new KeystoneAuthenticationException("Unexpected result code: " + responseCode);
-            }
-        } catch (IOException e) {
-            throw new KeystoneAuthenticationException("Error communicating with authentication service", e);
-        } catch (URISyntaxException e) {
-            throw new KeystoneAuthenticationException("Error building authentication URI", e);
-        }
+			default:
+				throw new KeystoneAuthenticationException("Unexpected result code: " + responseCode);
+			}
+		} catch (IOException e) {
+			throw new KeystoneAuthenticationException("Error communicating with authentication service", e);
+		} catch (URISyntaxException e) {
+			throw new KeystoneAuthenticationException("Error building authentication URI", e);
+		}
 
-    }
+	}
 
-    public static <T> T deserializeXml(InputStream is, Class<T> clazz) throws KeystoneAuthenticationException {
-        try {
-            return JaxbHelper.deserializeXmlObject(is, clazz, true);
-        } catch (UnmarshalException e) {
-            throw new KeystoneAuthenticationException("Error reading authentication response data", e);
-        }
-    }
+	public static <T> T deserializeXml(InputStream is, Class<T> clazz) throws KeystoneAuthenticationException {
+		try {
+			return JaxbHelper.deserializeXmlObject(is, clazz, true);
+		} catch (UnmarshalException e) {
+			throw new KeystoneAuthenticationException("Error reading authentication response data", e);
+		}
+	}
 
-    public static String serializeXml(Object object) throws KeystoneAuthenticationException {
-        try {
-            boolean formatted = false;
-            return JaxbHelper.toXml(object, formatted);
-        } catch (JAXBException e) {
-            throw new KeystoneAuthenticationException("Error serializing data", e);
-        }
-    }
+	public static String serializeXml(Object object) throws KeystoneAuthenticationException {
+		try {
+			boolean formatted = false;
+			return JaxbHelper.toXml(object, formatted);
+		} catch (JAXBException e) {
+			throw new KeystoneAuthenticationException("Error serializing data", e);
+		}
+	}
 
 }

@@ -9,12 +9,13 @@ import org.platformlayer.ops.filesystem.TemplatedFile;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class DnsResolver extends OpsTreeBase {
-    @Handler
-    public void doOperation() throws OpsException {
-    }
+	@Handler
+	public void doOperation() throws OpsException {
+	}
 
-    @Override
-    protected void addChildren() throws OpsException {
-        addChild(TemplatedFile.build(Injection.getInstance(DnsResolverModuleBuilder.class), new File("/etc/resolv.conf")).setFileMode("644"));
-    }
+	@Override
+	protected void addChildren() throws OpsException {
+		addChild(TemplatedFile.build(Injection.getInstance(DnsResolverModuleBuilder.class),
+				new File("/etc/resolv.conf")).setFileMode("644"));
+	}
 }

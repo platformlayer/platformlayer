@@ -18,24 +18,24 @@ import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.raw.model.RawTarget;
 
 public class RawTargetController extends OpsTreeBase {
-    static final Logger log = Logger.getLogger(RawTargetController.class);
+	static final Logger log = Logger.getLogger(RawTargetController.class);
 
-    @Inject
-    ServiceContext service;
+	@Inject
+	ServiceContext service;
 
-    @Handler
-    public void handler(RawTarget rawTarget) throws OpsException, IOException {
-        OpaqueMachine machine = new OpaqueMachine(NetworkPoint.forPublicHostname(rawTarget.host));
-        SshKey serviceSshKey = service.getSshKey();
-        OpsTarget target = machine.getTarget(serviceSshKey);
+	@Handler
+	public void handler(RawTarget rawTarget) throws OpsException, IOException {
+		OpaqueMachine machine = new OpaqueMachine(NetworkPoint.forPublicHostname(rawTarget.host));
+		SshKey serviceSshKey = service.getSshKey();
+		OpsTarget target = machine.getTarget(serviceSshKey);
 
-        // TODO: We have a bootstrapping problem here!!
-        PublicKey sshPublicKey = service.getSshKey().getKeyPair().getPublic();
-        SshAuthorizedKey.ensureSshAuthorization(target, "root", sshPublicKey);
-    }
+		// TODO: We have a bootstrapping problem here!!
+		PublicKey sshPublicKey = service.getSshKey().getKeyPair().getPublic();
+		SshAuthorizedKey.ensureSshAuthorization(target, "root", sshPublicKey);
+	}
 
-    @Override
-    protected void addChildren() throws OpsException {
-    }
+	@Override
+	protected void addChildren() throws OpsException {
+	}
 
 }

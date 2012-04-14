@@ -7,19 +7,19 @@ import org.platformlayer.RepositoryException;
 import org.platformlayer.auth.UserRepository;
 
 public class ListUsers extends KeystoneCommandRunnerBase {
-    @Argument(index = 0)
-    public String prefix;
+	@Argument(index = 0)
+	public String prefix;
 
-    public ListUsers() {
-        super("list", "users");
-    }
+	public ListUsers() {
+		super("list", "users");
+	}
 
-    @Override
-    public Object runCommand() throws RepositoryException {
-        UserRepository userRepository = getContext().getUserRepository();
+	@Override
+	public Object runCommand() throws RepositoryException {
+		UserRepository userRepository = getContext().getUserRepository();
 
-        List<String> users = userRepository.listAllUserNames(prefix);
-        return users;
-    }
+		List<String> users = userRepository.listAllUserNames(prefix);
+		return users;
+	}
 
 }

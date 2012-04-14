@@ -12,36 +12,37 @@ import org.platformlayer.WellKnownPorts;
 import com.google.inject.servlet.GuiceFilter;
 
 public class KeystoneAdminServer {
-    private Server server;
+	private Server server;
 
-    public static void main(String[] args) throws Exception {
-        KeystoneAdminServer server = new KeystoneAdminServer();
-        server.start(WellKnownPorts.PORT_PLATFORMLAYER_AUTH_ADMIN);
-    }
+	public static void main(String[] args) throws Exception {
+		KeystoneAdminServer server = new KeystoneAdminServer();
+		server.start(WellKnownPorts.PORT_PLATFORMLAYER_AUTH_ADMIN);
+	}
 
-    public void start(int port) throws Exception {
-        this.server = new Server(port);
+	public void start(int port) throws Exception {
+		this.server = new Server(port);
 
-        ServletContextHandler context = new ServletContextHandler();
-        context.setContextPath("/");
-        server.setHandler(context);
+		ServletContextHandler context = new ServletContextHandler();
+		context.setContextPath("/");
+		server.setHandler(context);
 
-        context.addEventListener(new AdminServerConfig());
+		context.addEventListener(new AdminServerConfig());
 
-        // Must add DefaultServlet for embedded Jetty
-        // Failing to do this will cause 404 errors.
-        context.addServlet(DefaultServlet.class, "/");
+		// Must add DefaultServlet for embedded Jetty
+		// Failing to do this will cause 404 errors.
+		context.addServlet(DefaultServlet.class, "/");
 
-        FilterHolder filterHolder = new FilterHolder(GuiceFilter.class);
-        context.addFilter(filterHolder, "*", EnumSet.of(DispatcherType.REQUEST));
+		FilterHolder filterHolder = new FilterHolder(GuiceFilter.class);
+		context.addFilter(filterHolder, "*", EnumSet.of(DispatcherType.REQUEST));
 
-        context.setClassLoader(Thread.currentThread().getContextClassLoader());
+		context.setClassLoader(Thread.currentThread().getContextClassLoader());
 
-        server.start();
-    }
+		server.start();
+	}
 
-    public void stop() throws Exception {
-        if (server != null)
-            server.stop();
-    }
+	public void stop() throws Exception {
+		if (server != null) {
+			server.stop();
+		}
+	}
 }

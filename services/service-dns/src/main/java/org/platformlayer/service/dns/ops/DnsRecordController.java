@@ -8,16 +8,16 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.service.dns.model.DnsRecord;
 
 public class DnsRecordController {
-    static final Logger log = Logger.getLogger(DnsRecordController.class);
+	static final Logger log = Logger.getLogger(DnsRecordController.class);
 
-    @Inject
-    DnsHelpers dns;
+	@Inject
+	DnsHelpers dns;
 
-    @Handler
-    public void handler(DnsRecord dnsRecord) throws OpsException {
-        DnsFile dnsFile = dns.buildDnsFile(dnsRecord);
+	@Handler
+	public void handler(DnsRecord dnsRecord) throws OpsException {
+		DnsFile dnsFile = dns.buildDnsFile(dnsRecord);
 
-        dns.uploadToAllDnsServers(dnsFile);
-    }
+		dns.uploadToAllDnsServers(dnsFile);
+	}
 
 }

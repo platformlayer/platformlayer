@@ -12,5 +12,5 @@ import org.platformlayer.xaas.Controller;
 @XmlRootElement
 @Controller(TomcatServiceController.class)
 public class TomcatService extends ItemBase {
-    public String dnsName;
+	public String dnsName;
 }

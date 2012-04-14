@@ -12,7 +12,7 @@ import org.platformlayer.xaas.Controller;
 @XmlAccessorType(XmlAccessType.FIELD)
 @Controller(FederatedServiceMapController.class)
 public class FederatedServiceMap extends ItemBase {
-    public String target;
+	public String target;
 
-    public String serviceType;
+	public String serviceType;
 }

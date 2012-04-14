@@ -15,25 +15,25 @@ import org.codehaus.jackson.map.SerializationConfig;
 @Produces("application/json")
 public class JacksonConfigurator implements ContextResolver<ObjectMapper> {
 
-    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
-    private ObjectMapper mapper = new ObjectMapper();
+	private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
+	private ObjectMapper mapper = new ObjectMapper();
 
-    public JacksonConfigurator() {
-        SerializationConfig serConfig = mapper.getSerializationConfig();
-        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
-        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+	public JacksonConfigurator() {
+		SerializationConfig serConfig = mapper.getSerializationConfig();
+		SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+		dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-        serConfig.setDateFormat(dateFormat);
+		serConfig.setDateFormat(dateFormat);
 
-        DeserializationConfig deserializationConfig = mapper.getDeserializationConfig();
-        deserializationConfig.setDateFormat(dateFormat);
+		DeserializationConfig deserializationConfig = mapper.getDeserializationConfig();
+		deserializationConfig.setDateFormat(dateFormat);
 
-        mapper.configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS, false);
-    }
+		mapper.configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS, false);
+	}
 
-    @Override
-    public ObjectMapper getContext(Class<?> arg0) {
-        return mapper;
-    }
+	@Override
+	public ObjectMapper getContext(Class<?> arg0) {
+		return mapper;
+	}
 
 }

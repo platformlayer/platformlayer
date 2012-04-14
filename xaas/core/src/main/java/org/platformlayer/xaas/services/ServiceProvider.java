@@ -11,29 +11,29 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.xaas.model.ServiceAuthorization;
 
 public interface ServiceProvider {
-    void beforeCreateItem(ItemBase item) throws OpsException;
+	void beforeCreateItem(ItemBase item) throws OpsException;
 
-    void beforeDeleteItem(ItemBase item) throws OpsException;
+	void beforeDeleteItem(ItemBase item) throws OpsException;
 
-    ServiceInfo getServiceInfo(boolean amdin);
+	ServiceInfo getServiceInfo(boolean amdin);
 
-    Models getModels();
+	Models getModels();
 
-    ServiceType getServiceType();
+	ServiceType getServiceType();
 
-    void validateAuthorization(ServiceAuthorization serviceAuthorization) throws OpsException;
+	void validateAuthorization(ServiceAuthorization serviceAuthorization) throws OpsException;
 
-    void initialize();
+	void initialize();
 
-    Object getController(Class<?> itemClass) throws OpsException;
+	Object getController(Class<?> itemClass) throws OpsException;
 
-    MetricValues getMetricValues(ItemBase item, String serviceKey) throws OpsException;
+	MetricValues getMetricValues(ItemBase item, String serviceKey) throws OpsException;
 
-    Class<?> getJavaClass(ItemType itemType);
+	Class<?> getJavaClass(ItemType itemType);
 
-    boolean isSystemObject(ItemType itemType);
+	boolean isSystemObject(ItemType itemType);
 
-    ModelClass<?> getModelClass(ItemType itemType);
+	ModelClass<?> getModelClass(ItemType itemType);
 
-    PublicKey getSshPublicKey() throws OpsException;
+	PublicKey getSshPublicKey() throws OpsException;
 }

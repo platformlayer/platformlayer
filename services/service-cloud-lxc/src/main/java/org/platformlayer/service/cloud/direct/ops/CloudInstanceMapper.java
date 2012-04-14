@@ -30,76 +30,77 @@ import org.platformlayer.service.cloud.direct.ops.cloud.DirectCloudHost;
 import com.google.common.collect.Lists;
 
 public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
-    public DirectInstance instance;
-    public boolean createInstance = true;
+	public DirectInstance instance;
+	public boolean createInstance = true;
 
-    @Inject
-    ServiceContext service;
+	@Inject
+	ServiceContext service;
 
-    @Inject
-    PlatformLayerHelpers platformLayer;
+	@Inject
+	PlatformLayerHelpers platformLayer;
 
-    @Inject
-    OpsContext ops;
+	@Inject
+	OpsContext ops;
 
-    @Inject
-    CloudMap cloudMap;
+	@Inject
+	CloudMap cloudMap;
 
-    // Set during doOperation
-    private OpsTarget hostTarget;
-    private DirectCloud cloud;
+	// Set during doOperation
+	private OpsTarget hostTarget;
+	private DirectCloud cloud;
 
-    @Inject
-    InstanceHelpers instanceHelpers;
+	@Inject
+	InstanceHelpers instanceHelpers;
 
-    @Handler
-    public void doOperation() throws OpsException, IOException {
-        Tag tag = new Tag(Tag.ASSIGNED, OpsSystem.toKey(instance).getUrl());
-        List<DirectHost> hosts = Lists.newArrayList(platformLayer.listItems(DirectHost.class, Filter.byTag(tag)));
+	@Handler
+	public void doOperation() throws OpsException, IOException {
+		Tag tag = new Tag(Tag.ASSIGNED, OpsSystem.toKey(instance).getUrl());
+		List<DirectHost> hosts = Lists.newArrayList(platformLayer.listItems(DirectHost.class, Filter.byTag(tag)));
 
-        if (hosts.size() > 1) {
-            // Huh?
-            throw new OpsException("Multiple hosts already assigned");
-        }
+		if (hosts.size() > 1) {
+			// Huh?
+			throw new OpsException("Multiple hosts already assigned");
+		}
 
-        DirectHost host;
-        if (hosts.isEmpty()) {
-            if (createInstance) {
-                DirectCloudHost cloudHost = cloudMap.pickHost(instance);
-                host = cloudHost.getModel();
+		DirectHost host;
+		if (hosts.isEmpty()) {
+			if (createInstance) {
+				DirectCloudHost cloudHost = cloudMap.pickHost(instance);
+				host = cloudHost.getModel();
 
-                platformLayer.addTag(OpsSystem.toKey(host), tag);
-            } else {
-                throw new OpsException("Instance not yet assigned");
-            }
-        } else {
-            host = hosts.get(0);
-        }
+				platformLayer.addTag(OpsSystem.toKey(host), tag);
+			} else {
+				throw new OpsException("Instance not yet assigned");
+			}
+		} else {
+			host = hosts.get(0);
+		}
 
-        this.cloud = platformLayer.getItem(host.cloud, DirectCloud.class);
+		this.cloud = platformLayer.getItem(host.cloud, DirectCloud.class);
 
-        Machine machine = instanceHelpers.findMachine(host);
+		Machine machine = instanceHelpers.findMachine(host);
 
-        SshKey sshKey = service.getSshKey();
-        this.hostTarget = machine.getTarget(sshKey);
-    }
+		SshKey sshKey = service.getSshKey();
+		this.hostTarget = machine.getTarget(sshKey);
+	}
 
-    @Override
-    public void doRecurseOperation() throws OpsException {
-        // We expect doOperation to set hostTarget
-        if (hostTarget == null)
-            throw new IllegalStateException();
+	@Override
+	public void doRecurseOperation() throws OpsException {
+		// We expect doOperation to set hostTarget
+		if (hostTarget == null) {
+			throw new IllegalStateException();
+		}
 
-        BindingScope scope = BindingScope.push(hostTarget, cloud);
-        try {
-            OpsContext opsContext = OpsContext.get();
-            OperationRecursor.doRecurseChildren(opsContext, this);
-        } finally {
-            scope.pop();
-        }
-    }
+		BindingScope scope = BindingScope.push(hostTarget, cloud);
+		try {
+			OpsContext opsContext = OpsContext.get();
+			OperationRecursor.doRecurseChildren(opsContext, this);
+		} finally {
+			scope.pop();
+		}
+	}
 
-    @Override
-    protected void addChildren() throws OpsException {
-    }
+	@Override
+	protected void addChildren() throws OpsException {
+	}
 }

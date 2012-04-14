@@ -1,9 +1,9 @@
 package org.openstack.keystone.services;
 
 public interface GenericAuthenticator {
-    AuthenticationInfo authenticate(String username, String password) throws AuthenticatorException;
+	AuthenticationInfo authenticate(String username, String password) throws AuthenticatorException;
 
-    GroupMembershipOracle getGroupMembership();
+	GroupMembershipOracle getGroupMembership();
 
-    byte[] getUserSecret(String userId, byte[] tokenSecret) throws AuthenticatorException;
+	byte[] getUserSecret(String userId, byte[] tokenSecret) throws AuthenticatorException;
 }

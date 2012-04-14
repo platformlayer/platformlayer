@@ -12,12 +12,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ManagedItemCollection<T> implements Iterable<T> {
-    @XmlElementWrapper(name = "items")
-    @XmlElement(name = "item")
-    public List<T> items;
+	@XmlElementWrapper(name = "items")
+	@XmlElement(name = "item")
+	public List<T> items;
 
-    @Override
-    public Iterator<T> iterator() {
-        return items.iterator();
-    }
+	@Override
+	public Iterator<T> iterator() {
+		return items.iterator();
+	}
 }

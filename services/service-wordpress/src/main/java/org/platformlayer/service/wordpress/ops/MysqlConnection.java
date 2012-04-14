@@ -19,53 +19,53 @@ import org.platformlayer.service.mysql.model.MysqlServer;
 import org.platformlayer.service.mysql.ops.MysqlTarget;
 
 public class MysqlConnection extends OpsTreeBase implements CustomRecursor {
-    public PlatformLayerKey key;
-    public String username;
-    public Secret password;
+	public PlatformLayerKey key;
+	public String username;
+	public Secret password;
 
-    @Inject
-    PlatformLayerHelpers platformLayerHelpers;
+	@Inject
+	PlatformLayerHelpers platformLayerHelpers;
 
-    @Inject
-    InstanceHelpers instanceHelpers;
+	@Inject
+	InstanceHelpers instanceHelpers;
 
-    public static MysqlConnection build(PlatformLayerKey key) {
-        MysqlConnection mysql = injected(MysqlConnection.class);
-        mysql.key = key;
-        return mysql;
-    }
+	public static MysqlConnection build(PlatformLayerKey key) {
+		MysqlConnection mysql = injected(MysqlConnection.class);
+		mysql.key = key;
+		return mysql;
+	}
 
-    @Handler
-    public void handler() {
-    }
+	@Handler
+	public void handler() {
+	}
 
-    @Override
-    public void doRecurseOperation() throws OpsException {
-        MysqlServer mysqlServer = platformLayerHelpers.getItem(key, MysqlServer.class);
+	@Override
+	public void doRecurseOperation() throws OpsException {
+		MysqlServer mysqlServer = platformLayerHelpers.getItem(key, MysqlServer.class);
 
-        String username = this.username;
-        if (username == null) {
-            username = "root";
-            password = mysqlServer.rootPassword;
-        }
+		String username = this.username;
+		if (username == null) {
+			username = "root";
+			password = mysqlServer.rootPassword;
+		}
 
-        Machine machine = instanceHelpers.getMachine(mysqlServer);
+		Machine machine = instanceHelpers.getMachine(mysqlServer);
 
-        String address = machine.getAddress(NetworkPoint.forTargetInContext(), 3306);
-        MysqlTarget mysql = new MysqlTarget(address, username, password);
+		String address = machine.getAddress(NetworkPoint.forTargetInContext(), 3306);
+		MysqlTarget mysql = new MysqlTarget(address, username, password);
 
-        BindingScope scope = BindingScope.push(mysql);
-        try {
-            OpsContext opsContext = OpsContext.get();
-            OperationRecursor.doRecurseChildren(opsContext, this);
-        } finally {
-            scope.pop();
-        }
-    }
+		BindingScope scope = BindingScope.push(mysql);
+		try {
+			OpsContext opsContext = OpsContext.get();
+			OperationRecursor.doRecurseChildren(opsContext, this);
+		} finally {
+			scope.pop();
+		}
+	}
 
-    @Override
-    protected void addChildren() throws OpsException {
+	@Override
+	protected void addChildren() throws OpsException {
 
-    }
+	}
 
 }

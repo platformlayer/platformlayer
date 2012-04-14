@@ -9,9 +9,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Service {
-    public String type;
+	public String type;
 
-    public String name;
+	public String name;
 
-    public List<ServiceEndpoint> endpoints;
+	public List<ServiceEndpoint> endpoints;
 }

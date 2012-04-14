@@ -5,8 +5,8 @@ import org.platformlayer.ids.ServiceType;
 import org.platformlayer.xaas.model.ServiceAuthorization;
 
 public interface ServiceAuthorizationDao {
-    // TODO: Do we need a separate DAO and repository?
-    ServiceAuthorization getServiceAuthorization(ServiceType serviceType, ProjectId project);
+	// TODO: Do we need a separate DAO and repository?
+	ServiceAuthorization getServiceAuthorization(ServiceType serviceType, ProjectId project);
 
-    ServiceAuthorization createAuthorization(ProjectId project, ServiceAuthorization authorization);
+	ServiceAuthorization createAuthorization(ProjectId project, ServiceAuthorization authorization);
 }

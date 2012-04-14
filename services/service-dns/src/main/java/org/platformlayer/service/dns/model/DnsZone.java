@@ -14,5 +14,5 @@ import org.platformlayer.xaas.Controller;
 @Controller(DnsZoneController.class)
 @GwtModel
 public class DnsZone extends ItemBase {
-    public String dnsName;
+	public String dnsName;
 }

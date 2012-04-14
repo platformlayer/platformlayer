@@ -5,6 +5,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class OperatingSystemRecipe {
-    public String distribution;
-    public String version;
+	public String distribution;
+	public String version;
 }

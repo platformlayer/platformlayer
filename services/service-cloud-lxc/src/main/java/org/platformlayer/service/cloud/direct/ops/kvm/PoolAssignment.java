@@ -12,40 +12,40 @@ import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.lxc.FilesystemBackedPool;
 
 public class PoolAssignment implements Provider<Properties> {
-    public Provider<FilesystemBackedPool> poolProvider;
+	public Provider<FilesystemBackedPool> poolProvider;
 
-    public File holder;
+	public File holder;
 
-    private FilesystemBackedPool cachedPool;
+	private FilesystemBackedPool cachedPool;
 
-    private Properties assigned;
+	private Properties assigned;
 
-    private FilesystemBackedPool getPool() {
-        if (cachedPool == null) {
-            cachedPool = poolProvider.get();
-        }
-        return cachedPool;
-    }
+	private FilesystemBackedPool getPool() {
+		if (cachedPool == null) {
+			cachedPool = poolProvider.get();
+		}
+		return cachedPool;
+	}
 
-    private OpsTarget getTarget() {
-        return OpsContext.get().getInstance(OpsTarget.class);
-    }
+	private OpsTarget getTarget() {
+		return OpsContext.get().getInstance(OpsTarget.class);
+	}
 
-    @Handler
-    public void handler() throws OpsException {
-        if (assigned == null) {
-            FilesystemBackedPool pool = getPool();
-            String key = pool.assign(holder, true);
-            assigned = pool.readProperties(key);
-        }
-    }
+	@Handler
+	public void handler() throws OpsException {
+		if (assigned == null) {
+			FilesystemBackedPool pool = getPool();
+			String key = pool.assign(holder, true);
+			assigned = pool.readProperties(key);
+		}
+	}
 
-    public Properties getAssigned() {
-        return assigned;
-    }
+	public Properties getAssigned() {
+		return assigned;
+	}
 
-    @Override
-    public Properties get() {
-        return getAssigned();
-    }
+	@Override
+	public Properties get() {
+		return getAssigned();
+	}
 }

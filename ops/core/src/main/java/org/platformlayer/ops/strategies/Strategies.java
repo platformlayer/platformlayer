@@ -7,8 +7,8 @@ import org.platformlayer.ops.OpsException;
 
 public class Strategies {
 
-    public static List<Object> findChildren(Object controller) throws OpsException {
-        FindChildren findChildren = Injection.getInstance(FindChildren.class);
-        return findChildren.findChildren(controller);
-    }
+	public static List<Object> findChildren(Object controller) throws OpsException {
+		FindChildren findChildren = Injection.getInstance(FindChildren.class);
+		return findChildren.findChildren(controller);
+	}
 }

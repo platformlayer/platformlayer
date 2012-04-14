@@ -12,20 +12,20 @@ import org.platformlayer.core.model.Tags;
 import org.platformlayer.xaas.services.ModelClass;
 
 public class TagsResource extends XaasResourceBase {
-    @GET
-    @Produces({ XML, JSON })
-    public Tags listTags() throws RepositoryException {
-        boolean fetchTags = true;
-        ItemBase managedItem = getManagedItem(fetchTags);
-        return managedItem.getTags();
-    }
+	@GET
+	@Produces({ XML, JSON })
+	public Tags listTags() throws RepositoryException {
+		boolean fetchTags = true;
+		ItemBase managedItem = getManagedItem(fetchTags);
+		return managedItem.getTags();
+	}
 
-    @POST
-    @Consumes({ XML, JSON })
-    @Produces({ XML, JSON })
-    public Tags changeTags(TagChanges changeTags) throws RepositoryException {
-        ModelClass<?> modelClass = getModelClass();
+	@POST
+	@Consumes({ XML, JSON })
+	@Produces({ XML, JSON })
+	public Tags changeTags(TagChanges changeTags) throws RepositoryException {
+		ModelClass<?> modelClass = getModelClass();
 
-        return repository.changeTags(modelClass, getProject(), getItemId(), changeTags);
-    }
+		return repository.changeTags(modelClass, getProject(), getItemId(), changeTags);
+	}
 }

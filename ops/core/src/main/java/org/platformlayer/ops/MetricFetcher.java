@@ -26,129 +26,134 @@ import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 
 public class MetricFetcher {
-    @Inject
-    PlatformLayerHelpers platformLayer;
+	@Inject
+	PlatformLayerHelpers platformLayer;
 
-    @Inject
-    InstanceHelpers instances;
+	@Inject
+	InstanceHelpers instances;
 
-    @Inject
-    SshKeys sshKeys;
+	@Inject
+	SshKeys sshKeys;
 
-    @Inject
-    OpsContext ops;
+	@Inject
+	OpsContext ops;
 
-    public MetricValues fetch(ServiceProviderBase serviceProviderBase, ItemBase managedItem, String metricKey) throws OpsException {
-        Object controller = serviceProviderBase.getController(managedItem.getClass());
+	public MetricValues fetch(ServiceProviderBase serviceProviderBase, ItemBase managedItem, String metricKey)
+			throws OpsException {
+		Object controller = serviceProviderBase.getController(managedItem.getClass());
 
-        MetricConfig metricConfig = ops.getMetricInfo(controller);
+		MetricConfig metricConfig = ops.getMetricInfo(controller);
 
-        Metric metric = getMetricConfig(metricConfig, metricKey);
-        if (metric == null)
-            return null;
+		Metric metric = getMetricConfig(metricConfig, metricKey);
+		if (metric == null) {
+			return null;
+		}
 
-        String collectdMachineKey = null;
-        {
-            // TODO: Multiple machines per service
-            PlatformLayerKey modelKey = OpsSystem.toKey(managedItem);
-            collectdMachineKey = CollectdHelpers.toCollectdKey(modelKey);
-        }
+		String collectdMachineKey = null;
+		{
+			// TODO: Multiple machines per service
+			PlatformLayerKey modelKey = OpsSystem.toKey(managedItem);
+			collectdMachineKey = CollectdHelpers.toCollectdKey(modelKey);
+		}
 
-        // OpenstackComputeMachine itemMachine = instances.findMachine(managedItem);
-        // if (itemMachine != null) {
-        // collectdMachineKey = itemMachine.getAddress();
-        // }
+		// OpenstackComputeMachine itemMachine = instances.findMachine(managedItem);
+		// if (itemMachine != null) {
+		// collectdMachineKey = itemMachine.getAddress();
+		// }
 
-        if (collectdMachineKey == null) {
-            return null;
-        }
+		if (collectdMachineKey == null) {
+			return null;
+		}
 
-        for (CollectdService collectdService : platformLayer.listItems(CollectdService.class)) {
-            Machine machine = instances.findMachine(collectdService);
+		for (CollectdService collectdService : platformLayer.listItems(CollectdService.class)) {
+			Machine machine = instances.findMachine(collectdService);
 
-            // TODO: This is so evil...
-            SshKey collectdKey = sshKeys.findOtherServiceKey(new ServiceType("collectd"));
+			// TODO: This is so evil...
+			SshKey collectdKey = sshKeys.findOtherServiceKey(new ServiceType("collectd"));
 
-            if (collectdKey == null)
-                throw new OpsException("Cannot find SSH key to query collectd");
+			if (collectdKey == null) {
+				throw new OpsException("Cannot find SSH key to query collectd");
+			}
 
-            OpsTarget target = machine.getTarget(collectdKey);
+			OpsTarget target = machine.getTarget(collectdKey);
 
-            String metricDefName = metricKey.replace(".", "__");
+			String metricDefName = metricKey.replace(".", "__");
 
-            String filePath = "/var/lib/rrdcached/db/collectd/" + collectdMachineKey + "/" + metric.rrd;
-            String defineCommand = "DEF:" + metricDefName + "=" + filePath + ":value:AVERAGE";
-            String exportCommand = "XPORT:" + metricDefName + ":" + metricDefName;
-            Command command = Command.build("rrdtool xport  --daemon unix:/var/run/rrdcached.sock {0} {1} | gzip -f", defineCommand, exportCommand);
-            ProcessExecution execution = target.executeCommand(command);
+			String filePath = "/var/lib/rrdcached/db/collectd/" + collectdMachineKey + "/" + metric.rrd;
+			String defineCommand = "DEF:" + metricDefName + "=" + filePath + ":value:AVERAGE";
+			String exportCommand = "XPORT:" + metricDefName + ":" + metricDefName;
+			Command command = Command.build("rrdtool xport  --daemon unix:/var/run/rrdcached.sock {0} {1} | gzip -f",
+					defineCommand, exportCommand);
+			ProcessExecution execution = target.executeCommand(command);
 
-            MetricValues metricValues;
-            try {
-                byte[] stdoutGzipped = execution.getBinaryStdOut();
-                GZIPInputStream stdout = new GZIPInputStream(new ByteArrayInputStream(stdoutGzipped));
+			MetricValues metricValues;
+			try {
+				byte[] stdoutGzipped = execution.getBinaryStdOut();
+				GZIPInputStream stdout = new GZIPInputStream(new ByteArrayInputStream(stdoutGzipped));
 
-                String stderr = execution.getStdErr();
+				String stderr = execution.getStdErr();
 
-                if (!Strings.isNullOrEmpty(stderr)) {
-                    throw new OpsException("Error fetching rrd data: " + stderr);
-                }
-                // MetricValues uses the same XML format as RRD (for now)
-                metricValues = JaxbHelper.deserializeXmlObject(stdout, MetricValues.class, false);
-                // String xml = IoUtils.readAll(stdout);
-                // metricValues = JaxbHelper.deserializeXmlObject(xml, MetricValues.class);
-            } catch (IOException e) {
-                throw new OpsException("Error expanding output", e);
-            } catch (UnmarshalException e) {
-                throw new OpsException("Error parsing RRD output", e);
-            }
+				if (!Strings.isNullOrEmpty(stderr)) {
+					throw new OpsException("Error fetching rrd data: " + stderr);
+				}
+				// MetricValues uses the same XML format as RRD (for now)
+				metricValues = JaxbHelper.deserializeXmlObject(stdout, MetricValues.class, false);
+				// String xml = IoUtils.readAll(stdout);
+				// metricValues = JaxbHelper.deserializeXmlObject(xml, MetricValues.class);
+			} catch (IOException e) {
+				throw new OpsException("Error expanding output", e);
+			} catch (UnmarshalException e) {
+				throw new OpsException("Error parsing RRD output", e);
+			}
 
-            // TODO: We're deserializing the RRD, only to reserialize it to the exact same format
+			// TODO: We're deserializing the RRD, only to reserialize it to the exact same format
 
-            return metricValues;
-        }
+			return metricValues;
+		}
 
-        // No data found
-        return null;
-    }
+		// No data found
+		return null;
+	}
 
-    private Metric getMetricConfig(MetricConfig metricConfig, String metricKey) throws OpsException {
-        String[] components = metricKey.split("\\.");
+	private Metric getMetricConfig(MetricConfig metricConfig, String metricKey) throws OpsException {
+		String[] components = metricKey.split("\\.");
 
-        if (components.length == 0)
-            throw new IllegalArgumentException();
+		if (components.length == 0) {
+			throw new IllegalArgumentException();
+		}
 
-        int position = 0;
-        while (true) {
-            String component = components[position];
-            if ((position + 1) == components.length) {
-                if (metricConfig.metric != null) {
-                    for (Metric metric : metricConfig.metric) {
-                        if (Objects.equal(metric.key, component)) {
-                            return metric;
-                        }
-                    }
-                }
-            } else {
-                boolean found = false;
+		int position = 0;
+		while (true) {
+			String component = components[position];
+			if ((position + 1) == components.length) {
+				if (metricConfig.metric != null) {
+					for (Metric metric : metricConfig.metric) {
+						if (Objects.equal(metric.key, component)) {
+							return metric;
+						}
+					}
+				}
+			} else {
+				boolean found = false;
 
-                if (metricConfig.metrics != null) {
-                    for (MetricConfig tree : metricConfig.metrics) {
-                        if (Objects.equal(tree.key, component)) {
-                            position++;
-                            metricConfig = tree;
-                            found = true;
-                            break;
-                        }
-                    }
-                }
+				if (metricConfig.metrics != null) {
+					for (MetricConfig tree : metricConfig.metrics) {
+						if (Objects.equal(tree.key, component)) {
+							position++;
+							metricConfig = tree;
+							found = true;
+							break;
+						}
+					}
+				}
 
-                if (found) {
-                    continue;
-                }
-            }
+				if (found) {
+					continue;
+				}
+			}
 
-            return null;
-        }
-    }
+			return null;
+		}
+	}
 
 }

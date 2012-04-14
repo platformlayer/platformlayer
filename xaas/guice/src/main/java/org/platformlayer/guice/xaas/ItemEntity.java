@@ -8,24 +8,24 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "items")
 public class ItemEntity {
-    @Id
-    public int id;
+	@Id
+	public int id;
 
-    @Column
-    public int service;
+	@Column
+	public int service;
 
-    @Column
-    public int model;
+	@Column
+	public int model;
 
-    @Column
-    public String key;
+	@Column
+	public String key;
 
-    @Column
-    public int state;
+	@Column
+	public int state;
 
-    @Column
-    public byte[] data;
+	@Column
+	public byte[] data;
 
-    @Column
-    public byte[] secret;
+	@Column
+	public byte[] secret;
 }

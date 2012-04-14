@@ -12,24 +12,24 @@ import org.platformlayer.ops.machines.StorageConfiguration;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class RawCloudController extends OpsTreeBase implements CloudController {
-    static final Logger log = Logger.getLogger(RawCloudController.class);
+	static final Logger log = Logger.getLogger(RawCloudController.class);
 
-    @Handler
-    public void handler() throws OpsException, IOException {
-    }
+	@Handler
+	public void handler() throws OpsException, IOException {
+	}
 
-    @Override
-    protected void addChildren() throws OpsException {
-    }
+	@Override
+	protected void addChildren() throws OpsException {
+	}
 
-    @Override
-    public ImageStore getImageStore(MachineCloudBase cloud) throws OpsException {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public ImageStore getImageStore(MachineCloudBase cloud) throws OpsException {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public StorageConfiguration getStorageConfiguration(MachineCloudBase cloud) throws OpsException {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public StorageConfiguration getStorageConfiguration(MachineCloudBase cloud) throws OpsException {
+		throw new UnsupportedOperationException();
+	}
 
 }

@@ -33,183 +33,184 @@ import com.google.web.bindery.requestfactory.shared.Receiver;
 import com.google.web.bindery.requestfactory.shared.RequestFactory;
 import com.google.web.bindery.requestfactory.shared.WriteOperation;
 
-public abstract class ItemGrid<P extends EntityProxy, Context extends BaseEntityRequest<P>> extends Composite implements RequiresResize {
+public abstract class ItemGrid<P extends EntityProxy, Context extends BaseEntityRequest<P>> extends Composite implements
+		RequiresResize {
 
-    protected final SingleSelectionModel<P> selectionModel = new SingleSelectionModel<P>();
+	protected final SingleSelectionModel<P> selectionModel = new SingleSelectionModel<P>();
 
-    interface Binder extends UiBinder<Widget, ItemGrid> {
-    }
+	interface Binder extends UiBinder<Widget, ItemGrid> {
+	}
 
-    public interface Style extends CssResource {
-    }
+	public interface Style extends CssResource {
+	}
 
-    public interface TableResources extends DataGrid.Resources {
-        @Override
-        @Source(value = { DataGrid.Style.DEFAULT_CSS, "DataGridPatch.css" })
-        DataGrid.Style dataGridStyle();
-    }
+	public interface TableResources extends DataGrid.Resources {
+		@Override
+		@Source(value = { DataGrid.Style.DEFAULT_CSS, "DataGridPatch.css" })
+		DataGrid.Style dataGridStyle();
+	}
 
-    protected int offsetOf(EntityProxyId<P> personId) {
-        List<P> displayedItems = table.getVisibleItems();
-        for (int offset = 0, j = displayedItems.size(); offset < j; offset++) {
-            if (personId.equals(displayedItems.get(offset).stableId())) {
-                return offset;
-            }
-        }
-        return -1;
-    }
+	protected int offsetOf(EntityProxyId<P> personId) {
+		List<P> displayedItems = table.getVisibleItems();
+		for (int offset = 0, j = displayedItems.size(); offset < j; offset++) {
+			if (personId.equals(displayedItems.get(offset).stableId())) {
+				return offset;
+			}
+		}
+		return -1;
+	}
 
-    protected void refreshSelection() {
-        P person = selectionModel.getSelectedObject();
-        if (person == null) {
-            return;
-        }
-        // eventBus.fireEvent(new EditPersonEvent(person));
-        selectionModel.setSelected(person, false);
-    }
+	protected void refreshSelection() {
+		P person = selectionModel.getSelectedObject();
+		if (person == null) {
+			return;
+		}
+		// eventBus.fireEvent(new EditPersonEvent(person));
+		selectionModel.setSelected(person, false);
+	}
 
-    @UiField
-    DockLayoutPanel dock;
+	@UiField
+	DockLayoutPanel dock;
 
-    @UiField(provided = true)
-    SimplePager pager = new SimplePager();
+	@UiField(provided = true)
+	SimplePager pager = new SimplePager();
 
-    @UiField(provided = true)
-    DataGrid<P> table;
+	@UiField(provided = true)
+	DataGrid<P> table;
 
-    @UiField
-    Button create;
+	@UiField
+	Button create;
 
-    private final EventBus eventBus;
-    private int lastFetch;
-    private final int numRows = 20;
-    private final RequestFactory requestFactory;
+	private final EventBus eventBus;
+	private int lastFetch;
+	private final int numRows = 20;
+	private final RequestFactory requestFactory;
 
-    private final DomainModel<P, Context> model;
+	private final DomainModel<P, Context> model;
 
-    public ItemGrid(DomainModel<P, Context> model) {
-        this.model = model;
+	public ItemGrid(DomainModel<P, Context> model) {
+		this.model = model;
 
-        this.eventBus = Injection.injector().getEventBus();
-        this.requestFactory = Injection.injector().getRequestFactory();
+		this.eventBus = Injection.injector().getEventBus();
+		this.requestFactory = Injection.injector().getRequestFactory();
 
-        table = new DataGrid<P>(numRows, GWT.<TableResources> create(TableResources.class));
-        initWidget(GWT.<Binder> create(Binder.class).createAndBindUi(this));
+		table = new DataGrid<P>(numRows, GWT.<TableResources> create(TableResources.class));
+		initWidget(GWT.<Binder> create(Binder.class).createAndBindUi(this));
 
-        create.setText("New " + model.getClass().toString());
+		create.setText("New " + model.getClass().toString());
 
-        addColumns(table);
+		addColumns(table);
 
-        // table.addColumn(new ScheduleColumn(), "Schedule");
-        table.setRowCount(numRows, false);
-        table.setSelectionModel(selectionModel);
-        table.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.DISABLED);
+		// table.addColumn(new ScheduleColumn(), "Schedule");
+		table.setRowCount(numRows, false);
+		table.setSelectionModel(selectionModel);
+		table.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.DISABLED);
 
-        EntityProxyChange.registerForProxyType(eventBus, model.getProxyClass(), new EntityProxyChange.Handler<P>() {
-            @Override
-            public void onProxyChange(EntityProxyChange<P> event) {
-                ItemGrid.this.onPersonChanged(event);
-            }
-        });
+		EntityProxyChange.registerForProxyType(eventBus, model.getProxyClass(), new EntityProxyChange.Handler<P>() {
+			@Override
+			public void onProxyChange(EntityProxyChange<P> event) {
+				ItemGrid.this.onPersonChanged(event);
+			}
+		});
 
-        // FilterChangeEvent.register(eventBus, new FilterChangeEvent.Handler() {
-        // @Override
-        // public void onFilterChanged(FilterChangeEvent e) {
-        // filter.set(e.getDay(), e.isSelected());
-        // if (!pending) {
-        // pending = true;
-        // Scheduler.get().scheduleFinally(new ScheduledCommand() {
-        // @Override
-        // public void execute() {
-        // pending = false;
-        // fetch(0);
-        // }
-        // });
-        // }
-        // }
-        // });
+		// FilterChangeEvent.register(eventBus, new FilterChangeEvent.Handler() {
+		// @Override
+		// public void onFilterChanged(FilterChangeEvent e) {
+		// filter.set(e.getDay(), e.isSelected());
+		// if (!pending) {
+		// pending = true;
+		// Scheduler.get().scheduleFinally(new ScheduledCommand() {
+		// @Override
+		// public void execute() {
+		// pending = false;
+		// fetch(0);
+		// }
+		// });
+		// }
+		// }
+		// });
 
-        selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
-            @Override
-            public void onSelectionChange(SelectionChangeEvent event) {
-                ItemGrid.this.refreshSelection();
-            }
-        });
+		selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
+			@Override
+			public void onSelectionChange(SelectionChangeEvent event) {
+				ItemGrid.this.refreshSelection();
+			}
+		});
 
-        fetch(0);
-    }
+		fetch(0);
+	}
 
-    protected abstract void addColumns(DataGrid<P> table);
+	protected abstract void addColumns(DataGrid<P> table);
 
-    @UiHandler("create")
-    void onCreate(ClickEvent event) {
-        Context context = model.context(requestFactory);
+	@UiHandler("create")
+	void onCreate(ClickEvent event) {
+		Context context = model.context(requestFactory);
 
-        P item = context.edit(context.create(model.getProxyClass()));
-        model.persist(context, item);
-        eventBus.fireEvent(new EditItemEvent(model, item, context));
-    }
+		P item = context.edit(context.create(model.getProxyClass()));
+		model.persist(context, item);
+		eventBus.fireEvent(new EditItemEvent(model, item, context));
+	}
 
-    void onPersonChanged(EntityProxyChange<P> event) {
-        if (WriteOperation.PERSIST.equals(event.getWriteOperation())) {
-            // Re-fetch if we're already displaying the last page
-            if (table.isRowCountExact()) {
-                fetch(lastFetch + 1);
-            }
-        }
-        if (WriteOperation.UPDATE.equals(event.getWriteOperation())) {
-            EntityProxyId<P> personId = event.getProxyId();
+	void onPersonChanged(EntityProxyChange<P> event) {
+		if (WriteOperation.PERSIST.equals(event.getWriteOperation())) {
+			// Re-fetch if we're already displaying the last page
+			if (table.isRowCountExact()) {
+				fetch(lastFetch + 1);
+			}
+		}
+		if (WriteOperation.UPDATE.equals(event.getWriteOperation())) {
+			EntityProxyId<P> personId = event.getProxyId();
 
-            // Is the changing record onscreen?
-            int displayOffset = offsetOf(personId);
-            if (displayOffset != -1) {
-                // Record is onscreen and may differ from our data
-                requestFactory.find(personId).fire(new Receiver<P>() {
-                    @Override
-                    public void onSuccess(P person) {
-                        // Re-check offset in case of changes while waiting for data
-                        EntityProxyId<P> stableId = (EntityProxyId<P>) person.stableId();
-                        int offset = offsetOf(stableId);
-                        if (offset != -1) {
-                            table.setRowData(table.getPageStart() + offset, Collections.singletonList(person));
-                        }
-                    }
-                });
-            }
-        }
-    }
+			// Is the changing record onscreen?
+			int displayOffset = offsetOf(personId);
+			if (displayOffset != -1) {
+				// Record is onscreen and may differ from our data
+				requestFactory.find(personId).fire(new Receiver<P>() {
+					@Override
+					public void onSuccess(P person) {
+						// Re-check offset in case of changes while waiting for data
+						EntityProxyId<P> stableId = (EntityProxyId<P>) person.stableId();
+						int offset = offsetOf(stableId);
+						if (offset != -1) {
+							table.setRowData(table.getPageStart() + offset, Collections.singletonList(person));
+						}
+					}
+				});
+			}
+		}
+	}
 
-    @UiHandler("table")
-    void onRangeChange(RangeChangeEvent event) {
-        Range r = event.getNewRange();
-        int start = r.getStart();
+	@UiHandler("table")
+	void onRangeChange(RangeChangeEvent event) {
+		Range r = event.getNewRange();
+		int start = r.getStart();
 
-        fetch(start);
-    }
+		fetch(start);
+	}
 
-    private void fetch(final int start) {
-        lastFetch = start;
-        model.findAll(requestFactory).fire(new Receiver<List<P>>() {
-            @Override
-            public void onSuccess(List<P> response) {
-                if (lastFetch != start) {
-                    return;
-                }
+	private void fetch(final int start) {
+		lastFetch = start;
+		model.findAll(requestFactory).fire(new Receiver<List<P>>() {
+			@Override
+			public void onSuccess(List<P> response) {
+				if (lastFetch != start) {
+					return;
+				}
 
-                int responses = response.size();
-                table.setRowData(start, response);
-                pager.setPageStart(start);
-                if (start == 0 || !table.isRowCountExact()) {
-                    table.setRowCount(start + responses, responses < numRows);
-                }
-            }
-        });
-    }
+				int responses = response.size();
+				table.setRowData(start, response);
+				pager.setPageStart(start);
+				if (start == 0 || !table.isRowCountExact()) {
+					table.setRowCount(start + responses, responses < numRows);
+				}
+			}
+		});
+	}
 
-    @Override
-    public void onResize() {
-        // TODO: Is this really required??
-        dock.onResize();
-    }
+	@Override
+	public void onResize() {
+		// TODO: Is this really required??
+		dock.onResize();
+	}
 
 }

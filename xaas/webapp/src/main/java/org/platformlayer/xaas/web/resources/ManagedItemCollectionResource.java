@@ -20,71 +20,71 @@ import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.xaas.services.ModelClass;
 
-
 public class ManagedItemCollectionResource extends XaasResourceBase {
-    static final Logger log = Logger.getLogger(ManagedItemCollectionResource.class);
+	static final Logger log = Logger.getLogger(ManagedItemCollectionResource.class);
 
-    @Inject
-    ItemService itemService;
+	@Inject
+	ItemService itemService;
 
-    @Path("{id}")
-    @Produces({ XML, JSON })
-    public ManagedItemResource retrieveSingleService(@PathParam("id") String id) {
-        ManagedItemId itemId = new ManagedItemId(id);
-        getScope().put(itemId);
+	@Path("{id}")
+	@Produces({ XML, JSON })
+	public ManagedItemResource retrieveSingleService(@PathParam("id") String id) {
+		ManagedItemId itemId = new ManagedItemId(id);
+		getScope().put(itemId);
 
-        ManagedItemResource resource = objectInjector.getInstance(ManagedItemResource.class);
-        return resource;
-    }
+		ManagedItemResource resource = objectInjector.getInstance(ManagedItemResource.class);
+		return resource;
+	}
 
-    @GET
-    @Produces({ XML, JSON })
-    public <T extends ItemBase> ManagedItemCollection<T> listItems() throws OpsException {
-        ModelClass<T> modelClass = (ModelClass<T>) getModelClass();
+	@GET
+	@Produces({ XML, JSON })
+	public <T extends ItemBase> ManagedItemCollection<T> listItems() throws OpsException {
+		ModelClass<T> modelClass = (ModelClass<T>) getModelClass();
 
-        List<T> listItems = itemService.findAll(getAuthentication(), modelClass.getJavaClass());
-        ManagedItemCollection<T> collection = new ManagedItemCollection<T>();
-        collection.items = listItems;
+		List<T> listItems = itemService.findAll(getAuthentication(), modelClass.getJavaClass());
+		ManagedItemCollection<T> collection = new ManagedItemCollection<T>();
+		collection.items = listItems;
 
-        return collection;
-    }
+		return collection;
+	}
 
-    @POST
-    @Consumes({ XML })
-    @Produces({ XML })
-    public <T extends ItemBase> T createItem(final T item) throws RepositoryException, OpsException {
-        // ModelClass<T> modelClass = (ModelClass<T>) getModelClass();
+	@POST
+	@Consumes({ XML })
+	@Produces({ XML })
+	public <T extends ItemBase> T createItem(final T item) throws RepositoryException, OpsException {
+		// ModelClass<T> modelClass = (ModelClass<T>) getModelClass();
 
-        // TODO: Does it matter that we're not checking the item type??
-        return itemService.createItem(getAuthentication(), item);
-    }
+		// TODO: Does it matter that we're not checking the item type??
+		return itemService.createItem(getAuthentication(), item);
+	}
 
-    @POST
-    @Consumes({ JSON })
-    @Produces({ JSON })
-    public <T extends ItemBase> T createItemJson(String json) throws RepositoryException, OpsException, JAXBException, XMLStreamException {
-        T typedItem = readItem(json);
+	@POST
+	@Consumes({ JSON })
+	@Produces({ JSON })
+	public <T extends ItemBase> T createItemJson(String json) throws RepositoryException, OpsException, JAXBException,
+			XMLStreamException {
+		T typedItem = readItem(json);
 
-        return itemService.createItem(getAuthentication(), typedItem);
-    }
+		return itemService.createItem(getAuthentication(), typedItem);
+	}
 
-    // private Tags deserializeTags(HttpHeaders hh) {
-    // Tags tags = new Tags();
-    //
-    // MultivaluedMap<String, String> headerParams = hh.getRequestHeaders();
-    // for (Entry<String, List<String>> header : headerParams.entrySet()) {
-    // String key = header.getKey();
-    // if (!key.startsWith("X-Tag-")) {
-    // continue;
-    // }
-    // key = key.substring(6);
-    //
-    // for (String value : header.getValue()) {
-    // tags.add(key, value);
-    // }
-    // }
-    //
-    // return tags;
-    // }
+	// private Tags deserializeTags(HttpHeaders hh) {
+	// Tags tags = new Tags();
+	//
+	// MultivaluedMap<String, String> headerParams = hh.getRequestHeaders();
+	// for (Entry<String, List<String>> header : headerParams.entrySet()) {
+	// String key = header.getKey();
+	// if (!key.startsWith("X-Tag-")) {
+	// continue;
+	// }
+	// key = key.substring(6);
+	//
+	// for (String value : header.getValue()) {
+	// tags.add(key, value);
+	// }
+	// }
+	//
+	// return tags;
+	// }
 
 }

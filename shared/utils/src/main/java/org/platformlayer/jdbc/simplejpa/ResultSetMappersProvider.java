@@ -7,40 +7,41 @@ import com.google.inject.Provider;
 
 public class ResultSetMappersProvider implements Provider<ResultSetMappers> {
 
-    private ResultSetMappers resultSetMappers;
+	private ResultSetMappers resultSetMappers;
 
-    private List<Class> modelClasses = Lists.newArrayList();
+	private List<Class> modelClasses = Lists.newArrayList();
 
-    @Override
-    public ResultSetMappers get() {
-        if (resultSetMappers == null) {
-            seal();
-        }
-        return resultSetMappers;
-    }
+	@Override
+	public ResultSetMappers get() {
+		if (resultSetMappers == null) {
+			seal();
+		}
+		return resultSetMappers;
+	}
 
-    public synchronized void seal() {
-        if (resultSetMappers != null) {
-            throw new IllegalStateException();
-        }
-        Class[] modelClassesArray = (Class[]) modelClasses.toArray(new Class[modelClasses.size()]);
-        resultSetMappers = new ResultSetMappers(DatabaseNameMapping.POSTGRESQL, modelClassesArray);
-    }
+	public synchronized void seal() {
+		if (resultSetMappers != null) {
+			throw new IllegalStateException();
+		}
+		Class[] modelClassesArray = modelClasses.toArray(new Class[modelClasses.size()]);
+		resultSetMappers = new ResultSetMappers(DatabaseNameMapping.POSTGRESQL, modelClassesArray);
+	}
 
-    public void add(Class clazz) {
-        if (resultSetMappers != null) {
-            throw new IllegalStateException("Result set mapping has already been built");
-        }
-        modelClasses.add(clazz);
-    }
+	public void add(Class clazz) {
+		if (resultSetMappers != null) {
+			throw new IllegalStateException("Result set mapping has already been built");
+		}
+		modelClasses.add(clazz);
+	}
 
-    public static ResultSetMappersProvider build(Class... classes) {
-        ResultSetMappersProvider provider = new ResultSetMappersProvider();
-        for (Class clazz : classes)
-            provider.add(clazz);
+	public static ResultSetMappersProvider build(Class... classes) {
+		ResultSetMappersProvider provider = new ResultSetMappersProvider();
+		for (Class clazz : classes) {
+			provider.add(clazz);
+		}
 
-        provider.seal();
+		provider.seal();
 
-        return provider;
-    }
+		return provider;
+	}
 }
