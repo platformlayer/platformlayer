@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ServiceInfo;
@@ -236,11 +237,14 @@ public class OpsSystem {
         return "http://127.0.0.1:8082/v0/";
     }
 
-    public static OpsSystem get() {
-        if (INSTANCE == null)
-            throw new IllegalStateException();
-        return INSTANCE;
-    }
+	public static void safeSleep(TimeSpan timeSpan) throws OpsException {
+		try {
+			Thread.sleep(timeSpan.getTotalMilliseconds());
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new OpsException("Interrupted", e);
+		}
+	}
 
     // private <T> PlatformLayerKey toKey(Class<T> itemClass) throws OpsException {
     // for (ServiceInfo service : serviceDictionary.getAllServices(false)) {
@@ -260,4 +264,5 @@ public class OpsSystem {
     // PlatformLayerKey plk = OpsSystem.get().toKey(itemClass);
     // return plk.withId(new ManagedItemId(itemId));
     // }
+
 }

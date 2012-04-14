@@ -106,11 +106,10 @@ public class ITSolrService extends PlatformLayerApiTest {
 	// String customFieldKey = "customfield1";
 	// testSolrCustomField(url, customFieldKey);
 	// }
-	//
-	// // Use
-	// // @Test
+
+	// @Test
 	// public void test3() throws Exception {
-	// String id = "XraPqNJk";
+	// String id = "lLkaoeK5";
 	//
 	// SolrCluster cluster = getItem(id, SolrCluster.class);
 	//
@@ -127,7 +126,7 @@ public class ITSolrService extends PlatformLayerApiTest {
 	// String url = "http://" + socketAddress.getAddress().getHostAddress() + ":" + socketAddress.getPort() + "/solr";
 	// // testSolr(url);
 	//
-	// String customFieldKey = "customfield123";
+	// String customFieldKey = "customfield" + random.nextLong();
 	//
 	// SolrSchemaField field = new SolrSchemaField();
 	// field.name = customFieldKey;
@@ -143,6 +142,8 @@ public class ITSolrService extends PlatformLayerApiTest {
 	// JobData configureJob = doConfigure(server);
 	//
 	// waitForJobComplete(configureJob);
+	//
+	// Thread.sleep(5000);
 	//
 	// testSolrCustomField(url, customFieldKey);
 	// }

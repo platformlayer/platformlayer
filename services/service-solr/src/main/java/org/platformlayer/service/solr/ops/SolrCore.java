@@ -1,12 +1,15 @@
 package org.platformlayer.service.solr.ops;
 
 import org.apache.log4j.Logger;
+import org.platformlayer.TimeSpan;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.OpsTarget;
-import org.platformlayer.ops.helpers.CurlRequest;
-import org.platformlayer.ops.helpers.CurlResult;
+import org.platformlayer.service.solr.ops.SolrCoreHelpers.SolrCoreStatus;
+
+import com.google.common.base.Objects;
 
 public class SolrCore {
 	static final Logger log = Logger.getLogger(SolrCore.class);
@@ -15,15 +18,27 @@ public class SolrCore {
 
 	@Handler
 	public void handler(OpsTarget target) throws OpsException {
-		String url = "http://127.0.0.1:8080/solr/admin/cores?core=" + key;
+		SolrCoreHelpers helper = new SolrCoreHelpers(target, key);
 
 		if (OpsContext.isConfigure()) {
-			// TODO: only if changed??
-			url += "&action=RELOAD";
+			// TODO: only reload if changed??
+			SolrCoreStatus status0 = helper.getStatus();
 
-			CurlRequest request = new CurlRequest(url);
-			CurlResult result = request.executeRequest(target);
-			log.info("result: " + result);
+			helper.reload();
+
+			// TODO: It looks like reload is async; hopefully this check deals with that
+			SolrCoreStatus status1 = helper.getStatus();
+
+			while (true) {
+				String startTime0 = status0.getStartTime();
+				String startTime1 = status1.getStartTime();
+				if (!Objects.equal(startTime0, startTime1)) {
+					break;
+				}
+
+				OpsSystem.safeSleep(TimeSpan.ONE_SECOND);
+			}
 		}
 	}
+
 }
