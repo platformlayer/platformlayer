@@ -3,12 +3,12 @@ package org.platformlayer.ops.filesystem;
 import java.io.File;
 import java.io.IOException;
 
+import org.platformlayer.TimeSpan;
 import org.platformlayer.crypto.Md5Hash;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.helpers.CurlRequest;
-import org.platformlayer.ops.process.ProcessExecution;
 
 public class DownloadFile extends ManagedFile {
 	public String url;
@@ -24,6 +24,8 @@ public class DownloadFile extends ManagedFile {
 		Command curlCommand = curlRequest.toCommand();
 		curlCommand.addLiteral(">");
 		curlCommand.addFile(remoteFilePath);
+
+		curlCommand.setTimeout(TimeSpan.FIVE_MINUTES);
 
 		target.executeCommand(curlCommand);
 	}
