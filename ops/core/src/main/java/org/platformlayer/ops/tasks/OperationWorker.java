@@ -156,7 +156,7 @@ public class OperationWorker implements Callable<Object> {
 
 			// TODO: Create new/copy of worker??
 			OperationWorker retryTask = this;
-			opsSystem.getOperationQueue().submit(retryTask, retry);
+			opsSystem.getOperationQueue().submitRetry(retryTask, retry);
 
 			return null;
 		} finally {

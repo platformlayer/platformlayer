@@ -20,7 +20,7 @@ public class SimpleOperationQueue implements OperationQueue {
     }
 
     @Override
-    public void submit(final OperationWorker operationWorker, TimeSpan delay) {
+    public void submitRetry(final OperationWorker operationWorker, TimeSpan delay) {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {

@@ -24,24 +24,21 @@ public class JobRegistry {
 	OpsSystem opsSystem;
 
 	@Inject
-	OperationQueue operationQueue;
-
-	@Inject
 	JobRepository repository;
 
 	final Map<PlatformLayerKey, JobRecord> activeJobs = Maps.newHashMap();
 
 	final LinkedList<JobRecord> recentJobs = Lists.newLinkedList();
 
+	@Inject
+	JobGraph jobGraph;
+
 	public PlatformLayerKey enqueueOperation(OperationType operationType, OpsAuthentication auth,
 			PlatformLayerKey targetItem) {
 		JobKey key = new JobKey(targetItem, operationType);
 		JobRecord jobRecord = new JobRecord(key, targetItem.getServiceType(), auth);
 
-		OperationWorker operationWorker = new OperationWorker(opsSystem, jobRecord);
-		operationQueue.submit(operationWorker);
-
-		return jobRecord.getJobKey();
+		return jobGraph.trigger(jobRecord);
 	}
 
 	private static final int RECENT_JOB_COUNT = 100;
@@ -59,7 +56,7 @@ public class JobRegistry {
 		return jobs;
 	}
 
-	public void recordJobEnd(JobRecord record) throws OpsException {
+	void recordJobEnd(JobRecord record) throws OpsException {
 		PlatformLayerKey key = record.getJobData().key;
 
 		synchronized (activeJobs) {
@@ -80,7 +77,7 @@ public class JobRegistry {
 		}
 	}
 
-	public JobRecord startJob(JobRecord jobRecord) {
+	JobRecord startJob(JobRecord jobRecord) {
 		PlatformLayerKey jobKey = jobRecord.getJobKey();
 
 		if (jobKey != null) {
