@@ -41,6 +41,7 @@
         <module>service-desktop</module>
         <module>service-memcache</module>
         <module>service-solr</module>
+        <module>service-redis</module>
     </modules>
     <build>
         <resources>
