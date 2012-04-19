@@ -12,8 +12,8 @@ import org.platformlayer.service.imagefactory.v1.OperatingSystemRecipe;
 import org.platformlayer.service.imagefactory.v1.Repository;
 
 public class JavaVirtualMachine extends OpsTreeBase implements HasDiskImageRecipe {
-
 	public String version;
+	public boolean addJdk = true;
 
 	@Handler
 	public void handler() {
@@ -46,8 +46,10 @@ public class JavaVirtualMachine extends OpsTreeBase implements HasDiskImageRecip
 			DiskImageRecipeBuilder.addPreconfigure(recipe, "sun-java6-jdk", "shared/present-sun-dlj-v1-1", "note", "");
 			DiskImageRecipeBuilder.addPreconfigure(recipe, "sun-java6-jre", "shared/present-sun-dlj-v1-1", "note", "");
 
-			recipe.getAddPackage().add("sun-java6-jdk");
 			recipe.getAddPackage().add("sun-java6-jre");
+			if (addJdk) {
+				recipe.getAddPackage().add("sun-java6-jdk");
+			}
 		} else if (version.equals("7")) {
 			OperatingSystemRecipe operatingSystem = recipe.getOperatingSystem();
 			if (operatingSystem == null) {
@@ -90,27 +92,42 @@ public class JavaVirtualMachine extends OpsTreeBase implements HasDiskImageRecip
 				addChild(jre);
 			}
 
-			addChild(PackageDependency.build("sun-java6-jdk"));
+			if (addJdk) {
+				addChild(PackageDependency.build("sun-java6-jdk"));
+			}
 		} else if (version.equals("7")) {
 			addChild(PackageDependency.build("openjdk-7-jre"));
+
+			if (addJdk) {
+				addChild(PackageDependency.build("openjdk-7-jdk"));
+			}
 		} else {
 			throw new IllegalArgumentException("Unknown java version: " + version);
 		}
 
 	}
 
-	public static JavaVirtualMachine build(String version) {
+	public static JavaVirtualMachine build(String version, boolean addJdk) {
 		JavaVirtualMachine jvm = Injection.getInstance(JavaVirtualMachine.class);
 		jvm.version = version;
+		jvm.addJdk = addJdk;
 		return jvm;
 	}
 
 	public static JavaVirtualMachine buildJava6() {
-		return build("6");
+		return build("6", true);
 	}
 
 	public static JavaVirtualMachine buildJava7() {
-		return build("7");
+		return build("7", true);
+	}
+
+	public static JavaVirtualMachine buildJre7() {
+		return build("7", false);
+	}
+
+	public static JavaVirtualMachine buildJdk7() {
+		return build("7", true);
 	}
 
 }
