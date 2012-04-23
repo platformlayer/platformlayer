@@ -12,80 +12,82 @@ import org.platformlayer.ops.filesystem.ManagedDirectory;
 import org.platformlayer.ops.filesystem.ManagedSymlink;
 import org.platformlayer.ops.java.JavaVirtualMachine;
 import org.platformlayer.ops.maven.MavenReference;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
 import org.platformlayer.ops.packages.PackageDependency;
 import org.platformlayer.ops.supervisor.SupervisorInstance;
 import org.platformlayer.ops.supervisor.SupervisordService;
+import org.platformlayer.ops.tree.OpsTreeBase;
 
 public abstract class ZippedService extends OpsTreeBase {
-    static final Logger log = Logger.getLogger(ZippedService.class);
+	static final Logger log = Logger.getLogger(ZippedService.class);
 
-    @Inject
-    SoftwareRepositoryHelpers softwareRepository;
+	@Inject
+	SoftwareRepositoryHelpers softwareRepository;
 
-    @Handler
-    public void doOperation() throws OpsException, IOException {
-    }
+	@Handler
+	public void doOperation() throws OpsException, IOException {
+	}
 
-    public File getLogDir() {
-        return null;
-    }
+	public File getLogDir() {
+		return null;
+	}
 
-    public File getWorkDir() {
-        return new File("/var", getFriendlyKey());
-    }
+	public File getWorkDir() {
+		return new File("/var", getFriendlyKey());
+	}
 
-    public String getFriendlyKey() {
-        return getMavenReference().artifactId;
-    }
+	public String getFriendlyKey() {
+		return getMavenReference().artifactId;
+	}
 
-    @Override
-    protected void addChildren() throws OpsException {
-        addChild(PackageDependency.build("unzip"));
+	@Override
+	protected void addChildren() throws OpsException {
+		addChild(PackageDependency.build("unzip"));
 
-        addChild(injected(SupervisordService.class));
+		addChild(injected(SupervisordService.class));
 
-        addChild(JavaVirtualMachine.buildJava7());
+		addChild(JavaVirtualMachine.buildJava7());
 
-        {
-            File logPath = getLogDir();
-            if (logPath != null) {
-                ManagedDirectory logDir = ManagedDirectory.build(logPath, "755");
-                addChild(logDir);
-            }
-        }
+		{
+			File logPath = getLogDir();
+			if (logPath != null) {
+				ManagedDirectory logDir = ManagedDirectory.build(logPath, "755");
+				addChild(logDir);
+			}
+		}
 
-        MavenReference mavenReference = getMavenReference();
+		MavenReference mavenReference = getMavenReference();
 
-        File rootDir = new File("/opt/" + getFriendlyKey() + "/current");
-        File workDir = getWorkDir();
+		File rootDir = new File("/opt/" + getFriendlyKey() + "/current");
+		File workDir = getWorkDir();
 
-        {
-            MavenFile zip = injected(MavenFile.class);
+		{
+			MavenFile zip = injected(MavenFile.class);
 
-            zip.mavenReference = mavenReference;
+			zip.mavenReference = mavenReference;
 
-            zip.basePath = softwareRepository.getMavenBasePath();
+			zip.basePath = softwareRepository.getMavenBasePath();
 
-            zip.repositoryPath = new File("/var/repository");
-            zip.expandPath = rootDir;
+			zip.repositoryPath = new File("/var/repository");
+			zip.expandPath = rootDir;
 
-            addChild(zip);
-        }
+			addChild(zip);
+		}
 
-        String supervisorKey = getFriendlyKey();
+		String supervisorKey = getFriendlyKey();
 
-        {
-            ManagedSymlink symlink = ManagedSymlink.build(new File("/etc/supervisor/conf.d/" + supervisorKey + ".conf"), new File(workDir, "supervisord.conf"));
-            addChild(symlink);
-        }
+		{
+			ManagedSymlink symlink = ManagedSymlink.build(
+					new File("/etc/supervisor/conf.d/" + supervisorKey + ".conf"),
+					new File(workDir, "supervisord.conf"));
+			addChild(symlink);
+		}
 
-        {
-            SupervisorInstance service = injected(SupervisorInstance.class);
-            service.id = supervisorKey;
-            addChild(service);
-        }
-    }
+		{
+			SupervisorInstance service = injected(SupervisorInstance.class);
+			service.id = supervisorKey;
+			addChild(service);
+		}
+	}
 
-    protected abstract MavenReference getMavenReference();
+	protected abstract MavenReference getMavenReference();
 }

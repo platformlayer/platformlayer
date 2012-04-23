@@ -13,63 +13,63 @@ import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
-import org.platformlayer.ops.metrics.collectd.OpsTreeBase;
 import org.platformlayer.ops.networks.NetworkPoint;
+import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.postgresql.model.PostgresqlServer;
 
 public class PostgresqlConnection extends OpsTreeBase implements CustomRecursor {
-    public static final int POSTGRES_PORT = 5432;
+	public static final int POSTGRES_PORT = 5432;
 
-    public PlatformLayerKey key;
-    public String username;
-    public Secret password;
+	public PlatformLayerKey key;
+	public String username;
+	public Secret password;
 
-    @Inject
-    PlatformLayerHelpers platformLayer;
+	@Inject
+	PlatformLayerHelpers platformLayer;
 
-    @Inject
-    InstanceHelpers instanceHelpers;
+	@Inject
+	InstanceHelpers instanceHelpers;
 
-    public static PostgresqlConnection build(PlatformLayerKey key) {
-        PostgresqlConnection mysql = injected(PostgresqlConnection.class);
-        mysql.key = key;
-        return mysql;
-    }
+	public static PostgresqlConnection build(PlatformLayerKey key) {
+		PostgresqlConnection mysql = injected(PostgresqlConnection.class);
+		mysql.key = key;
+		return mysql;
+	}
 
-    @Handler
-    public void handler() {
-    }
+	@Handler
+	public void handler() {
+	}
 
-    @Override
-    public void doRecurseOperation() throws OpsException {
-        PostgresqlServer pgServer = platformLayer.getItem(key, PostgresqlServer.class);
+	@Override
+	public void doRecurseOperation() throws OpsException {
+		PostgresqlServer pgServer = platformLayer.getItem(key, PostgresqlServer.class);
 
-        String username = this.username;
-        if (username == null) {
-            username = "postgres";
-        }
+		String username = this.username;
+		if (username == null) {
+			username = "postgres";
+		}
 
-        if (username.equals("postgres") && password == null) {
-            password = pgServer.rootPassword;
-        }
+		if (username.equals("postgres") && password == null) {
+			password = pgServer.rootPassword;
+		}
 
-        Machine machine = instanceHelpers.getMachine(pgServer);
+		Machine machine = instanceHelpers.getMachine(pgServer);
 
-        String address = machine.getAddress(NetworkPoint.forTargetInContext(), POSTGRES_PORT);
-        PostgresTarget mysql = new PostgresTarget(address, username, password);
+		String address = machine.getAddress(NetworkPoint.forTargetInContext(), POSTGRES_PORT);
+		PostgresTarget mysql = new PostgresTarget(address, username, password);
 
-        BindingScope scope = BindingScope.push(mysql);
-        try {
-            OpsContext opsContext = OpsContext.get();
-            OperationRecursor.doRecurseChildren(opsContext, this);
-        } finally {
-            scope.pop();
-        }
-    }
+		BindingScope scope = BindingScope.push(mysql);
+		try {
+			OpsContext opsContext = OpsContext.get();
+			OperationRecursor.doRecurseChildren(opsContext, this);
+		} finally {
+			scope.pop();
+		}
+	}
 
-    @Override
-    protected void addChildren() throws OpsException {
+	@Override
+	protected void addChildren() throws OpsException {
 
-    }
+	}
 
 }
