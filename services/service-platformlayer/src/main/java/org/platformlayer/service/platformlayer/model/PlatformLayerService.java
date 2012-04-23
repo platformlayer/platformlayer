@@ -13,7 +13,7 @@ import org.platformlayer.xaas.Controller;
 @XmlRootElement
 @Controller(PlatformLayerServiceController.class)
 public class PlatformLayerService extends ItemBase {
-    public String dnsName;
+	public String dnsName;
 
-    public PlatformLayerKey database;
+	public PlatformLayerKey database;
 }

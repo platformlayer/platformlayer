@@ -8,24 +8,24 @@ import org.platformlayer.ops.process.ProcessExecution;
 import org.platformlayer.ops.process.ProcessExecutionException;
 
 public class PostgresDatabase {
-    static final Logger log = Logger.getLogger(PostgresDatabase.class);
+	static final Logger log = Logger.getLogger(PostgresDatabase.class);
 
-    public String databaseName;
+	public String databaseName;
 
-    @Handler
-    public void handler(PostgresTarget db) throws OpsException {
-        if (OpsContext.isConfigure()) {
-            try {
-                db.execute(String.format("CREATE DATABASE %s", databaseName));
-            } catch (ProcessExecutionException e) {
-                ProcessExecution execution = e.getExecution();
-                if (execution.getExitCode() == 1 && execution.getStdErr().contains("already exists")) {
-                    log.info("Database already exists");
-                    return;
-                }
-                throw new OpsException("Error creating database", e);
-            }
-        }
-    }
+	@Handler
+	public void handler(PostgresTarget db) throws OpsException {
+		if (OpsContext.isConfigure()) {
+			try {
+				db.execute(String.format("CREATE DATABASE %s", databaseName));
+			} catch (ProcessExecutionException e) {
+				ProcessExecution execution = e.getExecution();
+				if (execution.getExitCode() == 1 && execution.getStdErr().contains("already exists")) {
+					log.info("Database already exists");
+					return;
+				}
+				throw new OpsException("Error creating database", e);
+			}
+		}
+	}
 
 }

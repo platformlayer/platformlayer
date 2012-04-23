@@ -17,43 +17,43 @@ import org.platformlayer.service.postgresql.model.PostgresqlServer;
 
 public class CommonTemplateData implements TemplateDataSource {
 
-    @Inject
-    PlatformLayerHelpers platformLayer;
+	@Inject
+	PlatformLayerHelpers platformLayer;
 
-    @Inject
-    InstanceHelpers instanceHelpers;
+	@Inject
+	InstanceHelpers instanceHelpers;
 
-    @Override
-    public void buildTemplateModel(Map<String, Object> model) throws OpsException {
-        model.put("jdbcUrl", getJdbcUrl());
-        model.put("jdbcUsername", getDatabaseUsername());
-        model.put("jdbcPassword", getDatabasePassword().plaintext());
-    }
+	@Override
+	public void buildTemplateModel(Map<String, Object> model) throws OpsException {
+		model.put("jdbcUrl", getJdbcUrl());
+		model.put("jdbcUsername", getDatabaseUsername());
+		model.put("jdbcPassword", getDatabasePassword().plaintext());
+	}
 
-    public String getDatabaseUsername() {
-        return "platformlayer_ops";
-    }
+	public String getDatabaseUsername() {
+		return "platformlayer_ops";
+	}
 
-    public Secret getDatabasePassword() {
-        return Secret.build("platformlayer-password");
-    }
+	public Secret getDatabasePassword() {
+		return Secret.build("platformlayer-password");
+	}
 
-    PlatformLayerService getPlatformLayerService() {
-        return OpsContext.get().getInstance(PlatformLayerService.class);
-    }
+	PlatformLayerService getPlatformLayerService() {
+		return OpsContext.get().getInstance(PlatformLayerService.class);
+	}
 
-    private String getJdbcUrl() throws OpsException {
-        PlatformLayerService model = getPlatformLayerService();
-        PostgresqlServer item = platformLayer.getItem(model.database, PostgresqlServer.class);
+	private String getJdbcUrl() throws OpsException {
+		PlatformLayerService model = getPlatformLayerService();
+		PostgresqlServer item = platformLayer.getItem(model.database, PostgresqlServer.class);
 
-        Machine itemMachine = instanceHelpers.getMachine(item);
-        String host = itemMachine.getAddress(NetworkPoint.forTargetInContext(), 5432);
+		Machine itemMachine = instanceHelpers.getMachine(item);
+		String host = itemMachine.getAddress(NetworkPoint.forTargetInContext(), 5432);
 
-        return "jdbc:postgresql://" + host + ":5432/" + getDatabaseName();
-    }
+		return "jdbc:postgresql://" + host + ":5432/" + getDatabaseName();
+	}
 
-    public String getDatabaseName() {
-        return "platformlayer";
-    }
+	public String getDatabaseName() {
+		return "platformlayer";
+	}
 
 }

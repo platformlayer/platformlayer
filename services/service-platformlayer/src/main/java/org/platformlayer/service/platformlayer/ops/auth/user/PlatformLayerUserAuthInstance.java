@@ -14,68 +14,68 @@ import org.platformlayer.service.platformlayer.model.PlatformLayerService;
 import org.platformlayer.service.platformlayer.ops.ZippedService;
 
 public class PlatformLayerUserAuthInstance extends ZippedService {
-    public static final int PORT_AUTH_USER = 5000;
+	public static final int PORT_AUTH_USER = 5000;
 
-    static final Logger log = Logger.getLogger(PlatformLayerUserAuthInstance.class);
+	static final Logger log = Logger.getLogger(PlatformLayerUserAuthInstance.class);
 
-    @Override
-    protected void addChildren() throws OpsException {
-        File workDir = getWorkDir();
-        File servicesDir = new File(workDir, "services");
+	@Override
+	protected void addChildren() throws OpsException {
+		File workDir = getWorkDir();
+		File servicesDir = new File(workDir, "services");
 
-        addChild(ManagedDirectory.build(workDir, "755"));
-        addChild(ManagedDirectory.build(servicesDir, "755"));
+		addChild(ManagedDirectory.build(workDir, "755"));
+		addChild(ManagedDirectory.build(servicesDir, "755"));
 
-        TemplateData templateData = injected(TemplateData.class);
-        {
-            TemplatedFile conf = TemplatedFile.build(templateData, new File(workDir, "configuration.properties"));
-            addChild(conf);
-        }
+		TemplateData templateData = injected(TemplateData.class);
+		{
+			TemplatedFile conf = TemplatedFile.build(templateData, new File(workDir, "configuration.properties"));
+			addChild(conf);
+		}
 
-        {
-            TemplatedFile conf = TemplatedFile.build(templateData, new File(workDir, "supervisord.conf"));
-            addChild(conf);
-        }
+		{
+			TemplatedFile conf = TemplatedFile.build(templateData, new File(workDir, "supervisord.conf"));
+			addChild(conf);
+		}
 
-        {
-            TemplatedFile conf = TemplatedFile.build(templateData, new File(servicesDir, "platformlayer"));
-            addChild(conf);
-        }
+		{
+			TemplatedFile conf = TemplatedFile.build(templateData, new File(servicesDir, "platformlayer"));
+			addChild(conf);
+		}
 
-        super.addChildren();
+		super.addChildren();
 
-        PlatformLayerService model = OpsContext.get().getInstance(PlatformLayerService.class);
+		PlatformLayerService model = OpsContext.get().getInstance(PlatformLayerService.class);
 
-        {
-            PublicEndpoint endpoint = injected(PublicEndpoint.class);
-            // endpoint.network = null;
-            endpoint.publicPort = PORT_AUTH_USER;
-            endpoint.backendPort = PORT_AUTH_USER;
-            endpoint.dnsName = model.dnsName;
+		{
+			PublicEndpoint endpoint = injected(PublicEndpoint.class);
+			// endpoint.network = null;
+			endpoint.publicPort = PORT_AUTH_USER;
+			endpoint.backendPort = PORT_AUTH_USER;
+			endpoint.dnsName = model.dnsName;
 
-            endpoint.tagItem = OpsSystem.toKey(model);
-            endpoint.parentItem = OpsSystem.toKey(model);
+			endpoint.tagItem = OpsSystem.toKey(model);
+			endpoint.parentItem = OpsSystem.toKey(model);
 
-            addChild(endpoint);
-        }
-    }
+			addChild(endpoint);
+		}
+	}
 
-    @Override
-    public File getLogDir() {
-        return new File("/var/log/platformlayer");
-    }
+	@Override
+	public File getLogDir() {
+		return new File("/var/log/platformlayer");
+	}
 
-    @Override
-    public String getFriendlyKey() {
-        return "platformlayer-auth-user";
-    }
+	@Override
+	public String getFriendlyKey() {
+		return "platformlayer-auth-user";
+	}
 
-    @Override
-    protected MavenReference getMavenReference() {
-        MavenReference mavenReference = new MavenReference();
-        mavenReference.groupId = "org.platformlayer";
-        mavenReference.artifactId = "package-platformlayer-auth-user";
-        mavenReference.classifier = "package";
-        return mavenReference;
-    }
+	@Override
+	protected MavenReference getMavenReference() {
+		MavenReference mavenReference = new MavenReference();
+		mavenReference.groupId = "org.platformlayer";
+		mavenReference.artifactId = "package-platformlayer-auth-user";
+		mavenReference.classifier = "package";
+		return mavenReference;
+	}
 }
