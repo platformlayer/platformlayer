@@ -3,9 +3,12 @@ package java.nio.file;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.SeekableByteChannel;
 import java.nio.file.DirectoryStream.Filter;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileAttribute;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Files {
 
@@ -16,9 +19,12 @@ public class Files {
 		}
 	};
 
-	public static InputStream newInputStream(Path path, OpenOption... options) {
-		throw new UnsupportedOperationException();
-		// return path.getFileSystem().provider().newInputStream(path, options);
+	public static InputStream newInputStream(Path path, OpenOption... options) throws IOException {
+		return path.getFileSystem().provider().newInputStream(path, options);
+	}
+
+	public static OutputStream newOutputStream(Path path, OpenOption... options) throws IOException {
+		return path.getFileSystem().provider().newOutputStream(path, options);
 	}
 
 	public static <A extends BasicFileAttributes> A readAttributes(Path path, Class<A> type, LinkOption... options)
@@ -32,12 +38,38 @@ public class Files {
 		return path;
 	}
 
-	public static long copy(InputStream src, Path dest) {
-		throw new UnsupportedOperationException();
+	static long copyStreams(InputStream is, OutputStream os) throws IOException {
+		long count = 0;
+		byte[] buffer = new byte[32768];
+		while (true) {
+			int bytesRead = is.read(buffer);
+			if (bytesRead == -1) {
+				break;
+			}
+
+			os.write(buffer, 0, bytesRead);
+
+			count += bytesRead;
+		}
+		return count;
 	}
 
-	public static long copy(Path src, OutputStream dest) {
-		throw new UnsupportedOperationException();
+	public static long copy(InputStream src, Path dest) throws IOException {
+		OutputStream os = newOutputStream(dest, StandardOpenOption.WRITE);
+		try {
+			return copyStreams(src, os);
+		} finally {
+			os.close();
+		}
+	}
+
+	public static long copy(Path src, OutputStream dest) throws IOException {
+		InputStream is = newInputStream(src, StandardOpenOption.READ);
+		try {
+			return copyStreams(is, dest);
+		} finally {
+			is.close();
+		}
 	}
 
 	public static void delete(Path path) throws IOException {
@@ -58,7 +90,26 @@ public class Files {
 	}
 
 	public static boolean exists(Path path) {
-		throw new UnsupportedOperationException();
+		try {
+			// This is crappy, but this is the contract...
+			/* BasicFileAttributes attributes = */readAttributes(path, BasicFileAttributes.class);
+			return true;
+		} catch (IOException e) {
+			return false;
+		}
+	}
+
+	public static SeekableByteChannel newByteChannel(Path path, Set<? extends OpenOption> options,
+			FileAttribute<?>... attrs) throws IOException {
+		return path.getFileSystem().provider().newByteChannel(path, options, attrs);
+	}
+
+	public static SeekableByteChannel newByteChannel(Path path, OpenOption... options) throws IOException {
+		Set<OpenOption> set = new HashSet<OpenOption>();
+		for (OpenOption option : options) {
+			set.add(option);
+		}
+		return newByteChannel(path, set);
 	}
 
 }

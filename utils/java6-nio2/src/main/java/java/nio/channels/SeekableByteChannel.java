@@ -1,17 +1,8 @@
 package java.nio.channels;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
-public interface SeekableByteChannel {
-
-	boolean isOpen();
-
-	void close() throws IOException;
-
-	int read(ByteBuffer dst) throws IOException;
-
-	int write(ByteBuffer src) throws IOException;
+public interface SeekableByteChannel extends ByteChannel {
 
 	long position() throws IOException;
 

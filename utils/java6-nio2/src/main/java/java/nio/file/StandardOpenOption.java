@@ -1,7 +1,7 @@
 package java.nio.file;
 
-public enum StandardOpenOption {
+public enum StandardOpenOption implements OpenOption {
 
-	APPEND, WRITE,
+	APPEND, WRITE, READ,
 
 }

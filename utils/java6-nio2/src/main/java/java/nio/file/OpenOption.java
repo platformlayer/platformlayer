@@ -1,5 +1,5 @@
 package java.nio.file;
 
-public class OpenOption {
+public interface OpenOption {
 
 }

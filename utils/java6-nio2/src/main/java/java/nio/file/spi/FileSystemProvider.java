@@ -1,7 +1,10 @@
 package java.nio.file.spi;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
+import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.AccessMode;
 import java.nio.file.CopyOption;
@@ -9,6 +12,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.DirectoryStream.Filter;
 import java.nio.file.FileStore;
 import java.nio.file.FileSystem;
+import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
@@ -21,7 +25,7 @@ import java.util.Set;
 public abstract class FileSystemProvider {
 
 	public abstract SeekableByteChannel newByteChannel(Path path, Set<? extends OpenOption> options,
-			FileAttribute<?>[] attrs) throws IOException;
+			FileAttribute<?>... attrs) throws IOException;
 
 	public abstract void createDirectory(Path dir, FileAttribute<?>... attrs) throws IOException;
 
@@ -60,5 +64,13 @@ public abstract class FileSystemProvider {
 
 	public abstract void setAttribute(Path path, String attribute, Object value, LinkOption... options)
 			throws IOException;
+
+	public InputStream newInputStream(Path path, OpenOption... options) throws IOException {
+		return Channels.newInputStream(Files.newByteChannel(path, options));
+	}
+
+	public OutputStream newOutputStream(Path path, OpenOption... options) throws IOException {
+		return Channels.newOutputStream(Files.newByteChannel(path, options));
+	}
 
 }
