@@ -5,14 +5,18 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.List;
 
 import org.platformlayer.PlatformLayerClientBase;
+import org.platformlayer.PlatformLayerUtils;
 import org.platformlayer.TypedPlatformLayerClient;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
+import org.platformlayer.core.model.Secret;
 import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.service.network.v1.NetworkConnection;
 import org.platformlayer.xml.JaxbHelper;
 
 public class PlatformLayerApiTest extends AbstractPlatformLayerTest {
@@ -31,6 +35,34 @@ public class PlatformLayerApiTest extends AbstractPlatformLayerTest {
 			typedItemMapper = new SimpleTypedItemMapper();
 		}
 		return typedItemMapper;
+	}
+
+	protected Secret randomSecret() {
+		String s = random.randomAlphanumericString(8, 32);
+		return Secret.build(s);
+	}
+
+	protected InetSocketAddress getEndpoint(ItemBase item) {
+		List<String> endpoints = PlatformLayerUtils.findEndpoints(item.getTags());
+		if (endpoints.size() != 1) {
+			throw new IllegalStateException("Expected exactly one endpoint");
+		}
+		System.out.println("Found endpoint: " + endpoints.get(0));
+
+		InetSocketAddress socketAddress = parseSocketAddress(endpoints.get(0));
+		return socketAddress;
+	}
+
+	protected void openFirewall(ItemBase item, int port) throws OpsException, IOException {
+		NetworkConnection firewallRule = new NetworkConnection();
+		firewallRule.setSourceCidr("0.0.0.0/0");
+		firewallRule.setDestItem(item.getKey());
+		firewallRule.setPort(port);
+
+		String id = item.getId() + "-global";
+		firewallRule = putItem(id, firewallRule);
+
+		waitForHealthy(firewallRule);
 	}
 
 	protected boolean isPortOpen(InetSocketAddress socketAddress) throws IOException {

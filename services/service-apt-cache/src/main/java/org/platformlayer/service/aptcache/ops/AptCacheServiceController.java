@@ -1,7 +1,6 @@
 package org.platformlayer.service.aptcache.ops;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.apache.log4j.Logger;
 import org.platformlayer.ops.Handler;
@@ -11,7 +10,6 @@ import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.filesystem.SimpleFile;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
-import org.platformlayer.ops.metrics.collectd.CollectdCollector;
 import org.platformlayer.ops.metrics.collectd.ManagedService;
 import org.platformlayer.ops.networks.PublicEndpoint;
 import org.platformlayer.ops.packages.PackageDependency;
@@ -20,9 +18,10 @@ import org.platformlayer.service.aptcache.model.AptCacheService;
 
 public class AptCacheServiceController extends OpsTreeBase {
 	static final Logger log = Logger.getLogger(AptCacheServiceController.class);
+	public static final int PORT = 3128;
 
 	@Handler
-	public void doOperation() throws OpsException, IOException {
+	public void doOperation() {
 	}
 
 	@Override
@@ -43,12 +42,12 @@ public class AptCacheServiceController extends OpsTreeBase {
 
 		instance.addChild(ManagedService.build("squid3"));
 
-		instance.addChild(CollectdCollector.build());
+		// instance.addChild(CollectdCollector.build());
 
 		{
 			PublicEndpoint endpoint = injected(PublicEndpoint.class);
-			endpoint.publicPort = 3128;
-			endpoint.backendPort = 3128;
+			endpoint.publicPort = PORT;
+			endpoint.backendPort = PORT;
 			endpoint.dnsName = model.dnsName;
 
 			endpoint.tagItem = OpsSystem.toKey(model);
