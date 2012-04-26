@@ -1,7 +1,6 @@
 package org.platformlayer.service.git.ops;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -32,8 +31,10 @@ import org.platformlayer.service.openldap.model.LdapService;
 public class GitServerController extends OpsTreeBase implements TemplateDataSource {
 	static final Logger log = Logger.getLogger(GitServerController.class);
 
+	public static final int PORT = 80;
+
 	@Handler
-	public void doOperation() throws OpsException, IOException {
+	public void doOperation() {
 	}
 
 	@Inject
@@ -94,37 +95,36 @@ public class GitServerController extends OpsTreeBase implements TemplateDataSour
 	protected void addChildren() throws OpsException {
 		GitService model = OpsContext.get().getInstance(GitService.class);
 
-		InstanceBuilder instance = InstanceBuilder.build(model.dnsName,
-				DiskImageRecipeBuilder.buildDiskImageRecipe(this));
-		addChild(instance);
+		InstanceBuilder vm = InstanceBuilder.build(model.dnsName, DiskImageRecipeBuilder.buildDiskImageRecipe(this));
+		addChild(vm);
 
-		instance.addChild(PackageDependency.build("apache2"));
+		vm.addChild(PackageDependency.build("apache2"));
 		// Provides /usr/lib/git-core/git-http-backend
-		instance.addChild(PackageDependency.build("git"));
+		vm.addChild(PackageDependency.build("git"));
 
-		instance.addChild(ManagedDirectory.build(new File("/var/git"), "0755"));
-		instance.addChild(ApacheModule.build("authnz_ldap"));
-		instance.addChild(ApacheModule.build("ldap"));
+		vm.addChild(ManagedDirectory.build(new File("/var/git"), "0755"));
+		vm.addChild(ApacheModule.build("authnz_ldap"));
+		vm.addChild(ApacheModule.build("ldap"));
 
 		File apache2ConfDir = new File("/etc/apache2");
 
-		instance.addChild(TemplatedFile.build(this, new File(apache2ConfDir, "conf.d/git")));
+		vm.addChild(TemplatedFile.build(this, new File(apache2ConfDir, "conf.d/git")));
 
-		instance.addChild(ManagedService.build("apache2"));
+		vm.addChild(ManagedService.build("apache2"));
 
-		instance.addChild(CollectdCollector.build());
+		vm.addChild(CollectdCollector.build());
 
 		{
 			PublicEndpoint endpoint = injected(PublicEndpoint.class);
 			// endpoint.network = null;
-			endpoint.publicPort = 80;
-			endpoint.backendPort = 80;
+			endpoint.publicPort = PORT;
+			endpoint.backendPort = PORT;
 			endpoint.dnsName = model.dnsName;
 
 			endpoint.tagItem = OpsSystem.toKey(model);
 			endpoint.parentItem = OpsSystem.toKey(model);
 
-			instance.addChild(endpoint);
+			vm.addChild(endpoint);
 		}
 	}
 

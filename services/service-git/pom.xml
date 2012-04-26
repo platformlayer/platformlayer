@@ -1,41 +1,50 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>org.platformlayer</groupId>
-		<artifactId>platformlayer-services-parent</artifactId>
-		<version>1.0-SNAPSHOT</version>
-	</parent>
+    <parent>
+        <groupId>org.platformlayer</groupId>
+        <artifactId>platformlayer-services-parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
 
-	<artifactId>service-git</artifactId>
-	<name>PlatformLayer :: Services :: Git</name>
+    <artifactId>service-git</artifactId>
+    <name>PlatformLayer :: Services :: Git</name>
 
-	<dependencies>
-		<dependency>
+    <dependencies>
+        <dependency>
+            <groupId>org.platformlayer</groupId>
+            <artifactId>service-base</artifactId>
+        </dependency>
+
+        <!-- We use OpenLDAP for authentication -->
+        <dependency>
             <groupId>org.platformlayer</groupId>
             <artifactId>service-openldap</artifactId>
         </dependency>
-        
+
+        <!-- TestNG -->
         <dependency>
-			<groupId>org.platformlayer</groupId>
-			<artifactId>platformlayer-xaas-core</artifactId>
-		</dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
-		<dependency>
-			<groupId>org.platformlayer</groupId>
-			<artifactId>platformlayer-ops-ssh</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.platformlayer</groupId>
-			<artifactId>platformlayer-api</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>javax.inject</groupId>
-			<artifactId>javax.inject</artifactId>
-		</dependency>
-	</dependencies>
-
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
