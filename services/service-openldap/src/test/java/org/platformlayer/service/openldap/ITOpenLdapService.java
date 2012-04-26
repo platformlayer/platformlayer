@@ -1,4 +1,4 @@
-package org.platformlayer.service.git;
+package org.platformlayer.service.openldap;
 
 import java.net.InetSocketAddress;
 import java.util.Hashtable;
