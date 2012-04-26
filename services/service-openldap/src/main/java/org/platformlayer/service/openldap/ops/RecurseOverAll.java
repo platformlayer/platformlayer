@@ -5,7 +5,6 @@ import javax.inject.Inject;
 import org.apache.log4j.Logger;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.ItemBase;
-import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.ops.BindingScope;
 import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OperationRecursor;
@@ -30,7 +29,15 @@ public class RecurseOverAll {
 		boolean failed = false;
 
 		for (ItemBase machineItem : platformLayer.listItems(machineItemClass)) {
-			if (machineItem.getState() != ManagedItemState.ACTIVE) {
+			switch (machineItem.getState()) {
+			case ACTIVE:
+				break;
+
+			case DELETED:
+				log.warn("Ignoring deleted server: " + machineItem);
+				continue;
+
+			default:
 				log.warn("Item not yet active: " + machineItem);
 				failed = true;
 				continue;

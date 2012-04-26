@@ -3,8 +3,10 @@ package org.platformlayer.service.openldap.ops.ldap;
 import java.io.File;
 import java.util.List;
 
+import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
+import org.platformlayer.ops.filesystem.FilesystemInfo;
 import org.platformlayer.ops.ldap.LdapAttributes;
 import org.platformlayer.ops.ldap.LdapDN;
 
@@ -24,6 +26,14 @@ public class HdbDatabaseEntry extends LdapEntry {
 
 		objectClasses.add("olcDatabaseConfig");
 		objectClasses.add("olcHdbConfig");
+	}
+
+	@Override
+	protected boolean alreadyExists() throws OpsException {
+		OpsTarget target = OpsContext.get().getInstance(OpsTarget.class);
+		FilesystemInfo dirInfo = target.getFilesystemInfoFile(new File(getDataDirectory(), "objectClass.bdb"));
+
+		return dirInfo != null;
 	}
 
 	@Override

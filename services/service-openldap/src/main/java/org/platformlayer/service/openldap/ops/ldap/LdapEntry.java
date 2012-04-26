@@ -62,15 +62,22 @@ public abstract class LdapEntry {
 
 	@Handler({ OperationType.Configure })
 	public void doConfigure(OpsTarget target) throws OpsException {
-		boolean shouldConfigure = true; // operation.isForce() || !isOnlyConfigureOnForce();
+		boolean shouldConfigure = OpsContext.isConfigure(); // operation.isForce() || !isOnlyConfigureOnForce();
 		if (shouldConfigure) {
 			String ldapServerPassword = ldap.readLdapServerPassword(target);
 
-			LdifRecord ldif = buildLdif();
-			OpenLdapManager.doLdapModify(target, OpenLdapServer.ADMIN_DN, ldapServerPassword, true, ldif);
+			if (!alreadyExists()) {
+				LdifRecord ldif = buildLdif();
+				OpenLdapManager.doLdapModify(target, OpenLdapServer.ADMIN_DN, ldapServerPassword, true, ldif);
+			}
+
 			// } else {
 			// log.info("Won't configure; OnlyConfigureOnForce is set: " + getPath());
 		}
+	}
+
+	protected boolean alreadyExists() throws OpsException {
+		return false;
 	}
 
 	protected void validateRecord(LdifRecord current) {

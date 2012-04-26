@@ -17,6 +17,7 @@ import org.platformlayer.service.openldap.ops.ldap.LdapMasterPassword;
 
 public class LdapServiceController extends OpsTreeBase {
 	static final Logger log = Logger.getLogger(LdapServiceController.class);
+	public static final int PORT = 389;
 
 	@Handler
 	public void doOperation() throws OpsException, IOException {
@@ -39,8 +40,8 @@ public class LdapServiceController extends OpsTreeBase {
 		{
 			PublicEndpoint endpoint = injected(PublicEndpoint.class);
 			// endpoint.network = null;
-			endpoint.publicPort = 389;
-			endpoint.backendPort = 389;
+			endpoint.publicPort = PORT;
+			endpoint.backendPort = PORT;
 			endpoint.dnsName = model.dnsName;
 
 			endpoint.tagItem = OpsSystem.toKey(model);
