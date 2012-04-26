@@ -19,6 +19,7 @@ import org.platformlayer.ops.helpers.CurlResult;
 import org.platformlayer.ops.process.ProcessExecution;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class ShellBackupClient {
@@ -47,7 +48,7 @@ public class ShellBackupClient {
 
 	public static class DirectoryBackup extends Backup {
 		public File rootDirectory;
-		public List<File> exclude;
+		public List<File> exclude = Lists.newArrayList();
 	}
 
 	// private RemoteCurlOpenstackSession openstackSession = null;
