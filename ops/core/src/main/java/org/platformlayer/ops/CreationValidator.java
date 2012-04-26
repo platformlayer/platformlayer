@@ -6,8 +6,6 @@ import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.xaas.SingletonService;
 
-import com.google.common.collect.Iterables;
-
 public class CreationValidator {
 	@Inject
 	PlatformLayerHelpers platformLayer;
@@ -20,12 +18,31 @@ public class CreationValidator {
 		// throw new OpsException("Invalid model", e);
 		// }
 
-		Class<? extends Object> modelClass = item.getClass();
+		Class<? extends ItemBase> modelClass = item.getClass();
 		SingletonService singletonServiceAnnotation = modelClass.getAnnotation(SingletonService.class);
 		if (singletonServiceAnnotation != null) {
 			// Only one can be created per scope
-			Iterable<?> items = platformLayer.listItems(modelClass);
-			if (!Iterables.isEmpty(items)) {
+			Iterable<? extends ItemBase> items = platformLayer.listItems(modelClass);
+
+			int aliveCount = 0;
+			for (ItemBase peer : items) {
+				switch (peer.getState()) {
+				case ACTIVE:
+				case CREATION_REQUESTED:
+				case BUILD:
+				case BUILD_ERROR:
+					aliveCount++;
+					break;
+
+				case DELETE_REQUESTED:
+				case DELETED:
+					break;
+
+				default:
+					throw new IllegalStateException();
+				}
+			}
+			if (aliveCount != 0) {
 				throw new OpsException("Cannot create multiple instances of: " + modelClass.getName());
 			}
 		}
