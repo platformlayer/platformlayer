@@ -1,7 +1,6 @@
 package org.platformlayer.service.jenkins.ops;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.apache.log4j.Logger;
 import org.platformlayer.ops.Handler;
@@ -21,25 +20,29 @@ import org.platformlayer.service.jenkins.model.JenkinsService;
 
 public class JenkinsServiceController extends OpsTreeBase {
 	static final Logger log = Logger.getLogger(JenkinsServiceController.class);
+	public static final int PORT = 8080;
 
 	@Handler
-	public void doOperation() throws OpsException, IOException {
+	public void doOperation() {
 	}
 
 	@Override
 	protected void addChildren() throws OpsException {
 		JenkinsService model = OpsContext.get().getInstance(JenkinsService.class);
 
-		InstanceBuilder instance = InstanceBuilder.build(model.dnsName,
-				DiskImageRecipeBuilder.buildDiskImageRecipe(this));
-		instance.publicPorts.add(8080);
+		InstanceBuilder vm;
 
-		instance.hostPolicy.allowRunInContainer = true;
-		instance.minimumMemoryMb = 2048;
+		{
+			vm = InstanceBuilder.build(model.dnsName, DiskImageRecipeBuilder.buildDiskImageRecipe(this));
+			vm.publicPorts.add(PORT);
 
-		addChild(instance);
+			vm.hostPolicy.allowRunInContainer = true;
+			vm.minimumMemoryMb = 2048;
 
-		instance.addChild(JavaVirtualMachine.buildJava7());
+			addChild(vm);
+		}
+
+		vm.addChild(JavaVirtualMachine.buildJava7());
 
 		{
 			PackageDependency jenkinsPackage = PackageDependency.build("jenkins");
@@ -48,18 +51,18 @@ public class JenkinsServiceController extends OpsTreeBase {
 			jenkinsPackage.repository = new Repository();
 			jenkinsPackage.repository.setKey("jenkins");
 			jenkinsPackage.repository.getSource().add("deb http://pkg.jenkins-ci.org/debian binary/");
-			instance.addChild(jenkinsPackage);
+			vm.addChild(jenkinsPackage);
 		}
 
 		// We use curl for backups
-		instance.addChild(PackageDependency.build("curl"));
+		vm.addChild(PackageDependency.build("curl"));
 
 		// Jenkins git usually relies on git being installed
 		// git-core is valid on both Debian & Ubuntu
-		instance.addChild(PackageDependency.build("git-core"));
+		vm.addChild(PackageDependency.build("git-core"));
 
 		// If we're building Java projects, we'll want a JDK
-		instance.addChild(PackageDependency.build("openjdk-6-jdk"));
+		vm.addChild(PackageDependency.build("openjdk-6-jdk"));
 
 		// Collectd not in wheezy??
 		// instance.addChild(CollectdCollector.build());
@@ -75,14 +78,14 @@ public class JenkinsServiceController extends OpsTreeBase {
 		{
 			PublicEndpoint endpoint = injected(PublicEndpoint.class);
 			// endpoint.network = null;
-			endpoint.publicPort = 8080;
-			endpoint.backendPort = 8080;
+			endpoint.publicPort = PORT;
+			endpoint.backendPort = PORT;
 			endpoint.dnsName = model.dnsName;
 
 			endpoint.tagItem = OpsSystem.toKey(model);
 			endpoint.parentItem = OpsSystem.toKey(model);
 
-			instance.addChild(endpoint);
+			vm.addChild(endpoint);
 		}
 
 		{
@@ -99,7 +102,7 @@ public class JenkinsServiceController extends OpsTreeBase {
 				backup.excludes.add(new File(jenkinsRoot, exclude));
 			}
 
-			instance.addChild(backup);
+			vm.addChild(backup);
 		}
 
 	}
