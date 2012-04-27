@@ -1,12 +1,11 @@
-package org.platformlayer.service.openldap;
+package org.platformlayer.tests;
 
 import org.openstack.client.utils.RandomUtil;
 import org.platformlayer.core.model.Secret;
-import org.platformlayer.tests.PlatformLayerTestContext;
 
 public class TestHelper {
-	final PlatformLayerTestContext context;
-	final RandomUtil random;
+	protected final PlatformLayerTestContext context;
+	protected final RandomUtil random;
 
 	public TestHelper(PlatformLayerTestContext context) {
 		super();

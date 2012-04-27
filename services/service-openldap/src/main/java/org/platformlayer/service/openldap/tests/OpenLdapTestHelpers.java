@@ -1,4 +1,4 @@
-package org.platformlayer.service.openldap;
+package org.platformlayer.service.openldap.tests;
 
 import java.io.IOException;
 
@@ -7,6 +7,7 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.service.openldap.model.LdapDomain;
 import org.platformlayer.service.openldap.model.LdapService;
 import org.platformlayer.tests.PlatformLayerTestContext;
+import org.platformlayer.tests.TestHelper;
 
 public class OpenLdapTestHelpers extends TestHelper {
 

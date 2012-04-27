@@ -14,6 +14,7 @@ import org.platformlayer.core.model.Secret;
 import org.platformlayer.service.openldap.model.LdapDomain;
 import org.platformlayer.service.openldap.model.LdapService;
 import org.platformlayer.service.openldap.ops.LdapServiceController;
+import org.platformlayer.service.openldap.tests.OpenLdapTestHelpers;
 import org.platformlayer.tests.PlatformLayerApiTest;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
