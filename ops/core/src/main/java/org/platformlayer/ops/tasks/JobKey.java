@@ -4,32 +4,32 @@ import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.OperationType;
 
 class JobKey {
-	final PlatformLayerKey itemKey;
+	final PlatformLayerKey targetItemKey;
 	final OperationType operationType;
 
-	public JobKey(PlatformLayerKey itemKey, OperationType operationType) {
+	public JobKey(PlatformLayerKey targetItemKey, OperationType operationType) {
 		if (operationType == null) {
 			throw new IllegalArgumentException();
 		}
 
-		this.itemKey = itemKey;
+		this.targetItemKey = targetItemKey;
 		this.operationType = operationType;
 	}
 
 	public PlatformLayerKey getTargetItemKey() {
-		return itemKey;
+		return targetItemKey;
 	}
 
 	@Override
 	public String toString() {
-		return "JobKey [itemKey=" + itemKey + ", operationType=" + operationType + "]";
+		return "JobKey [targetItemKey=" + targetItemKey + ", operationType=" + operationType + "]";
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((itemKey == null) ? 0 : itemKey.hashCode());
+		result = prime * result + ((targetItemKey == null) ? 0 : targetItemKey.hashCode());
 		result = prime * result + ((operationType == null) ? 0 : operationType.hashCode());
 		return result;
 	}
@@ -46,11 +46,11 @@ class JobKey {
 			return false;
 		}
 		JobKey other = (JobKey) obj;
-		if (itemKey == null) {
-			if (other.itemKey != null) {
+		if (targetItemKey == null) {
+			if (other.targetItemKey != null) {
 				return false;
 			}
-		} else if (!itemKey.equals(other.itemKey)) {
+		} else if (!targetItemKey.equals(other.targetItemKey)) {
 			return false;
 		}
 		if (operationType != other.operationType) {

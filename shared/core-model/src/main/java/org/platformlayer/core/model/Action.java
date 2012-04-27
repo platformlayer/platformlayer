@@ -19,4 +19,9 @@ public class Action {
 	public String getName() {
 		return name;
 	}
+
+	@Override
+	public String toString() {
+		return "Action [name=" + name + "]";
+	}
 }

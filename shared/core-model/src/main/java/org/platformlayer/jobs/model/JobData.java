@@ -18,7 +18,7 @@ public class JobData {
 	public static final ItemType ITEM_TYPE = new ItemType("job");
 
 	public PlatformLayerKey key;
-	public String targetId;
+	public PlatformLayerKey targetId;
 	public Action action;
 
 	public JobState state;

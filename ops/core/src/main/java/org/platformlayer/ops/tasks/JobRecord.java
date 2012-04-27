@@ -2,6 +2,7 @@ package org.platformlayer.ops.tasks;
 
 import java.util.UUID;
 
+import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.ids.ServiceType;
@@ -24,8 +25,8 @@ public class JobRecord {
 
 	boolean isDone;
 
-	public JobRecord(PlatformLayerKey itemKey, OperationType operationType, OpsAuthentication auth) {
-		this(new JobKey(itemKey, operationType), itemKey.getServiceType(), auth);
+	public JobRecord(PlatformLayerKey targetItemKey, OperationType operationType, OpsAuthentication auth) {
+		this(new JobKey(targetItemKey, operationType), targetItemKey.getServiceType(), auth);
 	}
 
 	JobRecord(JobKey key, ServiceType serviceType, OpsAuthentication auth) {
@@ -48,6 +49,9 @@ public class JobRecord {
 	}
 
 	public OperationType getOperationType() {
+		if (key == null) {
+			return null;
+		}
 		return key.operationType;
 	}
 
@@ -73,8 +77,17 @@ public class JobRecord {
 
 		jobData.key = getJobKey();
 
-		// public String targetId;
-		// public Action action;
+		OperationType operationType = getOperationType();
+		if (operationType != null) {
+			// TODO: We'll need to store the action when there's more than just an operationType
+			Action action = new Action();
+			action.name = operationType.toString();
+			jobData.action = action;
+		}
+
+		if (key != null) {
+			jobData.targetId = key.getTargetItemKey();
+		}
 
 		return jobData;
 	}
