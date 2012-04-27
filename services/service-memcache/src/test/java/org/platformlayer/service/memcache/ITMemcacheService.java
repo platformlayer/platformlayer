@@ -1,6 +1,7 @@
 package org.platformlayer.service.memcache;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -37,6 +38,10 @@ public class ITMemcacheService extends PlatformLayerApiTest {
 
 		openFirewall(memcache, MemcacheServerController.MEMCACHE_PORT);
 
+		testMemcache(socketAddress);
+	}
+
+	private void testMemcache(InetSocketAddress socketAddress) throws IOException {
 		Socket socket = new Socket();
 		socket.connect(socketAddress);
 		socket.getOutputStream().write("stats\n".getBytes());
