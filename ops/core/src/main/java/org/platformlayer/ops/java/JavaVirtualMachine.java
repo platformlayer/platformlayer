@@ -23,6 +23,7 @@ public class JavaVirtualMachine extends OpsTreeBase implements HasDiskImageRecip
 	@Override
 	public void addTo(DiskImageRecipe recipe) {
 		if (version.equals("6")) {
+			// TODO: What if it's not debian squeeze??
 			Repository repository = new Repository();
 			repository.setKey("debian-non-free");
 			repository.getSource().add("deb http://ftp.us.debian.org/debian squeeze non-free");
@@ -88,6 +89,12 @@ public class JavaVirtualMachine extends OpsTreeBase implements HasDiskImageRecip
 				jre.addConfiguration("sun-java6-bin", "shared/present-sun-dlj-v1-1", "note", "");
 				jre.addConfiguration("sun-java6-jdk", "shared/present-sun-dlj-v1-1", "note", "");
 				jre.addConfiguration("sun-java6-jre", "shared/present-sun-dlj-v1-1", "note", "");
+
+				// TODO: What if it's not debian squeeze??
+				Repository repository = new Repository();
+				repository.setKey("debian-non-free");
+				repository.getSource().add("deb http://ftp.us.debian.org/debian squeeze non-free");
+				jre.repository = repository;
 
 				addChild(jre);
 			}
