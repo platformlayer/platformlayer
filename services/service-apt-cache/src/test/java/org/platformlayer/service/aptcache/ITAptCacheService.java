@@ -1,7 +1,10 @@
 package org.platformlayer.service.aptcache;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.net.URL;
 
 import org.openstack.utils.Io;
@@ -38,16 +41,26 @@ public class ITAptCacheService extends PlatformLayerApiTest {
 		Assert.assertTrue(isPortOpen(socketAddress));
 
 		// TODO: Make endpoint http://<ip>:<port>/ ???
-		String httpUrl = "http://" + socketAddress.getAddress().getHostAddress() + ":" + socketAddress.getPort();
-		testProxy(httpUrl);
+		// String httpUrl = "http://" + socketAddress.getAddress().getHostAddress() + ":" + socketAddress.getPort();
+		String html = testProxy(socketAddress, "http://www.google.com/");
+		Assert.assertTrue(html.contains("Search the world"));
 
 		deleteItem(service);
 	}
 
-	private void testProxy(String httpUrl) throws IOException {
-		URL url = new URL(httpUrl);
-		String html = Io.readAll(url);
+	private String testProxy(InetSocketAddress proxySocketAddress, String fetchUrl) throws IOException {
+		Proxy proxy = new Proxy(Proxy.Type.HTTP, proxySocketAddress);
+		URL url = new URL(fetchUrl);
+		HttpURLConnection uc = (HttpURLConnection) url.openConnection(proxy);
+		uc.connect();
+
+		InputStream is = uc.getInputStream();
+		String html = Io.readAll(is);
+		is.close();
+
 		System.out.println(html);
+
+		return html;
 	}
 
 }
