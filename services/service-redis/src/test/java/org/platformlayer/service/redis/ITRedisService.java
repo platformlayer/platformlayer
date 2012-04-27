@@ -1,75 +1,65 @@
 package org.platformlayer.service.redis;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
-import java.util.List;
+import java.net.Socket;
 
-import org.platformlayer.PlatformLayerUtils;
-import org.platformlayer.service.network.v1.NetworkConnection;
 import org.platformlayer.service.redis.model.RedisServer;
-import org.platformlayer.service.redis.ops.RedisServerController;
 import org.platformlayer.tests.PlatformLayerApiTest;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class ITRedisService extends PlatformLayerApiTest {
+	@Override
+	@BeforeMethod
+	public void beforeMethod() {
+		super.beforeMethod();
 
-    @BeforeMethod
-    public void beforeMethod() {
-        reset();
+		getTypedItemMapper().addClass(RedisServer.class);
+	}
 
-        getTypedItemMapper().addClass(RedisServer.class);
-    }
+	@Test
+	public void testCreateAndDeleteItem() throws Exception {
+		String id = "redis" + random.randomAlphanumericString(8);
 
-    @Test
-    public void testCreateAndDeleteItem() throws Exception {
-        String id = random.randomAlphanumericString(8);
+		RedisServer redis = new RedisServer();
+		redis.dnsName = id + ".test.platformlayer.org";
 
-        RedisServer create = new RedisServer();
-        create.dnsName = id + ".test.platformlayer.org";
+		redis = putItem(id, redis);
+		redis = waitForHealthy(redis);
 
-        RedisServer created = putItem(id, create);
+		InetSocketAddress socketAddress = getEndpoint(redis);
+		Assert.assertFalse(isPortOpen(socketAddress));
 
-        RedisServer healthy = waitForHealthy(created);
+		openFirewall(redis, socketAddress.getPort());
 
-        List<String> endpoints = PlatformLayerUtils.findEndpoints(healthy.getTags());
+		String info = testRedis(socketAddress);
+		Assert.assertTrue(info.contains("redis_version:"));
+	}
 
-        if (endpoints.size() != 1) {
-            throw new IllegalStateException("Expected exactly one endpoint");
-        }
+	private String testRedis(InetSocketAddress socketAddress) throws IOException {
+		Socket socket = new Socket();
+		socket.connect(socketAddress);
+		socket.getOutputStream().write("INFO\r\n".getBytes());
 
-        InetSocketAddress socketAddress = parseSocketAddress(endpoints.get(0));
+		StringBuilder sb = new StringBuilder();
 
-        Assert.assertFalse(isPortOpen(socketAddress));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		while (true) {
+			String line = reader.readLine();
+			System.out.println("memcached said: " + line);
+			if (line.equals("")) {
+				break;
+			}
+			sb.append(line);
+		}
 
-        NetworkConnection firewallRule = new NetworkConnection();
-        firewallRule.setSourceCidr("0.0.0.0/0");
-        firewallRule.setDestItem(created.getKey());
-        firewallRule.setPort(RedisServerController.PORT);
+		socket.close();
 
-        firewallRule = putItem(id, firewallRule);
-
-        waitForHealthy(firewallRule);
-
-        // Socket socket = new Socket();
-        // socket.connect(socketAddress);
-        // socket.getOutputStream().write("stats\n".getBytes());
-        //
-        // BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        // while (true) {
-        // String line = reader.readLine();
-        // System.out.println("memcached said: " + line);
-        // if (line.equals("END")) {
-        // break;
-        // }
-        // if (line.equals("ERROR")) {
-        // throw new IllegalStateException("Got ERROR reply from memcache");
-        // }
-        // }
-        //
-        // socket.close();
-
-        deleteItem(created);
-    }
+		return sb.toString();
+	}
 
 }
