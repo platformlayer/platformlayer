@@ -31,7 +31,7 @@ public class ITZookeeperService extends PlatformLayerApiTest {
 		cluster = putItem(id, cluster);
 		cluster = waitForHealthy(cluster);
 
-		InetSocketAddress socketAddress = getEndpoint(cluster);
+		InetSocketAddress socketAddress = getFirstEndpoint(cluster);
 		Assert.assertFalse(isPortOpen(socketAddress));
 
 		openFirewall(cluster, socketAddress.getPort());

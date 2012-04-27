@@ -35,7 +35,7 @@ public class ITAptCacheService extends PlatformLayerApiTest {
 		aptCache = putItem(id, aptCache);
 		aptCache = waitForHealthy(aptCache);
 
-		InetSocketAddress socketAddress = getEndpoint(aptCache);
+		InetSocketAddress socketAddress = getUniqueEndpoint(aptCache);
 		Assert.assertFalse(isPortOpen(socketAddress));
 
 		openFirewall(aptCache, AptCacheServiceController.PORT);

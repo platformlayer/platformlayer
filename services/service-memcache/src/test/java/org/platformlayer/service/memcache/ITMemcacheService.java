@@ -33,7 +33,7 @@ public class ITMemcacheService extends PlatformLayerApiTest {
 		memcache = putItem(id, memcache);
 		memcache = waitForHealthy(memcache);
 
-		InetSocketAddress socketAddress = getEndpoint(memcache);
+		InetSocketAddress socketAddress = getUniqueEndpoint(memcache);
 		Assert.assertFalse(isPortOpen(socketAddress));
 
 		openFirewall(memcache, MemcacheServerController.MEMCACHE_PORT);

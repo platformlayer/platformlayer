@@ -32,7 +32,7 @@ public class ITJenkinsService extends PlatformLayerApiTest {
 		service = putItem(id, service);
 		service = waitForHealthy(service);
 
-		InetSocketAddress socketAddress = getEndpoint(service);
+		InetSocketAddress socketAddress = getUniqueEndpoint(service);
 		Assert.assertFalse(isPortOpen(socketAddress));
 
 		openFirewall(service, JenkinsServiceController.PORT);

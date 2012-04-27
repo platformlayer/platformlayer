@@ -36,7 +36,7 @@ public class ITOpenLdapService extends PlatformLayerApiTest {
 		OpenLdapTestHelpers openLdap = new OpenLdapTestHelpers(getContext());
 		LdapService ldapService = openLdap.createLdapServer();
 
-		InetSocketAddress socketAddress = getEndpoint(ldapService);
+		InetSocketAddress socketAddress = getUniqueEndpoint(ldapService);
 		Assert.assertFalse(isPortOpen(socketAddress));
 
 		openFirewall(ldapService, LdapServiceController.PORT);

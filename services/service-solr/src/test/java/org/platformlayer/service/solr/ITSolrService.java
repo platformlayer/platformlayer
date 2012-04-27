@@ -44,7 +44,7 @@ public class ITSolrService extends PlatformLayerApiTest {
 
 		solr = waitForHealthy(solr);
 
-		InetSocketAddress socketAddress = getEndpoint(solr);
+		InetSocketAddress socketAddress = getUniqueEndpoint(solr);
 
 		Assert.assertFalse(isPortOpen(socketAddress));
 

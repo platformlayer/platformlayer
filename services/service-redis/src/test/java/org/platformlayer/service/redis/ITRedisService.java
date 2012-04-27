@@ -31,7 +31,7 @@ public class ITRedisService extends PlatformLayerApiTest {
 		redis = putItem(id, redis);
 		redis = waitForHealthy(redis);
 
-		InetSocketAddress socketAddress = getEndpoint(redis);
+		InetSocketAddress socketAddress = getUniqueEndpoint(redis);
 		Assert.assertFalse(isPortOpen(socketAddress));
 
 		openFirewall(redis, socketAddress.getPort());

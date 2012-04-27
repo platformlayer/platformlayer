@@ -52,8 +52,12 @@ public class PlatformLayerApiTest extends AbstractPlatformLayerTest {
 		return getContext().openFirewall(item, port);
 	}
 
-	protected InetSocketAddress getEndpoint(ItemBase item) {
-		return getContext().getEndpoint(item);
+	protected InetSocketAddress getUniqueEndpoint(ItemBase item) {
+		return getContext().getUniqueEndpoint(item);
+	}
+
+	protected InetSocketAddress getFirstEndpoint(ItemBase item) {
+		return getContext().getFirstEndpoint(item);
 	}
 
 	protected JobData waitForJobComplete(JobData job) throws OpsException, IOException {

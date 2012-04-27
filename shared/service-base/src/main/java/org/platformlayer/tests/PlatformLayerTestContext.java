@@ -288,15 +288,30 @@ public class PlatformLayerTestContext {
 		}
 	}
 
-	public InetSocketAddress getEndpoint(ItemBase item) {
+	private InetSocketAddress getEndpoint(ItemBase item, boolean unique) {
 		List<EndpointInfo> endpoints = EndpointInfo.getEndpoints(item.getTags());
-		if (endpoints.size() != 1) {
-			throw new IllegalStateException("Expected exactly one endpoint");
+		if (unique) {
+			if (endpoints.size() != 1) {
+				throw new IllegalStateException("Expected exactly one endpoint");
+			}
+			System.out.println("Found endpoint: " + endpoints.get(0));
+		} else {
+			if (endpoints.size() == 0) {
+				throw new IllegalStateException("Expected at least one endpoint");
+			}
+			System.out.println("Found endpoints: " + endpoints + "; choosing: " + endpoints.get(0));
 		}
-		System.out.println("Found endpoint: " + endpoints.get(0));
 
 		InetSocketAddress socketAddress = toSocketAddress(endpoints.get(0));
 		return socketAddress;
+	}
+
+	public InetSocketAddress getUniqueEndpoint(ItemBase item) {
+		return getEndpoint(item, true);
+	}
+
+	public InetSocketAddress getFirstEndpoint(ItemBase item) {
+		return getEndpoint(item, false);
 	}
 
 }
