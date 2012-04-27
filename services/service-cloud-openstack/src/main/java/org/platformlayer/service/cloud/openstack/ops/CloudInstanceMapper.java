@@ -57,6 +57,9 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
 	@Inject
 	OpenstackCloudContext openstack;
 
+	@Inject
+	OpenstackCloudHelpers openstackHelpers;
+
 	@Handler
 	public void doOperation() throws OpsException, IOException {
 		Tags instanceTags = instance.getTags();
@@ -65,6 +68,7 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
 		if (cloud == null) {
 			throw new OpsException("Could not find cloud");
 		}
+		OpenstackComputeClient computeClient = openstack.getComputeClient(cloud);
 
 		getRecursionState().pushChildScope(cloud);
 
@@ -121,8 +125,29 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
 		}
 
 		if (!assignedInstanceIds.isEmpty() && OpsContext.isDelete()) {
+			CloudBehaviours cloudBehaviours = new CloudBehaviours(cloud);
+			boolean supportsSecurityGroups = cloudBehaviours.supportsSecurityGroups();
+
 			for (String instanceId : assignedInstanceIds) {
+				Server server = openstack.findServerById(cloud, instanceId);
+				if (server == null) {
+					log.warn("Could not find assigned server: " + instanceId + ", ignoring");
+					continue;
+				}
+
+				SecurityGroup securityGroup = null;
+
+				if (supportsSecurityGroups) {
+					securityGroup = openstackHelpers.getMachineSecurityGroup(computeClient, server);
+				}
+
 				openstack.terminateInstance(cloud, instanceId);
+
+				if (securityGroup != null) {
+					// We need to terminate the instance before we delete the security group it uses
+					// TODO: Wait for instance termination??
+					computeClient.root().securityGroups().securityGroup(securityGroup.getId()).delete();
+				}
 			}
 		}
 
