@@ -6,10 +6,10 @@ import org.platformlayer.auth.OpsUser;
 import org.platformlayer.auth.UserRepository;
 
 public class CreateUser extends KeystoneCommandRunnerBase {
-	@Argument(index = 0)
+	@Argument(index = 0, required = true)
 	public String username;
 
-	@Argument(index = 1)
+	@Argument(index = 1, required = true)
 	public String password;
 
 	public CreateUser() {
