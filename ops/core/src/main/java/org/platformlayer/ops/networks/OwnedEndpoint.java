@@ -36,7 +36,7 @@ public class OwnedEndpoint extends OwnedItem<PublicEndpointBase> {
 
 		// publicEndpoint.getTags().add(OpsSystem.get().createParentTag(instance));
 
-		Tag uniqueTag = UniqueTag.build(instance);
+		Tag uniqueTag = UniqueTag.build(instance, String.valueOf(publicPort));
 		publicEndpoint.getTags().add(uniqueTag);
 
 		return publicEndpoint;
