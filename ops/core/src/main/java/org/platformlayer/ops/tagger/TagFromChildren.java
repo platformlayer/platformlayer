@@ -1,4 +1,4 @@
-package org.platformlayer.service.solr.ops;
+package org.platformlayer.ops.tagger;
 
 import java.util.List;
 
@@ -12,12 +12,12 @@ import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.tree.OpsTreeBase;
-import org.platformlayer.service.solr.model.SolrServer;
-import org.platformlayer.service.solr.ops.SolrClusterController.SolrChildServer;
+import org.platformlayer.ops.tree.OwnedItem;
 
 public class TagFromChildren {
-	ItemBase parentItem;
-	OpsTreeBase parentController;
+	public ItemBase parentItem;
+	public OpsTreeBase parentController;
+	public Class<? extends OwnedItem> ownedItemType;
 
 	@Inject
 	PlatformLayerHelpers platformLayer;
@@ -25,8 +25,8 @@ public class TagFromChildren {
 	@Handler
 	public void handler() throws OpsException {
 		if (OpsContext.isConfigure()) {
-			for (SolrChildServer childServer : parentController.getChildren(SolrChildServer.class)) {
-				SolrServer server = childServer.getItem();
+			for (OwnedItem childServer : parentController.getChildren(OwnedItem.class)) {
+				ItemBase server = childServer.getItem();
 				if (server == null) {
 					// TODO: It's _possible_ that the child is ready instantly.
 					// Right now, we have to go through a retry cycle
