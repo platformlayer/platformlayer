@@ -17,9 +17,10 @@ import org.testng.annotations.Test;
 
 public class ITAptCacheService extends PlatformLayerApiTest {
 
+	@Override
 	@BeforeMethod
 	public void beforeMethod() {
-		reset();
+		super.beforeMethod();
 
 		getTypedItemMapper().addClass(AptCacheService.class);
 	}
@@ -28,16 +29,16 @@ public class ITAptCacheService extends PlatformLayerApiTest {
 	public void testCreateAndDeleteItem() throws Exception {
 		String id = random.randomAlphanumericString(8);
 
-		AptCacheService service = new AptCacheService();
-		service.dnsName = id + ".test.platformlayer.org";
+		AptCacheService aptCache = new AptCacheService();
+		aptCache.dnsName = id + ".test.platformlayer.org";
 
-		service = putItem(id, service);
-		service = waitForHealthy(service);
+		aptCache = putItem(id, aptCache);
+		aptCache = waitForHealthy(aptCache);
 
-		InetSocketAddress socketAddress = getEndpoint(service);
+		InetSocketAddress socketAddress = getEndpoint(aptCache);
 		Assert.assertFalse(isPortOpen(socketAddress));
 
-		openFirewall(service, AptCacheServiceController.PORT);
+		openFirewall(aptCache, AptCacheServiceController.PORT);
 		Assert.assertTrue(isPortOpen(socketAddress));
 
 		// TODO: Make endpoint http://<ip>:<port>/ ???
@@ -45,7 +46,7 @@ public class ITAptCacheService extends PlatformLayerApiTest {
 		String html = testProxy(socketAddress, "http://www.google.com/");
 		Assert.assertTrue(html.contains("Search the world"));
 
-		deleteItem(service);
+		deleteItem(aptCache);
 	}
 
 	private String testProxy(InetSocketAddress proxySocketAddress, String fetchUrl) throws IOException {

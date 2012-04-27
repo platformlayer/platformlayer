@@ -11,10 +11,8 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
-import org.platformlayer.PlatformLayerUtils;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.jobs.model.JobData;
-import org.platformlayer.service.network.v1.NetworkConnection;
 import org.platformlayer.service.solr.model.SolrCluster;
 import org.platformlayer.service.solr.model.SolrSchemaField;
 import org.platformlayer.service.solr.model.SolrServer;
@@ -27,9 +25,10 @@ import org.testng.collections.Lists;
 
 public class ITSolrService extends PlatformLayerApiTest {
 
+	@Override
 	@BeforeMethod
 	public void beforeMethod() {
-		reset();
+		super.beforeMethod();
 
 		getTypedItemMapper().addClass(SolrServer.class);
 	}
@@ -38,34 +37,18 @@ public class ITSolrService extends PlatformLayerApiTest {
 	public void testCreateAndDeleteItem() throws Exception {
 		String id = random.randomAlphanumericString(8);
 
-		SolrCluster create = new SolrCluster();
-		create.dnsName = id + ".test.platformlayer.org";
+		SolrCluster solr = new SolrCluster();
+		solr.dnsName = id + ".test.platformlayer.org";
 
-		SolrCluster created = putItem(id, create);
+		solr = putItem(id, solr);
 
-		SolrCluster healthy = waitForHealthy(created);
+		solr = waitForHealthy(solr);
 
-		List<String> endpoints = PlatformLayerUtils.findEndpoints(healthy.getTags());
-
-		if (endpoints.size() != 1) {
-			throw new IllegalStateException("Expected exactly one endpoint");
-		}
-
-		System.out.println("Found endpoint: " + endpoints.get(0));
-
-		InetSocketAddress socketAddress = parseSocketAddress(endpoints.get(0));
+		InetSocketAddress socketAddress = getEndpoint(solr);
 
 		Assert.assertFalse(isPortOpen(socketAddress));
 
-		NetworkConnection firewallRule = new NetworkConnection();
-		firewallRule.setSourceCidr("0.0.0.0/0");
-		firewallRule.setDestItem(created.getKey());
-		firewallRule.setPort(SolrConstants.API_PORT);
-
-		firewallRule = putItem(id, firewallRule);
-
-		waitForHealthy(firewallRule);
-
+		openFirewall(solr, SolrConstants.API_PORT);
 		Assert.assertTrue(isPortOpen(socketAddress));
 
 		// TODO: Make endpoint http://<ip>:<port>/<path>...
@@ -78,7 +61,7 @@ public class ITSolrService extends PlatformLayerApiTest {
 		SolrSchemaField field = new SolrSchemaField();
 		field.name = customFieldKey;
 		field.type = "text_general";
-		field.getTags().add(Tag.buildParentTag(created.getKey()));
+		field.getTags().add(Tag.buildParentTag(solr.getKey()));
 
 		// TODO: Our scoping of keys is problematic now...
 		// If two clusters both have the same key "customfield1", they can't have the same ID
@@ -89,64 +72,12 @@ public class ITSolrService extends PlatformLayerApiTest {
 		// TODO: trigger this automatically
 
 		SolrServer server = getItem(id + "-0", SolrServer.class);
-		JobData configureJob = doConfigure(server);
+		JobData configureJob = getContext().doConfigure(server);
 
 		waitForJobComplete(configureJob);
 
 		testSolrCustomField(url, customFieldKey);
-
-		deleteItem(created);
 	}
-
-	// // @Test
-	// public void test2() throws Exception {
-	// String url = "http://15.185.171.172:8080/solr/";
-	// // testSolr(url);
-	//
-	// String customFieldKey = "customfield1";
-	// testSolrCustomField(url, customFieldKey);
-	// }
-
-	// @Test
-	// public void test3() throws Exception {
-	// String id = "lLkaoeK5";
-	//
-	// SolrCluster cluster = getItem(id, SolrCluster.class);
-	//
-	// List<String> endpoints = PlatformLayerUtils.findEndpoints(cluster.getTags());
-	//
-	// if (endpoints.size() != 1) {
-	// throw new IllegalStateException("Expected exactly one endpoint");
-	// }
-	//
-	// System.out.println("Found endpoint: " + endpoints.get(0));
-	//
-	// InetSocketAddress socketAddress = parseSocketAddress(endpoints.get(0));
-	//
-	// String url = "http://" + socketAddress.getAddress().getHostAddress() + ":" + socketAddress.getPort() + "/solr";
-	// // testSolr(url);
-	//
-	// String customFieldKey = "customfield" + random.nextLong();
-	//
-	// SolrSchemaField field = new SolrSchemaField();
-	// field.name = customFieldKey;
-	// field.type = "text_general";
-	// field.getTags().add(Tag.buildParentTag(cluster.getKey()));
-	//
-	// // TODO: Our scoping of keys is problematic now...
-	// // If two clusters both have the same key "customfield1", they can't have the same ID
-	// field = putItem(id + "-" + customFieldKey, field);
-	// waitForHealthy(field);
-	//
-	// SolrServer server = getItem(id + "-0", SolrServer.class);
-	// JobData configureJob = doConfigure(server);
-	//
-	// waitForJobComplete(configureJob);
-	//
-	// Thread.sleep(5000);
-	//
-	// testSolrCustomField(url, customFieldKey);
-	// }
 
 	private void testSolr(String url) throws SolrServerException, IOException {
 		CommonsHttpSolrServer client = new CommonsHttpSolrServer(url);

@@ -21,9 +21,10 @@ import org.testng.annotations.Test;
 
 public class ITOpenLdapService extends PlatformLayerApiTest {
 
+	@Override
 	@BeforeMethod
 	public void beforeMethod() {
-		reset();
+		super.beforeMethod();
 
 		getTypedItemMapper().addClass(LdapService.class);
 		getTypedItemMapper().addClass(LdapDomain.class);
@@ -31,38 +32,21 @@ public class ITOpenLdapService extends PlatformLayerApiTest {
 
 	@Test
 	public void testCreateAndDeleteItem() throws Exception {
-		String id = random.randomAlphanumericString(8);
-		Secret ldapServerPassword = randomSecret();
+		OpenLdapTestHelpers openLdap = new OpenLdapTestHelpers(getContext());
+		LdapService ldapService = openLdap.createLdapServer();
 
-		LdapService service = new LdapService();
-		service.dnsName = id + ".test.platformlayer.org";
-		service.ldapServerPassword = ldapServerPassword;
-
-		service = putItem(id, service);
-		service = waitForHealthy(service);
-
-		InetSocketAddress socketAddress = getEndpoint(service);
+		InetSocketAddress socketAddress = getEndpoint(ldapService);
 		Assert.assertFalse(isPortOpen(socketAddress));
 
-		openFirewall(service, LdapServiceController.PORT);
+		openFirewall(ldapService, LdapServiceController.PORT);
 		Assert.assertTrue(isPortOpen(socketAddress));
 
 		String organizationName = "test.platformlayer.org";
-
-		String domainId = "domain-" + id;
-		Secret adminPassword = randomSecret();
-		LdapDomain domain = new LdapDomain();
-		domain.organizationName = organizationName;
-		domain.adminPassword = adminPassword;
-		domain = putItem(domainId, domain);
-		domain = waitForHealthy(domain);
+		LdapDomain ldapDomain = openLdap.createLdapDomain(ldapService, organizationName);
 
 		// TODO: Make endpoint ldap://<ip>:<port>/ ???
 		String ldapUrl = "ldap://" + socketAddress.getAddress().getHostAddress() + ":" + socketAddress.getPort() + "/";
-		testLdap(ldapUrl, adminPassword);
-
-		deleteItem(domain);
-		deleteItem(service);
+		testLdap(ldapUrl, ldapDomain.adminPassword);
 	}
 
 	private void testLdap(String ldapUrl, Secret adminPassword) throws NamingException {

@@ -23,7 +23,6 @@
             <artifactId>service-openldap</artifactId>
         </dependency>
 
-        <!-- TestNG -->
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>

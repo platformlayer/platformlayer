@@ -48,5 +48,11 @@
             <artifactId>codegen-annotations</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <!-- It's just easier to pull in TestNG for everyone... -->
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+        </dependency>
     </dependencies>
 </project>

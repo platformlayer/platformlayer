@@ -6,14 +6,25 @@ import org.openstack.client.utils.RandomUtil;
 import org.platformlayer.TypedItemMapper;
 import org.platformlayer.TypedPlatformLayerClient;
 import org.platformlayer.ops.OpsException;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 
 public abstract class AbstractPlatformLayerTest {
-	protected PlatformLayerTestContext context;
+	private PlatformLayerTestContext context;
 	protected RandomUtil random = new RandomUtil();
 
 	protected abstract TypedItemMapper getTypedItemMapper();
 
-	protected void reset() {
+	@BeforeMethod
+	public void beforeMethod() {
+		context = null;
+	}
+
+	@AfterMethod
+	protected void afterMethod() throws IOException, OpsException {
+		if (context != null) {
+			context.cleanup();
+		}
 		context = null;
 	}
 
@@ -21,7 +32,7 @@ public abstract class AbstractPlatformLayerTest {
 		return getContext().getTypedClient();
 	}
 
-	private PlatformLayerTestContext getContext() {
+	protected PlatformLayerTestContext getContext() {
 		if (context == null) {
 			context = PlatformLayerTestContext.buildFromProperties(getTypedItemMapper());
 		}

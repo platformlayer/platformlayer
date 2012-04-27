@@ -6,6 +6,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
+import org.openstack.client.common.OpenstackComputeClient;
+import org.openstack.model.compute.SecurityGroup;
 import org.openstack.model.compute.Server;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
@@ -26,7 +28,9 @@ import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.openstack.model.OpenstackCloud;
 import org.platformlayer.service.cloud.openstack.model.OpenstackInstance;
+import org.platformlayer.service.cloud.openstack.ops.openstack.CloudBehaviours;
 import org.platformlayer.service.cloud.openstack.ops.openstack.OpenstackCloudContext;
+import org.platformlayer.service.cloud.openstack.ops.openstack.OpenstackCloudHelpers;
 import org.platformlayer.service.cloud.openstack.ops.openstack.OpenstackComputeMachine;
 
 import com.google.common.base.Strings;
