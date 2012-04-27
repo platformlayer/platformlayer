@@ -62,7 +62,8 @@ public class ITGitService extends PlatformLayerApiTest {
 		repo = waitForHealthy(repo);
 
 		// TODO: Make endpoint http://<ip>:<port>/<path>...
-		String url = "http://" + socketAddress.getAddress().getHostAddress() + ":" + socketAddress.getPort() + "/git";
+		String url = "http://" + socketAddress.getAddress().getHostAddress() + ":" + socketAddress.getPort() + "/git/"
+				+ repoId;
 		String username = null;
 		String password = null;
 
@@ -91,7 +92,11 @@ public class ITGitService extends PlatformLayerApiTest {
 			Io.readAll(url);
 		} catch (Exception e) {
 			// We're not authenticated, so we expect a 401
+
 			System.out.println(e);
+
+			String message = e.getMessage();
+			Assert.assertTrue(message.contains("HTTP response code: 401"));
 		}
 	}
 
