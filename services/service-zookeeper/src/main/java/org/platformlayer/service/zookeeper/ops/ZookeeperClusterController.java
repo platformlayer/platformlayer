@@ -6,7 +6,6 @@ import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
 import org.platformlayer.Filter;
-import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.Handler;
@@ -39,12 +38,12 @@ public class ZookeeperClusterController extends OpsTreeBase implements MachineCl
 
 	}
 
-	static class ZookeeperChildServer extends OwnedItem {
+	static class ZookeeperChildServer extends OwnedItem<ZookeeperServer> {
 		ZookeeperCluster cluster;
 		String clusterId;
 
 		@Override
-		protected ItemBase buildItemTemplate() throws OpsException {
+		protected ZookeeperServer buildItemTemplate() throws OpsException {
 			Tag parentTag = Tag.buildParentTag(cluster.getKey());
 
 			ZookeeperServer server = new ZookeeperServer();
