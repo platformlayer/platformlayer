@@ -2,11 +2,15 @@ package org.platformlayer.service.cloud.openstack.ops;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
+import org.openstack.client.OpenstackException;
 import org.openstack.client.common.OpenstackComputeClient;
+import org.openstack.client.compute.AsyncServerOperation;
 import org.openstack.model.compute.SecurityGroup;
 import org.openstack.model.compute.Server;
 import org.platformlayer.core.model.PlatformLayerKey;
@@ -141,11 +145,20 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
 					securityGroup = openstackHelpers.getMachineSecurityGroup(computeClient, server);
 				}
 
-				openstack.terminateInstance(cloud, instanceId);
+				AsyncServerOperation terminateOperation = openstack.terminateInstance(cloud, instanceId);
 
 				if (securityGroup != null) {
 					// We need to terminate the instance before we delete the security group it uses
-					// TODO: Wait for instance termination??
+					if (terminateOperation != null) {
+						try {
+							terminateOperation.waitComplete(2, TimeUnit.MINUTES);
+						} catch (TimeoutException e) {
+							throw new OpsException("Timeout waiting for server shutdown", e);
+						} catch (OpenstackException e) {
+							throw new OpsException("Error waiting for server shutdown", e);
+						}
+					}
+
 					computeClient.root().securityGroups().securityGroup(securityGroup.getId()).delete();
 				}
 			}

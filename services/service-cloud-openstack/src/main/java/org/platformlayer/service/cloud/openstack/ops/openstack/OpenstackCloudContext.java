@@ -696,22 +696,18 @@ public class OpenstackCloudContext {
 		terminateInstance(machine.getCloud(), machine.getOpenstackServerId());
 	}
 
-	public boolean terminateInstance(OpenstackCloud cloud, String instanceId) throws OpsException {
+	public AsyncServerOperation terminateInstance(OpenstackCloud cloud, String instanceId) throws OpsException {
 		try {
-			getComputeClient(cloud).root().servers().server(instanceId).delete();
-			return true;
+			OpenstackComputeClient computeClient = getComputeClient(cloud);
+			AsyncServerOperation deleteOperation = computeClient.deleteServer(instanceId);
+			return deleteOperation;
 		} catch (OpenstackNotFoundException e) {
 			log.info("Could not find instance to be terminated, assuming already terminated: " + instanceId);
-			return false;
+			return null;
 		} catch (OpenstackException e) {
 			throw new OpsException("Error terminating server", e);
 		}
 	}
-
-	// // @Override
-	// // public boolean isImageFormatTar() {
-	// // return false;
-	// // }
 
 	public ImageStore getImageStore(OpenstackCloud cloud) throws OpsException {
 		OpenstackCloudHelpers helpers = new OpenstackCloudHelpers();
