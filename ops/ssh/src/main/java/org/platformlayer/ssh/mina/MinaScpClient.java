@@ -1,6 +1,5 @@
 package org.platformlayer.ssh.mina;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.EOFException;
@@ -10,6 +9,7 @@ import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
+import org.apache.log4j.Logger;
 import org.apache.sshd.ClientChannel;
 import org.apache.sshd.ClientSession;
 import org.openstack.utils.Io;
@@ -27,6 +27,8 @@ import org.platformlayer.ssh.mina.bugfix.BugFixChannelExec;
  * 
  */
 public class MinaScpClient {
+	static final Logger log = Logger.getLogger(MinaScpClient.class);
+
 	private final ClientSession clientSession;
 
 	TimeSpan connectTimeout = TimeSpan.ONE_MINUTE;
@@ -163,16 +165,13 @@ public class MinaScpClient {
 
 			byte[] buffer = new byte[8192];
 
-			// OutputStream os = new BufferedOutputStream(channelOutputStream, 1024);
-			InputStream is = new BufferedInputStream(fromStdout, 65536);
-
 			toStdin.write(0x0);
 			toStdin.flush();
 
 			FileInfo fileInfo;
 
 			while (true) {
-				ServerLine nextLine = readResponseLine(is);
+				ServerLine nextLine = readResponseLine();
 
 				int lineType = nextLine.lineType;
 
@@ -217,7 +216,7 @@ public class MinaScpClient {
 				while (remain > 0) {
 					int readSize = (int) Math.min(buffer.length, remain);
 
-					int actuallyRead = is.read(buffer, 0, readSize);
+					int actuallyRead = fromStdout.read(buffer, 0, readSize);
 
 					if (actuallyRead < 0) {
 						throw new EOFException();
@@ -231,7 +230,7 @@ public class MinaScpClient {
 				IoUtils.safeClose(destOutputStream);
 			}
 
-			parseFinalLine(readResponseLine(is));
+			parseFinalLine(readResponseLine());
 
 			toStdin.write(0x0);
 			toStdin.flush();
@@ -251,17 +250,13 @@ public class MinaScpClient {
 
 			byte[] buffer = new byte[32768];
 
-			// We don't buffer the output stream - we do it by hand
-			InputStream is = new BufferedInputStream(fromStdout, 65536);
-
 			// It's not entirely clear why the server responds here .. maybe to verify the target directory exists??
-			readResponse(is);
+			readResponse();
 
-			String line = "C" + mode + " " + srcDataLength + " " + remoteFileName + "\n";
-			toStdin.write(Utf8.getBytes(line));
-			toStdin.flush();
+			String line = "C" + mode + " " + srcDataLength + " " + remoteFileName;
+			writeCommand(line);
 
-			readResponse(is);
+			readResponse();
 
 			long remain = srcDataLength;
 
@@ -282,16 +277,24 @@ public class MinaScpClient {
 			toStdin.write(0);
 			toStdin.flush();
 
-			readResponse(is);
+			readResponse();
 
-			toStdin.write(Utf8.getBytes("E\n"));
-			toStdin.flush();
+			writeCommand("E");
 
-			readResponse(is);
+			readResponse();
 		}
 
-		private ServerLine readResponse(InputStream is) throws IOException, SshException {
-			ServerLine nextLine = readResponseLine(is);
+		private void writeCommand(String line) throws IOException {
+			log.info("SCP send: " + line);
+
+			line = line + "\n";
+
+			toStdin.write(Utf8.getBytes(line));
+			toStdin.flush();
+		}
+
+		private ServerLine readResponse() throws IOException, SshException {
+			ServerLine nextLine = readResponseLine();
 
 			int lineType = nextLine.lineType;
 
@@ -307,10 +310,10 @@ public class MinaScpClient {
 			return nextLine;
 		}
 
-		private ServerLine readResponseLine(InputStream is) throws IOException {
+		private ServerLine readResponseLine() throws IOException {
 			StringBuffer sb = new StringBuffer();
 
-			int lineType = is.read();
+			int lineType = fromStdout.read();
 			if (lineType < 0) {
 				throw new EOFException();
 			}
@@ -319,7 +322,7 @@ public class MinaScpClient {
 			}
 
 			while (true) {
-				int c = is.read();
+				int c = fromStdout.read();
 
 				if (c < 0) {
 					throw new EOFException();
@@ -331,7 +334,10 @@ public class MinaScpClient {
 
 				sb.append((char) c);
 			}
-			return new ServerLine(lineType, sb.toString());
+
+			ServerLine serverLine = new ServerLine(lineType, sb.toString());
+			log.info("SCP read: [" + serverLine.lineType + "] " + serverLine.data);
+			return serverLine;
 		}
 
 		private void parseFinalLine(ServerLine line) throws IOException, SshException {
