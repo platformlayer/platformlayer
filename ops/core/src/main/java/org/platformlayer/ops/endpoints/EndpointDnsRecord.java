@@ -3,6 +3,7 @@ package org.platformlayer.ops.endpoints;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
+import org.platformlayer.EndpointInfo;
 import org.platformlayer.PlatformLayerClientException;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.PublicEndpointBase;
@@ -29,9 +30,6 @@ public class EndpointDnsRecord {
 	@Inject
 	OpsContext opsContext;
 
-	@Inject
-	EndpointHelpers endpointHelpers;
-
 	@Handler
 	public void handler() throws OpsException {
 		PublicEndpointBase endpoint = endpointProvider.get();
@@ -40,7 +38,7 @@ public class EndpointDnsRecord {
 			// Create a DNS record
 			Tag parentTag = OpsSystem.get().createParentTag(endpoint);
 
-			EndpointInfo endpointInfo = endpointHelpers.findEndpoint(endpoint.getTags(), destinationPort);
+			EndpointInfo endpointInfo = EndpointInfo.findEndpoint(endpoint.getTags(), destinationPort);
 			if (endpointInfo == null) {
 				throw new OpsException("Cannot find endpoint for port: " + destinationPort);
 			}

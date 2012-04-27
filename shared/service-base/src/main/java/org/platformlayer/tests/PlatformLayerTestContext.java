@@ -15,10 +15,10 @@ import java.util.Properties;
 import org.openstack.client.utils.RandomUtil;
 import org.openstack.utils.Io;
 import org.platformlayer.DirectPlatformLayerClient;
+import org.platformlayer.EndpointInfo;
 import org.platformlayer.IoUtils;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientBase;
-import org.platformlayer.PlatformLayerUtils;
 import org.platformlayer.TypedItemMapper;
 import org.platformlayer.TypedPlatformLayerClient;
 import org.platformlayer.core.model.ItemBase;
@@ -235,6 +235,19 @@ public class PlatformLayerTestContext {
 		return new InetSocketAddress(address, port);
 	}
 
+	public InetSocketAddress toSocketAddress(EndpointInfo endpoint) {
+		String host = endpoint.publicIp;
+
+		InetAddress address;
+		try {
+			address = InetAddress.getByName(host);
+		} catch (UnknownHostException e) {
+			throw new IllegalStateException("Unable to resolve host: " + host, e);
+		}
+
+		return new InetSocketAddress(address, endpoint.port);
+	}
+
 	public JobData waitForJobComplete(JobData job) throws OpsException, IOException {
 		TypedPlatformLayerClient client = getTypedClient();
 
@@ -276,13 +289,13 @@ public class PlatformLayerTestContext {
 	}
 
 	public InetSocketAddress getEndpoint(ItemBase item) {
-		List<String> endpoints = PlatformLayerUtils.findEndpoints(item.getTags());
+		List<EndpointInfo> endpoints = EndpointInfo.getEndpoints(item.getTags());
 		if (endpoints.size() != 1) {
 			throw new IllegalStateException("Expected exactly one endpoint");
 		}
 		System.out.println("Found endpoint: " + endpoints.get(0));
 
-		InetSocketAddress socketAddress = parseSocketAddress(endpoints.get(0));
+		InetSocketAddress socketAddress = toSocketAddress(endpoints.get(0));
 		return socketAddress;
 	}
 

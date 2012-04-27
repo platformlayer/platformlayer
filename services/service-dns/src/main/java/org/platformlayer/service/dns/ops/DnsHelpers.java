@@ -5,13 +5,12 @@ import java.io.File;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
+import org.platformlayer.EndpointInfo;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.ops.CloudContext;
 import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
-import org.platformlayer.ops.endpoints.EndpointHelpers;
-import org.platformlayer.ops.endpoints.EndpointInfo;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.helpers.ServiceContext;
 import org.platformlayer.ops.helpers.SshKey;
@@ -33,9 +32,6 @@ public class DnsHelpers {
 
 	@Inject
 	InstanceHelpers instances;
-
-	@Inject
-	EndpointHelpers endpointHelpers;
 
 	static final Logger log = Logger.getLogger(DnsHelpers.class);
 
@@ -67,7 +63,7 @@ public class DnsHelpers {
 				log.info("Skipping server (deleted/deleting): " + dnsServer);
 				continue;
 			}
-			EndpointInfo dnsServerEndpoint = endpointHelpers.findEndpoint(dnsServer.getTags(), 53);
+			EndpointInfo dnsServerEndpoint = EndpointInfo.findEndpoint(dnsServer.getTags(), 53);
 
 			if (dnsServerEndpoint == null) {
 				throw new OpsException("Cannot find endpoint for: " + dnsServer);

@@ -6,12 +6,11 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
+import org.platformlayer.EndpointInfo;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsSystem;
-import org.platformlayer.ops.endpoints.EndpointHelpers;
-import org.platformlayer.ops.endpoints.EndpointInfo;
 import org.platformlayer.ops.filesystem.ManagedDirectory;
 import org.platformlayer.ops.filesystem.TemplatedFile;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
@@ -140,9 +139,6 @@ public class GitServerController extends OpsTreeBase implements TemplateDataSour
 		}
 	}
 
-	@Inject
-	EndpointHelpers endpoints;
-
 	@Override
 	public void buildTemplateModel(Map<String, Object> model) throws OpsException {
 		LdapDomain ldapDomain = getLdapDomain();
@@ -160,7 +156,7 @@ public class GitServerController extends OpsTreeBase implements TemplateDataSour
 		// String requireLdapGroup = "cn=Git,ou=Groups,dc=com,dc=fathomscale";
 
 		int port = 389;
-		EndpointInfo ldapEndpoint = endpoints.findEndpoint(ldapService.getTags(), port);
+		EndpointInfo ldapEndpoint = EndpointInfo.findEndpoint(ldapService.getTags(), port);
 		if (ldapEndpoint == null) {
 			throw new OpsException("Cannot find suitable LDAP endpoint");
 		}

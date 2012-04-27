@@ -4,6 +4,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 import org.apache.log4j.Logger;
+import org.platformlayer.EndpointInfo;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.PublicEndpointBase;
 import org.platformlayer.core.model.Tag;
@@ -13,8 +14,6 @@ import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsProvider;
 import org.platformlayer.ops.endpoints.EndpointDnsRecord;
-import org.platformlayer.ops.endpoints.EndpointHelpers;
-import org.platformlayer.ops.endpoints.EndpointInfo;
 import org.platformlayer.ops.firewall.FirewallEntry;
 import org.platformlayer.ops.firewall.FirewallRecord;
 import org.platformlayer.ops.firewall.FirewallRecord.Protocol;
@@ -52,9 +51,6 @@ public class PublicEndpoint extends OpsTreeBase {
 
 	@Inject
 	OpsContext opsContext;
-
-	@Inject
-	EndpointHelpers endpointHelpers;
 
 	@Handler
 	public void handler() {
@@ -104,7 +100,7 @@ public class PublicEndpoint extends OpsTreeBase {
 							return null;
 						}
 					}
-					EndpointInfo endpointInfo = endpointHelpers.findEndpoint(item.getTags(), publicPort);
+					EndpointInfo endpointInfo = EndpointInfo.findEndpoint(item.getTags(), publicPort);
 					if (endpointInfo == null) {
 						throw new OpsException("Cannot find endpoint for port: " + publicPort);
 					}

@@ -4,9 +4,9 @@ import java.io.PrintWriter;
 import java.util.List;
 
 import org.kohsuke.args4j.Argument;
+import org.platformlayer.EndpointInfo;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
-import org.platformlayer.PlatformLayerUtils;
 import org.platformlayer.UntypedItem;
 import org.platformlayer.client.cli.model.ItemPath;
 import org.platformlayer.core.model.PlatformLayerKey;
@@ -27,26 +27,7 @@ public class GetEndpoint extends PlatformLayerCommandRunnerBase {
 		PlatformLayerKey key = path.resolve(getContext());
 
 		UntypedItem untypedItem = client.getItemUntyped(key);
-		List<String> endpoints = PlatformLayerUtils.findEndpoints(untypedItem.getTags());
-
-		// Tag tag = new Tag(Tag.PARENT, "fathomdb/" + key.getRelativePath());
-		// List<PersistentInstance> persistentInstances = client.listItems(PersistentInstance.class, tag);
-		// for (PersistentInstance persistentInstance : persistentInstances) {
-		// findEndpoints(endpoints, persistentInstance.getTags());
-		// }
-		//
-		// for (PersistentInstance persistentInstance : persistentInstances) {
-		// Tags tags = persistentInstance.getTags();
-		// String instanceId = tags.findUnique(Tag.INSTANCE_KEY);
-		// if (instanceId != null) {
-		// PlatformLayerKey instanceKey = PlatformLayerKey.parse(instanceId);
-		//
-		// UntypedItem instance = client.getUntypedItem(instanceKey);
-		// if (instance != null) {
-		// findEndpoints(endpoints, instance.getTags());
-		// }
-		// }
-		// }
+		List<EndpointInfo> endpoints = EndpointInfo.getEndpoints(untypedItem.getTags());
 
 		return endpoints;
 	}

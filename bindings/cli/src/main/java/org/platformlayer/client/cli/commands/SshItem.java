@@ -4,12 +4,14 @@ import java.util.List;
 import java.util.Set;
 
 import org.kohsuke.args4j.Argument;
+import org.platformlayer.EndpointInfo;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
-import org.platformlayer.PlatformLayerUtils;
 import org.platformlayer.UntypedItem;
 import org.platformlayer.client.cli.model.ItemPath;
 import org.platformlayer.core.model.PlatformLayerKey;
+import org.platformlayer.core.model.Tag;
+import org.platformlayer.core.model.Tags;
 
 import com.fathomdb.cli.output.ClientAction;
 import com.google.common.collect.Sets;
@@ -29,12 +31,13 @@ public class SshItem extends PlatformLayerCommandRunnerBase {
 		PlatformLayerKey key = path.resolve(getContext());
 
 		UntypedItem untypedItem = client.getItemUntyped(key);
-		List<String> endpointList = PlatformLayerUtils.findEndpoints(untypedItem.getTags());
+		Tags itemTags = untypedItem.getTags();
+		List<EndpointInfo> endpointList = EndpointInfo.getEndpoints(itemTags);
 
-		Set<String> endpoints = Sets.newHashSet(endpointList);
+		Set<EndpointInfo> endpoints = Sets.newHashSet(endpointList);
 
-		String bestEndpoint = null;
-		for (String candidate : endpoints) {
+		EndpointInfo bestEndpoint = null;
+		for (EndpointInfo candidate : endpoints) {
 			if (bestEndpoint == null) {
 				bestEndpoint = candidate;
 			} else {
@@ -42,20 +45,28 @@ public class SshItem extends PlatformLayerCommandRunnerBase {
 			}
 		}
 
-		ClientAction action = null;
+		String host = null;
 
 		if (bestEndpoint != null) {
-			String host = bestEndpoint;
-			int colonIndex = host.indexOf(':');
-			if (colonIndex != -1) {
-				host = host.substring(colonIndex);
-			}
+			host = bestEndpoint.publicIp;
+		}
 
+		if (host == null) {
+			String addressTag = itemTags.findUnique(Tag.NETWORK_ADDRESS);
+			if (addressTag != null) {
+				int colonIndex = addressTag.indexOf(':');
+				if (colonIndex != -1) {
+					host = addressTag.substring(colonIndex);
+				}
+			}
+		}
+
+		ClientAction action = null;
+		if (host != null) {
 			// Hmmm... user? key?
 			// action = new ClientAction(ClientAction.ClientActionType.SSH, "root@" + bestEndpoint);
 		}
 
 		return action;
 	}
-
 }

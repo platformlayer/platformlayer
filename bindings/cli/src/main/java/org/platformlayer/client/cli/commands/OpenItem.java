@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.kohsuke.args4j.Argument;
+import org.platformlayer.EndpointInfo;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
-import org.platformlayer.PlatformLayerUtils;
 import org.platformlayer.UntypedItem;
 import org.platformlayer.client.cli.model.ItemPath;
 import org.platformlayer.core.model.PlatformLayerKey;
@@ -29,12 +29,12 @@ public class OpenItem extends PlatformLayerCommandRunnerBase {
 		PlatformLayerKey key = path.resolve(getContext());
 
 		UntypedItem untypedItem = client.getItemUntyped(key);
-		List<String> endpointList = PlatformLayerUtils.findEndpoints(untypedItem.getTags());
+		List<EndpointInfo> endpointList = EndpointInfo.getEndpoints(untypedItem.getTags());
 
-		Set<String> endpoints = Sets.newHashSet(endpointList);
+		Set<EndpointInfo> endpoints = Sets.newHashSet(endpointList);
 
-		String bestEndpoint = null;
-		for (String candidate : endpoints) {
+		EndpointInfo bestEndpoint = null;
+		for (EndpointInfo candidate : endpoints) {
 			if (bestEndpoint == null) {
 				bestEndpoint = candidate;
 			} else {
@@ -48,7 +48,8 @@ public class OpenItem extends PlatformLayerCommandRunnerBase {
 			// TODO: How do we want to do this? A new tag??
 			String id = key.getServiceType().getKey() + ":" + key.getItemType().getKey();
 			if (id.equals("jenkins:jenkinsService")) {
-				action = new ClientAction(ClientAction.ClientActionType.BROWSER, "http://" + bestEndpoint);
+				action = new ClientAction(ClientAction.ClientActionType.BROWSER, "http://" + bestEndpoint.publicIp
+						+ ":" + bestEndpoint.publicIp);
 			}
 		}
 

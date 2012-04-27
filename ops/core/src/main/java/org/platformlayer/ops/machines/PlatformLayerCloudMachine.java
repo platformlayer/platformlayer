@@ -1,16 +1,14 @@
 package org.platformlayer.ops.machines;
 
 import org.apache.log4j.Logger;
+import org.platformlayer.EndpointInfo;
 import org.platformlayer.core.model.InstanceBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.Tags;
-import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.MachineBase;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsSystem;
-import org.platformlayer.ops.endpoints.EndpointHelpers;
-import org.platformlayer.ops.endpoints.EndpointInfo;
 import org.platformlayer.ops.networks.NetworkPoint;
 
 import com.google.common.base.Objects;
@@ -70,8 +68,7 @@ public class PlatformLayerCloudMachine extends MachineBase {
 		// if (src.isPublicInternet())
 		// We assume that private networks can still reach the public internet, so these work for everyone
 		{
-			EndpointHelpers endpointHelpers = Injection.getInstance(EndpointHelpers.class);
-			EndpointInfo endpoint = endpointHelpers.findEndpoint(machine.getTags(), destinationPort);
+			EndpointInfo endpoint = EndpointInfo.findEndpoint(machine.getTags(), destinationPort);
 			if (endpoint != null) {
 				return endpoint.publicIp;
 			}

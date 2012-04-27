@@ -1,4 +1,4 @@
-package org.platformlayer.ops.endpoints;
+package org.platformlayer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,11 +6,13 @@ import java.util.List;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.Tags;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 
-public class EndpointHelpers {
-	public List<EndpointInfo> getEndpoints(Tags tags) {
+public class EndpointInfo {
+
+	public static List<EndpointInfo> getEndpoints(Tags tags) {
 		List<EndpointInfo> endpoints = Lists.newArrayList();
 
 		for (String publicEndpoint : tags.find(Tag.PUBLIC_ENDPOINT)) {
@@ -29,12 +31,29 @@ public class EndpointHelpers {
 
 	}
 
-	public EndpointInfo findEndpoint(Tags tags, Integer port) {
+	public static EndpointInfo findEndpoint(Tags tags, Integer port) {
 		for (EndpointInfo publicEndpoint : getEndpoints(tags)) {
 			if (publicEndpoint.matches(port)) {
 				return publicEndpoint;
 			}
 		}
 		return null;
+	}
+
+	public String publicIp;
+	public Integer port;
+
+	public boolean matches(Integer port) {
+		if (this.port == null || port == null || port == 0) {
+			return true;
+		}
+		if (!Objects.equal(port, this.port)) {
+			return false;
+		}
+		return true;
+	}
+
+	public Tag toTag() {
+		return new Tag(Tag.PUBLIC_ENDPOINT, publicIp + ":" + port);
 	}
 }
