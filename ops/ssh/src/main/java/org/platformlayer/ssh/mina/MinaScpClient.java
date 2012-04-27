@@ -285,7 +285,7 @@ public class MinaScpClient {
 		}
 
 		private void writeCommand(String line) throws IOException {
-			log.info("SCP send: " + line);
+			log.debug("SCP send: " + line);
 
 			line = line + "\n";
 
@@ -336,7 +336,7 @@ public class MinaScpClient {
 			}
 
 			ServerLine serverLine = new ServerLine(lineType, sb.toString());
-			log.info("SCP read: [" + serverLine.lineType + "] " + serverLine.data);
+			log.debug("SCP read: [" + serverLine.lineType + "] " + serverLine.data);
 			return serverLine;
 		}
 
