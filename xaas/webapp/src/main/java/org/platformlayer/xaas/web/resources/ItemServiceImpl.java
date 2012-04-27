@@ -9,6 +9,7 @@ import org.platformlayer.CheckedCallable;
 import org.platformlayer.Filter;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.Strings;
+import org.platformlayer.TagFilter;
 import org.platformlayer.auth.crypto.SecretProvider;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.ManagedItemState;
@@ -237,7 +238,7 @@ public class ItemServiceImpl implements ItemService {
 					if (uniqueTag == null) {
 						throw new IllegalArgumentException("Could not find unique tag");
 					}
-					Filter filter = Filter.byTag(uniqueTag);
+					Filter filter = TagFilter.byTag(uniqueTag);
 
 					existing = null;
 					List<T> existingList = repository.findAll(modelClass, modelKey.getProject(), fetchTags,

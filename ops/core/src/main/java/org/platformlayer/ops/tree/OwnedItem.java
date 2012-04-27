@@ -4,8 +4,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.platformlayer.Filter;
 import org.platformlayer.PlatformLayerClientException;
+import org.platformlayer.TagFilter;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.Handler;
@@ -37,7 +37,8 @@ public abstract class OwnedItem<T extends ItemBase> {
 		}
 
 		if (OpsContext.isDelete()) {
-			List<? extends ItemBase> items = platformLayer.listItems(itemTemplate.getClass(), Filter.byTag(uniqueTag));
+			List<? extends ItemBase> items = platformLayer.listItems(itemTemplate.getClass(),
+					TagFilter.byTag(uniqueTag));
 			if (items.size() != 0) {
 				if (items.size() != 1) {
 					throw new OpsException("Found multiple items with unique tag: " + uniqueTag);

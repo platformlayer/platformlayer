@@ -11,6 +11,15 @@ public class TagFilter extends Filter {
 		this.requiredTag = requiredTag;
 	}
 
+	public static Filter byTag(Tag requiredTag) {
+		TagFilter filter = new TagFilter(requiredTag);
+		return filter;
+	}
+
+	public static Filter byParent(ItemBase item) {
+		return byTag(Tag.buildParentTag(item.getKey()));
+	}
+
 	public boolean matchesTags(Iterable<Tag> tags) {
 		if (requiredTag == null) {
 			throw new IllegalStateException();

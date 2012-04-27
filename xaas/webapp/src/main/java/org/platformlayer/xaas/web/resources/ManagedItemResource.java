@@ -17,6 +17,7 @@ import javax.xml.stream.XMLStreamException;
 
 import org.platformlayer.Filter;
 import org.platformlayer.RepositoryException;
+import org.platformlayer.TagFilter;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.ManagedItemCollection;
 import org.platformlayer.core.model.PlatformLayerKey;
@@ -108,7 +109,7 @@ public class ManagedItemResource extends XaasResourceBase {
 		ItemBase item = getManagedItem(fetchTags);
 
 		Tag parentTag = Tag.buildParentTag(OpsSystem.toKey(item));
-		Filter filter = Filter.byTag(parentTag);
+		Filter filter = TagFilter.byTag(parentTag);
 		List<ItemBase> roots = itemService.listAll(getAuthentication(), filter);
 		ManagedItemCollection<ItemBase> collection = new ManagedItemCollection<ItemBase>();
 		collection.items = roots;

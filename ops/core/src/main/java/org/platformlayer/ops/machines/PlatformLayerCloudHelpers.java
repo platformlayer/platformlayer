@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import org.apache.log4j.Logger;
 import org.platformlayer.CastUtils;
 import org.platformlayer.Filter;
+import org.platformlayer.TagFilter;
 import org.platformlayer.core.model.InstanceBase;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.MachineCloudBase;
@@ -186,7 +187,7 @@ public class PlatformLayerCloudHelpers {
 		// TODO: Fix this!!
 		for (ModelClass<? extends InstanceBase> modelClass : serviceProviderHelpers
 				.getModelSubclasses(InstanceBase.class)) {
-			for (InstanceBase machine : platformLayer.listItems(modelClass.getJavaClass(), Filter.byTag(tag))) {
+			for (InstanceBase machine : platformLayer.listItems(modelClass.getJavaClass(), TagFilter.byTag(tag))) {
 				machines.add(machine);
 			}
 		}

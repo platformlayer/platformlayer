@@ -156,7 +156,7 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 	// }
 
 	public <T> List<T> listItems(Class<T> clazz, boolean showDeleted) throws OpsException {
-		Filter filter = showDeleted ? null : Filter.excludeStates(ManagedItemState.DELETED);
+		Filter filter = showDeleted ? null : StateFilter.exclude(ManagedItemState.DELETED);
 		return listItems(clazz, filter);
 	}
 

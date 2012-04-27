@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.platformlayer.Filter;
+import org.platformlayer.TagFilter;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
@@ -22,7 +22,7 @@ public class InstanceSupervisor {
 
 	public PersistentInstance findPersistentInstance(Tag tag) throws OpsException {
 		List<PersistentInstance> instances = Lists.newArrayList(platformLayer.listItems(PersistentInstance.class,
-				Filter.byTag(tag)));
+				TagFilter.byTag(tag)));
 		if (instances.size() == 0) {
 			return null;
 		}

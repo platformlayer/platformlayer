@@ -7,7 +7,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.platformlayer.Filter;
+import org.platformlayer.TagFilter;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OpsContext;
@@ -72,7 +72,7 @@ public class ZookeeperInstanceModel implements TemplateDataSource {
 			return Lists.newArrayList(model);
 		}
 
-		List<ZookeeperServer> servers = platformLayer.listItems(ZookeeperServer.class, Filter.byTag(parentTag));
+		List<ZookeeperServer> servers = platformLayer.listItems(ZookeeperServer.class, TagFilter.byTag(parentTag));
 		return servers;
 	}
 

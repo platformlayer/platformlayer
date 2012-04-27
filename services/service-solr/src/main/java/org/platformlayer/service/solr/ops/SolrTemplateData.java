@@ -7,7 +7,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.platformlayer.Filter;
+import org.platformlayer.TagFilter;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.OpsContext;
@@ -62,7 +62,7 @@ public class SolrTemplateData implements TemplateDataSource {
 	public List<SolrSchemaField> getFields() throws OpsException {
 		SolrCluster cluster = getCluster();
 		List<SolrSchemaField> fields = Lists.newArrayList();
-		for (SolrSchemaField field : platformLayer.listItems(SolrSchemaField.class, Filter.byParent(cluster))) {
+		for (SolrSchemaField field : platformLayer.listItems(SolrSchemaField.class, TagFilter.byParent(cluster))) {
 			fields.add(field);
 		}
 		return fields;

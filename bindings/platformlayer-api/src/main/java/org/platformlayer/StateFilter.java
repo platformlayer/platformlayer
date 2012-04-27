@@ -24,4 +24,17 @@ public class StateFilter extends Filter {
 		return allowStates.contains(itemState);
 	}
 
+	public static Filter exclude(ManagedItemState... states) {
+		EnumSet<ManagedItemState> allowStates = EnumSet.allOf(ManagedItemState.class);
+		for (ManagedItemState state : states) {
+			allowStates.remove(state);
+		}
+
+		return only(allowStates);
+	}
+
+	private static Filter only(EnumSet<ManagedItemState> allowStates) {
+		return new StateFilter(allowStates);
+	}
+
 }

@@ -6,7 +6,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.platformlayer.Filter;
+import org.platformlayer.TagFilter;
 import org.platformlayer.core.model.InstanceBase;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
@@ -83,7 +83,7 @@ public class InstanceHelpers {
 			// }
 
 			for (PersistentInstance persistentInstance : platformLayer.listItems(PersistentInstance.class,
-					Filter.byTag(parentTag))) {
+					TagFilter.byTag(parentTag))) {
 				String instanceKey = persistentInstance.getTags().findUnique(Tag.INSTANCE_KEY);
 				if (instanceKey != null) {
 					return cloud.findInstanceByInstanceKey(PlatformLayerKey.parse(instanceKey));

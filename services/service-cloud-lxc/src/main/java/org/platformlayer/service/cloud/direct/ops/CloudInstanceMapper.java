@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.platformlayer.Filter;
+import org.platformlayer.TagFilter;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.BindingScope;
 import org.platformlayer.ops.CustomRecursor;
@@ -55,7 +55,7 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
 	@Handler
 	public void doOperation() throws OpsException, IOException {
 		Tag tag = new Tag(Tag.ASSIGNED, OpsSystem.toKey(instance).getUrl());
-		List<DirectHost> hosts = Lists.newArrayList(platformLayer.listItems(DirectHost.class, Filter.byTag(tag)));
+		List<DirectHost> hosts = Lists.newArrayList(platformLayer.listItems(DirectHost.class, TagFilter.byTag(tag)));
 
 		if (hosts.size() > 1) {
 			// Huh?

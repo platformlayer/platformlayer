@@ -6,6 +6,7 @@ import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
 import org.platformlayer.Filter;
+import org.platformlayer.TagFilter;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.Handler;
@@ -85,7 +86,7 @@ public class ZookeeperClusterController extends OpsTreeBase implements MachineCl
 	@Override
 	public List<Machine> getMachines(Object modelObject, boolean required) throws OpsException {
 		ZookeeperCluster model = (ZookeeperCluster) modelObject;
-		Filter parentFilter = Filter.byTag(Tag.buildParentTag(model.getKey()));
+		Filter parentFilter = TagFilter.byTag(Tag.buildParentTag(model.getKey()));
 
 		List<Machine> machines = Lists.newArrayList();
 
