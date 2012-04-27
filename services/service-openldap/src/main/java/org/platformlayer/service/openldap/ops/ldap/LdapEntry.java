@@ -60,6 +60,11 @@ public abstract class LdapEntry {
 		}
 	}
 
+	@Handler
+	public void doOperation(OperationType operationType, OpsTarget target) throws OpsException {
+		log.warn("Operation not implemented: " + operationType);
+	}
+
 	@Handler({ OperationType.Configure })
 	public void doConfigure(OpsTarget target) throws OpsException {
 		boolean shouldConfigure = OpsContext.isConfigure(); // operation.isForce() || !isOnlyConfigureOnForce();
