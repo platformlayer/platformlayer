@@ -16,8 +16,6 @@ import org.platformlayer.service.zookeeper.model.ZookeeperServer;
 public class ZookeeperServerController extends OpsTreeBase {
 	static final Logger log = Logger.getLogger(ZookeeperServerController.class);
 
-	static final int ZK_PORT = 2181;
-
 	@Handler
 	public void doOperation() throws OpsException, IOException {
 	}
@@ -26,7 +24,7 @@ public class ZookeeperServerController extends OpsTreeBase {
 	protected void addChildren() throws OpsException {
 		ZookeeperServer model = OpsContext.get().getInstance(ZookeeperServer.class);
 
-		int port = ZK_PORT;
+		int port = ZookeeperConstants.ZK_PUBLIC_PORT;
 
 		// A per-instance name (for convenience)
 		String dnsName = "s" + model.clusterId + "-" + model.clusterDnsName;
