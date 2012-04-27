@@ -9,6 +9,7 @@ import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
 import org.openstack.client.OpenstackException;
+import org.openstack.client.OpenstackNotFoundException;
 import org.openstack.client.common.OpenstackComputeClient;
 import org.openstack.client.compute.AsyncServerOperation;
 import org.openstack.model.compute.SecurityGroup;
@@ -159,7 +160,11 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
 						}
 					}
 
-					computeClient.root().securityGroups().securityGroup(securityGroup.getId()).delete();
+					try {
+						computeClient.root().securityGroups().securityGroup(securityGroup.getId()).delete();
+					} catch (OpenstackNotFoundException e) {
+						log.info("Ignoring not-found error while deleting security group: " + securityGroup.getId());
+					}
 				}
 			}
 		}
