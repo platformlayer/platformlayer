@@ -7,7 +7,6 @@ import org.apache.log4j.Logger;
 import org.platformlayer.EndpointInfo;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.PublicEndpointBase;
-import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
@@ -105,8 +104,7 @@ public class PublicEndpoint extends OpsTreeBase {
 						throw new OpsException("Cannot find endpoint for port: " + publicPort);
 					}
 
-					tagChanges.addTags
-							.add(new Tag(Tag.PUBLIC_ENDPOINT, endpointInfo.publicIp + ":" + endpointInfo.port));
+					tagChanges.addTags.add(endpointInfo.toTag());
 					return tagChanges;
 				}
 			};

@@ -5,7 +5,7 @@ import java.io.IOException;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.platformlayer.core.model.Tag;
+import org.platformlayer.EndpointInfo;
 import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
@@ -62,7 +62,10 @@ public class OpenstackPublicEndpointController extends OpsTreeBase {
 					if (Strings.isNullOrEmpty(address)) {
 						throw new IllegalStateException();
 					}
-					tagChanges.addTags.add(new Tag(Tag.PUBLIC_ENDPOINT, address + ":" + model.publicPort));
+
+					EndpointInfo endpoint = new EndpointInfo(address, model.publicPort);
+					tagChanges.addTags.add(endpoint.toTag());
+
 					return tagChanges;
 				}
 			};

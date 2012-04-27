@@ -10,7 +10,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 import org.apache.log4j.Logger;
-import org.platformlayer.core.model.Tag;
+import org.platformlayer.EndpointInfo;
 import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
@@ -55,7 +55,7 @@ public class PublicPorts extends OpsTreeBase {
 	ServiceContext service;
 
 	static class PublicAddressDynamicPool extends FilesystemBackedPool {
-		private File resourceFile;
+		private final File resourceFile;
 		private final int publicPort;
 
 		public PublicAddressDynamicPool(OpsTarget target, File assignedDir, File resourceFile, int publicPort) {
@@ -161,7 +161,8 @@ public class PublicPorts extends OpsTreeBase {
 				public TagChanges get() {
 					TagChanges tagChanges = new TagChanges();
 					String address = assignPublicAddress.getAssigned().getProperty("address");
-					tagChanges.addTags.add(new Tag(Tag.PUBLIC_ENDPOINT, address + ":" + publicPort));
+					EndpointInfo endpoint = new EndpointInfo(address, publicPort);
+					tagChanges.addTags.add(endpoint.toTag());
 					return tagChanges;
 				}
 			};

@@ -2,6 +2,7 @@ package org.platformlayer.service.cloud.raw.ops;
 
 import javax.inject.Inject;
 
+import org.platformlayer.EndpointInfo;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.ops.OpsContext;
@@ -50,7 +51,9 @@ public class RawPublicEndpointController extends OpsTreeBase {
 					}
 
 					TagChanges tagChanges = new TagChanges();
-					tagChanges.addTags.add(new Tag(Tag.PUBLIC_ENDPOINT, publicAddress + ":" + model.publicPort));
+					EndpointInfo endpoint = new EndpointInfo(publicAddress, model.publicPort);
+					tagChanges.addTags.add(endpoint.toTag());
+
 					return tagChanges;
 				}
 			};

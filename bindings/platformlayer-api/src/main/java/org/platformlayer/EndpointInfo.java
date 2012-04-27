@@ -12,6 +12,14 @@ import com.google.common.collect.Lists;
 
 public class EndpointInfo {
 
+	public EndpointInfo() {
+	}
+
+	public EndpointInfo(String address, int publicPort) {
+		this.publicIp = address;
+		this.port = publicPort;
+	}
+
 	public static List<EndpointInfo> getEndpoints(Tags tags) {
 		List<EndpointInfo> endpoints = Lists.newArrayList();
 
