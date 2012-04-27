@@ -49,7 +49,7 @@ public class OperationInvoker {
 		List<Method> candidates = Lists.newArrayList();
 
 		for (Method method : controller.getClass().getMethods()) {
-			if (!isCandidate(method)) {
+			if (!isCandidate(method, scope)) {
 				continue;
 			}
 			candidates.add(method);
@@ -73,9 +73,17 @@ public class OperationInvoker {
 		return best;
 	}
 
-	private boolean isCandidate(Method method) {
+	private boolean isCandidate(Method method, BindingScope scope) {
+		OperationType operationType = scope.getInstance(OperationType.class);
+
 		Handler handler = method.getAnnotation(Handler.class);
 		if (handler != null) {
+			List<OperationType> operations = getOperations(handler);
+
+			if (!operations.isEmpty() && !operations.contains(operationType)) {
+				return false;
+			}
+
 			return true;
 		}
 
