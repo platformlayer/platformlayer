@@ -49,6 +49,12 @@ public class GitServerController extends OpsTreeBase implements TemplateDataSour
 
 			LdapDomain best = null;
 			for (LdapDomain candidate : platformLayer.listItems(LdapDomain.class)) {
+				switch (candidate.getState()) {
+				case DELETE_REQUESTED:
+				case DELETED:
+					continue;
+				}
+
 				// String orgName = candidate.organizationName;
 				// TODO: How to match?
 				if (best == null) {
