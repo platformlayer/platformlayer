@@ -193,22 +193,11 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 				itemTags.put(row.item, tag);
 			}
 
-			List<Integer> matchIds = Lists.newArrayList();
-
-			for (ItemEntity entity : result.getAll(ItemEntity.class)) {
-				int itemId = entity.id;
-
-				if (filter.matchesTags(itemTags.get(itemId))) {
-					matchIds.add(itemId);
-				}
-			}
-
 			List<ItemBase> roots = Lists.newArrayList();
 
-			for (Integer itemId : matchIds) {
-				ItemEntity entity = result.get(ItemEntity.class, itemId);
+			for (ItemEntity entity : result.getAll(ItemEntity.class)) {
 				if (entity == null) {
-					continue;
+					throw new IllegalStateException();
 				}
 
 				ServiceType serviceType = db.getServiceType(entity.service);
@@ -217,10 +206,13 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 				JaxbHelper jaxbHelper = getJaxbHelper(db, serviceType, itemType);
 				ItemBase item = mapToModel(project, serviceType, itemType, entity, jaxbHelper, secretProvider);
 
+				int itemId = entity.id;
 				Collection<Tag> tags = itemTags.get(itemId);
 				item.getTags().addAll(tags);
 
-				roots.add(item);
+				if (filter.matchesItem(item)) {
+					roots.add(item);
+				}
 			}
 
 			return roots;

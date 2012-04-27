@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import org.apache.log4j.Logger;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.ManagedItemCollection;
+import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ServiceInfo;
 import org.platformlayer.core.model.Tag;
@@ -154,8 +155,13 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 	// return platformLayerClient.listItems(itemClass, filter);
 	// }
 
+	public <T> List<T> listItems(Class<T> clazz, boolean showDeleted) throws OpsException {
+		Filter filter = showDeleted ? null : Filter.excludeStates(ManagedItemState.DELETED);
+		return listItems(clazz, filter);
+	}
+
 	public <T> List<T> listItems(Class<T> clazz) throws OpsException {
-		return listItems(clazz, null);
+		return listItems(clazz, false);
 	}
 
 	public <T> List<T> listItems(Class<T> clazz, Filter filter) throws OpsException {

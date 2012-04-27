@@ -1,48 +1,43 @@
 package org.platformlayer;
 
-import org.platformlayer.core.model.ItemBase;
-import org.platformlayer.core.model.Tag;
-import org.platformlayer.core.model.Tags;
+import java.util.EnumSet;
 
-public class Filter {
+import org.platformlayer.core.model.ItemBase;
+import org.platformlayer.core.model.ManagedItemState;
+import org.platformlayer.core.model.Tag;
+
+public abstract class Filter {
 	public static final Filter EMPTY = null;
 
-	Tag requiredTag;
-
 	public static Filter byTag(Tag requiredTag) {
-		Filter filter = new Filter();
-		filter.requiredTag = requiredTag;
+		TagFilter filter = new TagFilter(requiredTag);
 		return filter;
-	}
-
-	public boolean matchesTags(Iterable<Tag> tags) {
-		if (requiredTag == null) {
-			throw new IllegalStateException();
-		}
-
-		for (Tag tag : tags) {
-			if (tag.equals(requiredTag)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public boolean matches(Object item) {
-		if (requiredTag == null) {
-			throw new IllegalStateException();
-		}
-
-		if (item instanceof ItemBase) {
-			Tags tags = ((ItemBase) item).getTags();
-			return matchesTags(tags);
-		}
-
-		throw new IllegalArgumentException("Custom items not yet supported with filter");
 	}
 
 	public static Filter byParent(ItemBase item) {
 		return byTag(Tag.buildParentTag(item.getKey()));
 	}
 
+	public static Filter excludeStates(ManagedItemState... states) {
+		EnumSet<ManagedItemState> allowStates = EnumSet.allOf(ManagedItemState.class);
+		for (ManagedItemState state : states) {
+			allowStates.remove(state);
+		}
+
+		return onlyStates(allowStates);
+	}
+
+	private static Filter onlyStates(EnumSet<ManagedItemState> allowStates) {
+		return new StateFilter(allowStates);
+	}
+
+	public boolean matches(Object item) {
+		if (item instanceof ItemBase) {
+			return matchesItem((ItemBase) item);
+		}
+
+		throw new IllegalArgumentException("Custom items not yet supported with filter: " + this);
+	}
+
+	public abstract <T extends ItemBase> boolean matchesItem(T item);
 }
