@@ -161,9 +161,6 @@ public class MinaScpClient {
 				timeout = TimeSpan.ZERO;
 			}
 
-			// PipedOutputStream stdin, InputStream channelInputStream,
-			// receiveFile(toStdin, fromStdout, outputStream);
-
 			byte[] buffer = new byte[8192];
 
 			// OutputStream os = new BufferedOutputStream(channelOutputStream, 1024);
@@ -244,12 +241,6 @@ public class MinaScpClient {
 			if ((flags & ClientChannel.TIMEOUT) != 0) {
 				throw new SshException("Timeout while waiting for SSH task to complete");
 			}
-
-			// Integer exitCode = ((ChannelSession) sshChannel).getExitStatus();
-			//
-			// if (exitCode == null)
-			// throw new SshException("No exit code returned");
-
 		}
 
 		private void sendFile(InputStream srcData, long srcDataLength, String mode, String remoteFileName,
