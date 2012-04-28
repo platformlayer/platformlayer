@@ -10,7 +10,7 @@ import org.apache.sshd.common.SshConstants;
 import org.apache.sshd.common.util.Buffer;
 
 public class BugFixChannelExec extends ChannelExec {
-	private static final boolean USE_BUG_FIX = false;
+	private static final boolean USE_BUG_FIX = true;
 
 	public BugFixChannelExec(String command) {
 		super(command);

@@ -136,6 +136,9 @@ public class MinaScpClient {
 		public ScpChannel(ClientSession clientSession, String cmd) throws IOException {
 			this.toStdin = new PipedOutputStream();
 			this.fromStdout = new PipedInputStream();
+
+			log.debug("SCP Opening channel for cmd: " + cmd);
+
 			try {
 				channel = BugFixChannelExec.createExecChannel(clientSession, cmd);
 			} catch (Exception e1) {
@@ -151,6 +154,7 @@ public class MinaScpClient {
 
 		public void connect(TimeSpan connectTimeout) throws SshException {
 			try {
+				log.debug("SCP Opening connection");
 				channel.open().await(connectTimeout.getTotalMilliseconds());
 			} catch (Exception e) {
 				ExceptionUtils.handleInterrupted(e);
@@ -311,6 +315,8 @@ public class MinaScpClient {
 		}
 
 		private ServerLine readResponseLine() throws IOException {
+			log.debug("SCP reading response");
+
 			StringBuffer sb = new StringBuffer();
 
 			int lineType = fromStdout.read();
