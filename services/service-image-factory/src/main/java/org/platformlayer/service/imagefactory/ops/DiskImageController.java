@@ -34,6 +34,8 @@ import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.filesystem.FilesystemInfo;
 import org.platformlayer.ops.helpers.AptHelper;
+import org.platformlayer.ops.helpers.HttpProxyHelper;
+import org.platformlayer.ops.helpers.HttpProxyHelper.Usage;
 import org.platformlayer.ops.helpers.ImageFactory;
 import org.platformlayer.ops.helpers.ImageFactory.ImageFormat;
 import org.platformlayer.ops.helpers.ServiceContext;
@@ -78,6 +80,9 @@ public class DiskImageController {
 
 	@Inject
 	AptHelper apt;
+
+	@Inject
+	HttpProxyHelper httpProxies;
 
 	protected OperatingSystem getRequestedOperatingSystem(DiskImageRecipe recipe) {
 		OperatingSystemRecipe operatingSystemRecipe = recipe.operatingSystem;
@@ -170,7 +175,7 @@ public class DiskImageController {
 		// We need to install curl first so we can detect the performance of our proxies
 		apt.install(target, "curl"); // Needed for proxy testing at least
 
-		CommandEnvironment httpProxyEnv = apt.getHttpProxyEnvironment(target);
+		CommandEnvironment httpProxyEnv = httpProxies.getHttpProxyEnvironment(target, Usage.SoftwarePackages);
 
 		// For now, we assume that this image doesn't have debootstrap pre-installed
 		apt.install(target, "debootstrap");

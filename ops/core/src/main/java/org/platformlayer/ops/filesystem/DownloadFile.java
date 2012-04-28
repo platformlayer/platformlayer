@@ -3,16 +3,24 @@ package org.platformlayer.ops.filesystem;
 import java.io.File;
 import java.io.IOException;
 
+import javax.inject.Inject;
+
 import org.platformlayer.TimeSpan;
 import org.platformlayer.crypto.Md5Hash;
 import org.platformlayer.ops.Command;
+import org.platformlayer.ops.CommandEnvironment;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.helpers.CurlRequest;
+import org.platformlayer.ops.helpers.HttpProxyHelper;
+import org.platformlayer.ops.helpers.HttpProxyHelper.Usage;
 
 public class DownloadFile extends ManagedFile {
 	public String url;
 	public Md5Hash hash;
+
+	@Inject
+	HttpProxyHelper httpProxies;
 
 	@Override
 	protected void uploadFile(OpsTarget target, File remoteFilePath) throws IOException, OpsException {
@@ -21,10 +29,12 @@ public class DownloadFile extends ManagedFile {
 		CurlRequest curlRequest = new CurlRequest(url);
 		curlRequest.bareRequest = true;
 
+		CommandEnvironment commandEnvironment = httpProxies.getHttpProxyEnvironment(target, Usage.General);
+
 		Command curlCommand = curlRequest.toCommand();
 		curlCommand.addLiteral(">");
 		curlCommand.addFile(remoteFilePath);
-
+		curlCommand.setEnvironment(commandEnvironment);
 		curlCommand.setTimeout(TimeSpan.FIVE_MINUTES);
 
 		target.executeCommand(curlCommand);
