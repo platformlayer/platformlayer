@@ -37,9 +37,9 @@ public class GitServerAssignment extends OpsTreeBase implements CustomRecursor {
 		// TODO: Support backup on that GitServer
 		List<GitService> gitServices = platformLayer.listItems(GitService.class);
 
-		GitService gitService = null;
+		GitService gitService;
 		if (gitServices.size() == 0) {
-			throw new OpsException("No git servers found");
+			gitService = null;
 		} else {
 			// TODO: Assign to a single git server
 			if (gitServices.size() != 1) {
@@ -54,6 +54,10 @@ public class GitServerAssignment extends OpsTreeBase implements CustomRecursor {
 				getRecursionState().setPreventRecursion(true);
 				return;
 			}
+		}
+
+		if (gitService == null) {
+			throw new OpsException("No git servers found");
 		}
 
 		if (gitService.getState() != ManagedItemState.ACTIVE) {
