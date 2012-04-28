@@ -64,4 +64,10 @@ public class EndpointInfo {
 	public Tag toTag() {
 		return new Tag(Tag.PUBLIC_ENDPOINT, publicIp + ":" + port);
 	}
+
+	@Override
+	public String toString() {
+		return publicIp + ":" + port;
+	}
+
 }

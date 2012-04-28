@@ -38,9 +38,9 @@ public class GetEndpoint extends PlatformLayerCommandRunnerBase {
 			return;
 		}
 
-		List<String> endpoints = (List<String>) o;
-		for (String s : endpoints) {
-			writer.println(s);
+		List<EndpointInfo> endpoints = (List<EndpointInfo>) o;
+		for (EndpointInfo s : endpoints) {
+			writer.println(s.toString());
 		}
 	}
 
