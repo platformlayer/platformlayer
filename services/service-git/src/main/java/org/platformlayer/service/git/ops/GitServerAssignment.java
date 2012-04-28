@@ -9,6 +9,7 @@ import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.ops.CustomRecursor;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.Machine;
+import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.helpers.InstanceHelpers;
@@ -36,12 +37,25 @@ public class GitServerAssignment extends OpsTreeBase implements CustomRecursor {
 		// TODO: Support backup on that GitServer
 		List<GitService> gitServices = platformLayer.listItems(GitService.class);
 
-		if (gitServices.size() != 1) {
+		GitService gitService = null;
+		if (gitServices.size() == 0) {
+			throw new OpsException("No git servers found");
+		} else {
 			// TODO: Assign to a single git server
-			throw new OpsException("Only 1 git server implemented at the moment");
+			if (gitServices.size() != 1) {
+				throw new OpsException("Only 1 git server implemented at the moment");
+			}
+			gitService = gitServices.get(0);
 		}
 
-		GitService gitService = gitServices.get(0);
+		if (OpsContext.isDelete()) {
+			if (gitService == null) {
+				log.info("Deleting, but not assigned to a server; nothing to do");
+				getRecursionState().setPreventRecursion(true);
+				return;
+			}
+		}
+
 		if (gitService.getState() != ManagedItemState.ACTIVE) {
 			throw new OpsException("Server not yet active: " + gitService);
 		}
