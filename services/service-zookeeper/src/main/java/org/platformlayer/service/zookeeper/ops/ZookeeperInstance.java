@@ -83,7 +83,7 @@ public class ZookeeperInstance extends OpsTreeBase {
 
 		// Note: Don't use supervisord.conf, otherwise supervisorctl will fail with:
 		// "Error: .ini file does not include supervisorctl section"
-		addChild(TemplatedFile.build(template, new File(instanceDir, "zookeeper.conf")).setFileMode("0444"));
+		addChild(TemplatedFile.build(template, new File(instanceDir, "supervisor.conf")).setFileMode("0444"));
 
 		{
 			ManagedSymlink symlink = ManagedSymlink.build(
