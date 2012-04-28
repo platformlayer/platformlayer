@@ -7,6 +7,9 @@ import org.platformlayer.ops.helpers.SshKey;
 import org.platformlayer.ops.networks.NetworkPoint;
 
 public abstract class Machine {
+	// TODO: Introduce state??
+	public abstract boolean isTerminated();
+
 	public abstract void terminate() throws OpsException;
 
 	public abstract OpsTarget getTarget(String user, KeyPair sshKeyPair) throws OpsException;

@@ -124,11 +124,14 @@ public class InstanceBuilder extends OpsTreeBase implements CustomRecursor {
 
 		SshKey sshKey = service.getSshKey();
 		if (machine != null) {
-			target = machine.getTarget(sshKey);
+			if (OpsContext.isDelete() && machine.isTerminated()) {
+				target = null;
+			} else {
+				target = machine.getTarget(sshKey);
+			}
 		}
 
 		RecursionState recursion = getRecursionState();
-
 		if (OpsContext.isDelete() && machine == null) {
 			// Don't recurse into no machine :-)
 			recursion.setPreventRecursion(true);

@@ -23,7 +23,7 @@ public class ITZookeeperService extends PlatformLayerApiTest {
 
 	@Test
 	public void testCreateAndDeleteItem() throws Exception {
-		String id = random.randomAlphanumericString(8);
+		String id = "zk-" + random.randomAlphanumericString(8);
 
 		ZookeeperCluster cluster = new ZookeeperCluster();
 		cluster.dnsName = id + ".test.platformlayer.org";

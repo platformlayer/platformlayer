@@ -3,6 +3,7 @@ package org.platformlayer.ops.machines;
 import org.apache.log4j.Logger;
 import org.platformlayer.EndpointInfo;
 import org.platformlayer.core.model.InstanceBase;
+import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.Tags;
@@ -141,5 +142,23 @@ public class PlatformLayerCloudMachine extends MachineBase {
 		// }
 		// }
 		// return null;
+	}
+
+	@Override
+	public boolean isTerminated() {
+		ManagedItemState state = machine.getState();
+		log.debug("isTerminated? State=" + state);
+		switch (state) {
+		case DELETE_REQUESTED:
+			// TODO: Not sure if this is right
+			log.warn("isTerminated mapping DELETE_REQUESTED => isTerminated=true");
+			return true;
+
+		case DELETED:
+			return true;
+
+		default:
+			return false;
+		}
 	}
 }

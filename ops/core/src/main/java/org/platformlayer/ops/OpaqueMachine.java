@@ -38,4 +38,9 @@ public class OpaqueMachine extends MachineBase {
 		}
 		return null;
 	}
+
+	@Override
+	public boolean isTerminated() {
+		return false;
+	}
 }

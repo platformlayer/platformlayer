@@ -2,6 +2,8 @@ package org.platformlayer.service.cloud.openstack.ops.openstack;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
+import org.openstack.client.InstanceState;
 import org.openstack.model.compute.Addresses.Network.Ip;
 import org.openstack.model.compute.Server;
 import org.platformlayer.core.model.PlatformLayerKey;
@@ -16,6 +18,8 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 public class OpenstackComputeMachine extends MachineBase {
+	static final Logger log = Logger.getLogger(OpenstackComputeMachine.class);
+
 	final OpenstackCloudContext cloudContext;
 	final OpenstackCloud cloud;
 	// final String openstackServerId;
@@ -119,6 +123,23 @@ public class OpenstackComputeMachine extends MachineBase {
 
 	public Server getServer() {
 		return server;
+	}
+
+	@Override
+	public boolean isTerminated() {
+		InstanceState instanceState = InstanceState.get(server);
+		log.debug("isTerminated? State=" + instanceState);
+		if (instanceState.isTerminated()) {
+			return true;
+		}
+
+		if (instanceState.isTerminating()) {
+			// TODO: Not sure if this is right
+			log.warn("isTerminated mapping isTerminating => isTerminated=true");
+			return true;
+		}
+
+		return false;
 	}
 
 	// @Override
