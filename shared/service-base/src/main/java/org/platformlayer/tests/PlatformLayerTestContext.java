@@ -9,6 +9,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Properties;
 
@@ -23,6 +24,7 @@ import org.platformlayer.TimeSpan;
 import org.platformlayer.TypedItemMapper;
 import org.platformlayer.TypedPlatformLayerClient;
 import org.platformlayer.core.model.ItemBase;
+import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.jobs.model.JobData;
@@ -137,8 +139,8 @@ public class PlatformLayerTestContext {
 		while (!ownedItems.isEmpty()) {
 			ItemBase item = ownedItems.remove(ownedItems.size() - 1);
 			JobData deleteJob = deleteItem(item);
-
-			waitForJobComplete(deleteJob, TimeSpan.FIVE_MINUTES);
+			System.out.println("Deleted " + item.getKey() + " job=" + deleteJob.key);
+			waitForDeleted(item);
 		}
 	}
 
@@ -161,31 +163,18 @@ public class PlatformLayerTestContext {
 	}
 
 	public <T extends ItemBase> T waitForHealthy(T item) throws OpsException, IOException {
-		TypedPlatformLayerClient client = getTypedClient();
+		ManagedItemStatePoller<T> poller = new ManagedItemStatePoller<T>(getTypedClient());
+		poller.exitStates = EnumSet.of(ManagedItemState.ACTIVE);
+		poller.transitionalStates = EnumSet.of(ManagedItemState.CREATION_REQUESTED, ManagedItemState.BUILD);
+		poller.item = item;
+		return poller.waitForState();
+	}
 
-		Class<T> itemClass = (Class<T>) item.getClass();
-
-		while (true) {
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				throw new IllegalStateException("Interrupted", e);
-			}
-
-			T latest = client.getItem(item.getKey(), itemClass);
-			switch (latest.getState()) {
-			case ACTIVE:
-				return latest;
-
-			case BUILD:
-			case CREATION_REQUESTED:
-				System.out.println("Continuing to wait for " + item.getKey() + "; state=" + latest.getState());
-				break;
-
-			default:
-				throw new IllegalStateException("Unexpected state: " + latest.getState() + " for " + latest);
-			}
-		}
+	public <T extends ItemBase> T waitForDeleted(T item) throws OpsException, IOException {
+		ManagedItemStatePoller<T> poller = new ManagedItemStatePoller<T>(getTypedClient());
+		poller.exitStates = EnumSet.of(ManagedItemState.DELETED);
+		poller.item = item;
+		return poller.waitForState();
 	}
 
 	public NetworkConnection openFirewall(ItemBase item, int port) throws OpsException, IOException {
