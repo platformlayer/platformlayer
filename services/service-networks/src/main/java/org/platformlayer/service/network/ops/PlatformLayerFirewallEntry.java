@@ -3,10 +3,12 @@ package org.platformlayer.service.network.ops;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
+import org.apache.log4j.Logger;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.Machine;
+import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.firewall.FirewallEntry;
 import org.platformlayer.ops.firewall.FirewallRecord;
@@ -20,6 +22,8 @@ import org.platformlayer.ops.tree.OpsTreeBase;
 import com.google.common.base.Strings;
 
 public class PlatformLayerFirewallEntry extends OpsTreeBase {
+	static final Logger log = Logger.getLogger(PlatformLayerFirewallEntry.class);
+
 	public PlatformLayerKey destItem;
 	public PlatformLayerKey sourceItemKey;
 	public String sourceCidr;
@@ -58,7 +62,15 @@ public class PlatformLayerFirewallEntry extends OpsTreeBase {
 						ItemBase sourceItem = platformLayerHelpers.getItem(sourceItemKey);
 
 						NetworkPoint targetNetworkPoint = NetworkPoint.forTargetInContext();
-						Machine sourceMachine = instanceHelpers.getMachine(sourceItem);
+
+						boolean required = !OpsContext.isDelete();
+						Machine sourceMachine = instanceHelpers.getMachine(sourceItem, required);
+						if (sourceMachine == null) {
+							// TODO: Store by key? Delete by key?
+							log.warn("Source machine not found for firewall rule; assuming already deleted");
+							return null;
+						}
+
 						String address = sourceMachine.getAddress(targetNetworkPoint, port);
 						PortAddressFilter destFilter = PortAddressFilter.withPortRange(port, port);
 						PortAddressFilter srcFilter = PortAddressFilter.withCidr(address + "/32");

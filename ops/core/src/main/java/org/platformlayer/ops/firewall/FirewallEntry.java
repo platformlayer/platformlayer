@@ -47,17 +47,19 @@ public class FirewallEntry {
 
 		FirewallRecord firewallRule = rule.get();
 
-		boolean hasRule = firewallState.hasRule(firewallRule);
+		if (firewallRule != null) {
+			boolean hasRule = firewallState.hasRule(firewallRule);
 
-		if (!OpsContext.isDelete()) {
-			if (!hasRule) {
-				iptables.configureAddRule(target, firewallRule);
+			if (!OpsContext.isDelete()) {
+				if (!hasRule) {
+					iptables.configureAddRule(target, firewallRule);
+				}
 			}
-		}
 
-		if (OpsContext.isDelete()) {
-			if (hasRule) {
-				iptables.configureRemoveRule(target, firewallRule);
+			if (OpsContext.isDelete()) {
+				if (hasRule) {
+					iptables.configureRemoveRule(target, firewallRule);
+				}
 			}
 		}
 	}
