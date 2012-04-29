@@ -210,11 +210,7 @@ public class InstanceBuilder extends OpsTreeBase implements CustomRecursor {
 
 		if (OpsContext.isDelete()) {
 			if (foundPersistentInstance != null) {
-				try {
-					platformLayer.deleteItem(OpsSystem.toKey(foundPersistentInstance));
-				} catch (PlatformLayerClientException e) {
-					throw new OpsException("Error deleting persistent instance", e);
-				}
+				platformLayer.ensureDeleted(foundPersistentInstance);
 			}
 		}
 
