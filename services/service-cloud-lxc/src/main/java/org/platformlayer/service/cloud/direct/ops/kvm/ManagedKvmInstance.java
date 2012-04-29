@@ -11,6 +11,7 @@ import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.TemplatedFile;
+import org.platformlayer.ops.supervisor.ManagedSupervisorInstance;
 import org.platformlayer.ops.supervisor.SupervisorProcessConfig;
 import org.platformlayer.ops.templates.TemplateDataSource;
 import org.platformlayer.ops.tree.OpsTreeBase;
@@ -96,7 +97,7 @@ public class ManagedKvmInstance extends OpsTreeBase {
 		properties.put("command", command.buildCommandString());
 
 		ManagedSupervisorInstance instance = injected(ManagedSupervisorInstance.class);
-		instance.supervisorProcess = sup;
+		instance.config = sup;
 		return instance;
 	}
 }

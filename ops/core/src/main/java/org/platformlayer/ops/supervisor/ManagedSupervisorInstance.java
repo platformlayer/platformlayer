@@ -1,4 +1,4 @@
-package org.platformlayer.service.cloud.direct.ops.kvm;
+package org.platformlayer.ops.supervisor;
 
 import java.io.File;
 
@@ -6,22 +6,21 @@ import org.openstack.utils.Utf8;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.SyntheticFile;
-import org.platformlayer.ops.supervisor.SupervisorProcessConfig;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class ManagedSupervisorInstance extends OpsTreeBase {
-	public SupervisorProcessConfig supervisorProcess;
+	public SupervisorProcessConfig config;
 
 	File getConfigFile() {
 		return new File("/etc/supervisor/conf.d/", getId() + ".conf");
 	}
 
 	private String getId() {
-		return supervisorProcess.getId();
+		return config.getId();
 	}
 
 	SupervisorProcessConfig getSupervisorProcess() {
-		return supervisorProcess;
+		return config;
 	}
 
 	public static class SupervisorConfigFile extends SyntheticFile {
@@ -52,7 +51,7 @@ public class ManagedSupervisorInstance extends OpsTreeBase {
 		}
 
 		{
-			RunSupervisorInstance run = injected(RunSupervisorInstance.class);
+			SupervisorInstance run = injected(SupervisorInstance.class);
 			run.id = getId();
 			addChild(run);
 		}
