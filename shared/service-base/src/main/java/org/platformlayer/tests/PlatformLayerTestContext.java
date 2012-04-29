@@ -285,6 +285,7 @@ public class PlatformLayerTestContext {
 			switch (found.state) {
 			case FAILED:
 			case SUCCESS:
+				System.out.println("Job completed; state=" + found.state);
 				return found;
 
 			case RUNNING:
