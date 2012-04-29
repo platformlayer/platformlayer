@@ -25,7 +25,7 @@ public class ManagedItemStatePoller<T extends ItemBase> {
 		Class<T> itemClass = (Class<T>) item.getClass();
 
 		if (transitionalStates == null) {
-			transitionalStates.complementOf(exitStates);
+			transitionalStates = EnumSet.complementOf(exitStates);
 		}
 
 		long startedAt = System.currentTimeMillis();
