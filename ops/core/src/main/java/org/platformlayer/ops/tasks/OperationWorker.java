@@ -62,6 +62,7 @@ public class OperationWorker implements Callable<Object> {
 				return OpsContext.runInContext(opsContext, new CheckedCallable<Object, Exception>() {
 					@Override
 					public Object call() throws Exception {
+						log.info("Starting job");
 						jobRecord.setState(JobState.RUNNING, false);
 
 						ItemBase item;
