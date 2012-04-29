@@ -46,11 +46,7 @@ public abstract class OwnedItem<T extends ItemBase> {
 
 				item = (T) items.get(0);
 
-				try {
-					platformLayer.deleteItem(items.get(0).getKey());
-				} catch (PlatformLayerClientException e) {
-					throw new OpsException("Error deleting owned item", e);
-				}
+				platformLayer.ensureDeleted(item);
 			}
 		}
 	}
