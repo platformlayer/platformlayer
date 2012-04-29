@@ -41,7 +41,7 @@ public interface PlatformLayerClient {
 
 	// public <T> T putItem(T item) throws PlatformLayerClientException;
 
-	public void deleteItem(PlatformLayerKey key) throws PlatformLayerClientException;
+	public JobData deleteItem(PlatformLayerKey key) throws PlatformLayerClientException;
 
 	// Item Crud - Untyped
 	public UntypedItem getItemUntyped(PlatformLayerKey key) throws PlatformLayerClientException;

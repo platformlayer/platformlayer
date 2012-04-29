@@ -319,43 +319,46 @@ public class ItemServiceImpl implements ItemService {
 	}
 
 	@Override
-	public void deleteItem(final OpsAuthentication auth, final PlatformLayerKey key) throws OpsException {
+	public PlatformLayerKey deleteItem(final OpsAuthentication auth, final PlatformLayerKey targetItemKey)
+			throws OpsException {
 		SecretProvider secretProvider = SecretProvider.withAuth(auth);
 
 		boolean fetchTags = true;
-		ItemBase item;
+		ItemBase targetItem;
 		try {
-			item = repository.getManagedItem(key, fetchTags, secretProvider);
+			targetItem = repository.getManagedItem(targetItemKey, fetchTags, secretProvider);
 		} catch (RepositoryException e) {
 			throw new OpsException("Error reading item", e);
 		}
 
-		if (item == null) {
+		if (targetItem == null) {
 			throw new IllegalStateException("Item not found");
 		}
 
-		item.state = ManagedItemState.DELETE_REQUESTED;
+		targetItem.state = ManagedItemState.DELETE_REQUESTED;
 
-		final ServiceProvider serviceProvider = serviceProviderDirectory.getServiceProvider(key.getServiceType());
+		final ServiceProvider serviceProvider = serviceProviderDirectory.getServiceProvider(targetItemKey
+				.getServiceType());
 		if (serviceProvider == null) {
 			throw new IllegalStateException("Unknown service type");
 		}
 
-		final OpsContext opsContext = buildTemporaryOpsContext(key.getServiceType(), auth);
+		final OpsContext opsContext = buildTemporaryOpsContext(targetItemKey.getServiceType(), auth);
 
-		OpsContext.runInContext(opsContext, new CheckedCallable<Object, Exception>() {
-			@Override
-			public Object call() throws Exception {
-				try {
-					repository.changeState(key, ManagedItemState.DELETE_REQUESTED);
-				} catch (RepositoryException e) {
-					throw new OpsException("Error writing object to database", e);
-				}
+		PlatformLayerKey jobKey = OpsContext.runInContext(opsContext,
+				new CheckedCallable<PlatformLayerKey, Exception>() {
+					@Override
+					public PlatformLayerKey call() throws Exception {
+						try {
+							repository.changeState(targetItemKey, ManagedItemState.DELETE_REQUESTED);
+						} catch (RepositoryException e) {
+							throw new OpsException("Error writing object to database", e);
+						}
 
-				changeQueue.notifyChange(auth, key, ManagedItemState.DELETE_REQUESTED);
-				return null;
-			}
-		});
+						return changeQueue.notifyChange(auth, targetItemKey, ManagedItemState.DELETE_REQUESTED);
+					}
+				});
+		return jobKey;
 	}
 
 	@Override

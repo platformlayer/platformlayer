@@ -229,10 +229,11 @@ public class DirectPlatformLayerClient extends PlatformLayerClientBase {
 	// }
 
 	@Override
-	public void deleteItem(PlatformLayerKey key) throws PlatformLayerClientException {
+	public JobData deleteItem(PlatformLayerKey key) throws PlatformLayerClientException {
 		String relativePath = buildRelativePath(key);
 
-		httpClient.doRequest("DELETE", relativePath, String.class, Format.XML, null, null);
+		JobData retval = httpClient.doRequest("DELETE", relativePath, JobData.class, Format.XML, null, null);
+		return retval;
 	}
 
 	// public <T> List<T> listItems(Class<T> clazz) throws PlatformLayerClientException {

@@ -26,7 +26,7 @@ public interface ItemService {
 
 	<T extends ItemBase> List<T> findAll(OpsAuthentication authentication, Class<T> itemClass) throws OpsException;
 
-	<T extends ItemBase> void deleteItem(OpsAuthentication auth, PlatformLayerKey key) throws OpsException;
+	<T extends ItemBase> PlatformLayerKey deleteItem(OpsAuthentication auth, PlatformLayerKey key) throws OpsException;
 
 	List<ItemBase> findRoots(OpsAuthentication authentication) throws OpsException;
 

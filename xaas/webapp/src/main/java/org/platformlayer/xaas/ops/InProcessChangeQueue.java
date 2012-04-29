@@ -21,16 +21,14 @@ public class InProcessChangeQueue implements ChangeQueue {
 	ManagedItemRepository repository;
 
 	@Override
-	public void notifyChange(OpsAuthentication auth, PlatformLayerKey itemKey, ManagedItemState newState) {
+	public PlatformLayerKey notifyChange(OpsAuthentication auth, PlatformLayerKey itemKey, ManagedItemState newState) {
 		switch (newState) {
 		case CREATION_REQUESTED: {
-			operations.enqueueOperation(OperationType.Configure, auth, itemKey);
-			break;
+			return operations.enqueueOperation(OperationType.Configure, auth, itemKey);
 		}
 
 		case DELETE_REQUESTED: {
-			operations.enqueueOperation(OperationType.Delete, auth, itemKey);
-			break;
+			return operations.enqueueOperation(OperationType.Delete, auth, itemKey);
 		}
 
 		default: {

@@ -369,9 +369,10 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
-	public void deleteItem(PlatformLayerKey key) throws PlatformLayerClientException {
+	public JobData deleteItem(PlatformLayerKey key) throws PlatformLayerClientException {
 		MappedPlatformLayerKey mapped = mapToChild(key);
-		mapped.child.client.deleteItem(key);
+		JobData jobData = mapped.child.client.deleteItem(key);
+		return mapped.child.setHost(jobData);
 	}
 
 	@Override

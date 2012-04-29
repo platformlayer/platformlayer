@@ -27,8 +27,7 @@ public class DoAction extends PlatformLayerCommandRunnerBase {
 
 		PlatformLayerKey key = path.resolve(getContext());
 
-		Object ret = client.doAction(key, action.getKey());
-
+		JobData ret = client.doAction(key, action.getKey());
 		return ret;
 	}
 

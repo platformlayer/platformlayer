@@ -132,8 +132,8 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 	// }
 
 	@Override
-	public void deleteItem(PlatformLayerKey key) throws PlatformLayerClientException {
-		platformLayerClient.deleteItem(key);
+	public JobData deleteItem(PlatformLayerKey key) throws PlatformLayerClientException {
+		return platformLayerClient.deleteItem(key);
 	}
 
 	public Tags addTag(PlatformLayerKey key, Tag tag) throws PlatformLayerClientException {

@@ -136,15 +136,17 @@ public class PlatformLayerTestContext {
 	public void cleanup() throws IOException, OpsException {
 		while (!ownedItems.isEmpty()) {
 			ItemBase item = ownedItems.remove(ownedItems.size() - 1);
-			deleteItem(item);
+			JobData deleteJob = deleteItem(item);
+
+			waitForJobComplete(deleteJob, TimeSpan.FIVE_MINUTES);
 		}
 	}
 
-	public <T extends ItemBase> void deleteItem(T item) throws IOException, OpsException {
+	public <T extends ItemBase> JobData deleteItem(T item) throws IOException, OpsException {
 		TypedPlatformLayerClient client = getTypedClient();
 
 		PlatformLayerKey key = item.getKey();
-		client.deleteItem(key);
+		return client.deleteItem(key);
 	}
 
 	public <T extends ItemBase> JobData doAction(T item, String actionName) throws OpsException, IOException {
