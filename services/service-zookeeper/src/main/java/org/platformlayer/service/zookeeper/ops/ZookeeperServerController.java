@@ -27,7 +27,7 @@ public class ZookeeperServerController extends OpsTreeBase {
 		int port = ZookeeperConstants.ZK_PUBLIC_PORT;
 
 		// A per-instance name (for convenience)
-		String dnsName = "s" + model.clusterId + "-" + model.clusterDnsName;
+		String dnsName = ZookeeperUtils.buildDnsName(model);
 
 		InstanceBuilder vm = InstanceBuilder.build(dnsName, DiskImageRecipeBuilder.buildDiskImageRecipe(this));
 		vm.publicPorts.add(port);
