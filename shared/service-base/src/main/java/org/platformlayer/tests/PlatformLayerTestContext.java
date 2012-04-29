@@ -19,6 +19,7 @@ import org.platformlayer.EndpointInfo;
 import org.platformlayer.IoUtils;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientBase;
+import org.platformlayer.TimeSpan;
 import org.platformlayer.TypedItemMapper;
 import org.platformlayer.TypedPlatformLayerClient;
 import org.platformlayer.core.model.ItemBase;
@@ -248,16 +249,22 @@ public class PlatformLayerTestContext {
 		return new InetSocketAddress(address, endpoint.port);
 	}
 
-	public JobData waitForJobComplete(JobData job) throws OpsException, IOException {
+	public JobData waitForJobComplete(JobData job, TimeSpan timeout) throws OpsException, IOException {
 		TypedPlatformLayerClient client = getTypedClient();
 
 		PlatformLayerKey jobKey = job.key;
+
+		long startedAt = System.currentTimeMillis();
 
 		while (true) {
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				throw new IllegalStateException("Interrupted", e);
+			}
+
+			if (timeout != null && timeout.hasTimedOut(startedAt)) {
+				throw new OpsException("Timeout waiting for job completion");
 			}
 
 			// TODO: We really need a "get job status" function
