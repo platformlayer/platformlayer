@@ -40,6 +40,12 @@ public abstract class OpsTreeBase implements OpsTree, CustomRecursor {
 		return child;
 	}
 
+	public <T> T addChild(Class<T> childClass) throws OpsException {
+		T child = injected(childClass);
+		getChildren().add(child);
+		return child;
+	}
+
 	public void addChildren(Collection<?> children) throws OpsException {
 		getChildren().addAll(children);
 	}
