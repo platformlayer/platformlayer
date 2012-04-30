@@ -44,7 +44,7 @@ public class GitServerController extends OpsTreeBase implements TemplateDataSour
 	LdapDomain getLdapDomain() throws OpsException {
 		if (ldapDomain == null) {
 			GitService model = OpsContext.get().getInstance(GitService.class);
-			// String ldapGroup = model.ldapGroup;
+			LdapDN ldapGroup = LdapDN.parseLdifEncoded(model.ldapGroup);
 
 			LdapDomain best = null;
 			for (LdapDomain candidate : platformLayer.listItems(LdapDomain.class)) {
@@ -54,13 +54,21 @@ public class GitServerController extends OpsTreeBase implements TemplateDataSour
 					continue;
 				}
 
-				// String orgName = candidate.organizationName;
-				// TODO: How to match?
+				LdapDN organizationName = LdapDN.fromDomainName(candidate.organizationName);
+
+				if (!organizationName.isParentOf(ldapGroup)) {
+					log.info("LdapDomain does not match: " + organizationName + " vs " + ldapGroup);
+					continue;
+				}
+
+				log.info("Found matching LdapDomain: " + organizationName + " vs " + ldapGroup);
+
 				if (best == null) {
 					best = candidate;
 					continue;
 				}
-				throw new UnsupportedOperationException("Selecting between LDAP domains not yet implemented");
+
+				throw new UnsupportedOperationException("Selecting between matching LDAP domains not yet implemented");
 			}
 
 			if (best == null) {

@@ -59,10 +59,29 @@ public class LdapDN {
 			}
 			return true;
 		}
+
+		@Override
+		public String toString() {
+			return attributeName + "=" + value;
+		}
 	};
 
 	public LdapDN(List<LdapDNComponent> components) {
 		this.components = components;
+	}
+
+	public boolean isParentOf(LdapDN child) {
+		int thisSize = this.components.size();
+		int childSize = child.components.size();
+		if (thisSize > childSize) {
+			return false;
+		}
+		for (int i = 1; i <= thisSize; i++) {
+			if (!this.components.get(thisSize - i).equals(child.components.get(childSize - i))) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public LdapDN(String attributeName, String value) {
