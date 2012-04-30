@@ -4,6 +4,7 @@ import java.security.PublicKey;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.log4j.Logger;
 import org.openstack.client.OpenstackCredentials;
 import org.openstack.client.OpenstackException;
 import org.openstack.client.common.OpenstackComputeClient;
@@ -24,6 +25,8 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 public class OpenstackCloudHelpers {
+	static final Logger log = Logger.getLogger(OpenstackCloudHelpers.class);
+
 	public OpenstackComputeClient buildOpenstackComputeClient(OpenstackCloud cloud) throws OpsException {
 		try {
 			OpenstackSession session = buildOpenstackSession(cloud);
@@ -114,6 +117,8 @@ public class OpenstackCloudHelpers {
 
 		SecurityGroupList securityGroups;
 		try {
+			log.info("Listing security groups");
+
 			securityGroups = openstackComputeClient.root().securityGroups().list();
 		} catch (OpenstackException e) {
 			throw new OpsException("Error getting security groups for server", e);
@@ -146,6 +151,8 @@ public class OpenstackCloudHelpers {
 	}
 
 	public KeyPair findPublicKey(OpenstackComputeClient compute, PublicKey sshPublicKey) throws OpsException {
+		log.info("Listing SSH keys to find matching key");
+
 		String publicKey = SshKeys.serialize(sshPublicKey);
 		for (KeyPair keyPair : compute.root().keyPairs().list()) {
 			if (publicKey.equals(keyPair.getPublicKey())) {
@@ -168,6 +175,8 @@ public class OpenstackCloudHelpers {
 			KeyPair create = new KeyPair();
 			create.setName(name);
 			create.setPublicKey(publicKey);
+
+			log.info("Creating SSH key: " + create.getName());
 			compute.root().keyPairs().create(create);
 		}
 

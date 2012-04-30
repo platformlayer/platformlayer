@@ -159,6 +159,7 @@ public class OpenstackCloudContext {
 		OpenstackComputeClient computeClient = getComputeClient(cloud);
 
 		try {
+			log.info("Getting server info for: " + serverId);
 			Server server = computeClient.root().servers().server(serverId).show();
 			return server;
 		} catch (OpenstackNotFoundException e) {
@@ -247,13 +248,15 @@ public class OpenstackCloudContext {
 					operatingSystem = recipe.getOperatingSystem();
 				}
 
+				log.info("Listing images to pick best image");
+				Iterable<Image> images = computeClient.root().images().list();
 				if (cloudBehaviours.isHpCloud()) {
 					// TODO: We need a better solution here!!
 					Set<String> imageNames = Sets.newHashSet("Debian Squeeze 6.0.3 Server 64-bit 20120123");
 					log.warn("Hard coding image name (presuming HP cloud)");
 
 					// TODO: Match OS
-					for (Image image : computeClient.root().images().list()) {
+					for (Image image : images) {
 						if (imageNames.contains(image.getName())) {
 							foundImage = image;
 							break;
@@ -266,7 +269,7 @@ public class OpenstackCloudContext {
 						operatingSystem.setVersion("squeeze");
 					}
 
-					for (Image image : computeClient.root().images().list()) {
+					for (Image image : images) {
 						boolean matchesDistribution = false;
 						boolean matchesVersion = false;
 
@@ -323,7 +326,7 @@ public class OpenstackCloudContext {
 						}
 					}
 				} else {
-					for (Image image : computeClient.root().images().list()) {
+					for (Image image : images) {
 						boolean isMatch = false;
 
 						for (Image.ImageMetadata.ImageMetadataItem item : image.getMetadata()) {
@@ -364,6 +367,7 @@ public class OpenstackCloudContext {
 				String imageId = imageFactory.getOrCreateImageId(cloud, ImageFactory.ImageFormat.DiskQcow2,
 						request.recipeId);
 
+				log.info("Getting image details for image: " + imageId);
 				foundImage = computeClient.root().images().image(imageId).show();
 				if (foundImage == null) {
 					throw new IllegalArgumentException("Could not find image: " + imageId);
@@ -376,6 +380,7 @@ public class OpenstackCloudContext {
 				createTemplate.setName(SECURITY_GROUP_PREFIX + serverName);
 				createTemplate.setDescription("Security group for instance: " + serverName);
 				try {
+					log.info("Creating security group: " + createTemplate.getName());
 					createdSecurityGroup = computeClient.root().securityGroups().create(createTemplate);
 				} catch (OpenstackException e) {
 					for (SecurityGroup candidate : computeClient.root().securityGroups().list()) {
@@ -401,6 +406,7 @@ public class OpenstackCloudContext {
 					newRule.setParentGroupId(createdSecurityGroup.getId());
 
 					try {
+						log.info("Creating security group rule for port: " + newRule.getToPort());
 						SecurityGroupRule createdRule = computeClient.root().securityGroupRules().create(newRule);
 					} catch (OpenstackException e) {
 						String message = e.getMessage();
@@ -454,9 +460,11 @@ public class OpenstackCloudContext {
 
 				create.setConfigDrive(cloudBehaviours.useConfigDrive());
 
+				log.info("Launching new server: " + create.getName());
 				createServerOperation = computeClient.createServer(create);
 			}
 
+			log.info("Waiting for server to be ready");
 			Server server = createServerOperation.waitComplete();
 			Server instanceInfo = null;
 			String stateName = null;
@@ -500,6 +508,7 @@ public class OpenstackCloudContext {
 				}
 
 				newServerInfo.setMetadata(metadata);
+				log.info("Tagging server: " + server.getId());
 				computeClient.root().servers().server(server.getId()).update(newServerInfo);
 			}
 
@@ -514,6 +523,8 @@ public class OpenstackCloudContext {
 
 	private Flavor getClosestInstanceType(OpenstackComputeClient computeClient, MachineCreationRequest request)
 			throws OpenstackException {
+		log.info("Listing image sizes to find best size");
+
 		Iterable<Flavor> flavors = computeClient.root().flavors().list();
 		List<Flavor> candidates = Lists.newArrayList();
 		for (Flavor flavor : flavors) {
@@ -700,6 +711,8 @@ public class OpenstackCloudContext {
 	public AsyncServerOperation terminateInstance(OpenstackCloud cloud, String instanceId) throws OpsException {
 		try {
 			OpenstackComputeClient computeClient = getComputeClient(cloud);
+
+			log.info("Terminating server: " + instanceId);
 			AsyncServerOperation deleteOperation = computeClient.deleteServer(instanceId);
 			return deleteOperation;
 		} catch (OpenstackNotFoundException e) {
@@ -727,9 +740,12 @@ public class OpenstackCloudContext {
 		}
 
 		final OpenstackComputeClient compute = getComputeClient(cloud);
+
+		log.info("Creating floating IP");
 		FloatingIp floatingIp = compute.root().floatingIps().create();
 
 		// TODO: Don't abandon the IP e.g. if the attach fails
+		log.info("Attching floating IP " + floatingIp.getIp() + " to " + server.getId());
 		compute.root().servers().server(server.getId()).addFloatingIp(floatingIp.getIp());
 
 		final String serverId = server.getId();
@@ -738,6 +754,7 @@ public class OpenstackCloudContext {
 			server = TimeoutPoll.poll(TimeSpan.FIVE_MINUTES, TimeSpan.TEN_SECONDS, new PollFunction<Server>() {
 				@Override
 				public Server call() throws Exception {
+					log.info("Waiting for floating IP attach; polling server: " + serverId);
 					Server server = compute.root().servers().server(serverId).show();
 
 					List<Ip> publicIps = helpers.findPublicIps(cloud, server);

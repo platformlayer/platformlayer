@@ -152,6 +152,7 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
 					// We need to terminate the instance before we delete the security group it uses
 					if (terminateOperation != null) {
 						try {
+							log.info("Waiting for server to shut down");
 							terminateOperation.waitComplete(2, TimeUnit.MINUTES);
 						} catch (TimeoutException e) {
 							throw new OpsException("Timeout waiting for server shutdown", e);
@@ -161,6 +162,7 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
 					}
 
 					try {
+						log.info("Deleting security group: " + securityGroup.getId());
 						computeClient.root().securityGroups().securityGroup(securityGroup.getId()).delete();
 					} catch (OpenstackNotFoundException e) {
 						log.info("Ignoring not-found error while deleting security group: " + securityGroup.getId());
