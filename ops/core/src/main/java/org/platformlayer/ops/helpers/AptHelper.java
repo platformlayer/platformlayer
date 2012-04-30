@@ -1,6 +1,7 @@
 package org.platformlayer.ops.helpers;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -21,8 +22,11 @@ public class AptHelper {
 	HttpProxyHelper httpProxies;
 
 	public void install(OpsTarget target, String... packageNames) throws OpsException {
-		CommandEnvironment commandEnvironment = buildEnvironmentWithProxy(target);
+		install(target, Arrays.asList(packageNames));
+	}
 
+	public void install(OpsTarget target, Iterable<String> packageNames) throws OpsException {
+		CommandEnvironment commandEnvironment = buildEnvironmentWithProxy(target);
 		commandEnvironment.add("DEBIAN_FRONTEND", "noninteractive");
 
 		Command command = Command.build("apt-get install --yes");
@@ -59,6 +63,13 @@ public class AptHelper {
 		CommandEnvironment commandEnvironment = buildEnvironmentWithProxy(target);
 
 		Command command = Command.build("apt-get --yes upgrade");
+		target.executeCommand(command.setEnvironment(commandEnvironment).setTimeout(TimeSpan.TEN_MINUTES));
+	}
+
+	public void clean(OpsTarget target) throws OpsException {
+		CommandEnvironment commandEnvironment = buildEnvironmentWithProxy(target);
+
+		Command command = Command.build("apt-get clean");
 		target.executeCommand(command.setEnvironment(commandEnvironment).setTimeout(TimeSpan.TEN_MINUTES));
 	}
 

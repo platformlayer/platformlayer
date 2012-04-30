@@ -55,6 +55,7 @@ import org.platformlayer.service.imagefactory.model.Repository;
 import org.platformlayer.service.imagefactory.model.RepositoryKey;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 
 public class DiskImageController {
@@ -225,9 +226,59 @@ public class DiskImageController {
 			// Mount the partitions
 			// Hopefully it’s loop0p1...
 			target.executeCommand(Command.build("modprobe dm-mod"));
-			target.executeCommand(Command.build("kpartx -av {0}", imageFile));
 
-			loopbackPartition = new File("/dev/mapper/loop0p1");
+			// boolean isMounted = false;
+			//
+			// {
+			// ProcessExecution mountExecution = target.executeCommand(Command.build("mount", imageFile));
+			// String stdout = mountExecution.getStdOut();
+			// System.out.println(stdout);
+			//
+			// for (String line : Splitter.on('\n').split(stdout)) {
+			// line = line.trim();
+			// if (line.isEmpty()) {
+			// continue;
+			// }
+			//
+			// List<String> tokens = Lists.newArrayList(Splitter.on(' ').split(line));
+			// if (tokens.size() < 3) {
+			// throw new IllegalStateException("Cannot parse mount line: " + line);
+			// }
+			//
+			// String mountDir = tokens.get(2);
+			// if (mountDir.equals(mntDir.getAbsolutePath())) {
+			// isMounted = true;
+			// loopbackPartition = new File(tokens.get(0));
+			// break;
+			// }
+			// }
+			//
+			// // /dev/sda1 on / type ext4 (rw,errors=remount-ro)
+			// // tmpfs on /lib/init/rw type tmpfs (rw,nosuid,mode=0755)
+			// // proc on /proc type proc (rw,noexec,nosuid,nodev)
+			// // sysfs on /sys type sysfs (rw,noexec,nosuid,nodev)
+			// // udev on /dev type tmpfs (rw,mode=0755)
+			// // tmpfs on /dev/shm type tmpfs (rw,nosuid,nodev)
+			// // devpts on /dev/pts type devpts (rw,noexec,nosuid,gid=5,mode=620)
+			// // /dev/mapper/loop0p1 on /tmp/8389210e66cd0df6/mnt type ext3 (rw)
+			// // proc on /tmp/8389210e66cd0df6/mnt/proc type proc (rw)
+			// }
+			//
+			// if (!isMounted)
+			{
+				ProcessExecution kpartxExecution = target.executeCommand(Command.build("kpartx -av {0}", imageFile));
+				String stdout = kpartxExecution.getStdOut();
+				List<String> tokens = Lists.newArrayList(Splitter.on(' ').split(stdout));
+				if (tokens.size() != 9) {
+					throw new IllegalStateException("Cannot parse kpartx stdout: " + stdout);
+				}
+				// add map loop6p1 (253:6): 0 16750592 linear /dev/loop6 2048
+				String partitionDevice = tokens.get(2);
+				if (!partitionDevice.startsWith("loop")) {
+					throw new IllegalStateException("kpartx output does not look like a partition: " + stdout);
+				}
+				loopbackPartition = new File("/dev/mapper/" + partitionDevice);
+			}
 
 			// Format filesystem
 			command = Command.build("yes | mkfs." + filesystem + " {0}", loopbackPartition);
@@ -309,8 +360,7 @@ public class DiskImageController {
 
 		target.executeCommand("mount -t proc proc {0}", new File(rootfsDir, "proc"));
 
-		target.executeCommand(Command.build("chroot {0} apt-get --yes update", rootfsDir).setEnvironment(httpProxyEnv)
-				.setTimeout(TimeSpan.FIVE_MINUTES));
+		apt.update(chrootTarget);
 		target.executeCommand("chroot {0} locale-gen en_US.utf8", rootfsDir);
 
 		target.executeCommand("chroot {0} /bin/bash -c \"DEBIAN_FRONTEND=noninteractive dpkg-reconfigure locales\"",
@@ -333,8 +383,7 @@ public class DiskImageController {
 
 				target.executeCommand(Command.build("cat {0} | chroot {1} debconf-set-selections", preseedFile,
 						rootfsDir));
-				target.executeCommand(Command.build("chroot {0} apt-get --yes install {1}", rootfsDir, kernelPackage)
-						.setEnvironment(httpProxyEnv).setTimeout(TimeSpan.FIFTEEN_MINUTES));
+				apt.install(chrootTarget, kernelPackage);
 			}
 		}
 
@@ -351,22 +400,18 @@ public class DiskImageController {
 		}
 
 		if (recipe.addPackage != null) {
-			for (String packageName : recipe.addPackage) {
-				target.executeCommand(Command.build("chroot {0} apt-get --yes install {1}", rootfsDir, packageName)
-						.setEnvironment(httpProxyEnv).setTimeout(TimeSpan.FIFTEEN_MINUTES));
+			apt.install(chrootTarget, recipe.addPackage);
 
-				if (packageName.equals("jenkins")) {
-					// It looks like jenkins doesn't honor policy-rc.d (?)
-					// TODO: Fix this monstrosity...
-					log.warn("Hard-coding service stop after jenkins installation");
-					target.executeCommand(Command.build("chroot {0} /etc/init.d/jenkins stop", rootfsDir));
-				}
+			if (recipe.addPackage.contains("jenkins")) {
+				// It looks like jenkins doesn't honor policy-rc.d (?)
+				// TODO: Fix this monstrosity...
+				log.warn("Hard-coding service stop after jenkins installation");
+				target.executeCommand(Command.build("chroot {0} /etc/init.d/jenkins stop", rootfsDir));
 			}
 		}
 
-		target.executeCommand(Command.build("chroot {0} apt-get --yes upgrade", rootfsDir).setEnvironment(httpProxyEnv)
-				.setTimeout(TimeSpan.FIVE_MINUTES));
-		target.executeCommand(Command.build("chroot {0} apt-get clean", rootfsDir).setEnvironment(httpProxyEnv));
+		apt.upgrade(chrootTarget);
+		apt.clean(chrootTarget);
 
 		if (!buildTar) {
 			String uuid;
