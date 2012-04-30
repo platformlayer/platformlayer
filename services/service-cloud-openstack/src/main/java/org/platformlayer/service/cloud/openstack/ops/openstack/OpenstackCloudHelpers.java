@@ -155,13 +155,18 @@ public class OpenstackCloudHelpers {
 		return null;
 	}
 
-	public KeyPair ensurePublicKeyUploaded(OpenstackComputeClient compute, PublicKey sshPublicKey) throws OpsException {
+	public KeyPair ensurePublicKeyUploaded(OpenstackComputeClient compute, String name, PublicKey sshPublicKey)
+			throws OpsException {
 		KeyPair keyPair = findPublicKey(compute, sshPublicKey);
 
 		if (keyPair == null) {
+			if (name == null) {
+				name = UUID.randomUUID().toString();
+			}
+
 			String publicKey = SshKeys.serialize(sshPublicKey);
 			KeyPair create = new KeyPair();
-			create.setName(UUID.randomUUID().toString());
+			create.setName(name);
 			create.setPublicKey(publicKey);
 			compute.root().keyPairs().create(create);
 		}

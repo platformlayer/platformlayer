@@ -422,7 +422,8 @@ public class OpenstackCloudContext {
 				if (request.sshPublicKey != null) {
 					if (cloudBehaviours.supportsPublicKeys()) {
 						OpenstackCloudHelpers cloudHelpers = new OpenstackCloudHelpers();
-						KeyPair keyPair = cloudHelpers.ensurePublicKeyUploaded(computeClient, request.sshPublicKey);
+						KeyPair keyPair = cloudHelpers.ensurePublicKeyUploaded(computeClient, request.sshPublicKeyName,
+								request.sshPublicKey);
 						create.setKeyName(keyPair.getName());
 					} else if (cloudBehaviours.supportsFileInjection()) {
 						String fileContents = SshKeys.serialize(request.sshPublicKey);

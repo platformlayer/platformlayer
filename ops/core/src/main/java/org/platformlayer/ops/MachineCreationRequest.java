@@ -11,6 +11,8 @@ public class MachineCreationRequest {
 	public PlatformLayerKey cloud;
 
 	public PublicKey sshPublicKey;
+	public String sshPublicKeyName;
+
 	public Tags tags;
 	public PlatformLayerKey recipeId;
 	public List<String> securityGroups;

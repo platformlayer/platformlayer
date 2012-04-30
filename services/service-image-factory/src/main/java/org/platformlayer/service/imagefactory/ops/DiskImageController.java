@@ -152,6 +152,7 @@ public class DiskImageController {
 
 		request.recipeId = null; // Null means 'use bootstrap image'
 		request.sshPublicKey = sshKey.getKeyPair().getPublic();
+		request.sshPublicKeyName = service.getSshKeyName();
 		request.securityGroups = Lists.newArrayList();
 
 		String securityGroup = service.getSecurityGroupName();

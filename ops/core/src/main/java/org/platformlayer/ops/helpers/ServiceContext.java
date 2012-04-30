@@ -18,11 +18,10 @@ public class ServiceContext {
 
 	public SshKey getSshKey() throws OpsException {
 		String sshKeyName = getSshKeyName();
-
 		return sshKeys.getOrCreate(sshKeyName, "root");
 	}
 
-	private String getSshKeyName() {
+	public String getSshKeyName() {
 		return "service-" + getServiceKey();
 	}
 
