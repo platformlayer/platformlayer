@@ -26,4 +26,9 @@ public class CommandEnvironment {
 	public Set<String> keys() {
 		return vars.keySet();
 	}
+
+	@Override
+	public CommandEnvironment clone() {
+		return deepCopy();
+	}
 }
