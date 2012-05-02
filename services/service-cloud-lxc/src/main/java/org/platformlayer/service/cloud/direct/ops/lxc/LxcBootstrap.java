@@ -126,38 +126,40 @@ public class LxcBootstrap {
 
 	@Handler
 	public void handler(OpsTarget target) throws OpsException {
-		// TODO: Move to children
-		//
-		// File rootDir = getRoot();
-		// target.mkdir(rootDir);
+		if (OpsContext.isConfigure()) {
+			// TODO: Move to children
+			//
+			// File rootDir = getRoot();
+			// target.mkdir(rootDir);
 
-		// target.executeCommand(Command.build("cd {0}; tar jxf {1}", rootDir,
-		// imagePath).setTimeout(TimeSpan.FIVE_MINUTES));
+			// target.executeCommand(Command.build("cd {0}; tar jxf {1}", rootDir,
+			// imagePath).setTimeout(TimeSpan.FIVE_MINUTES));
 
-		// mknod -m 666 ${ROOT}/dev/tty1 c 4 1
-		// mknod -m 666 ${ROOT}/dev/tty2 c 4 2
-		// mknod -m 666 ${ROOT}/dev/tty3 c 4 3
-		// mknod -m 666 ${ROOT}/dev/tty4 c 4 4
-		// mknod -m 666 ${ROOT}/dev/tty5 c 4 5
-		// mknod -m 666 ${ROOT}/dev/tty6 c 4 6
+			// mknod -m 666 ${ROOT}/dev/tty1 c 4 1
+			// mknod -m 666 ${ROOT}/dev/tty2 c 4 2
+			// mknod -m 666 ${ROOT}/dev/tty3 c 4 3
+			// mknod -m 666 ${ROOT}/dev/tty4 c 4 4
+			// mknod -m 666 ${ROOT}/dev/tty5 c 4 5
+			// mknod -m 666 ${ROOT}/dev/tty6 c 4 6
 
-		{
-			ChrootOpsTarget chrootTarget = new ChrootOpsTarget(getRoot(), new File("/tmp"), target);
-			if (sshPublicKey != null) {
-				SshAuthorizedKey.ensureSshAuthorization(chrootTarget, "root", sshPublicKey);
+			{
+				ChrootOpsTarget chrootTarget = new ChrootOpsTarget(getRoot(), new File("/tmp"), target);
+				if (sshPublicKey != null) {
+					SshAuthorizedKey.ensureSshAuthorization(chrootTarget, "root", sshPublicKey);
+				}
 			}
+
+			setupLxcConfig();
+
+			setupResolveConf();
+			setupInittab();
+			setupInterfaces();
+			setupHostname();
+
+			// if (startOnBoot) {
+			// setupAutostart();
+			// }
 		}
-
-		setupLxcConfig();
-
-		setupResolveConf();
-		setupInittab();
-		setupInterfaces();
-		setupHostname();
-
-		// if (startOnBoot) {
-		// setupAutostart();
-		// }
 
 	}
 }

@@ -39,6 +39,8 @@ public class PublicPorts extends OpsTreeBase {
 	public int publicPort;
 	public DirectInstance backendItem;
 
+	public String uuid;
+
 	// TODO: Only tag the endpoint, and then copy that to the instance to give sequencing
 	public List<ItemBase> tagItems = Lists.newArrayList();
 
@@ -145,6 +147,8 @@ public class PublicPorts extends OpsTreeBase {
 			ForwardPort forward = injected(ForwardPort.class);
 			forward.publicAddress = OpsProvider.getProperty(assignPublicAddress, "address");
 			forward.publicPort = publicPort;
+			forward.uuid = uuid;
+
 			forward.privateAddress = new OpsProvider<String>() {
 				@Override
 				public String get() throws OpsException {

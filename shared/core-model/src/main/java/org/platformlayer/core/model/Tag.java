@@ -28,6 +28,8 @@ public class Tag {
 	public static final String IMAGE_OS_DISTRIBUTION = "org.openstack__1__os_distro";
 	public static final String IMAGE_OS_VERSION = "org.openstack__1__os_version";
 
+	public static final String UUID = "uuid";
+
 	// public static final String IMAGE_TYPE = "platformlayer.org__type";
 
 	public Tag() {
