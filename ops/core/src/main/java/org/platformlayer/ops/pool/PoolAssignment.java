@@ -1,4 +1,4 @@
-package org.platformlayer.service.cloud.direct.ops.kvm;
+package org.platformlayer.ops.pool;
 
 import java.io.File;
 import java.util.Properties;
@@ -8,8 +8,6 @@ import javax.inject.Provider;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.OpsTarget;
-import org.platformlayer.ops.lxc.FilesystemBackedPool;
 
 public class PoolAssignment implements Provider<Properties> {
 	public Provider<FilesystemBackedPool> poolProvider;
@@ -27,16 +25,23 @@ public class PoolAssignment implements Provider<Properties> {
 		return cachedPool;
 	}
 
-	private OpsTarget getTarget() {
-		return OpsContext.get().getInstance(OpsTarget.class);
-	}
-
 	@Handler
 	public void handler() throws OpsException {
-		if (assigned == null) {
-			FilesystemBackedPool pool = getPool();
-			String key = pool.assign(holder, true);
-			assigned = pool.readProperties(key);
+		FilesystemBackedPool pool = getPool();
+
+		if (OpsContext.isConfigure()) {
+			if (assigned == null) {
+				String key = pool.assign(holder, true);
+				assigned = pool.readProperties(key);
+			}
+		}
+
+		if (OpsContext.isDelete()) {
+			String key = pool.findAssigned(holder);
+			if (key != null) {
+				pool.release(holder, key);
+				assigned = null;
+			}
 		}
 	}
 

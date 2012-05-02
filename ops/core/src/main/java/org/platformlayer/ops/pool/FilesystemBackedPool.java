@@ -1,4 +1,4 @@
-package org.platformlayer.ops.lxc;
+package org.platformlayer.ops.pool;
 
 import java.io.File;
 import java.util.List;
@@ -136,7 +136,7 @@ public abstract class FilesystemBackedPool {
 		}
 
 		if (required) {
-			throw new OpsException("Unable to assign value from pool");
+			throw new OpsException("Unable to assign value from pool: " + toString());
 		}
 		return null;
 	}

@@ -5,6 +5,7 @@ import java.io.File;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.SimpleFile;
+import org.platformlayer.ops.metrics.collectd.ManagedService;
 import org.platformlayer.ops.packages.PackageDependency;
 import org.platformlayer.ops.supervisor.SupervisordService;
 import org.platformlayer.ops.tree.OpsTreeBase;
@@ -25,8 +26,9 @@ public class KvmHost extends OpsTreeBase {
 		addChild(PackageDependency.build("kvm"));
 
 		// For tunctl
-		addChild(SimpleFile.build(getClass(), new File("/etc/default/uml-utilities")));
 		addChild(PackageDependency.build("uml-utilities"));
-	}
 
+		addChild(SimpleFile.build(getClass(), new File("/etc/default/uml-utilities")));
+		addChild(ManagedService.build("uml-utilities").setEnabled(false));
+	}
 }

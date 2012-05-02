@@ -25,9 +25,10 @@ public class Tag {
 	public static final String PUBLIC_ENDPOINT = "public-endpoint";
 	public static final String UNIQUE_ID = "uniqueid";
 
-	public static final String IMAGE_OS_DISTRIBUTION = "platformlayer.org__os.distribution";
-	public static final String IMAGE_OS_VERSION = "platformlayer.org__os.version";
-	public static final String IMAGE_TYPE = "platformlayer.org__type";
+	public static final String IMAGE_OS_DISTRIBUTION = "org.openstack__1__os_distro";
+	public static final String IMAGE_OS_VERSION = "org.openstack__1__os_version";
+
+	// public static final String IMAGE_TYPE = "platformlayer.org__type";
 
 	public Tag() {
 	}

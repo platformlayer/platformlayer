@@ -19,11 +19,11 @@ import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.Tags;
 import org.platformlayer.crypto.Md5Hash;
-import org.platformlayer.ops.CloudImage;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.SshOpsTarget;
+import org.platformlayer.ops.images.CloudImage;
 import org.platformlayer.ops.images.ImageStore;
 import org.platformlayer.ops.images.PropertiesFileStore;
 import org.platformlayer.ops.process.ProcessExecution;
@@ -67,7 +67,9 @@ public class DirectImageStore implements ImageStore {
 	public List<CloudImage> findImages(List<Tag> tags) throws OpsException {
 		List<CloudImage> images = Lists.newArrayList();
 		for (String imageId : fileStore.find(tags)) {
-			images.add(new DirectCloudImage(this, imageId));
+			Properties properties = fileStore.readProperties(imageId);
+			Tags imageTags = fileStore.asTags(properties);
+			images.add(new DirectCloudImage(this, imageId, imageTags));
 		}
 		return images;
 	}
@@ -94,7 +96,7 @@ public class DirectImageStore implements ImageStore {
 
 		String imageId = UUID.randomUUID().toString();
 
-		final File targetImageFile = getImageFile(imageId);
+		final File targetImageFile = getImageFile(imageId, null);
 
 		if (srcImageHost.equals(target)) {
 			Command copyCommand = Command.build("cp", srcImageFile, targetImageFile);
@@ -107,6 +109,7 @@ public class DirectImageStore implements ImageStore {
 				final InetAddress srcAddress = ((SshOpsTarget) srcImageHost).getHost();
 				final InetAddress targetAddress = ((SshOpsTarget) target).getHost();
 
+				// TODO: Better security
 				final String port = "" + (random.nextInt(1000) + 20000);
 
 				Callable<ProcessExecution> serveFile = new Callable<ProcessExecution>() {
@@ -191,8 +194,19 @@ public class DirectImageStore implements ImageStore {
 		return imageId;
 	}
 
-	private File getImageFile(String imageId) {
-		return new File(getImagesDir(), imageId + ".image");
+	private File getImageFile(String imageId, Properties imageProperties) {
+		String imageLocation = null;
+		// if (imageProperties != null) {
+		// imageLocation = imageProperties.getProperty("org.openstack.sync__1__image");
+		// }
+		if (imageLocation == null) {
+			imageLocation = imageId + ".image";
+		}
+		// TODO: Better sanity checking of paths
+		if (imageLocation.contains("/") || imageLocation.contains("..")) {
+			throw new IllegalStateException();
+		}
+		return new File(getImagesDir(), imageLocation);
 	}
 
 	@Override
@@ -202,7 +216,7 @@ public class DirectImageStore implements ImageStore {
 			throw new OpsException("Image not found: " + imageId);
 		}
 
-		File imageFile = getImageFile(imageId);
+		File imageFile = getImageFile(imageId, imageProperties);
 
 		if (destination.isSameMachine(target)) {
 			Command copyCommand = Command.build("cp {0} {1}", imageFile, destinationPath);

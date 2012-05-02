@@ -16,5 +16,9 @@ public class SupervisorInstance {
 
 			target.executeCommand(Command.build("/usr/bin/supervisorctl start {0}", id));
 		}
+
+		if (OpsContext.isDelete()) {
+			target.executeCommand(Command.build("/usr/bin/supervisorctl update {0}", id));
+		}
 	}
 }

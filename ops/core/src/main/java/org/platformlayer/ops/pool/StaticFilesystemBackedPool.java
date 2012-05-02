@@ -1,4 +1,4 @@
-package org.platformlayer.ops.lxc;
+package org.platformlayer.ops.pool;
 
 import java.io.File;
 import java.util.Collections;
@@ -31,5 +31,10 @@ public class StaticFilesystemBackedPool extends FilesystemBackedPool {
 		List<String> resources = Lists.newArrayList(list(resourceDir));
 		Collections.shuffle(resources);
 		return resources;
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getName() + ":" + resourceDir;
 	}
 }

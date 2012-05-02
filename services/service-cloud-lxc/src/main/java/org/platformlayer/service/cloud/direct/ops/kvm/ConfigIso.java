@@ -33,7 +33,7 @@ public class ConfigIso extends OpsTreeBase {
 			MkIsoFs mkiso = injected(MkIsoFs.class);
 			mkiso.srcDir = getBuildDir();
 			mkiso.iso = isoFile;
-			mkiso.volumeLabel = "cloud_config";
+			mkiso.volumeLabel = "config";
 			addChild(mkiso);
 		}
 	}

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 
+import org.apache.log4j.Logger;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
@@ -14,6 +15,8 @@ import org.platformlayer.ops.process.ProcessExecutionException;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class NetworkBridge extends OpsTreeBase {
+	static final Logger log = Logger.getLogger(NetworkBridge.class);
+
 	public String bridge = "br0";
 	public IpRange ipRange;
 
@@ -31,7 +34,7 @@ public class NetworkBridge extends OpsTreeBase {
 
 		boolean found = false;
 
-		// ProcessExecution execution = target.executeCommand(Command.build("/usr/sbin/brctl show"));
+		// ProcessExecution execution = target.executeCommand(Command.build("brctl show"));
 		// String[] lines = execution.getStdOut().split("\n");
 		// for (int i = 0; i < lines.length; i++) {
 		// if (i == 0)
@@ -48,7 +51,7 @@ public class NetworkBridge extends OpsTreeBase {
 		// }
 		//
 		try {
-			target.executeCommand(Command.build("/usr/sbin/brctl showmacs {0}", bridge));
+			target.executeCommand(Command.build("brctl showmacs {0}", bridge));
 			found = true;
 		} catch (ProcessExecutionException e) {
 			ProcessExecution execution = e.getExecution();
@@ -58,15 +61,19 @@ public class NetworkBridge extends OpsTreeBase {
 		}
 
 		if (!found) {
-			target.executeCommand(Command.build("/usr/sbin/brctl addbr {0}", bridge));
+			target.executeCommand(Command.build("brctl addbr {0}", bridge));
 		}
 
-		target.executeCommand(Command.build("/usr/sbin/brctl setfd {0} 0", bridge));
+		target.executeCommand(Command.build("brctl setfd {0} 0", bridge));
 
-		String netmask = ipRange.getNetmask();
-		InetAddress ip = ipRange.getAddress(1);
+		{
+			String netmask = ipRange.getNetmask();
+			InetAddress ip = ipRange.getFirstAddress();
 
-		target.executeCommand(Command.build("/sbin/ifconfig {0} {1} netmask {2} promisc up", bridge, ip, netmask));
+			Command command = Command.build("/sbin/ifconfig {0} {1} netmask {2} promisc up", bridge, ip, netmask);
+			log.warn("Skipping execution of ifconfig; assuming already done: " + command);
+			// target.executeCommand(command);
+		}
 
 		File procIPV4 = new File("/proc/sys/net/ipv4");
 		File ipForward = new File(procIPV4, "ip_forward");

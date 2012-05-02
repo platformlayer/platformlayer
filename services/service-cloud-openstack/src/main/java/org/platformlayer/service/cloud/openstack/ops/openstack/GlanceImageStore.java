@@ -15,12 +15,11 @@ import org.openstack.model.image.Image;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.Tags;
-import org.platformlayer.ops.CloudImage;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
-import org.platformlayer.ops.helpers.ImageFactory;
-import org.platformlayer.ops.helpers.ImageFactory.ImageFormat;
+import org.platformlayer.ops.images.CloudImage;
+import org.platformlayer.ops.images.ImageFormat;
 import org.platformlayer.ops.images.ImageStore;
 import org.platformlayer.ops.process.ProcessExecution;
 
@@ -43,10 +42,8 @@ public class GlanceImageStore implements ImageStore {
 		String diskFormat = null;
 		if (tags != null) {
 			for (Tag tag : tags) {
-				if (tag.getKey().equals(ImageFactory.IMAGE_FORMAT)) {
-					ImageFormat imageFormat = ImageFactory.ImageFormat.forTag(tag);
-					diskFormat = mapToGlanceDiskFormat(imageFormat);
-				}
+				ImageFormat imageFormat = ImageFormat.fromTags(tags);
+				diskFormat = mapToGlanceDiskFormat(imageFormat);
 			}
 		}
 
@@ -216,8 +213,20 @@ public class GlanceImageStore implements ImageStore {
 
 				boolean checked = false;
 
-				if (tagKey.equals(ImageFactory.IMAGE_FORMAT)) {
-					ImageFormat format = ImageFormat.forTag(tag);
+				if (ImageFormat.isImageFormatTag(tag)) {
+					ImageFormat format = ImageFormat.fromTag(tag);
+
+					// if ("qcow2".equals(tagValue)) {
+					// format = ImageFormat.DiskQcow2;
+					// } else {
+					// throw new UnsupportedOperationException("Unknown glance disk_format: " + tagValue);
+					// }
+					//
+					// Tag mappedTag = format.toTag();
+					//
+					// match = Objects.equal(mappedTag.getValue().getDiskFormat(), glanceDiskFormat);
+					// checked = true;
+
 					String glanceDiskFormat = mapToGlanceDiskFormat(format);
 					if (glanceDiskFormat != null) {
 						match = Objects.equal(image.getDiskFormat(), glanceDiskFormat);

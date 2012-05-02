@@ -10,7 +10,6 @@ import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.BindingScope;
 import org.platformlayer.ops.CustomRecursor;
 import org.platformlayer.ops.Handler;
-import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OperationRecursor;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
@@ -18,7 +17,6 @@ import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.helpers.ServiceContext;
-import org.platformlayer.ops.helpers.SshKey;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.direct.model.DirectCloud;
@@ -52,6 +50,9 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
 	@Inject
 	InstanceHelpers instanceHelpers;
 
+	@Inject
+	DirectCloudUtils directHelpers;
+
 	@Handler
 	public void doOperation() throws OpsException, IOException {
 		Tag tag = new Tag(Tag.ASSIGNED, OpsSystem.toKey(instance).getUrl());
@@ -78,10 +79,7 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
 
 		this.cloud = platformLayer.getItem(host.cloud, DirectCloud.class);
 
-		Machine machine = instanceHelpers.findMachine(host);
-
-		SshKey sshKey = service.getSshKey();
-		this.hostTarget = machine.getTarget(sshKey);
+		this.hostTarget = directHelpers.toTarget(host);
 	}
 
 	@Override

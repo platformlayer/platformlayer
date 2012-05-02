@@ -31,6 +31,9 @@ public class DirectPublicEndpointController extends OpsTreeBase {
 		{
 			PublicPorts publicPorts = injected(PublicPorts.class);
 			publicPorts.backendItem = directInstance;
+			publicPorts.tagItems.add(directInstance);
+			publicPorts.tagItems.add(model);
+
 			publicPorts.backendPort = model.backendPort;
 			publicPorts.publicPort = model.publicPort;
 			addChild(publicPorts);

@@ -1,6 +1,7 @@
 package org.platformlayer.service.cloud.direct.ops;
 
 import java.io.File;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -15,6 +16,8 @@ import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.filesystem.ManagedDirectory;
 import org.platformlayer.ops.helpers.ImageFactory;
 import org.platformlayer.ops.helpers.SshKeys;
+import org.platformlayer.ops.images.CloudImage;
+import org.platformlayer.ops.images.ImageFormat;
 import org.platformlayer.ops.images.ImageStore;
 import org.platformlayer.ops.machines.PlatformLayerCloudHelpers;
 import org.platformlayer.ops.tree.OpsTreeBase;
@@ -24,7 +27,7 @@ public class DownloadImage extends OpsTreeBase {
 	private static final File IMAGES_DIR = new File("/var/lib/lxc/images");
 
 	public File imageFile;
-	public ImageFactory.ImageFormat imageFormat;
+	public List<ImageFormat> imageFormats;
 
 	@Inject
 	PlatformLayerClient platformLayer;
@@ -48,17 +51,21 @@ public class DownloadImage extends OpsTreeBase {
 				throw new IllegalStateException("Cloud instance not found");
 			}
 			ImageStore imageStore = cloudHelpers.getImageStore(cloud);
-			String imageId = imageFactory.getOrCreateImageId(cloud, imageFormat, recipeKey);
+			CloudImage imageInfo = imageFactory.getOrCreateImageId(cloud, imageFormats, recipeKey);
 
 			if (imageStore == null) {
 				throw new OpsException("Image store not configured");
 			}
 
-			// TODO: We don't need rawImage; delete or just request a read-only version
-			File rawImage = new File(IMAGES_DIR, imageId + ".image");
-			// TODO: Caching / reuse ... need to check md5 though
-			imageStore.bringToMachine(imageId, target, rawImage);
+			String fileName = imageInfo.getId() + ".image." + imageInfo.getFormat().name();
 
+			// TODO: We don't need rawImage; delete or just request a read-only version
+			File rawImage = new File(IMAGES_DIR, fileName);
+			target.mkdir(IMAGES_DIR);
+			// TODO: Caching / reuse ... need to check md5 though
+			imageStore.bringToMachine(imageInfo.getId(), target, rawImage);
+
+			ImageFormat imageFormat = imageInfo.getFormat();
 			switch (imageFormat) {
 			case Tar: {
 				target.mkdir(imageFile);
@@ -71,6 +78,13 @@ public class DownloadImage extends OpsTreeBase {
 				Command expand = Command.build("gunzip -c {0} | cp --sparse=always /proc/self/fd/0 {1}", rawImage,
 						imageFile);
 				target.executeCommand(expand.setTimeout(TimeSpan.FIVE_MINUTES));
+				break;
+			}
+
+			case DiskQcow2: {
+				Command expand = Command.build("cp {0} {1}", rawImage, imageFile);
+				target.executeCommand(expand.setTimeout(TimeSpan.FIVE_MINUTES));
+				break;
 			}
 
 			default:

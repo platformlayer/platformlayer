@@ -16,6 +16,7 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.helpers.TemplateHelpers;
 import org.platformlayer.ops.ssh.SshAuthorizedKey;
+import org.platformlayer.service.cloud.direct.ops.IpRange;
 
 import com.google.common.collect.Maps;
 
@@ -45,6 +46,11 @@ public class LxcBootstrap {
 		String netmask = addressProperties.getProperty("netmask");
 		String gateway = addressProperties.getProperty("gateway");
 		String cidr = addressProperties.getProperty("cidr");
+
+		if (cidr == null) {
+			IpRange ipRange = IpRange.parse(address, netmask);
+			cidr = address + "/" + ipRange.getPrefixLength();
+		}
 
 		model.put("cidr", cidr);
 		model.put("address", address);

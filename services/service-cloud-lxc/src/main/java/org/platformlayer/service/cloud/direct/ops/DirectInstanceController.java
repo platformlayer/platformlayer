@@ -48,14 +48,15 @@ public class DirectInstanceController extends OpsTreeBase {
 			addChild(lxc);
 
 			if (model.publicPorts != null) {
-				for (int publicPort : model.publicPorts) {
-					throw new UnsupportedOperationException();
+				log.info("Ignoring model.publicPorts: " + model.publicPorts);
 
-					// PublicPorts publicPortForward = injected(PublicPorts.class);
-					// publicPortForward.port = publicPort;
-					// publicPortForward.backendItem = model;
-					// lxc.addChild(publicPortForward);
-				}
+				// for (int publicPort : model.publicPorts) {
+				// PublicPorts publicPortForward = injected(PublicPorts.class);
+				// publicPortForward.publicPort = publicPort;
+				// publicPortForward.backendPort = publicPort;
+				// publicPortForward.backendItem = model;
+				// lxc.addChild(publicPortForward);
+				// }
 			}
 		} else {
 			// TODO: The variable initialization probably doesn't belong here

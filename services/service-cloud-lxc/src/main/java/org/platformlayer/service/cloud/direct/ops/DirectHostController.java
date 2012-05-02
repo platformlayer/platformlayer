@@ -5,14 +5,13 @@ import java.io.IOException;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.helpers.ServiceContext;
-import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
-import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.machines.PlatformLayerCloudContext;
+import org.platformlayer.ops.machines.PlatformLayerHelpers;
+import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.packages.PackageDependency;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.direct.model.DirectHost;
@@ -22,7 +21,7 @@ public class DirectHostController extends OpsTreeBase {
 	static final Logger log = Logger.getLogger(DirectHostController.class);
 
 	@Inject
-	PlatformLayerClient platformLayer;
+	PlatformLayerHelpers platformLayer;
 
 	@Inject
 	PlatformLayerCloudContext platformLayerCloudContext;
@@ -64,25 +63,39 @@ public class DirectHostController extends OpsTreeBase {
 		// throw new IllegalArgumentException("dnsName must be specified");
 		// }
 
+		// DirectCloud cloud = platformLayer.getItem(model.cloud, DirectCloud.class);
+
 		// We'd like to auto-gen the disk image, but there's no way to auto-specify the OS at the moment
-		String dnsName = "lxc-" + model.getId();
-		InstanceBuilder instance = InstanceBuilder.build(dnsName, DiskImageRecipeBuilder.buildDiskImageRecipe(this));
-		instance.cloud = model.machineSource;
-		instance.addTagToManaged = true;
-		addChild(instance);
+		// String dnsName = "direct-host-" + model.getId();
+		// InstanceBuilder instance = InstanceBuilder.build(dnsName, DiskImageRecipeBuilder.buildDiskImageRecipe(this));
+		// instance.cloud = cloud.machineSource;
+		// instance.addTagToManaged = true;
+		// addChild(instance);
 
-		instance.addChild(PackageDependency.build("lxc"));
+		DirectTarget host;
+		{
+			host = addChild(DirectTarget.class);
+			host.address = NetworkPoint.forPublicHostname(model.host);
+			host.sshKey = service.getSshKey();
+		}
 
-		instance.addChild(injected(KvmHost.class));
+		// TODO: Do we want to differentiate between an LXC host and a KVM host?
+		host.addChild(PackageDependency.build("lxc"));
 
-		instance.addChild(MountCgroups.build());
+		// Useful for moving images around
+		host.addChild(PackageDependency.build("bzip2"));
+		host.addChild(PackageDependency.build("socat"));
 
-		String bridge = "br0"; // lxcHost.bridge;
+		host.addChild(KvmHost.class);
+
+		host.addChild(MountCgroups.build());
+
+		String bridge = "br100"; // lxcHost.bridge;
 		IpRange ipRange = IpRange.parse(model.ipRange);
 
-		instance.addChild(PackageDependency.build("bridge-utils"));
+		host.addChild(PackageDependency.build("bridge-utils"));
 
-		instance.addChild(NetworkBridge.build(bridge, ipRange));
+		host.addChild(NetworkBridge.build(bridge, ipRange));
 	}
 
 }

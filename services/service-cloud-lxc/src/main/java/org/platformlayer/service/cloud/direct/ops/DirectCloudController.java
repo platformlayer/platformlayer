@@ -1,7 +1,5 @@
 package org.platformlayer.service.cloud.direct.ops;
 
-import java.io.IOException;
-
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
@@ -18,11 +16,11 @@ public class DirectCloudController extends OpsTreeBase implements CloudControlle
 	static final Logger log = Logger.getLogger(DirectCloudController.class);
 
 	@Handler
-	public void handler() throws OpsException, IOException {
+	public void handler() {
 	}
 
 	@Override
-	protected void addChildren() throws OpsException {
+	protected void addChildren() {
 	}
 
 	@Inject

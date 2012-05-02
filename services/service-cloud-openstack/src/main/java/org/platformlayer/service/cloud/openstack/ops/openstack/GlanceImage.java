@@ -1,7 +1,8 @@
 package org.platformlayer.service.cloud.openstack.ops.openstack;
 
 import org.openstack.model.image.Image;
-import org.platformlayer.ops.CloudImage;
+import org.platformlayer.ops.images.CloudImage;
+import org.platformlayer.ops.images.ImageFormat;
 
 public class GlanceImage implements CloudImage {
 
@@ -14,6 +15,11 @@ public class GlanceImage implements CloudImage {
 	@Override
 	public String getId() {
 		return image.getId();
+	}
+
+	@Override
+	public ImageFormat getFormat() {
+		throw new UnsupportedOperationException();
 	}
 
 }

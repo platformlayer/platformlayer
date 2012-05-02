@@ -20,7 +20,8 @@ public class PropertiesFileStore {
 	final File baseDir;
 
 	static final String FILE_EXTENSION_PROPERTIES = ".properties";
-	private static final String PROPERTY_PREFIX_TAG = "tag-";
+
+	// private static final String PROPERTY_PREFIX_TAG = "tag-";
 
 	public PropertiesFileStore(OpsTarget target, File baseDir) {
 		this.target = target;
@@ -96,7 +97,8 @@ public class PropertiesFileStore {
 			boolean valid = true;
 
 			for (Tag tag : tags) {
-				String tagKey = PropertiesFileStore.PROPERTY_PREFIX_TAG + tag.key;
+				// String tagKey = PropertiesFileStore.PROPERTY_PREFIX_TAG + tag.key;
+				String tagKey = tag.key;
 				String tagValue = properties.getProperty(tagKey);
 				if (!Objects.equal(tagValue, tag.getValue())) {
 					valid = false;
@@ -121,7 +123,8 @@ public class PropertiesFileStore {
 			boolean valid = true;
 
 			for (Tag tag : tags) {
-				String tagKey = PropertiesFileStore.PROPERTY_PREFIX_TAG + tag.key;
+				// String tagKey = PropertiesFileStore.PROPERTY_PREFIX_TAG + tag.key;
+				String tagKey = tag.key;
 				String tagValue = properties.getProperty(tagKey);
 				if (!Objects.equal(tagValue, tag.getValue())) {
 					valid = false;
@@ -141,11 +144,12 @@ public class PropertiesFileStore {
 		Tags tags = new Tags();
 		for (Object keyObject : properties.keySet()) {
 			String key = (String) keyObject;
-			if (key.startsWith(PROPERTY_PREFIX_TAG)) {
-				String tagName = key.substring(PROPERTY_PREFIX_TAG.length());
-				Tag tag = new Tag(tagName, properties.getProperty(key));
-				tags.add(tag);
-			}
+			// if (key.startsWith(PROPERTY_PREFIX_TAG)) {
+			// String tagName = key.substring(PROPERTY_PREFIX_TAG.length());
+			String tagName = key;
+			Tag tag = new Tag(tagName, properties.getProperty(key));
+			tags.add(tag);
+			// }
 		}
 		return tags;
 	}
@@ -153,7 +157,8 @@ public class PropertiesFileStore {
 	public Properties toProperties(Tags tags) {
 		Properties properties = new Properties();
 		for (Tag tag : tags) {
-			properties.put(PROPERTY_PREFIX_TAG + tag.getKey(), tag.getValue());
+			// properties.put(PROPERTY_PREFIX_TAG + tag.getKey(), tag.getValue());
+			properties.put(tag.getKey(), tag.getValue());
 		}
 		return properties;
 	}

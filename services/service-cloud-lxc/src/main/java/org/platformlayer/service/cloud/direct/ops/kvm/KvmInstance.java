@@ -3,6 +3,7 @@ package org.platformlayer.service.cloud.direct.ops.kvm;
 import java.io.File;
 import java.io.IOException;
 import java.security.PublicKey;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -11,13 +12,18 @@ import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.crypto.OpenSshUtils;
+import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsProvider;
 import org.platformlayer.ops.OpsSystem;
+import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.filesystem.ManagedDirectory;
-import org.platformlayer.ops.helpers.ImageFactory;
+import org.platformlayer.ops.images.ImageFormat;
+import org.platformlayer.ops.pool.PoolAssignment;
+import org.platformlayer.ops.process.ProcessExecution;
+import org.platformlayer.ops.process.ProcessExecutionException;
 import org.platformlayer.ops.tagger.Tagger;
 import org.platformlayer.ops.templates.TemplateDataSource;
 import org.platformlayer.ops.tree.OpsTreeBase;
@@ -30,6 +36,7 @@ import org.platformlayer.service.cloud.direct.ops.kvm.monitor.KvmConfig.KvmNic;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.inject.Provider;
 
 public class KvmInstance extends OpsTreeBase {
 	public File instanceDir;
@@ -75,7 +82,7 @@ public class KvmInstance extends OpsTreeBase {
 		{
 			assignNetworkAddress = injected(PoolAssignment.class);
 			assignNetworkAddress.holder = getInstanceDir();
-			assignNetworkAddress.poolProvider = DirectCloudUtils.getPoolProvider("network");
+			assignNetworkAddress.poolProvider = DirectCloudUtils.getPrivateAddressPool();
 			instance.addChild(assignNetworkAddress);
 		}
 
@@ -90,7 +97,7 @@ public class KvmInstance extends OpsTreeBase {
 		{
 			assignMonitorPort = injected(PoolAssignment.class);
 			assignMonitorPort.holder = getInstanceDir();
-			assignMonitorPort.poolProvider = DirectCloudUtils.getPoolProvider("monitor");
+			assignMonitorPort.poolProvider = DirectCloudUtils.getKvmMonitorPortPool();
 			instance.addChild(assignMonitorPort);
 		}
 
@@ -98,7 +105,7 @@ public class KvmInstance extends OpsTreeBase {
 		{
 			assignVncPort = injected(PoolAssignment.class);
 			assignVncPort.holder = getInstanceDir();
-			assignVncPort.poolProvider = DirectCloudUtils.getPoolProvider("vnc");
+			assignVncPort.poolProvider = DirectCloudUtils.getVncPortPool();
 			instance.addChild(assignVncPort);
 		}
 
@@ -134,7 +141,7 @@ public class KvmInstance extends OpsTreeBase {
 			DownloadImage download = injected(DownloadImage.class);
 			download.imageFile = getImagePath();
 			download.recipeKey = recipeId;
-			download.imageFormat = ImageFactory.ImageFormat.DiskRaw;
+			download.imageFormats = Arrays.asList(ImageFormat.DiskRaw, ImageFormat.DiskQcow2);
 			instance.addChild(download);
 		}
 
@@ -206,32 +213,49 @@ public class KvmInstance extends OpsTreeBase {
 		return nics;
 	}
 
-	private List<KvmDrive> buildDrives() {
-		List<KvmDrive> drives = Lists.newArrayList();
+	private Provider<List<KvmDrive>> buildDrives() {
+		return new Provider<List<KvmDrive>>() {
+			@Override
+			public List<KvmDrive> get() {
+				List<KvmDrive> drives = Lists.newArrayList();
 
-		{
-			KvmDrive drive = new KvmDrive();
+				{
+					KvmDrive drive = new KvmDrive();
+					drive.path = getImagePath().getAbsolutePath();
+					drive.id = "0";
+					drive.boot = true;
+					drive.format = "raw";
+					drive.media = "disk";
 
-			drive.path = getImagePath().getAbsolutePath();
-			drive.id = "0";
-			drive.boot = true;
-			drive.format = "raw";
-			drive.media = "disk";
+					OpsTarget target = OpsContext.get().getInstance(OpsTarget.class);
+					ProcessExecution fileCommand;
+					try {
+						fileCommand = target.executeCommand(Command.build("file --brief {0}", getImagePath()));
+					} catch (ProcessExecutionException e) {
+						throw new IllegalStateException("Error querying file type", e);
+					}
+					String fileStdout = fileCommand.getStdOut();
+					if (fileStdout.contains("QCOW Image")) {
+						drive.format = "qcow2";
+					}
 
-			drives.add(drive);
-		}
-		{
-			KvmDrive drive = new KvmDrive();
+					drives.add(drive);
+				}
+				{
+					KvmDrive drive = new KvmDrive();
 
-			drive.path = getConfigIsoPath().getAbsolutePath();
-			drive.id = "config_cd";
-			drive.boot = false;
-			drive.format = "raw";
-			drive.media = "cdrom";
+					drive.path = getConfigIsoPath().getAbsolutePath();
+					drive.id = "config";
+					drive.boot = false;
+					drive.format = "raw";
+					drive.media = "cdrom";
 
-			drives.add(drive);
-		}
+					drives.add(drive);
+				}
 
-		return drives;
+				return drives;
+			}
+		};
+
 	}
 }

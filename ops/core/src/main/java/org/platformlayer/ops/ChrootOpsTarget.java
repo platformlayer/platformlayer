@@ -82,7 +82,7 @@ public class ChrootOpsTarget extends OpsTargetBase {
 
 	@Override
 	public String readTextFile(File file) throws OpsException {
-		return parentTarget.readTextFile(file);
+		return parentTarget.readTextFile(mapToOutsideChroot(file));
 	}
 
 	@Override

@@ -28,7 +28,7 @@ public class ManagedKvmInstance extends OpsTreeBase {
 	public int vcpus = 1;
 
 	public List<KvmNic> nics;
-	public List<KvmDrive> drives;
+	public Provider<List<KvmDrive>> drives;
 	public Provider<Properties> monitor;
 	public Provider<Properties> vnc;
 

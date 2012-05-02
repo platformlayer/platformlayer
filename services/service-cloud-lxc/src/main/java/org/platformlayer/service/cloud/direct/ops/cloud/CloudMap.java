@@ -5,23 +5,19 @@ import java.util.Random;
 
 import javax.inject.Inject;
 
-import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.helpers.InstanceHelpers;
-import org.platformlayer.ops.helpers.ServiceContext;
-import org.platformlayer.ops.helpers.SshKey;
 import org.platformlayer.ops.helpers.SshKeys;
 import org.platformlayer.ops.machines.PlatformLayerCloudHelpers;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.service.cloud.direct.model.DirectHost;
 import org.platformlayer.service.cloud.direct.model.DirectInstance;
+import org.platformlayer.service.cloud.direct.ops.DirectCloudUtils;
 
 import com.google.common.collect.Lists;
 
 public class CloudMap {
-	@Inject
-	ServiceContext service;
 
 	@Inject
 	PlatformLayerHelpers platformLayer;
@@ -34,6 +30,9 @@ public class CloudMap {
 
 	@Inject
 	PlatformLayerCloudHelpers cloudHelpers;
+
+	@Inject
+	DirectCloudUtils directHelpers;
 
 	// final DirectCloud cloudModel;
 
@@ -55,13 +54,11 @@ public class CloudMap {
 
 	private List<DirectCloudHost> getHosts() throws OpsException {
 		if (this.hosts == null) {
-			SshKey sshKey = service.getSshKey();
-
 			List<DirectCloudHost> hosts = Lists.newArrayList();
 			for (DirectHost host : platformLayer.listItems(DirectHost.class)) {
-				Machine hostMachine = instances.findMachine(host);
-				OpsTarget hostTarget = hostMachine.getTarget(sshKey);
-				hosts.add(new DirectCloudHost(host, hostTarget));
+				OpsTarget target = directHelpers.toTarget(host);
+
+				hosts.add(new DirectCloudHost(host, target));
 			}
 			this.hosts = hosts;
 		}

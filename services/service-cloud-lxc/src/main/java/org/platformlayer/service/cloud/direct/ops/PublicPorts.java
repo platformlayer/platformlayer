@@ -11,6 +11,7 @@ import javax.inject.Provider;
 
 import org.apache.log4j.Logger;
 import org.platformlayer.EndpointInfo;
+import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
@@ -21,13 +22,13 @@ import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.helpers.ImageFactory;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.helpers.ServiceContext;
-import org.platformlayer.ops.lxc.FilesystemBackedPool;
 import org.platformlayer.ops.machines.PlatformLayerCloudMachine;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
+import org.platformlayer.ops.pool.FilesystemBackedPool;
+import org.platformlayer.ops.pool.PoolAssignment;
 import org.platformlayer.ops.tagger.Tagger;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.direct.model.DirectInstance;
-import org.platformlayer.service.cloud.direct.ops.kvm.PoolAssignment;
 
 import com.google.common.collect.Lists;
 
@@ -37,6 +38,9 @@ public class PublicPorts extends OpsTreeBase {
 	public int backendPort;
 	public int publicPort;
 	public DirectInstance backendItem;
+
+	// TODO: Only tag the endpoint, and then copy that to the instance to give sequencing
+	public List<ItemBase> tagItems = Lists.newArrayList();
 
 	@Handler
 	public void handler() throws OpsException, IOException {
@@ -94,6 +98,11 @@ public class PublicPorts extends OpsTreeBase {
 			properties.put("address", tokens[0]);
 			properties.put("port", tokens[1]);
 			return properties;
+		}
+
+		@Override
+		public String toString() {
+			return getClass().getName() + ":" + resourceFile;
 		}
 	};
 
@@ -154,8 +163,6 @@ public class PublicPorts extends OpsTreeBase {
 		}
 
 		{
-			Tagger tagger = injected(Tagger.class);
-
 			OpsProvider<TagChanges> tagChanges = new OpsProvider<TagChanges>() {
 				@Override
 				public TagChanges get() {
@@ -166,10 +173,12 @@ public class PublicPorts extends OpsTreeBase {
 					return tagChanges;
 				}
 			};
-			tagger.platformLayerKey = OpsSystem.toKey(backendItem);
-			tagger.tagChangesProvider = tagChanges;
 
-			cloudHost.addChild(tagger);
+			for (ItemBase tagItem : tagItems) {
+				Tagger tagger = addChild(Tagger.class);
+				tagger.platformLayerKey = OpsSystem.toKey(tagItem);
+				tagger.tagChangesProvider = tagChanges;
+			}
 		}
 	}
 

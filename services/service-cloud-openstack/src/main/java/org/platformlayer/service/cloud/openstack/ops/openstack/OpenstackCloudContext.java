@@ -1,5 +1,6 @@
 package org.platformlayer.service.cloud.openstack.ops.openstack;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -35,6 +36,8 @@ import org.platformlayer.ops.MachineCreationRequest;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.helpers.ImageFactory;
 import org.platformlayer.ops.helpers.SshKeys;
+import org.platformlayer.ops.images.CloudImage;
+import org.platformlayer.ops.images.ImageFormat;
 import org.platformlayer.ops.images.ImageStore;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.service.cloud.openstack.model.OpenstackCloud;
@@ -330,11 +333,11 @@ public class OpenstackCloudContext {
 						boolean isMatch = false;
 
 						for (Image.ImageMetadata.ImageMetadataItem item : image.getMetadata()) {
-							if (item.getKey().equals(Tag.IMAGE_TYPE)) {
-								if (item.getValue().equals("base")) {
-									isMatch = true;
-								}
-							}
+							// if (item.getKey().equals(Tag.IMAGE_TYPE)) {
+							// if (item.getValue().equals("base")) {
+							// isMatch = true;
+							// }
+							// }
 
 							if (item.getKey().equals(Tag.IMAGE_OS_DISTRIBUTION)) {
 								if (operatingSystem != null && operatingSystem.getDistribution() != null) {
@@ -364,9 +367,10 @@ public class OpenstackCloudContext {
 					throw new IllegalArgumentException("Could not find image");
 				}
 			} else {
-				String imageId = imageFactory.getOrCreateImageId(cloud, ImageFactory.ImageFormat.DiskQcow2,
-						request.recipeId);
+				List<ImageFormat> formats = Collections.singletonList(ImageFormat.DiskQcow2);
+				CloudImage image = imageFactory.getOrCreateImageId(cloud, formats, request.recipeId);
 
+				String imageId = image.getId();
 				log.info("Getting image details for image: " + imageId);
 				foundImage = computeClient.root().images().image(imageId).show();
 				if (foundImage == null) {

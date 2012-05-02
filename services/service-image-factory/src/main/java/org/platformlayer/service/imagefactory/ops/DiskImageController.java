@@ -36,10 +36,9 @@ import org.platformlayer.ops.filesystem.FilesystemInfo;
 import org.platformlayer.ops.helpers.AptHelper;
 import org.platformlayer.ops.helpers.HttpProxyHelper;
 import org.platformlayer.ops.helpers.HttpProxyHelper.Usage;
-import org.platformlayer.ops.helpers.ImageFactory;
-import org.platformlayer.ops.helpers.ImageFactory.ImageFormat;
 import org.platformlayer.ops.helpers.ServiceContext;
 import org.platformlayer.ops.helpers.SshKey;
+import org.platformlayer.ops.images.ImageFormat;
 import org.platformlayer.ops.machines.PlatformLayerCloudHelpers;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.networks.NetworkPoint;
@@ -565,7 +564,7 @@ public class DiskImageController {
 		{
 			Tags tags = new Tags();
 			tags.add(opsContext.getOpsSystem().createParentTag(recipe));
-			tags.add(ImageFactory.buildImageFormatTag(imageFormat));
+			tags.add(imageFormat.toTag());
 
 			imageId = cloud.getImageStore(cloudModel).uploadImage(target, tags, uploadImageFile, imageInfo.size);
 		}

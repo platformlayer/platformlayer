@@ -10,11 +10,11 @@ import org.platformlayer.core.model.MachineCloudBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.CloudContext;
-import org.platformlayer.ops.CloudImage;
-import org.platformlayer.ops.EnumUtils;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsSystem;
+import org.platformlayer.ops.images.CloudImage;
+import org.platformlayer.ops.images.ImageFormat;
 import org.platformlayer.ops.images.ImageStore;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.service.imagefactory.v1.DiskImage;
@@ -23,11 +23,11 @@ import org.platformlayer.xml.JaxbHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
 public class ImageFactory {
-	public static final String IMAGE_FORMAT = "image_format";
 
 	static final Logger log = LoggerFactory.getLogger(ImageFactory.class);
 
@@ -37,21 +37,6 @@ public class ImageFactory {
 	// public static final String FORMAT_TAR = "tar";
 	// public static final String FORMAT_DISK = "disk";
 	// public static final String FORMAT_QCOW2 = "qcow2";
-
-	public enum ImageFormat {
-		Tar, DiskRaw, DiskQcow2;
-
-		public static ImageFormat forTag(Tag tag) {
-			if (!tag.getKey().equals(IMAGE_FORMAT)) {
-				throw new IllegalArgumentException();
-			}
-			return EnumUtils.valueOfCaseInsensitive(ImageFormat.class, tag.getValue());
-		}
-	};
-
-	public static Tag buildImageFormatTag(ImageFormat format) {
-		return new Tag(IMAGE_FORMAT, format.name().toLowerCase());
-	}
 
 	// public static final Tag TAG_IMAGEFORMAT_TAR = buildImageFormatTag(ImageFormat.Tar);
 	// public static final Tag TAG_IMAGEFORMAT_DISK_RAW = buildImageFormatTag(ImageFormat.DiskRaw);
@@ -112,29 +97,34 @@ public class ImageFactory {
 		return best;
 	}
 
-	public String getOrCreateImageId(MachineCloudBase targetCloud, ImageFormat format, DiskImageRecipe recipeTemplate)
-			throws OpsException {
+	public CloudImage getOrCreateImageId(MachineCloudBase targetCloud, List<ImageFormat> formats,
+			DiskImageRecipe recipeTemplate) throws OpsException {
 		DiskImageRecipe recipeItem = getOrCreateRecipe(recipeTemplate);
 		PlatformLayerKey recipeKey = OpsSystem.toKey(recipeItem);
 
-		return getOrCreateImageId(targetCloud, format, recipeKey);
+		return getOrCreateImageId(targetCloud, formats, recipeKey);
 	}
 
 	@Inject
 	CloudContext cloud;
 
-	public String getOrCreateImageId(MachineCloudBase targetCloud, ImageFormat format, PlatformLayerKey recipeKey)
-			throws OpsException {
+	public CloudImage getOrCreateImageId(MachineCloudBase targetCloud, List<ImageFormat> formats,
+			PlatformLayerKey recipeKey) throws OpsException {
 		if (recipeKey == null) {
-			CloudImage bootstrapImage = findBootstrapImage(format, cloud.getImageStore(targetCloud));
-			if (bootstrapImage == null) {
-				throw new OpsException("Cannot find bootstrap image for format " + format);
+			for (ImageFormat format : formats) {
+				CloudImage bootstrapImage = findBootstrapImage(format, cloud.getImageStore(targetCloud));
+				if (bootstrapImage != null) {
+					return bootstrapImage;
+					// Tags tags = bootstrapImage.getTags();
+					// String compression = tags.findUnique("org.openstack.sync__1__expand");
+					// return new ImageInfo(bootstrapImage.getId(), format, compression);
+				}
 			}
-			return bootstrapImage.getId();
+			throw new OpsException("Cannot find bootstrap image for format " + Joiner.on(",").join(formats));
 		}
 
 		DiskImage imageTemplate = new DiskImage();
-		imageTemplate.setFormat(format.name());
+		imageTemplate.setFormat(formats.get(0).name());
 		imageTemplate.setRecipeId(recipeKey);
 		String id = "image-" + recipeKey.getItemId().getKey();
 		imageTemplate.setKey(PlatformLayerKey.fromId(id));
@@ -143,24 +133,31 @@ public class ImageFactory {
 		imageTemplate.setCloud(cloudKey);
 
 		DiskImage image = getOrCreateImage(imageTemplate);
-
-		return getImageId(image);
+		return getImageInfo(image);
 	}
 
 	private CloudImage findBootstrapImage(ImageFormat format, ImageStore imageStore) throws OpsException {
-		Tag formatTag = buildImageFormatTag(format);
+		// Tag formatTag = buildImageFormatTag(format);
+		//
+		// CloudImage image = imageStore.findImage(Lists.newArrayList(formatTag, BOOTSTRAP_IMAGE_TAG));
+		// if (image != null) {
+		// return image;
+		// }
 
-		CloudImage image = imageStore.findImage(Lists.newArrayList(formatTag, BOOTSTRAP_IMAGE_TAG));
-		if (image != null) {
-			return image;
+		Tag osDebian = new Tag(Tag.IMAGE_OS_DISTRIBUTION, "debian.org");
+		Tag osSqueeze = new Tag(Tag.IMAGE_OS_VERSION, "6.0.4");
+
+		Tag diskFormatTag;
+		switch (format) {
+		case DiskQcow2:
+			diskFormatTag = format.toTag();
+			break;
+		default:
+			log.warn("Unsupported format: " + format);
+			return null;
 		}
 
-		Tag osDebian = new Tag(Tag.IMAGE_OS_DISTRIBUTION, "debian");
-		Tag osSqueeze = new Tag(Tag.IMAGE_OS_VERSION, "squeeze");
-		Tag imageTypeBase = new Tag(Tag.IMAGE_TYPE, "base");
-
-		List<CloudImage> images = imageStore.findImages(Lists.newArrayList(formatTag, imageTypeBase, osDebian,
-				osSqueeze));
+		List<CloudImage> images = imageStore.findImages(Lists.newArrayList(diskFormatTag, osDebian, osSqueeze));
 		for (CloudImage candidate : images) {
 			return candidate;
 		}
@@ -168,12 +165,34 @@ public class ImageFactory {
 		return null;
 	}
 
-	private String getImageId(DiskImage recipe) throws OpsException {
-		String imageId = recipe.getTags().findUnique(Tag.IMAGE_ID);
+	private CloudImage getImageInfo(DiskImage recipe) throws OpsException {
+		final String imageId = recipe.getTags().findUnique(Tag.IMAGE_ID);
 		if (imageId == null) {
 			throw new OpsException("Image is not yet built").setRetry(TimeSpan.ONE_MINUTE);
 		}
-		return imageId;
+		final ImageFormat imageFormat = ImageFormat.valueOf(recipe.getFormat());
+		String compression = null;
+		switch (imageFormat) {
+		case Tar:
+			compression = "gzip";
+			break;
+		case DiskRaw:
+			compression = "gzip";
+			break;
+		}
+		return new CloudImage() {
+
+			@Override
+			public String getId() {
+				return imageId;
+			}
+
+			@Override
+			public ImageFormat getFormat() {
+				return imageFormat;
+			}
+
+		};
 	}
 
 	<T> T cloneThroughJaxb(T a) {

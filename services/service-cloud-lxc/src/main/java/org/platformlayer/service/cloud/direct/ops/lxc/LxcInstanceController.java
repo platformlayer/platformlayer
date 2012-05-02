@@ -2,6 +2,7 @@ package org.platformlayer.service.cloud.direct.ops.lxc;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 
 import javax.inject.Inject;
 
@@ -20,6 +21,8 @@ import org.platformlayer.ops.helpers.ImageFactory;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.helpers.ServiceContext;
 import org.platformlayer.ops.helpers.SshKeys;
+import org.platformlayer.ops.images.ImageFormat;
+import org.platformlayer.ops.pool.PoolAssignment;
 import org.platformlayer.ops.tagger.Tagger;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.direct.model.DirectInstance;
@@ -27,7 +30,6 @@ import org.platformlayer.service.cloud.direct.ops.CloudInstanceMapper;
 import org.platformlayer.service.cloud.direct.ops.DirectCloudUtils;
 import org.platformlayer.service.cloud.direct.ops.DownloadImage;
 import org.platformlayer.service.cloud.direct.ops.cloud.CloudMap;
-import org.platformlayer.service.cloud.direct.ops.kvm.PoolAssignment;
 
 public class LxcInstanceController extends OpsTreeBase {
 	static final Logger log = Logger.getLogger(LxcInstanceController.class);
@@ -81,7 +83,7 @@ public class LxcInstanceController extends OpsTreeBase {
 		{
 			assignNetworkAddress = injected(PoolAssignment.class);
 			assignNetworkAddress.holder = getInstanceDir();
-			assignNetworkAddress.poolProvider = DirectCloudUtils.getPoolProvider("network");
+			assignNetworkAddress.poolProvider = DirectCloudUtils.getPrivateAddressPool();
 			instance.addChild(assignNetworkAddress);
 		}
 
@@ -96,7 +98,7 @@ public class LxcInstanceController extends OpsTreeBase {
 			DownloadImage download = injected(DownloadImage.class);
 			download.imageFile = new File(getInstanceDir(), "rootfs");
 			download.recipeKey = model.recipeId;
-			download.imageFormat = ImageFactory.ImageFormat.Tar;
+			download.imageFormats = Collections.singletonList(ImageFormat.Tar);
 			instance.addChild(download);
 		}
 

@@ -31,34 +31,58 @@ public class IpRange {
 		}
 	}
 
-	public String getNetmask() {
-		// TODO: This is a lame and incomplete implementation
-		switch (prefixLength) {
-		case 8:
-			return "255.0.0.0";
-		case 16:
-			return "255.255.0.0";
-		case 24:
-			return "255.255.255.0";
-
-		default:
-			throw new IllegalArgumentException("Netmask length not implemented: " + prefixLength);
+	private static String getNetmaskByte(int count) {
+		if (count > 8) {
+			count = 8;
 		}
+		if (count < 0) {
+			count = 0;
+		}
+
+		int k = 256 - (1 << (8 - count));
+		return String.valueOf(k);
+	}
+
+	public static String getNetmask(int prefixLength) {
+		StringBuilder sb = new StringBuilder();
+		int count = prefixLength;
+		sb.append(getNetmaskByte(count));
+		sb.append(".");
+		count -= 8;
+		sb.append(getNetmaskByte(count));
+		sb.append(".");
+		count -= 8;
+		sb.append(getNetmaskByte(count));
+		sb.append(".");
+		count -= 8;
+		sb.append(getNetmaskByte(count));
+		return sb.toString();
+	}
+
+	public String getNetmask() {
+		return getNetmask(prefixLength);
 	}
 
 	public InetAddress getAddress(int offset) {
 		byte[] bytes = address.getAddress();
-		for (int i = bytes.length - 1; i >= 0; i--) {
-			int v = (bytes[i] & 0xff);
-			v++;
-			if (v >= 256) {
-				v = 0;
-				bytes[i] = (byte) (v & 0xff);
-			} else {
-				bytes[i] = (byte) (v & 0xff);
+		if (offset == 0) {
 
-				break;
+		} else if (offset == 1) {
+			for (int i = bytes.length - 1; i >= 0; i--) {
+				int v = (bytes[i] & 0xff);
+				v++;
+				if (v >= 256) {
+					v = 0;
+					bytes[i] = (byte) (v & 0xff);
+				} else {
+					bytes[i] = (byte) (v & 0xff);
+
+					break;
+				}
 			}
+		} else {
+			// TODO: I don't know why I didn't implement this!
+			throw new UnsupportedOperationException();
 		}
 
 		try {
@@ -66,5 +90,42 @@ public class IpRange {
 		} catch (UnknownHostException e) {
 			throw new IllegalArgumentException("Error building address", e);
 		}
+	}
+
+	public InetAddress getFirstAddress() {
+		// The first address is usually reserved, unless we've only got a /32
+		if (prefixLength != 32) {
+			return getAddress(1);
+		} else {
+			return getAddress(0);
+		}
+	}
+
+	public static IpRange parse(String addressString, String netmask) {
+		int prefixLength = -1;
+
+		// TODO: This is pretty inefficient...
+		for (int i = 0; i < 32; i++) {
+			if (getNetmask(i).equals(netmask)) {
+				prefixLength = i;
+				break;
+			}
+		}
+
+		if (prefixLength == -1) {
+			throw new IllegalArgumentException("Unknown netmask: " + netmask);
+		}
+		InetAddress address;
+		try {
+			address = InetAddress.getByName(addressString);
+		} catch (UnknownHostException e) {
+			throw new IllegalArgumentException("Error resolving: " + addressString, e);
+		}
+
+		return new IpRange(address, prefixLength);
+	}
+
+	public int getPrefixLength() {
+		return prefixLength;
 	}
 }

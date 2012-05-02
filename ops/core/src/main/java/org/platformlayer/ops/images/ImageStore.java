@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.Tags;
-import org.platformlayer.ops.CloudImage;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 

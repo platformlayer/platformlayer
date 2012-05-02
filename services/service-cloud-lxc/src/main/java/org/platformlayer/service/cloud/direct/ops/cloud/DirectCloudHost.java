@@ -1,17 +1,14 @@
 package org.platformlayer.service.cloud.direct.ops.cloud;
 
-import java.io.File;
-
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
-import org.platformlayer.ops.lxc.FilesystemBackedPool;
-import org.platformlayer.ops.lxc.StaticFilesystemBackedPool;
+import org.platformlayer.ops.pool.FilesystemBackedPool;
 import org.platformlayer.service.cloud.direct.model.DirectHost;
+import org.platformlayer.service.cloud.direct.ops.DirectCloudUtils;
 
 public class DirectCloudHost {
 	// private static final File MACHINE_CONF_DIR = new File("/var/lib/lxc");
-	private static final File ADDRESS_POOL_DIR = new File("/var/pools/network");
 
 	final OpsTarget host;
 
@@ -25,10 +22,7 @@ public class DirectCloudHost {
 		this.host = host;
 		// this.machineStore = new PropertiesFileStore(host, MACHINE_CONF_DIR);
 
-		File addressPoolAll = new File(ADDRESS_POOL_DIR, "all");
-		File addressPoolAssigned = new File(ADDRESS_POOL_DIR, "assigned");
-
-		this.addressPool = new StaticFilesystemBackedPool(host, addressPoolAll, addressPoolAssigned);
+		this.addressPool = DirectCloudUtils.getPrivateAddressPool().get();
 	}
 
 	public void terminate(String lxcId) throws OpsException {
@@ -74,4 +68,5 @@ public class DirectCloudHost {
 	public DirectHost getModel() {
 		return model;
 	}
+
 }
