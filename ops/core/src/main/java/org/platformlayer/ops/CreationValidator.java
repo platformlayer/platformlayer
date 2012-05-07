@@ -1,10 +1,16 @@
 package org.platformlayer.ops;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.platformlayer.core.model.ItemBase;
+import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.xaas.SingletonService;
+
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 
 public class CreationValidator {
 	@Inject
@@ -24,14 +30,14 @@ public class CreationValidator {
 			// Only one can be created per scope
 			Iterable<? extends ItemBase> items = platformLayer.listItems(modelClass);
 
-			int aliveCount = 0;
+			List<PlatformLayerKey> matches = Lists.newArrayList();
 			for (ItemBase peer : items) {
 				switch (peer.getState()) {
 				case ACTIVE:
 				case CREATION_REQUESTED:
 				case BUILD:
 				case BUILD_ERROR:
-					aliveCount++;
+					matches.add(peer.getKey());
 					break;
 
 				case DELETE_REQUESTED:
@@ -42,8 +48,9 @@ public class CreationValidator {
 					throw new IllegalStateException();
 				}
 			}
-			if (aliveCount != 0) {
-				throw new OpsException("Cannot create multiple instances of: " + modelClass.getName());
+			if (!matches.isEmpty()) {
+				throw new OpsException("Cannot create multiple instances of: " + modelClass.getName() + ".  Others="
+						+ Joiner.on(",").join(matches));
 			}
 		}
 	}
