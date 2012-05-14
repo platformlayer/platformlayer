@@ -46,7 +46,6 @@ pushd schemas
 cp ../shared/core-model/target/schemas/*.xsd .
 
 cp ../services/service-federation/target/generated-resources/schemagen/schema1.xsd federation.xsd
-cp ../services/service-apt-cache/target/generated-resources/schemagen/schema1.xsd apt-cache.xsd
 cp ../services/service-dns/target/generated-resources/schemagen/schema1.xsd dns.xsd
 cp ../services/service-dnsresolver/target/generated-resources/schemagen/schema1.xsd dnsresolver.xsd
 cp ../services/service-image-factory/target/generated-resources/schemagen/schema1.xsd image-factory.xsd
