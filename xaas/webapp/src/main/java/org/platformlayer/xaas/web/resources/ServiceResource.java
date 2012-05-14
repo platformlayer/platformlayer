@@ -88,7 +88,10 @@ public class ServiceResource extends XaasResourceBase {
 			throw new WebApplicationException(404);
 		}
 
-		return OpenSshUtils.serialize(publicKey);
+		String description = "platformlayer://" + getProject().getKey() + "/"
+				+ serviceProvider.getServiceType().getKey();
+
+		return OpenSshUtils.serialize(publicKey, description);
 	}
 
 	@Path("{itemType}")
