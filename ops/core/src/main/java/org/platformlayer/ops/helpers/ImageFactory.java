@@ -1,5 +1,6 @@
 package org.platformlayer.ops.helpers;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -25,7 +26,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
-import com.google.common.collect.Lists;
 
 public class ImageFactory {
 
@@ -111,6 +111,8 @@ public class ImageFactory {
 	public CloudImage getOrCreateImageId(MachineCloudBase targetCloud, List<ImageFormat> formats,
 			PlatformLayerKey recipeKey) throws OpsException {
 		if (recipeKey == null) {
+			log.debug("Looking for bootstrap image");
+
 			for (ImageFormat format : formats) {
 				CloudImage bootstrapImage = findBootstrapImage(format, cloud.getImageStore(targetCloud));
 				if (bootstrapImage != null) {
@@ -157,7 +159,7 @@ public class ImageFactory {
 			return null;
 		}
 
-		List<CloudImage> images = imageStore.findImages(Lists.newArrayList(diskFormatTag, osDebian, osSqueeze));
+		List<CloudImage> images = imageStore.findImages(Arrays.asList(diskFormatTag, osDebian, osSqueeze));
 		for (CloudImage candidate : images) {
 			return candidate;
 		}
