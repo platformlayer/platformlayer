@@ -28,4 +28,24 @@ public class ConfigMap {
 		return properties;
 	}
 
+	public static boolean write(OpsTarget target, File path, Properties properties) throws OpsException {
+		String contents;
+
+		try {
+			StringWriter sw = new StringWriter();
+			properties.store(sw, null);
+			contents = sw.toString();
+		} catch (IOException e) {
+			throw new OpsException("Error serializing properties", e);
+		}
+
+		// String existing = target.readTextFile(path);
+		// if (Objects.equal(existing, contents)) {
+		// return false;
+		// }
+
+		FileUpload.upload(target, path, contents);
+		return true;
+	}
+
 }
