@@ -1,5 +1,7 @@
 package org.platformlayer;
 
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,9 +17,17 @@ public class EndpointInfo {
 	public EndpointInfo() {
 	}
 
-	public EndpointInfo(String address, int publicPort) {
+	public EndpointInfo(String address, int port) {
 		this.publicIp = address;
-		this.port = publicPort;
+		this.port = port;
+	}
+
+	public EndpointInfo(InetAddress address, int port) {
+		this(address.getHostAddress(), port);
+	}
+
+	public EndpointInfo(InetSocketAddress socketAddress) {
+		this(socketAddress.getAddress(), socketAddress.getPort());
 	}
 
 	public static List<EndpointInfo> getEndpoints(Tags tags) {
