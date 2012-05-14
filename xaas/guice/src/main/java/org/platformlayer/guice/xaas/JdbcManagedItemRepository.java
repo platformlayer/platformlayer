@@ -415,17 +415,29 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 		}
 
 		public void removeTag(int itemId, Tag tag) throws SQLException {
-			final String sql = "DELETE FROM item_tags WHERE service = ? and model=? and project=? and item=? and key=? and data=?";
+			PreparedStatement ps;
+			if (tag.getValue() != null) {
+				final String sql = "DELETE FROM item_tags WHERE service = ? and model=? and project=? and item=? and key=? and data=?";
 
-			PreparedStatement ps = prepareStatement(sql);
-			setAtom(ps, 1, ServiceType.class);
-			setAtom(ps, 2, ItemType.class);
-			setAtom(ps, 3, ProjectId.class);
-			ps.setInt(4, itemId);
+				ps = prepareStatement(sql);
+				setAtom(ps, 1, ServiceType.class);
+				setAtom(ps, 2, ItemType.class);
+				setAtom(ps, 3, ProjectId.class);
+				ps.setInt(4, itemId);
 
-			ps.setString(5, tag.key);
-			ps.setString(6, tag.value);
+				ps.setString(5, tag.key);
+				ps.setString(6, tag.value);
+			} else {
+				final String sql = "DELETE FROM item_tags WHERE service = ? and model=? and project=? and item=? and key=? and data is null";
 
+				ps = prepareStatement(sql);
+				setAtom(ps, 1, ServiceType.class);
+				setAtom(ps, 2, ItemType.class);
+				setAtom(ps, 3, ProjectId.class);
+				ps.setInt(4, itemId);
+
+				ps.setString(5, tag.key);
+			}
 			ps.executeUpdate();
 		}
 
