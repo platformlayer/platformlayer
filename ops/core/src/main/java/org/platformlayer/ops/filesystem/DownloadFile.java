@@ -2,6 +2,8 @@ package org.platformlayer.ops.filesystem;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.inject.Inject;
 
@@ -12,11 +14,11 @@ import org.platformlayer.ops.CommandEnvironment;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.helpers.CurlRequest;
-import org.platformlayer.ops.helpers.HttpProxyHelper;
-import org.platformlayer.ops.helpers.HttpProxyHelper.Usage;
+import org.platformlayer.ops.proxy.HttpProxyHelper;
+import org.platformlayer.ops.proxy.HttpProxyHelper.Usage;
 
 public class DownloadFile extends ManagedFile {
-	public String url;
+	public URI url;
 	public Md5Hash hash;
 
 	@Inject
@@ -29,7 +31,7 @@ public class DownloadFile extends ManagedFile {
 		CurlRequest curlRequest = new CurlRequest(url);
 		curlRequest.bareRequest = true;
 
-		CommandEnvironment commandEnvironment = httpProxies.getHttpProxyEnvironment(target, Usage.General);
+		CommandEnvironment commandEnvironment = httpProxies.getHttpProxyEnvironment(target, Usage.General, url);
 
 		Command curlCommand = curlRequest.toCommand();
 		curlCommand.addLiteral(">");
@@ -49,5 +51,13 @@ public class DownloadFile extends ManagedFile {
 		}
 
 		return hash;
+	}
+
+	public void setUrl(String url) {
+		try {
+			this.url = new URI(url);
+		} catch (URISyntaxException e) {
+			throw new IllegalArgumentException("Error parsing URI", e);
+		}
 	}
 }

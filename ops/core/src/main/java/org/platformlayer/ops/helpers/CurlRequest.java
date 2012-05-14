@@ -19,7 +19,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 public class CurlRequest {
-	final String url;
+	final URI url;
 
 	public final Multimap<String, String> headers = HashMultimap.create();
 	static final String metadataDelimiter = "\n\n";;
@@ -35,10 +35,18 @@ public class CurlRequest {
 	public boolean bareRequest;
 
 	public CurlRequest(String url) {
+		try {
+			this.url = new URI(url);
+		} catch (URISyntaxException e) {
+			throw new IllegalArgumentException("Error parsing URI", e);
+		}
+	}
+
+	public CurlRequest(URI url) {
 		this.url = url;
 	}
 
-	public String getUrl() {
+	public URI getUrl() {
 		return url;
 	}
 
@@ -137,7 +145,7 @@ public class CurlRequest {
 			command.addQuoted(method);
 		}
 
-		command.addQuoted(getUrl());
+		command.addQuoted(getUrl().toString());
 		return command;
 	}
 
