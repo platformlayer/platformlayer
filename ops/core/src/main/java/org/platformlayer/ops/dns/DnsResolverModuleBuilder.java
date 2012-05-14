@@ -45,6 +45,9 @@ public class DnsResolverModuleBuilder implements TemplateDataSource {
 			nameservers.add("8.8.8.8");
 			nameservers.add("8.8.4.4");
 
+			nameservers.add("2001:4860:4860::8888");
+			nameservers.add("2001:4860:4860::8844");
+
 			// So a reconfigure is needed!
 		}
 		model.put("nameservers", nameservers);
