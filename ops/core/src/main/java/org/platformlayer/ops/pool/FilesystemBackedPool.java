@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsException;
@@ -31,10 +32,14 @@ import com.google.common.collect.Sets;
  * 
  */
 public abstract class FilesystemBackedPool {
+	static final Logger log = Logger.getLogger(FilesystemBackedPool.class);
+
+	final PoolBuilder poolBuilder;
 	protected final OpsTarget target;
 	final File assignedDir;
 
-	public FilesystemBackedPool(OpsTarget target, File assignedDir) {
+	public FilesystemBackedPool(PoolBuilder poolBuilder, OpsTarget target, File assignedDir) {
+		this.poolBuilder = poolBuilder;
 		this.target = target;
 		this.assignedDir = assignedDir;
 	}
@@ -67,22 +72,34 @@ public abstract class FilesystemBackedPool {
 	protected abstract Iterable<String> pickRandomResource() throws OpsException;
 
 	String pickUnassigned() throws OpsException {
-		Set<String> assigned = Sets.newHashSet(list(assignedDir));
+		for (int i = 0; i < 2; i++) {
+			Set<String> assigned = Sets.newHashSet(list(assignedDir));
 
-		String found = null;
-		for (String resource : pickRandomResource()) {
-			if (!assigned.contains(resource)) {
-				found = resource;
-				break;
+			String found = null;
+			for (String resource : pickRandomResource()) {
+				if (!assigned.contains(resource)) {
+					found = resource;
+					break;
+				}
+			}
+
+			if (found != null) {
+				return found;
+			}
+
+			// TODO: We should implement resource reclamation by checking that symlink targets exist.
+			// (We should probably avoid doing this on too many threads concurrently)
+			if (i == 0) {
+				if (poolBuilder != null) {
+					int added = poolBuilder.extendPool(this);
+					if (added != 0) {
+						log.warn("Added " + added + " items to pool");
+					}
+				}
 			}
 		}
 
-		if (found == null) {
-			// TODO: We should implement resource reclamation by checking that symlink targets exist.
-			// (We should probably avoid doing this on too many threads concurrently)
-		}
-
-		return found;
+		return null;
 	}
 
 	private boolean createSymlink(File src, File link) throws OpsException {

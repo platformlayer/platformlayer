@@ -9,14 +9,14 @@ import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 
-public class PoolAssignment implements Provider<Properties> {
+public abstract class PoolAssignment<T> implements Provider<T> {
 	public Provider<FilesystemBackedPool> poolProvider;
 
 	public File holder;
 
 	private FilesystemBackedPool cachedPool;
 
-	private Properties assigned;
+	private Properties assignedProperties;
 
 	private FilesystemBackedPool getPool() {
 		if (cachedPool == null) {
@@ -30,9 +30,9 @@ public class PoolAssignment implements Provider<Properties> {
 		FilesystemBackedPool pool = getPool();
 
 		if (OpsContext.isConfigure()) {
-			if (assigned == null) {
+			if (assignedProperties == null) {
 				String key = pool.assign(holder, true);
-				assigned = pool.readProperties(key);
+				assignedProperties = pool.readProperties(key);
 			}
 		}
 
@@ -40,17 +40,19 @@ public class PoolAssignment implements Provider<Properties> {
 			String key = pool.findAssigned(holder);
 			if (key != null) {
 				pool.release(holder, key);
-				assigned = null;
+				assignedProperties = null;
 			}
 		}
 	}
 
-	public Properties getAssigned() {
-		return assigned;
+	public Properties getProperties() {
+		return assignedProperties;
 	}
 
 	@Override
-	public Properties get() {
-		return getAssigned();
+	public T get() {
+		return map(getProperties());
 	}
+
+	protected abstract T map(Properties properties);
 }

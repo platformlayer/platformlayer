@@ -12,10 +12,10 @@ import org.platformlayer.ops.images.ConfigMap;
 import com.google.common.collect.Lists;
 
 public class StaticFilesystemBackedPool extends FilesystemBackedPool {
-	final File resourceDir;
+	protected final File resourceDir;
 
-	public StaticFilesystemBackedPool(OpsTarget target, File resourceDir, File assignedDir) {
-		super(target, assignedDir);
+	public StaticFilesystemBackedPool(PoolBuilder poolBuilder, OpsTarget target, File resourceDir, File assignedDir) {
+		super(poolBuilder, target, assignedDir);
 		this.resourceDir = resourceDir;
 	}
 
@@ -28,13 +28,28 @@ public class StaticFilesystemBackedPool extends FilesystemBackedPool {
 
 	@Override
 	protected Iterable<String> pickRandomResource() throws OpsException {
-		List<String> resources = Lists.newArrayList(list(resourceDir));
+		List<String> resources = listResourceKeys();
 		Collections.shuffle(resources);
+		return resources;
+	}
+
+	public List<String> listResourceKeys() throws OpsException {
+		List<String> resources = Lists.newArrayList(list(resourceDir));
 		return resources;
 	}
 
 	@Override
 	public String toString() {
-		return getClass().getName() + ":" + resourceDir;
+		return getClass().getSimpleName() + ":" + resourceDir;
+	}
+
+	public void ensureCreated() throws OpsException {
+		target.mkdir(resourceDir);
+		target.mkdir(assignedDir);
+	}
+
+	public boolean addResource(String key, Properties properties) throws OpsException {
+		File path = new File(resourceDir, key);
+		return ConfigMap.write(target, path, properties);
 	}
 }
