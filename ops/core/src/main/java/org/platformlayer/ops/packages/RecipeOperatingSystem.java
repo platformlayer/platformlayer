@@ -1,7 +1,6 @@
-package org.platformlayer.service.desktop.ops;
+package org.platformlayer.ops.packages;
 
 import org.platformlayer.ops.Handler;
-import org.platformlayer.ops.packages.HasDiskImageRecipe;
 import org.platformlayer.service.imagefactory.v1.DiskImageRecipe;
 import org.platformlayer.service.imagefactory.v1.OperatingSystemRecipe;
 

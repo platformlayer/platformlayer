@@ -11,6 +11,7 @@ import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.networks.PublicEndpoint;
 import org.platformlayer.ops.packages.PackageDependency;
+import org.platformlayer.ops.packages.RecipeOperatingSystem;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.desktop.model.Desktop;
 import org.platformlayer.service.imagefactory.v1.OperatingSystemRecipe;
