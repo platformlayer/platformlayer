@@ -2,29 +2,34 @@ package org.platformlayer.service.cloud.direct.ops.lxc;
 
 import java.io.File;
 import java.security.PublicKey;
+import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 
 import org.openstack.utils.Utf8;
 import org.platformlayer.ops.ChrootOpsTarget;
+import org.platformlayer.ops.FileUpload;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.helpers.TemplateHelpers;
+import org.platformlayer.ops.networks.AddressModel;
+import org.platformlayer.ops.networks.InterfaceModel;
 import org.platformlayer.ops.ssh.SshAuthorizedKey;
-import org.platformlayer.service.cloud.direct.ops.IpRange;
+import org.platformlayer.service.cloud.direct.model.DirectHost;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class LxcBootstrap {
 	public String lxcId;
 	public String hostname;
 	public File instanceDir;
-	public Provider<Properties> address;
+	public Provider<AddressModel> address4;
+	public Provider<AddressModel> address6;
 
 	@Inject
 	TemplateHelpers template;
@@ -38,25 +43,22 @@ public class LxcBootstrap {
 
 		model.put("name", lxcId);
 
-		// TODO: Pass this through directly into the model??
-		Properties addressProperties = this.address.get();
+		InterfaceModel eth0 = InterfaceModel.build("eth0");
+		AddressModel ipv4 = address4.get();
+		eth0.addAddress(ipv4);
 
-		String bridge = addressProperties.getProperty("bridge", "br0");
-		String address = addressProperties.getProperty("address");
-		String netmask = addressProperties.getProperty("netmask");
-		String gateway = addressProperties.getProperty("gateway");
-		String cidr = addressProperties.getProperty("cidr");
+		AddressModel ipv6 = address6.get();
+		eth0.addAddress(ipv6);
 
-		if (cidr == null) {
-			IpRange ipRange = IpRange.parse(address, netmask);
-			cidr = address + "/" + ipRange.getPrefixLength();
-		}
+		List<InterfaceModel> interfaces = Lists.newArrayList();
+		interfaces.add(eth0);
 
-		model.put("cidr", cidr);
-		model.put("address", address);
-		model.put("netmask", netmask);
-		model.put("gateway", gateway);
-		model.put("bridge", bridge);
+		model.put("interfaces", interfaces);
+
+		model.put("externalBridge", OpsContext.get().getInstance(DirectHost.class).bridge);
+
+		model.put("ipv4", ipv4);
+		model.put("ipv6", ipv6);
 
 		return model;
 	}
@@ -86,19 +88,19 @@ public class LxcBootstrap {
 
 	void setupInterfaces() throws OpsException {
 		File file = new File(getRoot(), "etc/network/interfaces");
-		getTarget().setFileContents(file, runTemplate("etc.network.interfaces"));
+		FileUpload.upload(getTarget(), file, runTemplate("etc.network.interfaces"));
 	}
 
 	void setupLxcConfig() throws OpsException {
 		File file = getConfigFile();
-		getTarget().setFileContents(file, runTemplate("lxc.config"));
+		FileUpload.upload(getTarget(), file, runTemplate("lxc.config"));
 	}
 
 	void setupHostname() throws OpsException {
 		String hostname = getHostname();
 
 		File file = new File(getRoot(), "etc/hostname");
-		getTarget().setFileContents(file, hostname);
+		FileUpload.upload(getTarget(), file, hostname);
 	}
 
 	private String getHostname() {
@@ -110,12 +112,12 @@ public class LxcBootstrap {
 
 	void setupInittab() throws OpsException {
 		File file = new File(getRoot(), "etc/inittab");
-		getTarget().setFileContents(file, runTemplate("etc.inittab"));
+		FileUpload.upload(getTarget(), file, runTemplate("etc.inittab"));
 	}
 
 	private void setupResolveConf() throws OpsException {
 		File file = new File(getRoot(), "etc/resolv.conf");
-		getTarget().setFileContents(file, runTemplate("etc.resolv.conf"));
+		FileUpload.upload(getTarget(), file, runTemplate("etc.resolv.conf"));
 	}
 
 	// private void setupAutostart() throws OpsException {

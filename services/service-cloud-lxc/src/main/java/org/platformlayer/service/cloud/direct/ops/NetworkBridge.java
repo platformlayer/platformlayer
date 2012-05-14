@@ -1,8 +1,6 @@
 package org.platformlayer.service.cloud.direct.ops;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
 import org.platformlayer.ops.Command;
@@ -10,6 +8,7 @@ import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
+import org.platformlayer.ops.networks.IpRange;
 import org.platformlayer.ops.process.ProcessExecution;
 import org.platformlayer.ops.process.ProcessExecutionException;
 import org.platformlayer.ops.tree.OpsTreeBase;
@@ -17,7 +16,7 @@ import org.platformlayer.ops.tree.OpsTreeBase;
 public class NetworkBridge extends OpsTreeBase {
 	static final Logger log = Logger.getLogger(NetworkBridge.class);
 
-	public String bridge = "br0";
+	public String bridge;
 	public IpRange ipRange;
 
 	public static NetworkBridge build(String bridge, IpRange ipRange) {
@@ -50,6 +49,7 @@ public class NetworkBridge extends OpsTreeBase {
 		// }
 		// }
 		//
+
 		try {
 			target.executeCommand(Command.build("brctl showmacs {0}", bridge));
 			found = true;
@@ -60,30 +60,33 @@ public class NetworkBridge extends OpsTreeBase {
 			}
 		}
 
-		if (!found) {
-			target.executeCommand(Command.build("brctl addbr {0}", bridge));
-		}
+		throw new OpsException("How many of the remaining are really needed??");
 
-		target.executeCommand(Command.build("brctl setfd {0} 0", bridge));
+		// if (!found) {
+		// target.executeCommand(Command.build("brctl addbr {0}", bridge));
+		// }
+		//
+		// target.executeCommand(Command.build("brctl setfd {0} 0", bridge));
 
-		{
-			String netmask = ipRange.getNetmask();
-			InetAddress ip = ipRange.getFirstAddress();
+		// {
+		// String netmask = ipRange.getNetmask();
+		// InetAddress ip = ipRange.getFirstAddress();
+		//
+		// Command command = Command.build("/sbin/ifconfig {0} {1} netmask {2} promisc up", bridge, ip, netmask);
+		// log.warn("Skipping execution of ifconfig; assuming already done: " + command);
+		// // target.executeCommand(command);
+		// }
 
-			Command command = Command.build("/sbin/ifconfig {0} {1} netmask {2} promisc up", bridge, ip, netmask);
-			log.warn("Skipping execution of ifconfig; assuming already done: " + command);
-			// target.executeCommand(command);
-		}
-
-		File procIPV4 = new File("/proc/sys/net/ipv4");
-		File ipForward = new File(procIPV4, "ip_forward");
-		target.executeCommand(Command.build("echo 1 > {0}", ipForward));
-
-		File proxyArp = new File(procIPV4, "conf/" + bridge + "/proxy_arp");
-		target.executeCommand(Command.build("echo 1 > {0}", proxyArp));
-
-		// TODO: Idempotency?
-		target.executeCommand(Command.build("/sbin/iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE"));
+		// ???
+		// File procIPV4 = new File("/proc/sys/net/ipv4");
+		// File ipForward = new File(procIPV4, "ip_forward");
+		// target.executeCommand(Command.build("echo 1 > {0}", ipForward));
+		//
+		// File proxyArp = new File(procIPV4, "conf/" + bridge + "/proxy_arp");
+		// target.executeCommand(Command.build("echo 1 > {0}", proxyArp));
+		//
+		// // TODO: Idempotency?
+		// target.executeCommand(Command.build("/sbin/iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE"));
 
 		// apt-get install bridge-utils
 		//

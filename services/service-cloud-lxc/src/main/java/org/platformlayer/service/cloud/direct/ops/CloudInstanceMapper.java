@@ -7,10 +7,8 @@ import javax.inject.Inject;
 
 import org.platformlayer.TagFilter;
 import org.platformlayer.core.model.Tag;
-import org.platformlayer.ops.BindingScope;
 import org.platformlayer.ops.CustomRecursor;
 import org.platformlayer.ops.Handler;
-import org.platformlayer.ops.OperationRecursor;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsSystem;
@@ -80,22 +78,12 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
 		this.cloud = platformLayer.getItem(host.cloud, DirectCloud.class);
 
 		this.hostTarget = directHelpers.toTarget(host);
-	}
 
-	@Override
-	public void doRecurseOperation() throws OpsException {
-		// We expect doOperation to set hostTarget
-		if (hostTarget == null) {
-			throw new IllegalStateException();
-		}
+		RecursionState recursion = getRecursionState();
 
-		BindingScope scope = BindingScope.push(hostTarget, cloud);
-		try {
-			OpsContext opsContext = OpsContext.get();
-			OperationRecursor.doRecurseChildren(opsContext, this);
-		} finally {
-			scope.pop();
-		}
+		recursion.pushChildScope(cloud);
+		recursion.pushChildScope(host);
+		recursion.pushChildScope(hostTarget);
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.platformlayer.ops.Command;
+import org.platformlayer.ops.FileUpload;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
@@ -32,7 +33,7 @@ public class MountCgroups {
 		File fstabFile = new File("/etc/fstab");
 		String fstab = target.readTextFile(fstabFile);
 		fstab += fstabLine;
-		target.setFileContents(fstabFile, fstab);
+		FileUpload.upload(target, fstabFile, fstab);
 
 		target.mkdir(cgroupsFile);
 

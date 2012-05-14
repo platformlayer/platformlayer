@@ -15,9 +15,14 @@ import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.helpers.ServiceContext;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.pool.FilesystemBackedPool;
+import org.platformlayer.ops.pool.NetworkPoolBuilder;
+import org.platformlayer.ops.pool.PoolBuilder;
 import org.platformlayer.ops.pool.StaticFilesystemBackedPool;
 import org.platformlayer.service.cloud.direct.model.DirectHost;
 import org.platformlayer.service.cloud.direct.model.DirectInstance;
+import org.platformlayer.service.cloud.direct.ops.PublicPorts.PublicAddressDynamicPool;
+
+import com.google.inject.util.Providers;
 
 public class DirectCloudUtils {
 	static File POOL_ROOT = new File("/var/pools/");
@@ -35,7 +40,7 @@ public class DirectCloudUtils {
 		return hostTarget;
 	}
 
-	public static File getPoolPath(String key) {
+	private static File getPoolPath(String key) {
 		File poolPath = new File(POOL_ROOT, key);
 		return poolPath;
 	}
@@ -50,7 +55,8 @@ public class DirectCloudUtils {
 		}
 	}
 
-	private static Provider<FilesystemBackedPool> getPoolProvider(final String key) {
+	private static Provider<FilesystemBackedPool> getPoolProvider(final String key,
+			final Provider<? extends PoolBuilder> poolBuilderProvider) {
 		return new Provider<FilesystemBackedPool>() {
 			@Override
 			public FilesystemBackedPool get() {
@@ -61,7 +67,11 @@ public class DirectCloudUtils {
 				File resourceDir = new File(poolPath, "all");
 				File assignedDir = new File(poolPath, "assigned");
 
-				return new StaticFilesystemBackedPool(target, resourceDir, assignedDir);
+				PoolBuilder poolBuilder = null;
+				if (poolBuilderProvider != null) {
+					poolBuilder = poolBuilderProvider.get();
+				}
+				return new StaticFilesystemBackedPool(poolBuilder, target, resourceDir, assignedDir);
 			}
 		};
 	}
@@ -71,16 +81,81 @@ public class DirectCloudUtils {
 		return tags.findUnique(Tag.NETWORK_ADDRESS);
 	}
 
-	public static Provider<FilesystemBackedPool> getPrivateAddressPool() {
-		return getPoolProvider("network-private");
+	public static Provider<FilesystemBackedPool> getPublicAddressPool4(final int publicPort) {
+		return new Provider<FilesystemBackedPool>() {
+			@Override
+			public FilesystemBackedPool get() {
+				OpsTarget target = OpsContext.get().getInstance(OpsTarget.class);
+
+				File poolPath = getPoolPath("sockets-ipv4-public");
+
+				File resourceDir = new File(poolPath, "all");
+				File assignedDir = new File(poolPath, "assigned");
+
+				PoolBuilder poolBuilder = null;
+
+				DirectHost host = OpsContext.get().getInstance(DirectHost.class);
+				String ipv4Public = host.ipv4Public;
+				if (ipv4Public != null) {
+					// We don't skip here, .sat the moment.
+					// We may just need a comma separated list in future...
+					int skipCount = 0;
+					poolBuilder = new NetworkPoolBuilder(ipv4Public, skipCount);
+				}
+
+				return new PublicAddressDynamicPool(poolBuilder, target, resourceDir, assignedDir, publicPort);
+			}
+		};
+	}
+
+	public static Provider<FilesystemBackedPool> getPrivateAddressPool4() {
+		Provider<PoolBuilder> poolBuilder = new Provider<PoolBuilder>() {
+			@Override
+			public PoolBuilder get() {
+				DirectHost host = OpsContext.get().getInstance(DirectHost.class);
+				String privateCidr = host.ipv4Private;
+				if (privateCidr != null) {
+					// Skip the first entries in the CIDR as it's probably not valid
+					// 0: Network identifier
+					// 1: Gateway (?)
+					// 2: Host (?)
+					int skipCount = 3;
+					return new NetworkPoolBuilder(privateCidr, skipCount);
+				}
+				return null;
+			}
+		};
+
+		return getPoolProvider("addresses-ipv4-private", poolBuilder);
+	}
+
+	public static Provider<FilesystemBackedPool> getAddressPool6() {
+		Provider<PoolBuilder> poolBuilder = new Provider<PoolBuilder>() {
+			@Override
+			public PoolBuilder get() {
+				DirectHost host = OpsContext.get().getInstance(DirectHost.class);
+				String privateCidr = host.ipv6;
+				if (privateCidr != null) {
+					// Skip the first entries in the CIDR as it's probably not valid
+					// 0: Network identifier
+					// 1: Gateway
+					// 2: Host
+					int skipCount = 3;
+					return new NetworkPoolBuilder(privateCidr, skipCount);
+				}
+				return null;
+			}
+		};
+
+		return getPoolProvider("addresses-ipv6", poolBuilder);
 	}
 
 	public static Provider<FilesystemBackedPool> getKvmMonitorPortPool() {
-		return getPoolProvider("kvm-monitor");
+		return getPoolProvider("kvm-monitor", Providers.of(new KvmMonitorPoolBuilder()));
 	}
 
 	public static Provider<FilesystemBackedPool> getVncPortPool() {
-		return getPoolProvider("kvm-vnc");
+		return getPoolProvider("kvm-vnc", Providers.of(new VncPortPoolBuilder()));
 	}
 
 }

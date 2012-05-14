@@ -22,7 +22,8 @@ import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.helpers.ServiceContext;
 import org.platformlayer.ops.helpers.SshKeys;
 import org.platformlayer.ops.images.ImageFormat;
-import org.platformlayer.ops.pool.PoolAssignment;
+import org.platformlayer.ops.networks.AddressModel;
+import org.platformlayer.ops.pool.NetworkAddressPoolAssignment;
 import org.platformlayer.ops.tagger.Tagger;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.direct.model.DirectInstance;
@@ -79,12 +80,19 @@ public class LxcInstanceController extends OpsTreeBase {
 
 		instance.addChild(ManagedDirectory.build(getInstanceDir(), "700"));
 
-		final PoolAssignment assignNetworkAddress;
+		// TODO: If we're not going to assign an IPV4 redirect, we might not need this
+		final NetworkAddressPoolAssignment address4;
 		{
-			assignNetworkAddress = injected(PoolAssignment.class);
-			assignNetworkAddress.holder = getInstanceDir();
-			assignNetworkAddress.poolProvider = DirectCloudUtils.getPrivateAddressPool();
-			instance.addChild(assignNetworkAddress);
+			address4 = instance.addChild(NetworkAddressPoolAssignment.class);
+			address4.holder = getInstanceDir();
+			address4.poolProvider = DirectCloudUtils.getPrivateAddressPool4();
+		}
+
+		final NetworkAddressPoolAssignment address6;
+		{
+			address6 = instance.addChild(NetworkAddressPoolAssignment.class);
+			address6.holder = getInstanceDir();
+			address6.poolProvider = DirectCloudUtils.getAddressPool6();
 		}
 
 		// {
@@ -104,7 +112,8 @@ public class LxcInstanceController extends OpsTreeBase {
 
 		{
 			LxcBootstrap bootstrap = injected(LxcBootstrap.class);
-			bootstrap.address = assignNetworkAddress;
+			bootstrap.address4 = address4;
+			bootstrap.address6 = address6;
 			bootstrap.lxcId = id;
 			bootstrap.instanceDir = instanceDir;
 
@@ -133,11 +142,15 @@ public class LxcInstanceController extends OpsTreeBase {
 				@Override
 				public TagChanges get() {
 					TagChanges tagChanges = new TagChanges();
-					String address = assignNetworkAddress.getAssigned().getProperty("address");
 
 					tagChanges.addTags.add(new Tag(Tag.INSTANCE_KEY, OpsSystem.toKey(model).getUrl()));
 
-					tagChanges.addTags.add(new Tag(Tag.NETWORK_ADDRESS, address));
+					AddressModel ipv4 = address4.get();
+					AddressModel ipv6 = address6.get();
+
+					tagChanges.addTags.add(ipv4.toTag());
+					tagChanges.addTags.add(ipv6.toTag());
+
 					return tagChanges;
 				}
 			};

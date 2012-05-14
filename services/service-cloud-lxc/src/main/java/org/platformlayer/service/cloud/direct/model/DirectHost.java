@@ -17,5 +17,10 @@ public class DirectHost extends ItemBase {
 	// public PlatformLayerKey machineSource;
 
 	public String host;
-	public String ipRange;
+
+	public String ipv4Public;
+	public String ipv4Private;
+	public String ipv6;
+
+	public String bridge = "br100";
 }

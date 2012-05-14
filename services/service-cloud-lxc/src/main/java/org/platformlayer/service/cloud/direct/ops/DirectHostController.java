@@ -11,6 +11,7 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.helpers.ServiceContext;
 import org.platformlayer.ops.machines.PlatformLayerCloudContext;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
+import org.platformlayer.ops.networks.IpRange;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.packages.PackageDependency;
 import org.platformlayer.ops.tree.OpsTreeBase;
@@ -90,11 +91,10 @@ public class DirectHostController extends OpsTreeBase {
 
 		host.addChild(MountCgroups.build());
 
-		String bridge = "br100"; // lxcHost.bridge;
-		IpRange ipRange = IpRange.parse(model.ipRange);
-
 		host.addChild(PackageDependency.build("bridge-utils"));
 
+		String bridge = model.host;
+		IpRange ipRange = IpRange.parse(model.ipv4Public);
 		host.addChild(NetworkBridge.build(bridge, ipRange));
 	}
 

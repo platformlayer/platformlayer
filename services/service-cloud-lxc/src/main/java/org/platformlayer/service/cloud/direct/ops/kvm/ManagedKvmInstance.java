@@ -1,9 +1,10 @@
 package org.platformlayer.service.cloud.direct.ops.kvm;
 
 import java.io.File;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.inject.Provider;
 
@@ -18,6 +19,8 @@ import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.direct.ops.kvm.monitor.KvmConfig.KvmDrive;
 import org.platformlayer.service.cloud.direct.ops.kvm.monitor.KvmConfig.KvmNic;
 
+import com.google.inject.util.Providers;
+
 public class ManagedKvmInstance extends OpsTreeBase {
 	public String id;
 	public File base;
@@ -29,8 +32,8 @@ public class ManagedKvmInstance extends OpsTreeBase {
 
 	public List<KvmNic> nics;
 	public Provider<List<KvmDrive>> drives;
-	public Provider<Properties> monitor;
-	public Provider<Properties> vnc;
+	public Provider<InetSocketAddress> monitor;
+	public Provider<InetSocketAddress> vnc;
 
 	File getRootPath() {
 		return base;
@@ -38,6 +41,17 @@ public class ManagedKvmInstance extends OpsTreeBase {
 
 	File getDeviceConfigPath() {
 		return new File(base, "devices.conf");
+	}
+
+	public String getMonitorHost() {
+		// For templates
+		InetSocketAddress socketAddress = monitor.get();
+		InetAddress address = socketAddress.getAddress();
+		if (address.isAnyLocalAddress()) {
+			return "127.0.0.1";
+		} else {
+			return address.getHostAddress();
+		}
 	}
 
 	@Handler
@@ -68,14 +82,17 @@ public class ManagedKvmInstance extends OpsTreeBase {
 		Command command = Command.build("/usr/bin/kvm");
 
 		if (this.vnc != null) {
-			Properties vnc = this.vnc.get();
-			int port = Integer.parseInt(vnc.getProperty("port"));
-			int vncPort = port - 5900;
-			command.addLiteral("-vnc");
-			if (vnc.contains("address")) {
-				command.addQuoted(vnc.getProperty("address") + ":" + vncPort);
-			} else {
-				command.addQuoted("0.0.0.0:" + vncPort);
+			InetSocketAddress vnc = this.vnc.get();
+			if (vnc != null) {
+				int port = vnc.getPort();
+				int vncPort = port - 5900;
+				command.addLiteral("-vnc");
+				InetAddress address = vnc.getAddress();
+				if (!address.isAnyLocalAddress()) {
+					command.addQuoted(address.getHostAddress() + ":" + vncPort);
+				} else {
+					command.addQuoted("0.0.0.0:" + vncPort);
+				}
 			}
 		}
 
@@ -97,7 +114,7 @@ public class ManagedKvmInstance extends OpsTreeBase {
 		properties.put("command", command.buildCommandString());
 
 		ManagedSupervisorInstance instance = injected(ManagedSupervisorInstance.class);
-		instance.config = sup;
+		instance.config = Providers.of(sup);
 		return instance;
 	}
 }

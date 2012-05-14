@@ -10,6 +10,8 @@ import org.platformlayer.ops.supervisor.ManagedSupervisorInstance;
 import org.platformlayer.ops.supervisor.SupervisorProcessConfig;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
+import com.google.inject.util.Providers;
+
 public class ManagedLxcInstance extends OpsTreeBase {
 	public String id;
 	public File base;
@@ -39,7 +41,7 @@ public class ManagedLxcInstance extends OpsTreeBase {
 		properties.put("command", command.buildCommandString());
 
 		ManagedSupervisorInstance instance = injected(ManagedSupervisorInstance.class);
-		instance.config = sup;
+		instance.config = Providers.of(sup);
 		return instance;
 	}
 }

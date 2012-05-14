@@ -21,12 +21,15 @@ import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.filesystem.ManagedDirectory;
 import org.platformlayer.ops.images.ImageFormat;
-import org.platformlayer.ops.pool.PoolAssignment;
+import org.platformlayer.ops.networks.AddressModel;
+import org.platformlayer.ops.networks.InterfaceModel;
+import org.platformlayer.ops.pool.NetworkAddressPoolAssignment;
+import org.platformlayer.ops.pool.SocketAddressPoolAssignment;
 import org.platformlayer.ops.process.ProcessExecution;
-import org.platformlayer.ops.process.ProcessExecutionException;
 import org.platformlayer.ops.tagger.Tagger;
 import org.platformlayer.ops.templates.TemplateDataSource;
 import org.platformlayer.ops.tree.OpsTreeBase;
+import org.platformlayer.service.cloud.direct.model.DirectHost;
 import org.platformlayer.service.cloud.direct.model.DirectInstance;
 import org.platformlayer.service.cloud.direct.ops.CloudInstanceMapper;
 import org.platformlayer.service.cloud.direct.ops.DirectCloudUtils;
@@ -78,32 +81,44 @@ public class KvmInstance extends OpsTreeBase {
 
 		instance.addChild(ManagedDirectory.build(getInstanceDir(), "700"));
 
-		final PoolAssignment assignNetworkAddress;
+		final NetworkAddressPoolAssignment address4;
 		{
-			assignNetworkAddress = injected(PoolAssignment.class);
-			assignNetworkAddress.holder = getInstanceDir();
-			assignNetworkAddress.poolProvider = DirectCloudUtils.getPrivateAddressPool();
-			instance.addChild(assignNetworkAddress);
+			address4 = instance.addChild(NetworkAddressPoolAssignment.class);
+			address4.holder = getInstanceDir();
+			address4.poolProvider = DirectCloudUtils.getPrivateAddressPool4();
+		}
+
+		final NetworkAddressPoolAssignment address6;
+		{
+			address6 = instance.addChild(NetworkAddressPoolAssignment.class);
+			address6.holder = getInstanceDir();
+			address6.poolProvider = DirectCloudUtils.getAddressPool6();
 		}
 
 		{
 			NetworkTunDevice tun = injected(NetworkTunDevice.class);
 			tun.interfaceName = getEthernetDeviceName();
-			tun.bridgeName = OpsProvider.getProperty(assignNetworkAddress, "bridge");
+			tun.bridgeName = new Provider<String>() {
+				@Override
+				public String get() {
+					DirectHost host = OpsContext.get().getInstance(DirectHost.class);
+					return host.bridge;
+				}
+			};
 			instance.addChild(tun);
 		}
 
-		final PoolAssignment assignMonitorPort;
+		final SocketAddressPoolAssignment assignMonitorPort;
 		{
-			assignMonitorPort = injected(PoolAssignment.class);
+			assignMonitorPort = injected(SocketAddressPoolAssignment.class);
 			assignMonitorPort.holder = getInstanceDir();
 			assignMonitorPort.poolProvider = DirectCloudUtils.getKvmMonitorPortPool();
 			instance.addChild(assignMonitorPort);
 		}
 
-		final PoolAssignment assignVncPort;
+		final SocketAddressPoolAssignment assignVncPort;
 		{
-			assignVncPort = injected(PoolAssignment.class);
+			assignVncPort = injected(SocketAddressPoolAssignment.class);
 			assignVncPort.holder = getInstanceDir();
 			assignVncPort.poolProvider = DirectCloudUtils.getVncPortPool();
 			instance.addChild(assignVncPort);
@@ -116,12 +131,16 @@ public class KvmInstance extends OpsTreeBase {
 			iso.model = new TemplateDataSource() {
 				@Override
 				public void buildTemplateModel(Map<String, Object> model) throws OpsException {
-					List<Map<String, String>> interfaces = Lists.newArrayList();
-					{
-						Map<String, String> conf = asMap(assignNetworkAddress.getAssigned());
-						conf.put("name", "eth0");
-						interfaces.add(conf);
-					}
+					InterfaceModel eth0 = InterfaceModel.build("eth0");
+					AddressModel ipv4 = address4.get();
+					eth0.addAddress(ipv4);
+
+					AddressModel ipv6 = address6.get();
+					eth0.addAddress(ipv6);
+
+					List<InterfaceModel> interfaces = Lists.newArrayList();
+					interfaces.add(eth0);
+
 					model.put("interfaces", interfaces);
 
 					List<String> authorizedKeys = Lists.newArrayList();
@@ -170,8 +189,12 @@ public class KvmInstance extends OpsTreeBase {
 
 					tagChanges.addTags.add(new Tag(Tag.INSTANCE_KEY, OpsSystem.toKey(model).getUrl()));
 
-					String address = assignNetworkAddress.getAssigned().getProperty("address");
-					tagChanges.addTags.add(new Tag(Tag.NETWORK_ADDRESS, address));
+					AddressModel ipv4 = address4.get();
+					AddressModel ipv6 = address6.get();
+
+					tagChanges.addTags.add(ipv4.toTag());
+					tagChanges.addTags.add(ipv6.toTag());
+
 					return tagChanges;
 				}
 			};
@@ -231,7 +254,7 @@ public class KvmInstance extends OpsTreeBase {
 					ProcessExecution fileCommand;
 					try {
 						fileCommand = target.executeCommand(Command.build("file --brief {0}", getImagePath()));
-					} catch (ProcessExecutionException e) {
+					} catch (OpsException e) {
 						throw new IllegalStateException("Error querying file type", e);
 					}
 					String fileStdout = fileCommand.getStdOut();

@@ -1,7 +1,11 @@
 package org.platformlayer.service.cloud.direct.ops;
 
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.inject.Provider;
 
 import org.apache.log4j.Logger;
 import org.platformlayer.ops.Command;
@@ -10,6 +14,7 @@ import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsProvider;
 import org.platformlayer.ops.OpsTarget;
+import org.platformlayer.ops.machines.InetAddressUtils;
 import org.platformlayer.ops.process.ProcessExecution;
 
 import com.google.common.base.Joiner;
@@ -19,8 +24,7 @@ import com.google.common.collect.Lists;
 public class ForwardPort {
 	static final Logger log = Logger.getLogger(ForwardPort.class);
 
-	public OpsProvider<String> publicAddress;
-	public int publicPort;
+	public Provider<InetSocketAddress> publicAddress;
 	public OpsProvider<String> privateAddress;
 	public int privatePort;
 
@@ -74,6 +78,15 @@ public class ForwardPort {
 
 		public boolean isMatchAddress(String cidr) {
 			return normalized.contains("-d " + cidr.toLowerCase());
+		}
+
+		public boolean isMatchAddress(InetAddress address) {
+			if (InetAddressUtils.isIpv4(address)) {
+				return isMatchAddress(address.getHostAddress() + "/32");
+			} else {
+				throw new UnsupportedOperationException();
+				// return isMatchAddress(address.getHostAddress() );
+			}
 		}
 
 		public boolean isDnatDestination(String dest) {
@@ -130,7 +143,7 @@ public class ForwardPort {
 
 			if (OpsContext.isConfigure()) {
 				String dest = privateAddress.get() + ":" + privatePort;
-				String publicIp = publicAddress.get();
+				InetSocketAddress publicSocketAddress = this.publicAddress.get();
 
 				for (SimpleIptablesRule rule : matches) {
 					if (!rule.isPrerouting()) {
@@ -148,11 +161,11 @@ public class ForwardPort {
 						continue;
 					}
 
-					if (!rule.isMatchPort(publicPort)) {
+					if (!rule.isMatchPort(publicSocketAddress.getPort())) {
 						log.warn("Found matching comment, but rule did not match: " + rule);
 						continue;
 					}
-					if (!rule.isMatchAddress(publicIp + "/32")) {
+					if (!rule.isMatchAddress(publicSocketAddress.getAddress())) {
 						log.warn("Found matching comment, but rule did not match: " + rule);
 						continue;
 					}
@@ -164,11 +177,10 @@ public class ForwardPort {
 				}
 
 				if (matches.isEmpty()) {
-
 					String ruleSpec = "PREROUTING";
-					ruleSpec += " --dst " + publicIp;
+					ruleSpec += " --dst " + publicSocketAddress.getAddress().getHostAddress();
 					ruleSpec += " -p " + protocol;
-					ruleSpec += " --dport " + publicPort;
+					ruleSpec += " --dport " + publicSocketAddress.getPort();
 					ruleSpec += " -j DNAT";
 					ruleSpec += " --to " + dest;
 

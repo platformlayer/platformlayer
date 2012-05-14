@@ -3,9 +3,7 @@ package org.platformlayer.service.cloud.direct.ops.cloud;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
-import org.platformlayer.ops.pool.FilesystemBackedPool;
 import org.platformlayer.service.cloud.direct.model.DirectHost;
-import org.platformlayer.service.cloud.direct.ops.DirectCloudUtils;
 
 public class DirectCloudHost {
 	// private static final File MACHINE_CONF_DIR = new File("/var/lib/lxc");
@@ -14,7 +12,7 @@ public class DirectCloudHost {
 
 	// final PropertiesFileStore machineStore;
 
-	final FilesystemBackedPool addressPool;
+	// final FilesystemBackedPool addressPool4;
 	final DirectHost model;
 
 	public DirectCloudHost(DirectHost model, OpsTarget host) {
@@ -22,7 +20,7 @@ public class DirectCloudHost {
 		this.host = host;
 		// this.machineStore = new PropertiesFileStore(host, MACHINE_CONF_DIR);
 
-		this.addressPool = DirectCloudUtils.getPrivateAddressPool().get();
+		// this.addressPool4 = DirectCloudUtils.getPrivateAddressPool4().get();
 	}
 
 	public void terminate(String lxcId) throws OpsException {
@@ -52,10 +50,6 @@ public class DirectCloudHost {
 
 	public OpsTarget getTarget() {
 		return host;
-	}
-
-	public FilesystemBackedPool getAddressPool() {
-		return addressPool;
 	}
 
 	// public LxcMachineInfo addMachine(String lxcId, Tags tags) throws OpsException {
