@@ -1,11 +1,12 @@
 package org.platformlayer.ops.machines;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.platformlayer.EndpointInfo;
 import org.platformlayer.core.model.InstanceBase;
 import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.core.model.PlatformLayerKey;
-import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.Tags;
 import org.platformlayer.ops.MachineBase;
 import org.platformlayer.ops.OpsException;
@@ -13,7 +14,6 @@ import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.networks.NetworkPoint;
 
 import com.google.common.base.Objects;
-import com.google.common.base.Strings;
 
 public class PlatformLayerCloudMachine extends MachineBase {
 	static final Logger log = Logger.getLogger(PlatformLayerCloudMachine.class);
@@ -55,14 +55,10 @@ public class PlatformLayerCloudMachine extends MachineBase {
 		String privateNetworkId = src.getPrivateNetworkId();
 		if (Objects.equal(privateNetworkId, NetworkPoint.PRIVATE_NETWORK_ID)) {
 			Tags tags = machine.getTags();
-			for (String address : tags.find(Tag.NETWORK_ADDRESS)) {
-				if (address.contains(":")) {
-					log.info("Ignoring IPV6 address: " + address);
-					continue;
-				}
-				if (!Strings.isNullOrEmpty(address)) {
-					return address;
-				}
+			List<NetworkAddress> addresses = NetworkAddress.find(tags);
+			NetworkAddress best = NetworkAddress.pickBest(addresses, NetworkStrategy.PREFER_IPV6);
+			if (best != null) {
+				return best.getHostAddress();
 			}
 		}
 
