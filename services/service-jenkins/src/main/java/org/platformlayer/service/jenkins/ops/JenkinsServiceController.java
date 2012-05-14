@@ -8,6 +8,7 @@ import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.backups.BackupDirectory;
+import org.platformlayer.ops.filesystem.SimpleFile;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.java.JavaVirtualMachine;
@@ -42,7 +43,8 @@ public class JenkinsServiceController extends OpsTreeBase {
 			addChild(vm);
 		}
 
-		vm.addChild(JavaVirtualMachine.buildJava7());
+		// If we're building Java projects, we'll want a JDK
+		vm.addChild(JavaVirtualMachine.buildJdk7());
 
 		{
 			PackageDependency jenkinsPackage = PackageDependency.build("jenkins");
@@ -61,8 +63,7 @@ public class JenkinsServiceController extends OpsTreeBase {
 		// git-core is valid on both Debian & Ubuntu
 		vm.addChild(PackageDependency.build("git-core"));
 
-		// If we're building Java projects, we'll want a JDK
-		vm.addChild(PackageDependency.build("openjdk-6-jdk"));
+		vm.addChild(SimpleFile.build(getClass(), new File("/etc/default/jenkins")));
 
 		// Collectd not in wheezy??
 		// instance.addChild(CollectdCollector.build());
