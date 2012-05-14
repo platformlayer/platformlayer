@@ -87,6 +87,7 @@ public class Command {
 				case '-':
 				case '_':
 				case '/':
+				case ':':
 					sb.append(c);
 					break;
 
@@ -144,6 +145,8 @@ public class Command {
 				case '?':
 				case '&':
 				case '+':
+				case '[':
+				case ']':
 					sb.append(c);
 					break;
 
