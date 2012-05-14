@@ -1,9 +1,0 @@
-check process dnsdatabasemonitor with pidfile /var/run/dnsdatabasemonitor.pid
-	start program = "/opt/scripts/dnsdatabasemonitor"
-	stop program = "/bin/kill -KILL `cat /var/run/dnsdatabasemonitor.pid`"
-	group dns
-
-check process tinydns with pidfile /var/run/tinydns.pid
-	start program = "/opt/scripts/tinydns start"
-	stop program = "/opt/scripts/tinydns stop"
-	group dns

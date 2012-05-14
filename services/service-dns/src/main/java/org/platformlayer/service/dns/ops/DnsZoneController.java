@@ -15,7 +15,7 @@ public class DnsZoneController {
 
 	@Handler
 	public void handler(DnsZone dnsDomain) throws OpsException {
-		DnsFile dnsFile = dns.buildDnsFile(dnsDomain);
+		ZoneFile dnsFile = dns.buildDnsFile(dnsDomain);
 
 		dns.uploadToAllDnsServers(dnsFile);
 	}

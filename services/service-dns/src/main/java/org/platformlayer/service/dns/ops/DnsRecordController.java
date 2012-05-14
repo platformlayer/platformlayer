@@ -15,7 +15,7 @@ public class DnsRecordController {
 
 	@Handler
 	public void handler(DnsRecord dnsRecord) throws OpsException {
-		DnsFile dnsFile = dns.buildDnsFile(dnsRecord);
+		ZoneFile dnsFile = dns.buildDnsFile(dnsRecord);
 
 		dns.uploadToAllDnsServers(dnsFile);
 	}
