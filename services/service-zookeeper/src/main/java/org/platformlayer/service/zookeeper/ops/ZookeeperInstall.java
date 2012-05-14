@@ -8,6 +8,7 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.DownloadFile;
 import org.platformlayer.ops.filesystem.ExpandArchive;
 import org.platformlayer.ops.java.JavaVirtualMachine;
+import org.platformlayer.ops.packages.PackageDependency;
 import org.platformlayer.ops.supervisor.SupervisordService;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
@@ -37,14 +38,17 @@ public class ZookeeperInstall extends OpsTreeBase {
 			File extractPath = new File(basePath, "zookeeper-3.3.5");
 
 			DownloadFile download = injected(DownloadFile.class);
-			download.url = apacheMirror + file;
+			download.setUrl(apacheMirror + file);
 			download.hash = hash;
 			download.filePath = zipFile;
 			addChild(download);
 
+			// Needed for ExpandArchive
+			addChild(PackageDependency.build("unzip"));
+
 			// TODO: Only unzip if newly downloaded
 			ExpandArchive unzip = injected(ExpandArchive.class);
-			unzip.zipFile = zipFile;
+			unzip.archiveFile = zipFile;
 			unzip.extractPath = extractPath;
 			addChild(unzip);
 		}
