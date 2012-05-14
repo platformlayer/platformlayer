@@ -77,4 +77,9 @@ public class ModelClass<T extends ItemBase> {
 	public String getXmlElementName() {
 		return getJaxbHelper().getXmlElementName();
 	}
+
+	@Override
+	public String toString() {
+		return "ModelClass [javaClass=" + javaClass + "]";
+	}
 }
