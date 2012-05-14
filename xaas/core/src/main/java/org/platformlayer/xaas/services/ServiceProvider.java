@@ -36,4 +36,6 @@ public interface ServiceProvider {
 	ModelClass<?> getModelClass(ItemType itemType);
 
 	PublicKey getSshPublicKey() throws OpsException;
+
+	Class<?> getControllerClass(Class<?> javaClass) throws OpsException;
 }
