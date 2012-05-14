@@ -163,6 +163,15 @@ public abstract class ServiceProviderBase implements ServiceProvider {
 
 	@Override
 	public Object getController(Class<?> managedItemClass) throws OpsException {
+		Class<?> controllerClass = getControllerClass(managedItemClass);
+
+		ensureInitialized();
+
+		return injector.getInstance(controllerClass);
+	}
+
+	@Override
+	public Class<?> getControllerClass(Class<?> managedItemClass) throws OpsException {
 		Controller controller = managedItemClass.getAnnotation(Controller.class);
 		if (controller == null) {
 			throw new IllegalArgumentException("No @Controller annotation found for " + managedItemClass.getName());
@@ -170,7 +179,7 @@ public abstract class ServiceProviderBase implements ServiceProvider {
 
 		ensureInitialized();
 
-		return injector.getInstance(controller.value());
+		return controller.value();
 	}
 
 	boolean initialized;
