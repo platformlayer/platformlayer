@@ -11,18 +11,22 @@ import org.platformlayer.ops.filesystem.SyntheticFile;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class ManagedSupervisorInstance extends OpsTreeBase {
-	public SupervisorProcessConfig config;
+	public String key;
+	public Provider<SupervisorProcessConfig> config;
 
 	File getConfigFile() {
 		return new File("/etc/supervisor/conf.d/", getId() + ".conf");
 	}
 
 	private String getId() {
-		return config.getId();
+		if (key == null) {
+			return config.get().getId();
+		}
+		return key;
 	}
 
-	SupervisorProcessConfig getSupervisorProcess() {
-		return config;
+	SupervisorProcessConfig getConfig() {
+		return config.get();
 	}
 
 	public static class SupervisorConfigFile extends SyntheticFile {
@@ -30,7 +34,7 @@ public class ManagedSupervisorInstance extends OpsTreeBase {
 
 		@Override
 		protected byte[] getContentsBytes() throws OpsException {
-			return Utf8.getBytes(parent.getSupervisorProcess().buildConfigFile());
+			return Utf8.getBytes(parent.getConfig().buildConfigFile());
 		}
 
 		public SupervisorConfigFile setParent(ManagedSupervisorInstance parent) {
