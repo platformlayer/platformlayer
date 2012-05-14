@@ -177,7 +177,7 @@ public class DiskImageController {
 		// We need to install curl first so we can detect the performance of our proxies
 		apt.install(target, "curl"); // Needed for proxy testing at least
 
-		CommandEnvironment httpProxyEnv = httpProxies.getHttpProxyEnvironment(target, Usage.SoftwarePackages);
+		CommandEnvironment httpProxyEnv = httpProxies.getHttpProxyEnvironment(target, Usage.SoftwarePackages, null);
 
 		// For now, we assume that this image doesn't have debootstrap pre-installed
 		apt.install(target, "debootstrap");
