@@ -6,8 +6,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.openstack.client.OpenstackCredentials;
-import org.openstack.client.common.RequestBuilder;
-import org.openstack.client.storage.OpenstackStorageClient;
 import org.openstack.filesystem.HashAttributes;
 import org.openstack.filesystem.OpenstackFileSystem;
 import org.openstack.filesystem.OpenstackPath;
@@ -17,12 +15,10 @@ import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
-import org.platformlayer.ops.backups.RemoteCurlOpenstackSession;
 import org.platformlayer.ops.filesystem.ManagedFile;
-import org.platformlayer.ops.helpers.CurlRequest;
 import org.platformlayer.ops.maven.MavenReference;
 import org.platformlayer.ops.maven.MavenResolver;
-import org.platformlayer.ops.process.ProcessExecution;
+import org.platformlayer.ops.openstack.DirectOpenstackDownload;
 
 public class MavenFile extends ManagedFile {
 	public Path basePath;
@@ -62,39 +58,11 @@ public class MavenFile extends ManagedFile {
 
 		OpenstackCredentials credentials = fileSystem.getOpenstackCredentials();
 
-		RemoteCurlOpenstackSession session = new RemoteCurlOpenstackSession(target);
-		session.authenticate(credentials, false);
-
-		OpenstackStorageClient storageClient = session.getStorageClient();
-
 		String containerName = resolved.getContainerName();
 		String objectPath = resolved.getObjectPath();
 
-		RequestBuilder request = storageClient.root().containers().id(containerName).objects().id(objectPath)
-				.buildDownloadRequest();
-
-		CurlRequest curlRequest = session.toCurlRequest(request);
-		curlRequest.bareRequest = true;
-
-		Command curlCommand = curlRequest.toCommand();
-
-		curlCommand.addLiteral(">");
-		curlCommand.addFile(remoteFilePath);
-
-		ProcessExecution execution = target.executeCommand(curlCommand);
-
-		// CurlResult curlResult = curlRequest.parseResponse(execution);
-		//
-		// int httpResult = curlResult.getHttpResult();
-		// switch (httpResult) {
-		// case 200:
-		// break;
-		// case 201:
-		// break;
-		// default:
-		// throw new OpsException("Unexpected result code while downloading file: " + httpResult + " Result=" +
-		// curlResult);
-		// }
+		DirectOpenstackDownload download = new DirectOpenstackDownload();
+		download.download(target, remoteFilePath, credentials, containerName, objectPath);
 	}
 
 	@Override
