@@ -181,6 +181,10 @@ public class PlatformLayerKey {
 		return new PlatformLayerKey(getHost(), getProject(), serviceType2, getItemType(), getItemId());
 	}
 
+	public PlatformLayerKey withProject(ProjectId project) {
+		return new PlatformLayerKey(getHost(), project, getServiceType(), getItemType(), getItemId());
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
