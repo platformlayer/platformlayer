@@ -128,7 +128,7 @@ public class PropertiesFileStore {
 				// String tagKey = PropertiesFileStore.PROPERTY_PREFIX_TAG + tag.key;
 				String tagKey = tag.key;
 				String tagValue = properties.getProperty(tagKey);
-				if (!Objects.equal(tagValue, tag.getValue())) {
+				if (!Strings.equalsIgnoreCase(tagValue, tag.getValue())) {
 					valid = false;
 					break;
 				}
