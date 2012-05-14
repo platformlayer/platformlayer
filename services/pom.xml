@@ -15,6 +15,7 @@
     <modules>
         <module>service-image-factory</module>
         <module>service-apt-cache</module>
+        <module>service-proxyserver</module>
         <module>service-instance-supervisor</module>
         <module>service-dns</module>
         <module>service-dnsresolver</module>
