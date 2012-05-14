@@ -15,15 +15,15 @@ public abstract class OpsProvider<T> {
 	// }
 	// }
 
-	public static OpsProvider<String> getProperty(final Provider<Properties> propertiesProvider, final String key) {
-		return new OpsProvider<String>() {
-			@Override
-			public String get() {
-				Properties properties = propertiesProvider.get();
-				return properties.getProperty(key);
-			}
-		};
-	}
+	// public static OpsProvider<String> getProperty(final Provider<Properties> propertiesProvider, final String key) {
+	// return new OpsProvider<String>() {
+	// @Override
+	// public String get() {
+	// Properties properties = propertiesProvider.get();
+	// return properties.getProperty(key);
+	// }
+	// };
+	// }
 
 	public static <T> OpsProvider<T> of(final T item) {
 		return new OpsProvider<T>() {
