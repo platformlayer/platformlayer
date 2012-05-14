@@ -1,24 +1,35 @@
 package org.platformlayer.service.aptcache.ops;
 
 import java.io.File;
+import java.net.URI;
+
+import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
+import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.ops.Handler;
+import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.filesystem.SimpleFile;
+import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.metrics.collectd.ManagedService;
+import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.networks.PublicEndpoint;
 import org.platformlayer.ops.packages.PackageDependency;
+import org.platformlayer.ops.proxy.HttpProxyController;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.aptcache.model.AptCacheService;
 
-public class AptCacheServiceController extends OpsTreeBase {
+public class AptCacheServiceController extends OpsTreeBase implements HttpProxyController {
 	static final Logger log = Logger.getLogger(AptCacheServiceController.class);
 	public static final int PORT = 3128;
+
+	@Inject
+	InstanceHelpers instances;
 
 	@Handler
 	public void doOperation() {
@@ -56,4 +67,30 @@ public class AptCacheServiceController extends OpsTreeBase {
 			instance.addChild(endpoint);
 		}
 	}
+
+	@Override
+	public String getUrl(Object modelObject, NetworkPoint forNetworkPoint, URI uri) throws OpsException {
+		AptCacheService model = (AptCacheService) modelObject;
+
+		if (model.getState() != ManagedItemState.ACTIVE) {
+			return null;
+		}
+
+		// {
+		// // By DNS
+		// String dnsName = aptCacheService.getDnsName();
+		// String address = "http://" + dnsName + ":3128/";
+		// proxies.add(address);
+		// }
+		//
+		// {
+		// By IP
+		Machine machine = instances.findMachine(model);
+		if (machine != null) {
+			String address = "http://" + machine.getAddress(forNetworkPoint, 3128) + ":3128/";
+			return address;
+		}
+		return null;
+	}
+
 }
