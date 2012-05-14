@@ -14,7 +14,6 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.helpers.CurlRequest;
 import org.platformlayer.ops.helpers.CurlResult;
-import org.platformlayer.ops.process.ProcessExecutionException;
 import org.platformlayer.xml.XmlHelper;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -71,7 +70,7 @@ public class SolrCoreHelpers {
 		return new SolrCoreStatus(dom);
 	}
 
-	private CurlResult execute(String action) throws ProcessExecutionException {
+	private CurlResult execute(String action) throws OpsException {
 		String url = "http://127.0.0.1:8080/solr/admin/cores?core=" + coreKey;
 
 		url += "&action=" + action;

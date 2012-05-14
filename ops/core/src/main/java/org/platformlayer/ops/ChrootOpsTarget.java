@@ -5,7 +5,6 @@ import java.io.File;
 import org.platformlayer.crypto.Md5Hash;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.process.ProcessExecution;
-import org.platformlayer.ops.process.ProcessExecutionException;
 
 /**
  * Creates a target out of machine image that we have to chroot into. Although the default implementations of many
@@ -45,9 +44,10 @@ public class ChrootOpsTarget extends OpsTargetBase {
 	}
 
 	@Override
-	public void setFileContents(File path, byte[] contents) throws ProcessExecutionException {
-		File innerFile = mapToOutsideChroot(path);
-		parentTarget.setFileContents(innerFile, contents);
+	public void doUpload(FileUpload upload) throws OpsException {
+		upload.path = mapToOutsideChroot(upload.path);
+
+		parentTarget.doUpload(upload);
 	}
 
 	@Override
@@ -57,7 +57,7 @@ public class ChrootOpsTarget extends OpsTargetBase {
 	}
 
 	@Override
-	protected ProcessExecution executeCommandUnchecked(Command command) throws ProcessExecutionException {
+	protected ProcessExecution executeCommandUnchecked(Command command) throws OpsException {
 		// Command innerCommand = Command.build("chroot {0} {1}", chrootDir, command.buildCommandString());
 
 		Command innerCommand = command.prefix("chroot", chrootDir);
@@ -71,7 +71,7 @@ public class ChrootOpsTarget extends OpsTargetBase {
 	// }
 
 	@Override
-	public void touchFile(File file) throws ProcessExecutionException {
+	public void touchFile(File file) throws OpsException {
 		parentTarget.touchFile(mapToOutsideChroot(file));
 	}
 

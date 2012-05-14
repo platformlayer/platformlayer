@@ -3,6 +3,7 @@ package org.platformlayer.ops.instances;
 import java.io.File;
 
 import org.platformlayer.Strings;
+import org.platformlayer.ops.FileUpload;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OperationType;
@@ -31,9 +32,9 @@ public class ConfigureHostname {
 		File hostsFile = new File("/etc/hosts");
 		String hosts = target.readTextFile(hostsFile);
 		hosts += "\n127.0.0.1\t" + hostname + "\n";
-		target.setFileContents(hostsFile, hosts);
+		FileUpload.upload(target, hostsFile, hosts);
 
-		target.setFileContents(new File("/etc/hostname"), hostname);
+		FileUpload.upload(target, new File("/etc/hostname"), hostname);
 
 		{
 			ProcessExecution execution = target.executeCommand("hostname");

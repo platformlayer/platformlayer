@@ -3,6 +3,7 @@ package org.platformlayer.ops.ssh;
 import java.io.File;
 import java.security.PublicKey;
 
+import org.platformlayer.ops.FileUpload;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsException;
@@ -51,7 +52,7 @@ public class SshAuthorizedKey {
 			sshAuthorizations += "\n";
 		}
 		sshAuthorizations += SshKeys.serialize(sshPublicKey);
-		target.setFileContents(sshAuthorizationsFile, sshAuthorizations);
+		FileUpload.upload(target, sshAuthorizationsFile, sshAuthorizations);
 	}
 
 }

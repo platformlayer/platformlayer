@@ -7,6 +7,7 @@ import javax.inject.Inject;
 
 import org.platformlayer.core.model.Secret;
 import org.platformlayer.ops.Command;
+import org.platformlayer.ops.FileUpload;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsException;
@@ -51,7 +52,7 @@ public class LdapMasterPassword {
 
 			File tempDir = target.createTempDir();
 			File modifyFile = new File(tempDir, "modifypw.ldif");
-			target.setFileContents(modifyFile, modify.toString());
+			FileUpload.upload(target, modifyFile, modify.toString());
 
 			Command ldapModify = Command.build("ldapmodify -Q -Y EXTERNAL -H ldapi:/// -f {0}", modifyFile);
 

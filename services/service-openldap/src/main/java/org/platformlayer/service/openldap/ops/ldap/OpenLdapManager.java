@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.List;
 
 import org.platformlayer.ops.Command;
+import org.platformlayer.ops.FileUpload;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.ldap.LdapDN;
@@ -78,7 +79,7 @@ public class OpenLdapManager {
 			throws OpsException {
 		File ldifTempDir = target.createTempDir();
 		File ldifTempFile = new File(ldifTempDir, "ldapmodify.ldif");
-		target.setFileContents(ldifTempFile, ldifCommands);
+		FileUpload.upload(target, ldifTempFile, ldifCommands);
 		try {
 			Command command = Command.build(CMD_LDAP_MODIFY);
 

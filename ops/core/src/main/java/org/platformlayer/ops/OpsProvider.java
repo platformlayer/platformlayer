@@ -1,8 +1,5 @@
 package org.platformlayer.ops;
 
-import java.util.Properties;
-
-import javax.inject.Provider;
 
 public abstract class OpsProvider<T> {
 

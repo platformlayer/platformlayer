@@ -1,14 +1,16 @@
 package org.platformlayer.ops.helpers;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.platformlayer.TimeSpan;
 import org.platformlayer.ops.Command;
+import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.process.ProcessExecution;
-import org.platformlayer.ops.process.ProcessExecutionException;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.HashMultimap;
@@ -40,7 +42,7 @@ public class CurlRequest {
 		return url;
 	}
 
-	public CurlResult executeRequest(OpsTarget target) throws ProcessExecutionException {
+	public CurlResult executeRequest(OpsTarget target) throws OpsException {
 		Command command = toCommand();
 
 		ProcessExecution execution = target.executeCommand(command);

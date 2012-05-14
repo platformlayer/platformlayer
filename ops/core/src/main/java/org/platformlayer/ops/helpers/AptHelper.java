@@ -129,7 +129,7 @@ public class AptHelper {
 
 		log.info("Uploading to " + file + ": " + sb.toString());
 
-		target.setFileContents(file, sb.toString());
+		FileUpload.upload(target, file, sb.toString());
 	}
 
 	public void preconfigurePackages(OpsTarget target, List<ConfigurePackage> settings) throws OpsException {
@@ -149,7 +149,7 @@ public class AptHelper {
 
 		File preseedFile = new File(preseedTmpDir, "misc.preseed");
 
-		target.setFileContents(preseedFile, sb.toString());
+		FileUpload.upload(target, preseedFile, sb.toString());
 		target.executeCommand(Command.build("cat {0} | debconf-set-selections", preseedFile));
 	}
 

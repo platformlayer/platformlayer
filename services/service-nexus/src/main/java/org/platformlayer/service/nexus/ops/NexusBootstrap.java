@@ -8,6 +8,7 @@ import javax.inject.Inject;
 
 import org.platformlayer.ExceptionUtils;
 import org.platformlayer.ResourceUtils;
+import org.platformlayer.ops.FileUpload;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsContext;
@@ -39,12 +40,12 @@ public class NexusBootstrap {
 		target.mkdir(confDir, "750");
 		{
 			String contents = ResourceUtils.get(getClass(), "conf/security.xml");
-			target.setFileContents(new File(confDir, "security.xml"), contents);
+			FileUpload.upload(target, new File(confDir, "security.xml"), contents);
 		}
 
 		{
 			String contents = ResourceUtils.get(getClass(), "conf/security-configuration.xml");
-			target.setFileContents(new File(confDir, "security-configuration.xml"), contents);
+			FileUpload.upload(target, new File(confDir, "security-configuration.xml"), contents);
 		}
 
 		{
@@ -67,7 +68,7 @@ public class NexusBootstrap {
 
 			String resourcePath = templates.toResourcePath(this, "conf/ldap.xml");
 			String contents = templates.runTemplate(resourcePath, vars);
-			target.setFileContents(new File(confDir, "ldap.xml"), contents);
+			FileUpload.upload(target, new File(confDir, "ldap.xml"), contents);
 		}
 
 		target.chown(sonatypeDir, "jetty", "jetty", true, false);

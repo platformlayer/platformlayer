@@ -5,6 +5,8 @@ import java.net.Inet4Address;
 import java.util.List;
 import java.util.Map.Entry;
 
+import javax.inject.Provider;
+
 import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.Secret;
 

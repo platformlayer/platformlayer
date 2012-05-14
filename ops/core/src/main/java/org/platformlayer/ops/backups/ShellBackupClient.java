@@ -10,6 +10,7 @@ import org.openstack.client.common.RequestBuilder;
 import org.openstack.client.storage.OpenstackStorageClient;
 import org.openstack.model.storage.ObjectProperties;
 import org.platformlayer.ops.Command;
+import org.platformlayer.ops.FileUpload;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
@@ -87,7 +88,7 @@ public class ShellBackupClient {
 
 		// TODO: Set content type?
 
-		request.target.setFileContents(excludeFile, Joiner.on("\n").join(request.exclude));
+		FileUpload.upload(request.target, excludeFile, Joiner.on("\n").join(request.exclude));
 
 		Command tarCommand = Command.build("tar zcf - -X {0} {1}", excludeFile, request.rootDirectory);
 

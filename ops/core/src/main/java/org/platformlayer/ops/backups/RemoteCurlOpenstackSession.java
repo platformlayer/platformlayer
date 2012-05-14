@@ -11,10 +11,10 @@ import org.openstack.client.OpenstackNotFoundException;
 import org.openstack.client.common.HeadResponse;
 import org.openstack.client.common.OpenstackSession;
 import org.openstack.client.common.RequestBuilder;
+import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.helpers.CurlRequest;
 import org.platformlayer.ops.helpers.CurlResult;
-import org.platformlayer.ops.process.ProcessExecutionException;
 import org.platformlayer.xml.JaxbHelper;
 
 import com.google.common.base.Joiner;
@@ -44,7 +44,7 @@ public class RemoteCurlOpenstackSession extends OpenstackSession {
 			CurlResult result;
 			try {
 				result = request.executeRequest(target);
-			} catch (ProcessExecutionException e) {
+			} catch (OpsException e) {
 				throw new OpenstackException("Error issuing request", e);
 			}
 

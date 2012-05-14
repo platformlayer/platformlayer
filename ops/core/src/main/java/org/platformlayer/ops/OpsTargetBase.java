@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Random;
 
 import org.apache.log4j.Logger;
-import org.openstack.utils.Utf8;
 import org.platformlayer.crypto.Md5Hash;
 import org.platformlayer.ops.filesystem.FilesystemInfo;
 import org.platformlayer.ops.process.ProcessExecution;
@@ -23,19 +22,19 @@ public abstract class OpsTargetBase implements OpsTarget {
 	}
 
 	@Override
-	public ProcessExecution executeCommand(String commandLiteral, Object... args) throws ProcessExecutionException {
+	public ProcessExecution executeCommand(String commandLiteral, Object... args) throws OpsException {
 		Command command = Command.build(commandLiteral, args);
 		return executeCommand(command);
 	}
 
 	@Override
-	public void touchFile(File file) throws ProcessExecutionException {
+	public void touchFile(File file) throws OpsException {
 		Command command = Command.build("touch {0}", file);
 		executeCommand(command);
 	}
 
 	@Override
-	public void mv(File oldName, File newName) throws ProcessExecutionException {
+	public void mv(File oldName, File newName) throws OpsException {
 		Command command = Command.build("mv {0} {1}", oldName, newName);
 		executeCommand(command);
 	}
@@ -57,12 +56,6 @@ public abstract class OpsTargetBase implements OpsTarget {
 		// Format is "hash filename"
 		String[] items = stdout.split(" ");
 		return new Md5Hash(items[0]);
-	}
-
-	@Override
-	public void setFileContents(File path, String contents) throws ProcessExecutionException {
-		byte[] bytes = Utf8.getBytes(contents);
-		setFileContents(path, bytes);
 	}
 
 	@Override
@@ -111,7 +104,7 @@ public abstract class OpsTargetBase implements OpsTarget {
 	}
 
 	@Override
-	public ProcessExecution executeCommand(Command command) throws ProcessExecutionException {
+	public ProcessExecution executeCommand(Command command) throws OpsException {
 		log.info("Executing command: " + command.toString());
 		if (command.getEnvironment() != null) {
 			String s = Joiner.on(",").join(command.getEnvironment().keys());
@@ -125,7 +118,7 @@ public abstract class OpsTargetBase implements OpsTarget {
 		return execution;
 	}
 
-	protected abstract ProcessExecution executeCommandUnchecked(Command command) throws ProcessExecutionException;
+	protected abstract ProcessExecution executeCommandUnchecked(Command command) throws OpsException;
 
 	protected File createTempDir(File tempDirBase) throws OpsException {
 		int maxRetries = 10;

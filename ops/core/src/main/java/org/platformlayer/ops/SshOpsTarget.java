@@ -1,6 +1,5 @@
 package org.platformlayer.ops;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,18 +36,24 @@ public class SshOpsTarget extends OpsTargetBase {
 	}
 
 	@Override
-	public void setFileContents(File path, byte[] contents) throws ProcessExecutionException {
-		InputStream srcData = new ByteArrayInputStream(contents);
+	public void doUpload(FileUpload upload) throws OpsException {
+		InputStream dataStream;
 		try {
-			log.info("Uploading file over ssh: " + path);
-			sshConnection.sshCopyData(srcData, contents.length, path.getPath(), "0600");
+			dataStream = upload.data.getInputStream();
 		} catch (IOException e) {
-			throw new ProcessExecutionException("Error during file upload", e);
+			throw new OpsException("Error opening data stream", e);
+		}
+		long dataLength = upload.data.getLength();
+		try {
+			log.info("Uploading file over ssh: " + upload.path);
+			sshConnection.sshCopyData(dataStream, dataLength, upload.path.getPath(), upload.mode);
+		} catch (IOException e) {
+			throw new OpsException("Error during file upload", e);
 		} catch (InterruptedException e) {
 			ExceptionUtils.handleInterrupted(e);
-			throw new ProcessExecutionException("Error during file upload", e);
+			throw new OpsException("Error during file upload", e);
 		} catch (SshException e) {
-			throw new ProcessExecutionException("Error during file upload", e);
+			throw new OpsException("Error during file upload", e);
 		}
 	}
 

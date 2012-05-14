@@ -6,8 +6,10 @@ import java.io.StringWriter;
 import java.util.List;
 import java.util.Properties;
 
+import org.platformlayer.Strings;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.Tags;
+import org.platformlayer.ops.FileUpload;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.filesystem.FilesystemInfo;
@@ -81,7 +83,7 @@ public class PropertiesFileStore {
 			throw new OpsException("Error serializing properties", e);
 		}
 
-		target.setFileContents(path, contents);
+		FileUpload.upload(target, path, contents);
 	}
 
 	private File getConfigFile(String key) {

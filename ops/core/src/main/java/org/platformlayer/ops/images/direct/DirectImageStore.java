@@ -1,35 +1,25 @@
 package org.platformlayer.ops.images.direct;
 
 import java.io.File;
-import java.net.InetAddress;
 import java.util.List;
 import java.util.Properties;
-import java.util.Random;
 import java.util.UUID;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.platformlayer.ExceptionUtils;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.Tags;
-import org.platformlayer.crypto.Md5Hash;
 import org.platformlayer.ops.Command;
+import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
-import org.platformlayer.ops.SshOpsTarget;
 import org.platformlayer.ops.images.CloudImage;
 import org.platformlayer.ops.images.ImageStore;
 import org.platformlayer.ops.images.PropertiesFileStore;
-import org.platformlayer.ops.process.ProcessExecution;
-import org.platformlayer.ops.process.ProcessExecutionException;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
 public class DirectImageStore implements ImageStore {

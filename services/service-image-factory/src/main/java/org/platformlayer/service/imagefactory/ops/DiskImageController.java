@@ -25,6 +25,7 @@ import org.platformlayer.ops.CloudContext;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.CommandEnvironment;
 import org.platformlayer.ops.EnumUtils;
+import org.platformlayer.ops.FileUpload;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.MachineCreationRequest;
@@ -347,13 +348,13 @@ public class DiskImageController {
 		// TODO: Switch to ChrootOpsTarget, so we can move this stuff into utility functions
 		ChrootOpsTarget chrootTarget = new ChrootOpsTarget(rootfsDir, new File("/tmp"), target);
 
-		target.setFileContents(new File(rootfsDir, "etc/hostname"), hostname);
+		FileUpload.upload(target, new File(rootfsDir, "etc/hostname"), hostname);
 
 		{
 			// Stop services being started in the chroot
 			String policy = ResourceUtils.get(getClass(), "usr.sbin.policy-rc.d");
 			File policyFile = new File(rootfsDir, "usr/sbin/policy-rc.d");
-			target.setFileContents(policyFile, policy);
+			FileUpload.upload(target, policyFile, policy);
 			target.chmod(policyFile, "755");
 		}
 
@@ -370,7 +371,7 @@ public class DiskImageController {
 				File kernelImgConf = new File(rootfsDir, "etc/kernel-img.conf");
 
 				String preseedData = ResourceUtils.get(getClass(), "kernel-img.conf");
-				target.setFileContents(kernelImgConf, preseedData);
+				FileUpload.upload(target, kernelImgConf, preseedData);
 			}
 
 			{
@@ -378,7 +379,7 @@ public class DiskImageController {
 				File preseedFile = new File(preseedTmpDir, "kernel.preseed");
 
 				String preseedData = ResourceUtils.get(getClass(), "kernel.preseed");
-				target.setFileContents(preseedFile, preseedData);
+				FileUpload.upload(target, preseedFile, preseedData);
 
 				target.executeCommand(Command.build("cat {0} | chroot {1} debconf-set-selections", preseedFile,
 						rootfsDir));
@@ -435,7 +436,7 @@ public class DiskImageController {
 				}
 			}
 
-			target.setFileContents(new File(rootfsDir, "etc/fstab"), fstab);
+			FileUpload.upload(target, new File(rootfsDir, "etc/fstab"), fstab);
 			log.info("fstab = " + fstab);
 
 			// Set up extlinux
@@ -480,7 +481,7 @@ public class DiskImageController {
 				String conf = String.format(
 						"default linux\ntimeout 1\n\nlabel linux\nkernel %s\nappend initrd=%s root=UUID=%s ro quiet",
 						kernels.get(0), initrds.get(0), uuid);
-				target.setFileContents(new File(rootfsDir, "extlinux.conf"), conf);
+				FileUpload.upload(target, new File(rootfsDir, "extlinux.conf"), conf);
 				log.info("extlinux.conf = " + conf);
 			}
 			target.executeCommand(Command.build("extlinux --install  {0}", rootfsDir).setTimeout(TimeSpan.FIVE_MINUTES));
@@ -499,7 +500,7 @@ public class DiskImageController {
 				String initScript = ResourceUtils.get(getClass(), "openstack-config");
 				File initScriptFile = new File(rootfsDir, "etc/init.d/openstack-config");
 
-				target.setFileContents(initScriptFile, initScript);
+				FileUpload.upload(target, initScriptFile, initScript);
 				target.executeCommand("chmod +x {0}", initScriptFile);
 
 				chrootTarget.executeCommand("/usr/sbin/update-rc.d openstack-config defaults");

@@ -7,20 +7,17 @@ import org.platformlayer.crypto.Md5Hash;
 import org.platformlayer.ops.filesystem.FilesystemInfo;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.process.ProcessExecution;
-import org.platformlayer.ops.process.ProcessExecutionException;
 
 public interface OpsTarget {
-	void setFileContents(File path, String contents) throws ProcessExecutionException;
+	void doUpload(FileUpload upload) throws OpsException;
 
-	void setFileContents(File path, byte[] contents) throws ProcessExecutionException;
+	ProcessExecution executeCommand(String command, Object... args) throws OpsException;
 
-	ProcessExecution executeCommand(String command, Object... args) throws ProcessExecutionException;
-
-	ProcessExecution executeCommand(Command command) throws ProcessExecutionException;
+	ProcessExecution executeCommand(Command command) throws OpsException;
 
 	File createTempDir() throws OpsException;
 
-	void touchFile(File file) throws ProcessExecutionException;
+	void touchFile(File file) throws OpsException;
 
 	void mkdir(File dir) throws OpsException;
 
