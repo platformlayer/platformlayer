@@ -4,14 +4,14 @@ import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsContext;
+import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
-import org.platformlayer.ops.process.ProcessExecutionException;
 import org.platformlayer.service.postgresql.model.PostgresqlServer;
 
 public class PostgresqlServerBootstrap {
 
 	@Handler
-	public void handler() throws ProcessExecutionException {
+	public void handler() throws OpsException {
 		PostgresqlServer model = OpsContext.get().getInstance(PostgresqlServer.class);
 		OpsTarget target = OpsContext.get().getInstance(OpsTarget.class);
 
