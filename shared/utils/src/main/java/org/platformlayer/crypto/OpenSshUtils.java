@@ -181,9 +181,20 @@ public class OpenSshUtils {
 	}
 
 	public static String serialize(PublicKey sshPublicKey) throws IOException {
+		return serialize(sshPublicKey, null);
+	}
+
+	public static String serialize(PublicKey sshPublicKey, String description) throws IOException {
 		if (sshPublicKey == null) {
 			return null;
 		}
-		return SSH_RSA_PREFIX + CryptoUtils.toBase64(encodePublicKey((RSAPublicKey) sshPublicKey));
+		StringBuilder sb = new StringBuilder();
+		sb.append(SSH_RSA_PREFIX);
+		sb.append(CryptoUtils.toBase64(encodePublicKey((RSAPublicKey) sshPublicKey)));
+		if (description != null) {
+			sb.append(" ");
+			sb.append(description);
+		}
+		return sb.toString();
 	}
 }
