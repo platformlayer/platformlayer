@@ -22,7 +22,8 @@ import org.platformlayer.tests.PlatformLayerApiTest;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
+
+import com.google.common.collect.Lists;
 
 public class ITSolrService extends PlatformLayerApiTest {
 
