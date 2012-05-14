@@ -103,7 +103,7 @@ public class JavaVirtualMachine extends OpsTreeBase implements HasDiskImageRecip
 				addChild(PackageDependency.build("sun-java6-jdk"));
 			}
 		} else if (version.equals("7")) {
-			addChild(PackageDependency.build("openjdk-7-jre"));
+			addChild(PackageDependency.build("openjdk-7-jre-headless"));
 
 			if (addJdk) {
 				addChild(PackageDependency.build("openjdk-7-jdk"));

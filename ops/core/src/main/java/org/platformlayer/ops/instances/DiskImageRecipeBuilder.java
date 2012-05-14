@@ -48,7 +48,7 @@ public class DiskImageRecipeBuilder extends OpsTreeVisitor {
 		final Set<String> whitelistRepos = Sets.newHashSet();
 		final Set<String> whitelistRepositoryKeys = Sets.newHashSet();
 
-		whitelistPackages.add("openjdk-7-jre");
+		// whitelistPackages.add("openjdk-7-jre");
 
 		Iterables.removeIf(recipe.getAddPackage(), new Predicate<String>() {
 			@Override
