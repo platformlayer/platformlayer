@@ -221,7 +221,10 @@ public class Command {
 	private static Argument escape(Object arg) {
 		String command = null;
 		String masked = null;
-		if (arg instanceof File) {
+		if (arg instanceof Provider) {
+			Provider<?> provider = (Provider<?>) arg;
+			return escape(provider.get());
+		} else if (arg instanceof File) {
 			command = escapeFile((File) arg);
 		} else if (arg instanceof Secret) {
 			String plaintext = ((Secret) arg).plaintext();
