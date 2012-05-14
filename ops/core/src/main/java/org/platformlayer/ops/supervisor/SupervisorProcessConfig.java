@@ -25,7 +25,7 @@ public class SupervisorProcessConfig {
 		}
 
 		StringBuilder sb = new StringBuilder();
-		for (Map.Entry<String, String> entry : properties.entrySet()) {
+		for (Map.Entry<String, String> entry : environment.entrySet()) {
 			if (sb.length() != 0) {
 				sb.append(",");
 			}
