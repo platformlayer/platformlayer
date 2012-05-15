@@ -24,14 +24,16 @@ public class ConfigIso extends OpsTreeBase {
 
 	@Override
 	protected void addChildren() throws OpsException {
-		addChild(ManagedDirectory.build(new File(getBuildDir(), "root/.ssh"), "700"));
-		addChild(TemplatedFile.build(model, new File(getBuildDir(), "root/.ssh/authorized_keys")));
-		addChild(ManagedDirectory.build(new File(getBuildDir(), "etc/network"), "755"));
-		addChild(TemplatedFile.build(model, new File(getBuildDir(), "etc/network/interfaces")));
+		File base = getBuildDir();
+		addChild(ManagedDirectory.build(new File(base, "root/.ssh"), "700"));
+		addChild(TemplatedFile.build(model, new File(base, "root/.ssh/authorized_keys")));
+		addChild(ManagedDirectory.build(new File(base, "etc/network"), "755"));
+		addChild(TemplatedFile
+				.build(model, new File(base, "etc/network/interfaces"), "etc.network.interfaces"));
 
 		{
 			MkIsoFs mkiso = injected(MkIsoFs.class);
-			mkiso.srcDir = getBuildDir();
+			mkiso.srcDir = base;
 			mkiso.iso = isoFile;
 			mkiso.volumeLabel = "config";
 			addChild(mkiso);
