@@ -1,0 +1,19 @@
+#!/bin/bash
+# Apply iptables rules when an interface comes up
+# (We pre-up with it in 'lockdown', and then open the ports)
+# (Based on the OpenSSH script)
+
+set -e
+
+# Only run from ifup.
+if [ "$MODE" != start ]; then
+	echo "Not run from ifup; exiting"
+	exit 0
+fi
+
+# Run any scripts in the directory e.g. /etc/iptables/eth0/inet6
+if [ -e /etc/iptables/${IFACE}/${ADDRFAM} ]; then
+        run-parts /etc/iptables/${IFACE}/${ADDRFAM}
+fi
+
+exit 0

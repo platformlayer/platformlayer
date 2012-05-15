@@ -1,0 +1,35 @@
+#!/bin/bash
+
+set -e
+
+iptables-restore <<EOF
+# By default, we lock down everything but SSH
+*filter
+:INPUT DROP
+:FORWARD DROP
+:OUTPUT ACCEPT
+-A INPUT -p tcp -m tcp --dport 22 -j ACCEPT
+-A INPUT -m state --state ESTABLISHED -j ACCEPT
+COMMIT
+*nat
+:PREROUTING ACCEPT
+:INPUT ACCEPT
+:OUTPUT ACCEPT
+:POSTROUTING ACCEPT
+COMMIT
+
+EOF
+
+
+ip6tables-restore <<EOF
+# By default, we lock down everything but SSH
+*filter
+:INPUT DROP
+:FORWARD DROP
+:OUTPUT ACCEPT
+-A INPUT -p icmpv6 -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 22 -j ACCEPT
+-A INPUT -m state --state ESTABLISHED -j ACCEPT
+COMMIT
+
+EOF

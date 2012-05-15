@@ -1,21 +1,75 @@
 package org.platformlayer.ops.firewall;
 
+import java.io.File;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.platformlayer.ops.Command;
+import org.platformlayer.ops.FileUpload;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
+import org.platformlayer.ops.firewall.FirewallRecord.Transport;
+import org.platformlayer.ops.networks.ScriptBuilder;
+
+import com.google.common.base.Objects;
 
 public class IpTablesFirewallManager extends FirewallManager {
 	static final Logger log = Logger.getLogger(IpTablesFirewallManager.class);
+	private final Transport transport;
+
+	public IpTablesFirewallManager(Transport transport) {
+		this.transport = transport;
+	}
 
 	@Override
 	public void configureAddRule(OpsTarget target, FirewallRecord add) throws OpsException {
 		// OpsServer server = smartGetServer(true);
 		Command command = IpTablesManager.buildCommandAddFirewallRule(target, add);
 
-		target.executeCommand(command);
+		String key = add.buildKey();
+
+		File scriptDirectory = new File("/etc/iptables/eth0");
+		File transportDirectory;
+		switch (add.getTransport()) {
+		case Ipv4:
+			transportDirectory = new File(scriptDirectory, "inet");
+			break;
+		case Ipv6:
+			transportDirectory = new File(scriptDirectory, "inet6");
+			break;
+		default:
+			throw new IllegalStateException();
+		}
+		File scriptFile = new File(transportDirectory, key);
+
+		ScriptBuilder sb = new ScriptBuilder();
+		sb.add(command);
+
+		String script = sb.toString();
+
+		String existing = target.readTextFile(scriptFile);
+
+		boolean shouldUpload = true;
+		if (existing != null) {
+			if (Objects.equal(existing, script)) {
+				shouldUpload = false;
+			} else {
+				// TODO: Put a UUID in there, check the UUID is the same??
+				throw new OpsException("Script has changed: " + scriptFile);
+			}
+		}
+
+		if (shouldUpload) {
+			target.mkdir(transportDirectory);
+
+			FileUpload upload = FileUpload.build(script);
+			upload.path = scriptFile;
+			upload.mode = "0755";
+			target.doUpload(upload);
+		}
+
+		Command executeScript = Command.build("{0}", scriptFile);
+		target.executeCommand(executeScript);
 
 		// getCurrentFirewallState(operation).state.add(add);
 	}
