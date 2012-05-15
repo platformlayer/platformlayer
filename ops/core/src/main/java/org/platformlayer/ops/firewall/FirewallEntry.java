@@ -1,7 +1,5 @@
 package org.platformlayer.ops.firewall;
 
-import javax.inject.Provider;
-
 import org.apache.log4j.Logger;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
@@ -9,19 +7,13 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.firewall.IpTablesFirewallManager.IpTablesFirewallState;
 
-import com.google.inject.util.Providers;
-
 //@Icon("firewall")
 public class FirewallEntry {
 	static final Logger log = Logger.getLogger(FirewallEntry.class);
 
-	public Provider<FirewallRecord> rule;
+	public FirewallRecord rule;
 
 	public static FirewallEntry build(FirewallRecord rule) {
-		return build(Providers.of(rule));
-	}
-
-	public static FirewallEntry build(Provider<FirewallRecord> rule) {
 		FirewallEntry entry = OpsContext.get().getInjector().getInstance(FirewallEntry.class);
 		entry.rule = rule;
 		return entry;
@@ -45,20 +37,18 @@ public class FirewallEntry {
 
 		IpTablesFirewallState firewallState = iptables.getCurrentFirewallState(target);
 
-		FirewallRecord firewallRule = rule.get();
-
-		if (firewallRule != null) {
-			boolean hasRule = firewallState.hasRule(firewallRule);
+		if (rule != null) {
+			boolean hasRule = firewallState.hasRule(rule);
 
 			if (!OpsContext.isDelete()) {
 				if (!hasRule) {
-					iptables.configureAddRule(target, firewallRule);
+					iptables.configureAddRule(target, rule);
 				}
 			}
 
 			if (OpsContext.isDelete()) {
 				if (hasRule) {
-					iptables.configureRemoveRule(target, firewallRule);
+					iptables.configureRemoveRule(target, rule);
 				}
 			}
 		}
