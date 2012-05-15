@@ -24,6 +24,7 @@ import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.OpsTarget;
+import org.platformlayer.ops.bootstrap.InstanceBootstrap;
 import org.platformlayer.ops.dns.DnsResolver;
 import org.platformlayer.ops.helpers.ImageFactory;
 import org.platformlayer.ops.helpers.InstanceHelpers;
@@ -226,7 +227,7 @@ public class InstanceBuilder extends OpsTreeBase implements CustomRecursor {
 
 	@Override
 	protected void addChildren() throws OpsException {
-		addChild(injected(InstanceBootstrap.class));
+		addChild(InstanceBootstrap.class);
 
 		addChild(injected(DnsResolver.class));
 
