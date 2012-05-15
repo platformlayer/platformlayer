@@ -8,6 +8,7 @@ import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.firewall.FirewallRecord.Protocol;
+import org.platformlayer.ops.firewall.FirewallRecord.Transport;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.network.model.NetworkConnection;
 
@@ -30,6 +31,11 @@ public class NetworkConnectionController extends OpsTreeBase {
 			protocol = EnumUtils.valueOfCaseInsensitive(Protocol.class, model.protocol);
 		}
 
+		Transport transport = null;
+		// if (model.transport != null) {
+		// protocol = EnumUtils.valueOfCaseInsensitive(Transport.class, model.transport);
+		// }
+
 		{
 			PlatformLayerFirewallEntry net = injected(PlatformLayerFirewallEntry.class);
 			net.destItem = model.destItem;
@@ -37,6 +43,7 @@ public class NetworkConnectionController extends OpsTreeBase {
 			net.sourceItemKey = model.sourceItem;
 			net.sourceCidr = model.sourceCidr;
 			net.protocol = protocol;
+			net.transport = transport;
 
 			addChild(net);
 		}

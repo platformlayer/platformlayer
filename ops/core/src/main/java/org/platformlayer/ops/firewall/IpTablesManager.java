@@ -10,6 +10,7 @@ import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.firewall.FirewallRecord.Decision;
 import org.platformlayer.ops.firewall.FirewallRecord.Direction;
 import org.platformlayer.ops.firewall.FirewallRecord.Protocol;
+import org.platformlayer.ops.firewall.FirewallRecord.Transport;
 import org.platformlayer.ops.process.ProcessExecution;
 
 import com.google.common.collect.Lists;
@@ -18,10 +19,24 @@ public class IpTablesManager {
 	static final Logger log = Logger.getLogger(IpTablesManager.class);
 
 	// static final String CMD_IPFSTAT = "/usr/sbin/ipfstat ";
-	static final String CMD_IPTABLES = "/sbin/iptables ";
+	static final String CMD_IPTABLES4 = "/sbin/iptables ";
+	static final String CMD_IPTABLES6 = "/sbin/ip6tables ";
 
-	public static List<FirewallRecord> getCurrentFirewallState(OpsTarget target) throws OpsException {
-		Command command = Command.build(CMD_IPTABLES + " --list-rules");
+	static Command getIptablesCommand(Transport transport) {
+		switch (transport) {
+		case Ipv4:
+			return Command.build(CMD_IPTABLES4);
+		case Ipv6:
+			return Command.build(CMD_IPTABLES6);
+		default:
+			throw new IllegalArgumentException();
+		}
+	}
+
+	public static List<FirewallRecord> getCurrentFirewallState(OpsTarget target, Transport transport)
+			throws OpsException {
+		Command command = getIptablesCommand(transport);
+		command.addLiteral("--list-rules");
 
 		List<FirewallRecord> records = Lists.newArrayList();
 
@@ -264,12 +279,13 @@ public class IpTablesManager {
 		return FirewallNetmask.buildCidr(cidr);
 	}
 
-	public static void addFirewallRule(OpsTarget server, FirewallRecord add) throws OpsException {
+	public static Command buildCommandAddFirewallRule(OpsTarget server, FirewallRecord add) throws OpsException {
 		if (isPolicyDefault(add)) {
-			String commandString = CMD_IPTABLES + " -P " + toChain(add) + " " + toIpTableDecision(add.decision);
-			Command command = Command.build(commandString);
-			server.executeCommand(command);
-			return;
+			Command command = getIptablesCommand(add.getTransport());
+			command.addLiteral("-P");
+			command.addLiteral(toChain(add));
+			command.addLiteral(toIpTableDecision(add.decision));
+			return command;
 		}
 
 		// iptables --append INPUT -s 74.125.67.103/32 -p tcp -m tcp --dport 22 -j ACCEPT
@@ -286,9 +302,9 @@ public class IpTablesManager {
 			throw new IllegalStateException();
 		}
 		String ipTableRule = buildIpTableRule(add);
-		String commandString = CMD_IPTABLES + action + ipTableRule;
+		String commandString = getIptablesCommand(add.getTransport()).buildCommandString() + action + ipTableRule;
 		Command command = Command.build(commandString);
-		server.executeCommand(command);
+		return command;
 	}
 
 	private static boolean isPolicyDefault(FirewallRecord record) {
@@ -334,7 +350,8 @@ public class IpTablesManager {
 
 		// iptables --delete INPUT -s 74.125.67.103/32 -p tcp -m tcp --dport 22 -j ACCEP
 		String ipTableRule = buildIpTableRule(remove);
-		String commandString = CMD_IPTABLES + " --delete " + toChain(remove) + " " + ipTableRule;
+		String commandString = getIptablesCommand(remove.getTransport()).buildCommandString() + " --delete "
+				+ toChain(remove) + " " + ipTableRule;
 		Command command = Command.build(commandString);
 		server.executeCommand(command);
 	}

@@ -1,10 +1,22 @@
 package org.platformlayer.ops.firewall;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.platformlayer.ops.EnumUtils;
 
 public class FirewallRecord {
 	static final Logger log = Logger.getLogger(FirewallRecord.class);
+
+	public enum Transport {
+		// TODO: Is transport the right word?
+		Ipv4, Ipv6;
+
+		public static List<Transport> all() {
+			return Arrays.asList(Transport.values());
+		}
+	}
 
 	public enum Protocol {
 		All, Tcp, Udp, Icmp, TcpOrUdp, Esp, Ah;
@@ -35,6 +47,7 @@ public class FirewallRecord {
 		In, Out
 	}
 
+	Transport transport = Transport.Ipv4;
 	Protocol protocol = Protocol.All;
 	Decision decision;
 	Direction direction;
@@ -51,6 +64,7 @@ public class FirewallRecord {
 
 	public FirewallRecord deepCopy() {
 		FirewallRecord clone = new FirewallRecord();
+		clone.transport = this.transport;
 		clone.protocol = this.protocol;
 		clone.decision = this.decision;
 		clone.direction = this.direction;
@@ -70,7 +84,7 @@ public class FirewallRecord {
 	}
 
 	public String buildKey() {
-		String key = protocol + "-" + decision + "-" + direction + "-" + srcFilter.buildKey() + "-"
+		String key = transport + "-" + protocol + "-" + decision + "-" + direction + "-" + srcFilter.buildKey() + "-"
 				+ destFilter.buildKey();
 		if (device != null) {
 			key += "-" + device;
@@ -96,6 +110,7 @@ public class FirewallRecord {
 		if (logPacket) {
 			value += " log";
 		}
+		value += " transport " + transport;
 		value += " proto " + protocol + " from " + srcFilter + " to " + destFilter;
 		if (device != null) {
 			value += " on " + device;
@@ -262,6 +277,7 @@ public class FirewallRecord {
 		result = prime * result + (isQuick ? 1231 : 1237);
 		result = prime * result + (keepState ? 1231 : 1237);
 		result = prime * result + (logPacket ? 1231 : 1237);
+		result = prime * result + ((transport == null) ? 0 : transport.hashCode());
 		result = prime * result + ((protocol == null) ? 0 : protocol.hashCode());
 		result = prime * result + ((srcFilter == null) ? 0 : srcFilter.hashCode());
 		return result;
@@ -317,6 +333,13 @@ public class FirewallRecord {
 			return false;
 		}
 		if (logPacket != other.logPacket) {
+			return false;
+		}
+		if (transport == null) {
+			if (other.transport != null) {
+				return false;
+			}
+		} else if (!transport.equals(other.transport)) {
 			return false;
 		}
 		if (protocol == null) {
@@ -395,6 +418,15 @@ public class FirewallRecord {
 
 	public static FirewallRecord buildBlockPort(Protocol protocol, int port) {
 		return FirewallRecord.block().in().protocol(protocol).dest(PortAddressFilter.withPortRange(port, port));
+	}
+
+	public Transport getTransport() {
+		return transport;
+	}
+
+	public FirewallRecord setTransport(Transport transport) {
+		this.transport = transport;
+		return this;
 	}
 
 }

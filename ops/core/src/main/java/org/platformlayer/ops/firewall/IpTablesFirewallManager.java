@@ -3,6 +3,7 @@ package org.platformlayer.ops.firewall;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 
@@ -12,7 +13,10 @@ public class IpTablesFirewallManager extends FirewallManager {
 	@Override
 	public void configureAddRule(OpsTarget target, FirewallRecord add) throws OpsException {
 		// OpsServer server = smartGetServer(true);
-		IpTablesManager.addFirewallRule(target, add);
+		Command command = IpTablesManager.buildCommandAddFirewallRule(target, add);
+
+		target.executeCommand(command);
+
 		// getCurrentFirewallState(operation).state.add(add);
 	}
 
@@ -52,7 +56,7 @@ public class IpTablesFirewallManager extends FirewallManager {
 		// }
 		// return rules;
 		IpTablesFirewallState state = new IpTablesFirewallState();
-		state.rules = IpTablesManager.getCurrentFirewallState(target);
+		state.rules = IpTablesManager.getCurrentFirewallState(target, transport);
 		return state;
 	}
 

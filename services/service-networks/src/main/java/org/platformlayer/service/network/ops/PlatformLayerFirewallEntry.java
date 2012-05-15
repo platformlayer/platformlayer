@@ -13,6 +13,7 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.firewall.FirewallEntry;
 import org.platformlayer.ops.firewall.FirewallRecord;
 import org.platformlayer.ops.firewall.FirewallRecord.Protocol;
+import org.platformlayer.ops.firewall.FirewallRecord.Transport;
 import org.platformlayer.ops.firewall.PortAddressFilter;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
@@ -29,6 +30,7 @@ public class PlatformLayerFirewallEntry extends OpsTreeBase {
 	public String sourceCidr;
 	public int port;
 	public Protocol protocol = Protocol.Tcp;
+	public Transport transport = null;
 
 	@Inject
 	PlatformLayerHelpers platformLayerHelpers;
@@ -46,19 +48,30 @@ public class PlatformLayerFirewallEntry extends OpsTreeBase {
 		MachineResolver dest = MachineResolver.build(destItem);
 		addChild(dest);
 
-		if (!Strings.isNullOrEmpty(sourceCidr)) {
-			PortAddressFilter destFilter = PortAddressFilter.withPortRange(port, port);
-			PortAddressFilter srcFilter = PortAddressFilter.withCidr(sourceCidr);
-			FirewallRecord destRule = FirewallRecord.pass().protocol(protocol).in().dest(destFilter).source(srcFilter);
-			FirewallEntry entry = FirewallEntry.build(destRule);
-			dest.addChild(entry);
+		List<Transport> transports;
+
+		if (transport == null) {
+			transports = Transport.all();
+		} else {
+			transports = Collections.singletonList(transport);
 		}
 
-		if (sourceItemKey != null) {
-			Provider<FirewallRecord> ruleProvider = new Provider<FirewallRecord>() {
-				@Override
-				public FirewallRecord get() {
-					try {
+		for (final Transport transport : transports) {
+			if (!Strings.isNullOrEmpty(sourceCidr)) {
+				PortAddressFilter destFilter = PortAddressFilter.withPortRange(port, port);
+				PortAddressFilter srcFilter = PortAddressFilter.withCidr(sourceCidr);
+				FirewallRecord destRule = FirewallRecord.pass().protocol(protocol).in().dest(destFilter)
+						.source(srcFilter);
+				destRule.setTransport(transport);
+
+				FirewallEntry entry = FirewallEntry.build(destRule);
+				dest.addChild(entry);
+			}
+
+			if (sourceItemKey != null) {
+				LateBound<FirewallEntry> entry = new LateBound<FirewallEntry>() {
+					@Override
+					public FirewallEntry get() throws OpsException {
 						ItemBase sourceItem = platformLayerHelpers.getItem(sourceItemKey);
 
 						NetworkPoint targetNetworkPoint = NetworkPoint.forTargetInContext();
@@ -76,15 +89,15 @@ public class PlatformLayerFirewallEntry extends OpsTreeBase {
 						PortAddressFilter srcFilter = PortAddressFilter.withCidr(address + "/32");
 						FirewallRecord destRule = FirewallRecord.pass().protocol(protocol).in().dest(destFilter)
 								.source(srcFilter);
-						return destRule;
-					} catch (OpsException e) {
-						throw new IllegalArgumentException("Error building network rule", e);
-					}
-				}
-			};
+						destRule.setTransport(transport);
 
-			FirewallEntry entry = FirewallEntry.build(ruleProvider);
-			dest.addChild(entry);
+						FirewallEntry entry = FirewallEntry.build(destRule);
+						return entry;
+					}
+				};
+
+				addChild(entry);
+			}
 		}
 
 		// TODO: Add source rules??

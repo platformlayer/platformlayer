@@ -41,7 +41,7 @@ public class FirewallEntry {
 		// }
 
 		// IpTablesManager manager = new IpTablesManager();
-		IpTablesFirewallManager iptables = new IpTablesFirewallManager();
+		IpTablesFirewallManager iptables = new IpTablesFirewallManager(rule.getTransport());
 
 		IpTablesFirewallState firewallState = iptables.getCurrentFirewallState(target);
 

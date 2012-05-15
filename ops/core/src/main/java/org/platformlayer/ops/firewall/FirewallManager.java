@@ -200,7 +200,7 @@ public abstract class FirewallManager {
 			throws Exception {
 		boolean isValidate = operationType.isValidate();
 
-		FirewallRecord firewallRule = firewallEntry.rule.get();
+		FirewallRecord firewallRule = firewallEntry.rule;
 
 		List<FirewallRecord> desired = rewriteRule(target, firewallRule);
 		List<FirewallRecord> actual = getConfiguredRules(target);
