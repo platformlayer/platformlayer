@@ -166,8 +166,10 @@ public class IpTablesManager {
 					String stateRule = tokens.remove();
 					switch (record.direction) {
 					case In:
-						if (!stateRule.equals("RELATED,ESTABLISHED") && !stateRule.equals("ESTABLISHED,RELATED")) {
-							throw new IllegalStateException("Expected --state RELATED,ESTABLISHED, was " + stateRule);
+						if (!stateRule.equals("ESTABLISHED") && !stateRule.equals("RELATED,ESTABLISHED")
+								&& !stateRule.equals("ESTABLISHED,RELATED")) {
+							throw new IllegalStateException("Expected --state ESTABLISHED or RELATED,ESTABLISHED, was "
+									+ stateRule);
 						}
 						break;
 
