@@ -110,7 +110,7 @@ public class PublicPorts extends OpsTreeBase {
 
 		@Override
 		public String toString() {
-			return getClass().getName() + ":" + resourceDir + ":" + publicPort;
+			return getClass().getSimpleName() + ":" + resourceDir + ":" + publicPort;
 		}
 	};
 
