@@ -1,6 +1,8 @@
 package org.platformlayer.service.dns.ops;
 
 import org.apache.log4j.Logger;
+import org.platformlayer.core.model.PlatformLayerKey;
+import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
@@ -24,6 +26,14 @@ public class DnsServerController extends OpsTreeBase {
 		DnsServer model = OpsContext.get().getInstance(DnsServer.class);
 
 		InstanceBuilder vm = InstanceBuilder.build(model.dnsName, DiskImageRecipeBuilder.buildDiskImageRecipe(this));
+
+		// TODO: Do we need a DnsCluster concept?
+		// For now, we fake it
+		PlatformLayerKey key = model.getKey();
+		String groupId = key.withId(new ManagedItemId("primary")).getUrl();
+		groupId = groupId.replace("/dnsServer/", "/dnsCluster/");
+		vm.hostPolicy.groupId = groupId;
+
 		vm.addTagToManaged = true;
 		vm.publicPorts.add(53);
 
