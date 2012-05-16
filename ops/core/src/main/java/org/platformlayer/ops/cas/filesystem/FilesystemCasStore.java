@@ -65,9 +65,9 @@ public class FilesystemCasStore implements CasStore {
 	}
 
 	public void copyTo(FilesystemCasObject src, OpsTarget target, File targetFilePath) throws OpsException {
-		File targetSrc;
+		File fileOnTarget;
 
-		if (!host.equals(target)) {
+		if (!host.isSameMachine(target)) {
 			// Copy to host cache
 			File cachePath = new File(PATH_CACHE, toRelativePath(src.getHash()));
 
@@ -76,12 +76,12 @@ public class FilesystemCasStore implements CasStore {
 			PeerToPeerCopy peerToPeerCopy = Injection.getInstance(PeerToPeerCopy.class);
 			peerToPeerCopy.copy(host, src.getPath(), target, cachePath);
 
-			targetSrc = cachePath;
+			fileOnTarget = cachePath;
 		} else {
-			targetSrc = src.getPath();
+			fileOnTarget = src.getPath();
 		}
 
-		Command copy = Command.build("cp {0} {1}", targetSrc, targetFilePath);
+		Command copy = Command.build("cp {0} {1}", fileOnTarget, targetFilePath);
 		target.executeCommand(copy);
 	}
 }
