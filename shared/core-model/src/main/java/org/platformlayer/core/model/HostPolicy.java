@@ -8,4 +8,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class HostPolicy {
 	public boolean allowRunInContainer = true;
+
+	/**
+	 * A string, which identifies a 'group'. The group can drive a placement strategy
+	 * 
+	 * e.g. "Put machines in the same group as redundantly as possible"
+	 * 
+	 * e.g. "Not the same machine, but otherwise as close as possible"
+	 */
+	public String groupId;
 }

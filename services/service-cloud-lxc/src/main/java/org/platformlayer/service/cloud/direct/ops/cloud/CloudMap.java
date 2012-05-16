@@ -1,10 +1,11 @@
 package org.platformlayer.service.cloud.direct.ops.cloud;
 
 import java.util.List;
-import java.util.Random;
 
 import javax.inject.Inject;
 
+import org.platformlayer.choice.Chooser;
+import org.platformlayer.choice.RandomChooser;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.helpers.InstanceHelpers;
@@ -15,6 +16,7 @@ import org.platformlayer.service.cloud.direct.model.DirectHost;
 import org.platformlayer.service.cloud.direct.model.DirectInstance;
 import org.platformlayer.service.cloud.direct.ops.DirectCloudUtils;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 public class CloudMap {
@@ -85,11 +87,18 @@ public class CloudMap {
 	// // }
 	//
 	public DirectCloudHost pickHost(DirectInstance model) throws OpsException {
-		// TODO: Make better choices
-		Random random = new Random();
 		List<DirectCloudHost> hosts = getHosts();
-		int index = random.nextInt(hosts.size());
-		return hosts.get(index);
+
+		Chooser<DirectCloudHost> chooser = buildChooser(model);
+		return chooser.choose(hosts);
+	}
+
+	private Chooser<DirectCloudHost> buildChooser(DirectInstance model) {
+		if (model.hostPolicy == null || Strings.isNullOrEmpty(model.hostPolicy.groupId)) {
+			return RandomChooser.build();
+		} else {
+			return SpreadChooser.build(model.hostPolicy.groupId);
+		}
 	}
 
 	// public ImageStore getImageStore() {
