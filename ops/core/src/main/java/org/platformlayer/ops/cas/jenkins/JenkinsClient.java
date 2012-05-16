@@ -202,4 +202,9 @@ public class JenkinsClient {
 		return new BuildInfo(dom, buildBaseUrl);
 	}
 
+	@Override
+	public String toString() {
+		return "JenkinsClient [baseUrl=" + baseUrl + "]";
+	}
+
 }
