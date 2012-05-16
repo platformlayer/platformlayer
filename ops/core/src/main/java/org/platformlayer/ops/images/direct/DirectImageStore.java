@@ -127,11 +127,35 @@ public class DirectImageStore implements ImageStore {
 
 		File imageFile = getImageFile(imageId, imageProperties);
 
+		// TODO: Local caching???
+
+		// File fileOnTarget;
+		// if (!destination.isSameMachine(target)) {
+		//
+		// File cacheDir = new File("/var/cache/images");
+		// // Copy to host cache
+		// File cachePath = new File(cacheDir, toRelativePath(src.getHash()));
+		// target.mkdir(cachePath.getParentFile());
+		//
+		// PeerToPeerCopy peerToPeerCopy = Injection.getInstance(PeerToPeerCopy.class);
+		// peerToPeerCopy.copy(host, src.getPath(), target, cachePath);
+		//
+		// fileOnTarget = cachePath;
+		// } else {
+		// fileOnTarget = imageFile;
+		// }
+		//
+		// Command copy = Command.build("cp {0} {1}", fileOnTarget, destinationPath);
+		// target.executeCommand(copy);
+
 		if (destination.isSameMachine(target)) {
 			Command copyCommand = Command.build("cp {0} {1}", imageFile, destinationPath);
 			destination.executeCommand(copyCommand.setTimeout(TimeSpan.FIVE_MINUTES));
 		} else {
-			throw new OpsException("SCPing images between machines not yet implemented");
+			PeerToPeerCopy peerToPeerCopy = Injection.getInstance(PeerToPeerCopy.class);
+			peerToPeerCopy.copy(target, imageFile, destination, destinationPath);
+
+			// throw new OpsException("SCPing images between machines not yet implemented");
 		}
 	}
 }
