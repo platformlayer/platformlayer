@@ -8,6 +8,7 @@ import org.platformlayer.ops.packages.PackageDependency;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class InstanceBootstrap extends OpsTreeBase {
+	@SuppressWarnings("unused")
 	private static final Logger log = Logger.getLogger(InstanceBootstrap.class);
 
 	@Handler
@@ -17,6 +18,8 @@ public class InstanceBootstrap extends OpsTreeBase {
 	@Override
 	protected void addChildren() throws OpsException {
 		addChild(PersistIptablesScripts.class);
+
+		addChild(BootstrapLocales.class);
 
 		// We always install curl, because we use it to check for http proxy responsiveness
 		// TODO: Switch to netcat, to avoid using curl here - it's quite big
