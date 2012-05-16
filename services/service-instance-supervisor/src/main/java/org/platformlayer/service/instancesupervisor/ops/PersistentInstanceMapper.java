@@ -40,6 +40,8 @@ public class PersistentInstanceMapper extends OpsTreeBase {
 	public void handler(PersistentInstance model) throws OpsException {
 		Machine machine = null;
 
+		// TODO: We should use putItem here...
+
 		Tag tagForInstance = OpsSystem.get().createParentTag(model);
 		boolean instanceIsTagged = false;
 
