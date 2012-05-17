@@ -47,7 +47,7 @@ public class DnsService extends ServiceProviderBase {
 
 			model.dnsName = normalize(model.dnsName);
 			if (Strings.isEmpty(model.dnsName)) {
-				throw new IllegalArgumentException("dnsName must be specified");
+				model.dnsName = normalize(model.getId());
 			}
 		}
 
