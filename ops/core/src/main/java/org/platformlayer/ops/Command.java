@@ -42,6 +42,11 @@ public class Command {
 			Argument arg = new Argument(literalPrefix + escapeQuoted(value));
 			return arg;
 		}
+
+		public static Argument buildLiteral(String literal) {
+			Argument arg = new Argument(literal);
+			return arg;
+		}
 	}
 
 	public static final String MASKED = "***";
@@ -105,7 +110,7 @@ public class Command {
 	}
 
 	private Argument addUnmaskedArg(String literalArg) {
-		Argument arg = new Argument(literalArg);
+		Argument arg = Argument.buildLiteral(literalArg);
 		args.add(arg);
 		return arg;
 	}
