@@ -43,6 +43,7 @@
         <module>service-memcache</module>
         <module>service-solr</module>
         <module>service-redis</module>
+        <module>service-httpfrontend</module>
     </modules>
     <build>
         <resources>
