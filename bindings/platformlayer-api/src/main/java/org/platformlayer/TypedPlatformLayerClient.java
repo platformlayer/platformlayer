@@ -14,6 +14,7 @@ import org.platformlayer.core.model.ServiceInfo;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.core.model.Tags;
+import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobLog;
@@ -83,6 +84,26 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 		}
 
 		return promoteToTyped(cloudItemUntyped, itemClass);
+	}
+
+	public <T> T findItem(String id, Class<T> itemClass) throws OpsException {
+		PlatformLayerKey key = toKey(itemClass, id);
+
+		UntypedItem item = platformLayerClient.getItemUntyped(key);
+		if (item == null) {
+			return null;
+		}
+
+		return promoteToTyped(item, itemClass);
+	}
+
+	public <T> PlatformLayerKey toKey(Class<T> itemClass, String id) throws PlatformLayerClientException {
+		JaxbHelper jaxbHelper = PlatformLayerClientBase.toJaxbHelper(itemClass, new Class[0]);
+		ManagedItemId itemId = new ManagedItemId(id);
+
+		PlatformLayerKey key = PlatformLayerClientBase.toKey(jaxbHelper, itemId, itemClass,
+				platformLayerClient.listServices(true));
+		return key;
 	}
 
 	public <T> T findItem(PlatformLayerKey path) throws OpsException {
