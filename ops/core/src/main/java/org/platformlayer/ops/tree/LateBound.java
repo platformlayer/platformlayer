@@ -1,9 +1,9 @@
-package org.platformlayer.service.network.ops;
+package org.platformlayer.ops.tree;
 
 import org.apache.log4j.Logger;
 import org.platformlayer.ops.Handler;
+import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.tree.OpsTreeBase;
 
 public abstract class LateBound<T> extends OpsTreeBase {
 	private static final Logger log = Logger.getLogger(LateBound.class);
@@ -27,4 +27,13 @@ public abstract class LateBound<T> extends OpsTreeBase {
 	}
 
 	protected abstract T get() throws OpsException;
+
+	public static <T> LateBound<T> of(final Class<T> clazz) {
+		return new LateBound<T>() {
+			@Override
+			protected T get() throws OpsException {
+				return Injection.getInstance(clazz);
+			}
+		};
+	}
 }
