@@ -10,6 +10,7 @@ import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.helpers.ServiceContext;
+import org.platformlayer.ops.tree.ForEach;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class NginxSites extends OpsTreeBase implements CustomRecursor {

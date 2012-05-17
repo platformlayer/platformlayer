@@ -1,4 +1,4 @@
-package org.openstack.service.nginx.ops;
+package org.platformlayer.ops.tree;
 
 import java.util.List;
 
@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.ManagedItemState;
+import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.BindingScope;
 import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OperationRecursor;
@@ -49,14 +50,16 @@ public class ForEach {
 		Object contextMachine = ops.getInstance(machineItemClass);
 		if (contextMachine != null) {
 			// We are presumably building the machine item
-			ItemBase machineItem = ops.getInstance(ItemBase.class);
-			if (!Objects.equal(machineItem, contextMachine)) {
+			PlatformLayerKey targetItemKey = ops.getJobRecord().getTargetItemKey();
+			ItemBase machineItem = (ItemBase) contextMachine;
+
+			if (!Objects.equal(targetItemKey, machineItem.getKey())) {
 				throw new OpsException("Expected to find same model");
 			}
 
 			Machine machine = instances.findMachine(machineItem);
 			if (machine == null) {
-				log.warn("Server instance not found: " + machineItem);
+				log.warn("Server instance not found: " + contextMachine);
 				failed = true;
 			} else {
 				OpsTarget target = machine.getTarget(sshKey);
