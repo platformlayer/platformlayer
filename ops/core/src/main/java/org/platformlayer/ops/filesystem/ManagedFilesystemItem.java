@@ -2,6 +2,7 @@ package org.platformlayer.ops.filesystem;
 
 import java.io.File;
 
+import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
@@ -53,8 +54,8 @@ public abstract class ManagedFilesystemItem {
 		return this;
 	}
 
-	// String updateAction = null;
-	//
+	Command updateAction = null;
+
 	// protected FileMetadata getFileMetadata() {
 	// return new FileMetadata(getFileMode(), getOwner(), getGroup());
 	// }
@@ -120,28 +121,23 @@ public abstract class ManagedFilesystemItem {
 	}
 
 	protected void doUpdateAction(OpsTarget target) throws OpsException {
-		// protected void doUpdateAction(Operation operation) throws OpsException {
 		// log.debug("Was updated; restarting dependencies");
 		// markDependenciesForRestart(operation, null);
-		//
-		// if (getUpdateAction() != null) {
-		// OpsServer server = smartGetServer(true);
-		// FilePath workingDirectory = null;
-		// if (this instanceof ManagedDirectoryOpsItem) {
-		// workingDirectory = getRemoteFilePath();
-		// }
-		// server.simpleRun(getUpdateAction(), new TimeSpan("5m"), workingDirectory);
-		// }
+
+		if (getUpdateAction() != null) {
+			target.executeCommand(getUpdateAction());
+		}
 	}
-	//
-	// public String getUpdateAction() {
-	// return updateAction;
-	// }
-	//
-	// public void setUpdateAction(String updateAction) {
-	// this.updateAction = updateAction;
-	// }
-	//
+
+	public Command getUpdateAction() {
+		return updateAction;
+	}
+
+	public ManagedFilesystemItem setUpdateAction(Command updateAction) {
+		this.updateAction = updateAction;
+		return this;
+	}
+
 	// public String getGroup() {
 	// return group;
 	// }
