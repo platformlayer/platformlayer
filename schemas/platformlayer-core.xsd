@@ -23,15 +23,57 @@
 
   <xs:element name="tags" type="tns:tags"/>
 
-  <xs:complexType name="action">
+  <xs:complexType name="serviceInfo">
     <xs:sequence>
-      <xs:element name="name" type="xs:string" minOccurs="0"/>
+      <xs:element name="serviceType" type="xs:string" minOccurs="0"/>
+      <xs:element name="namespace" type="xs:string" minOccurs="0"/>
+      <xs:element name="description" type="xs:string" minOccurs="0"/>
+      <xs:element name="publicTypes" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="adminTypes" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
   </xs:complexType>
 
-  <xs:complexType name="hostPolicy">
+  <xs:complexType name="tagChanges">
     <xs:sequence>
-      <xs:element name="allowRunInContainer" type="xs:boolean"/>
+      <xs:element name="addTags" type="tns:tags" minOccurs="0"/>
+      <xs:element name="removeTags" type="tns:tags" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="tags">
+    <xs:sequence>
+      <xs:element name="tags" type="tns:tag" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="tag">
+    <xs:sequence>
+      <xs:element name="key" type="xs:string" minOccurs="0"/>
+      <xs:element name="value" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="itemBase">
+    <xs:sequence>
+      <xs:element name="key" type="tns:platformLayerKey" minOccurs="0"/>
+      <xs:element name="version" type="xs:long"/>
+      <xs:element name="state" type="tns:managedItemState" minOccurs="0"/>
+      <xs:element ref="tns:tags" minOccurs="0"/>
+      <xs:element name="secret" type="tns:secretInfo" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="platformLayerKey">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+
+  <xs:complexType name="secretInfo">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="action">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -49,41 +91,21 @@
     </xs:complexContent>
   </xs:complexType>
 
-  <xs:complexType name="itemBase">
+  <xs:complexType name="hostPolicy">
     <xs:sequence>
-      <xs:element name="key" type="tns:platformLayerKey" minOccurs="0"/>
-      <xs:element name="version" type="xs:long"/>
-      <xs:element name="state" type="tns:managedItemState" minOccurs="0"/>
-      <xs:element ref="tns:tags" minOccurs="0"/>
-      <xs:element name="secret" type="tns:secretInfo" minOccurs="0"/>
+      <xs:element name="allowRunInContainer" type="xs:boolean"/>
+      <xs:element name="groupId" type="xs:string" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 
-  <xs:simpleType name="platformLayerKey">
-    <xs:restriction base="xs:string"/>
-  </xs:simpleType>
-
-  <xs:complexType name="tags">
-    <xs:sequence>
-      <xs:element name="tags" type="tns:tag" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
-    </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="tag">
-    <xs:sequence>
-      <xs:element name="key" type="xs:string" minOccurs="0"/>
-      <xs:element name="value" type="xs:string" minOccurs="0"/>
-    </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="secretInfo">
-    <xs:sequence/>
-  </xs:complexType>
-
-  <xs:complexType name="machineCloudBase">
+  <xs:complexType name="publicEndpointBase">
     <xs:complexContent>
       <xs:extension base="tns:itemBase">
-        <xs:sequence/>
+        <xs:sequence>
+          <xs:element name="publicPort" type="xs:int"/>
+          <xs:element name="instance" type="tns:platformLayerKey" minOccurs="0"/>
+          <xs:element name="backendPort" type="xs:int"/>
+        </xs:sequence>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -100,31 +122,9 @@
     </xs:sequence>
   </xs:complexType>
 
-  <xs:complexType name="publicEndpointBase">
-    <xs:complexContent>
-      <xs:extension base="tns:itemBase">
-        <xs:sequence>
-          <xs:element name="publicPort" type="xs:int"/>
-          <xs:element name="instance" type="tns:platformLayerKey" minOccurs="0"/>
-          <xs:element name="backendPort" type="xs:int"/>
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-
   <xs:simpleType name="secret">
     <xs:restriction base="xs:string"/>
   </xs:simpleType>
-
-  <xs:complexType name="serviceInfo">
-    <xs:sequence>
-      <xs:element name="serviceType" type="xs:string" minOccurs="0"/>
-      <xs:element name="namespace" type="xs:string" minOccurs="0"/>
-      <xs:element name="description" type="xs:string" minOccurs="0"/>
-      <xs:element name="publicTypes" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:element name="adminTypes" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
-    </xs:sequence>
-  </xs:complexType>
 
   <xs:complexType name="serviceInfoCollection">
     <xs:sequence>
@@ -132,11 +132,12 @@
     </xs:sequence>
   </xs:complexType>
 
-  <xs:complexType name="tagChanges">
-    <xs:sequence>
-      <xs:element name="addTags" type="tns:tags" minOccurs="0"/>
-      <xs:element name="removeTags" type="tns:tags" minOccurs="0"/>
-    </xs:sequence>
+  <xs:complexType name="machineCloudBase">
+    <xs:complexContent>
+      <xs:extension base="tns:itemBase">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
   </xs:complexType>
 
   <xs:simpleType name="managedItemState">

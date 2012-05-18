@@ -7,18 +7,6 @@
 
   <xs:element name="diskImageRecipe" type="tns:diskImageRecipe"/>
 
-  <xs:complexType name="diskImage">
-    <xs:complexContent>
-      <xs:extension base="ns1:itemBase">
-        <xs:sequence>
-          <xs:element name="cloud" type="ns1:platformLayerKey" minOccurs="0"/>
-          <xs:element name="recipeId" type="ns1:platformLayerKey" minOccurs="0"/>
-          <xs:element name="format" type="xs:string" minOccurs="0"/>
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-
   <xs:complexType name="repositoryKey">
     <xs:sequence>
       <xs:element name="url" type="xs:string" minOccurs="0"/>
@@ -39,6 +27,18 @@
       <xs:element name="key" type="xs:string" minOccurs="0"/>
       <xs:element name="value" type="xs:string" minOccurs="0"/>
     </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="diskImage">
+    <xs:complexContent>
+      <xs:extension base="ns1:itemBase">
+        <xs:sequence>
+          <xs:element name="cloud" type="ns1:platformLayerKey" minOccurs="0"/>
+          <xs:element name="recipeId" type="ns1:platformLayerKey" minOccurs="0"/>
+          <xs:element name="format" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
   </xs:complexType>
 
   <xs:complexType name="operatingSystemRecipe">

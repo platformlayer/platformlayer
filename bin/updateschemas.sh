@@ -18,6 +18,10 @@ cp ../shared/core-model/target/generated-resources/schemagen/schema1.xsd platfor
 cp ../shared/core-model/target/generated-resources/schemagen/schema2.xsd platformlayer-jobs.xsd
 cp ../shared/core-model/target/generated-resources/schemagen/schema3.xsd platformlayer-core.xsd
 
+find *.xsd -name "platformlayer-*.xsd" | xargs sed -i 's/schema1.xsd/platformlayer-metrics.xsd/g'
+find *.xsd -name "platformlayer-*.xsd" | xargs sed -i 's/schema2.xsd/platformlayer-jobs.xsd/g'
+find *.xsd -name "platformlayer-*.xsd" | xargs sed -i 's/schema3.xsd/platformlayer-core.xsd/g'
+
 cp ../services/service-federation/target/generated-resources/schemagen/schema1.xsd federation.xsd
 cp ../services/service-dns/target/generated-resources/schemagen/schema1.xsd dns.xsd
 cp ../services/service-dnsresolver/target/generated-resources/schemagen/schema1.xsd dnsresolver.xsd
@@ -30,6 +34,7 @@ cp ../services/service-cloud-lxc/target/generated-resources/schemagen/schema1.xs
 cp ../services/service-cloud-raw/target/generated-resources/schemagen/schema1.xsd machines-raw.xsd
 cp ../services/service-cloud-openstack/target/generated-resources/schemagen/schema1.xsd machines-openstack.xsd
 
+# TODO: Yuk... it would be good to fix this up properly
 #find *.xsd ! -name "platformlayer-*.xsd" | xargs sed -i 's/schema1.xsd/platformlayer-core.xsd/g'
 find *.xsd ! -name "platformlayer-*.xsd" | xargs sed -i 's/schema2.xsd/platformlayer-core.xsd/g'
 find *.xsd ! -name "platformlayer-*.xsd" | xargs sed -i 's/schema3.xsd/platformlayer-core.xsd/g'

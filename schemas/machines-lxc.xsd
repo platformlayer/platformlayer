@@ -11,26 +11,6 @@
 
   <xs:element name="directPublicEndpoint" type="tns:directPublicEndpoint"/>
 
-  <xs:complexType name="directCloud">
-    <xs:complexContent>
-      <xs:extension base="ns1:machineCloudBase">
-        <xs:sequence/>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-
-  <xs:complexType name="directHost">
-    <xs:complexContent>
-      <xs:extension base="ns1:itemBase">
-        <xs:sequence>
-          <xs:element name="cloud" type="ns1:platformLayerKey" minOccurs="0"/>
-          <xs:element name="machineSource" type="ns1:platformLayerKey" minOccurs="0"/>
-          <xs:element name="ipRange" type="xs:string" minOccurs="0"/>
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-
   <xs:complexType name="directInstance">
     <xs:complexContent>
       <xs:extension base="ns1:instanceBase">
@@ -42,9 +22,32 @@
     </xs:complexContent>
   </xs:complexType>
 
+  <xs:complexType name="directHost">
+    <xs:complexContent>
+      <xs:extension base="ns1:itemBase">
+        <xs:sequence>
+          <xs:element name="cloud" type="ns1:platformLayerKey" minOccurs="0"/>
+          <xs:element name="host" type="xs:string" minOccurs="0"/>
+          <xs:element name="ipv4Public" type="xs:string" minOccurs="0"/>
+          <xs:element name="ipv4Private" type="xs:string" minOccurs="0"/>
+          <xs:element name="ipv6" type="xs:string" minOccurs="0"/>
+          <xs:element name="bridge" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
   <xs:complexType name="directPublicEndpoint">
     <xs:complexContent>
       <xs:extension base="ns1:publicEndpointBase">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="directCloud">
+    <xs:complexContent>
+      <xs:extension base="ns1:machineCloudBase">
         <xs:sequence/>
       </xs:extension>
     </xs:complexContent>

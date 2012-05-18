@@ -15,7 +15,7 @@
     <xs:complexContent>
       <xs:extension base="ns1:itemBase">
         <xs:sequence>
-          <xs:element name="cloud" type="xs:string" minOccurs="0"/>
+          <xs:element name="cloud" type="ns1:platformLayerKey" minOccurs="0"/>
           <xs:element name="host" type="xs:string" minOccurs="0"/>
         </xs:sequence>
       </xs:extension>

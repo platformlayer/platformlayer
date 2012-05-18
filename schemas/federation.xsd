@@ -7,6 +7,17 @@
 
   <xs:element name="federatedServiceMap" type="tns:federatedServiceMap"/>
 
+  <xs:complexType name="federatedServiceMap">
+    <xs:complexContent>
+      <xs:extension base="ns1:itemBase">
+        <xs:sequence>
+          <xs:element name="target" type="ns1:platformLayerKey" minOccurs="0"/>
+          <xs:element name="serviceType" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
   <xs:complexType name="federatedService">
     <xs:complexContent>
       <xs:extension base="ns1:itemBase">
@@ -15,17 +26,6 @@
           <xs:element name="tenant" type="xs:string" minOccurs="0"/>
           <xs:element name="username" type="xs:string" minOccurs="0"/>
           <xs:element name="secret" type="xs:string" minOccurs="0"/>
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-
-  <xs:complexType name="federatedServiceMap">
-    <xs:complexContent>
-      <xs:extension base="ns1:itemBase">
-        <xs:sequence>
-          <xs:element name="target" type="xs:string" minOccurs="0"/>
-          <xs:element name="serviceType" type="xs:string" minOccurs="0"/>
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>

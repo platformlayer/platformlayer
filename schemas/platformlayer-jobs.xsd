@@ -9,27 +9,6 @@
 
   <xs:element name="jobLog" type="tns:jobLog"/>
 
-  <xs:complexType name="jobData">
-    <xs:sequence>
-      <xs:element name="key" type="ns1:platformLayerKey" minOccurs="0"/>
-      <xs:element name="targetId" type="xs:string" minOccurs="0"/>
-      <xs:element ref="ns1:action" minOccurs="0"/>
-      <xs:element name="state" type="tns:jobState" minOccurs="0"/>
-    </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="jobDataList">
-    <xs:sequence>
-      <xs:element name="jobs" type="tns:jobData" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
-    </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="jobLog">
-    <xs:sequence>
-      <xs:element name="lines" type="tns:jobLogLine" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
-    </xs:sequence>
-  </xs:complexType>
-
   <xs:complexType name="jobLogLine">
     <xs:sequence>
       <xs:element name="timestamp" type="xs:long"/>
@@ -42,6 +21,27 @@
   <xs:complexType name="jobLogExceptionInfo">
     <xs:sequence>
       <xs:element name="info" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="jobLog">
+    <xs:sequence>
+      <xs:element name="lines" type="tns:jobLogLine" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="jobDataList">
+    <xs:sequence>
+      <xs:element name="jobs" type="tns:jobData" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="jobData">
+    <xs:sequence>
+      <xs:element name="key" type="ns1:platformLayerKey" minOccurs="0"/>
+      <xs:element name="targetId" type="ns1:platformLayerKey" minOccurs="0"/>
+      <xs:element name="action" type="ns1:action" minOccurs="0"/>
+      <xs:element name="state" type="tns:jobState" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 

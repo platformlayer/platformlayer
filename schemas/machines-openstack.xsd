@@ -9,19 +9,6 @@
 
   <xs:element name="openstackPublicEndpoint" type="tns:openstackPublicEndpoint"/>
 
-  <xs:complexType name="openstackCloud">
-    <xs:complexContent>
-      <xs:extension base="ns1:machineCloudBase">
-        <xs:sequence>
-          <xs:element name="endpoint" type="xs:string" minOccurs="0"/>
-          <xs:element name="username" type="xs:string" minOccurs="0"/>
-          <xs:element name="password" type="ns1:secret" minOccurs="0"/>
-          <xs:element name="tenant" type="xs:string" minOccurs="0"/>
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-
   <xs:complexType name="openstackInstance">
     <xs:complexContent>
       <xs:extension base="ns1:instanceBase">
@@ -37,6 +24,19 @@
     <xs:complexContent>
       <xs:extension base="ns1:publicEndpointBase">
         <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="openstackCloud">
+    <xs:complexContent>
+      <xs:extension base="ns1:machineCloudBase">
+        <xs:sequence>
+          <xs:element name="endpoint" type="xs:string" minOccurs="0"/>
+          <xs:element name="username" type="xs:string" minOccurs="0"/>
+          <xs:element name="password" type="ns1:secret" minOccurs="0"/>
+          <xs:element name="tenant" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
