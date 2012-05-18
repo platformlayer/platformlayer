@@ -11,39 +11,12 @@ mvn compile --projects xaas/core,shared/core-model,shared/codegen-annotations
 # Generate the schema files
 mvn generate-resources
 
-for servicedir in $( find  services/ -maxdepth 1  -type d -name 'service-*' | sort )
-#for servicedir in "services/service-cloud-lxc"
-do
-service=`basename ${servicedir}`
-echo "Processing ${service}"
-
-#mvn compile --projects ${servicedir}
-
-CORE_FILES=$( find  shared/core-model/src/main/java -type f -name '*.java' | grep core | xargs grep -l "@Xml"  )
-MODEL_FILES=$( find  ${servicedir}/src/main/java -type f -name '*.java' | xargs grep -l "@Xml" )
-CLASSPATH=`cat ${servicedir}/target/classpath.def`
-CLASSPATH=${CLASSPATH}:${servicedir}/target/classes
-#shared/codegen-annotations/target/classes:xaas/core/target/classes:shared/core-model/target/classes:/home/justinsb/.m2/repository/com/google/guava/guava/10.0.1/guava-10.0.1.jar:${servicedir}/target/classes
-OUTDIR=${servicedir}/target/schemas
-mkdir -p ${OUTDIR}
-
-echo "Doing schemagen..."
-#mvn generate-resources
-#schemagen -d ${OUTDIR} -cp ${CLASSPATH} ${CORE_FILES} ${MODEL_FILES}
-done
-
-
-#for service in services/*; do
-#echo ${service}
-#done
-
-#schemagen shared/core-model/src/main/java/org/platformlayer/core/model/*.java services/service-cloud-lxc/src/main/java/org/openstack/service/lxc/model/*.java
 
 # Copy the schemas from the target directories
-
-
 pushd schemas
-cp ../shared/core-model/target/schemas/*.xsd .
+cp ../shared/core-model/target/generated-resources/schemagen/schema1.xsd platformlayer-metrics.xsd
+cp ../shared/core-model/target/generated-resources/schemagen/schema2.xsd platformlayer-jobs.xsd
+cp ../shared/core-model/target/generated-resources/schemagen/schema3.xsd platformlayer-core.xsd
 
 cp ../services/service-federation/target/generated-resources/schemagen/schema1.xsd federation.xsd
 cp ../services/service-dns/target/generated-resources/schemagen/schema1.xsd dns.xsd
@@ -59,6 +32,7 @@ cp ../services/service-cloud-openstack/target/generated-resources/schemagen/sche
 
 #find *.xsd ! -name "platformlayer-*.xsd" | xargs sed -i 's/schema1.xsd/platformlayer-core.xsd/g'
 find *.xsd ! -name "platformlayer-*.xsd" | xargs sed -i 's/schema2.xsd/platformlayer-core.xsd/g'
+find *.xsd ! -name "platformlayer-*.xsd" | xargs sed -i 's/schema3.xsd/platformlayer-core.xsd/g'
 #find *.xsd ! -name "platformlayer-*.xsd" | xargs sed -i 's/schemaLocation=.schema..xsd.//g'
 
 popd
