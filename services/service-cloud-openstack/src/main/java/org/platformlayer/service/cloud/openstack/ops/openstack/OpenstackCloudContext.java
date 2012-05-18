@@ -777,6 +777,25 @@ public class OpenstackCloudContext {
 		return server;
 	}
 
+	public AsyncServerOperation ensurePoweredOn(OpenstackCloud cloud, Server server) throws OpsException {
+		String status = server.getStatus();
+		if (Objects.equal(status, "SHUTOFF")) {
+			try {
+				OpenstackComputeClient computeClient = getComputeClient(cloud);
+
+				String serverId = server.getId();
+				log.info("Starting SHUTOFF server: " + serverId);
+
+				AsyncServerOperation powerOnOperation = computeClient.powerServerOn(serverId);
+				return powerOnOperation;
+			} catch (OpenstackException e) {
+				throw new OpsException("Error powering server on", e);
+			}
+		}
+
+		return null;
+	}
+
 	// @Override
 	// public Machine refreshMachine(Machine machine) throws OpsException {
 	// throw new UnsupportedOperationException();

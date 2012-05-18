@@ -122,6 +122,11 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
 			} else {
 				server = openstack.ensureHasPublicIp(cloud, server);
 
+				AsyncServerOperation powerOnOperation = openstack.ensurePoweredOn(cloud, server);
+				if (powerOnOperation != null) {
+					waitOperation(powerOnOperation);
+				}
+
 				machine = new OpenstackComputeMachine(openstack, cloud, server);
 
 				SshKey sshKey = service.getSshKey();
@@ -151,14 +156,7 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
 				if (securityGroup != null) {
 					// We need to terminate the instance before we delete the security group it uses
 					if (terminateOperation != null) {
-						try {
-							log.info("Waiting for server to shut down");
-							terminateOperation.waitComplete(2, TimeUnit.MINUTES);
-						} catch (TimeoutException e) {
-							throw new OpsException("Timeout waiting for server shutdown", e);
-						} catch (OpenstackException e) {
-							throw new OpsException("Error waiting for server shutdown", e);
-						}
+						waitOperation(terminateOperation);
 					}
 
 					try {
@@ -178,6 +176,17 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
 		} else {
 			recursion.pushChildScope(machine);
 			recursion.pushChildScope(target);
+		}
+	}
+
+	private void waitOperation(AsyncServerOperation operation) throws OpsException {
+		try {
+			log.info("Waiting for server operation to complete");
+			operation.waitComplete(2, TimeUnit.MINUTES);
+		} catch (TimeoutException e) {
+			throw new OpsException("Timeout waiting for server operation to complete", e);
+		} catch (OpenstackException e) {
+			throw new OpsException("Error waiting for server operation to complete", e);
 		}
 	}
 
