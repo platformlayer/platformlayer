@@ -11,15 +11,25 @@ iptables-restore <<EOF
 -A INPUT -p tcp -m tcp --dport 22 -j ACCEPT
 -A INPUT -m state --state ESTABLISHED -j ACCEPT
 COMMIT
-*nat
-:PREROUTING ACCEPT
-:INPUT ACCEPT
-:OUTPUT ACCEPT
-:POSTROUTING ACCEPT
-COMMIT
+
+# Older versions of Debian (Squeeze) have different syntaxes (for INPUT)
+#*nat
+#:PREROUTING ACCEPT
+#:INPUT ACCEPT
+#:OUTPUT ACCEPT
+#:POSTROUTING ACCEPT
+#COMMIT
 
 EOF
 
+
+# Older versions of Debian (Squeeze) have different syntaxes (for INPUT)
+for TABLE in nat mangle
+do
+    iptables -t $TABLE -F
+    iptables -t $TABLE -X
+    iptables -t $TABLE -Z
+done
 
 ip6tables-restore <<EOF
 # By default, we lock down everything but SSH
