@@ -14,4 +14,8 @@ public abstract class Filter {
 	}
 
 	public abstract <T extends ItemBase> boolean matchesItem(T item);
+
+	public static Filter and(Filter... filters) {
+		return new AndFilter(filters);
+	}
 }
