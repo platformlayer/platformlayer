@@ -1,8 +1,12 @@
 package org.platformlayer.ops.bootstrap;
 
+import java.io.File;
+
 import org.apache.log4j.Logger;
+import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.filesystem.SimpleFile;
 import org.platformlayer.ops.firewall.scripts.PersistIptablesScripts;
 import org.platformlayer.ops.packages.PackageDependency;
 import org.platformlayer.ops.tree.OpsTreeBase;
@@ -20,6 +24,9 @@ public class InstanceBootstrap extends OpsTreeBase {
 		addChild(PersistIptablesScripts.class);
 
 		addChild(BootstrapLocales.class);
+
+		addChild(SimpleFile.build(getClass(), new File("/etc/ssh/sshd_config")).setFileMode("0644").setOwner("root")
+				.setGroup("root").setUpdateAction(Command.build("service ssh reload")));
 
 		// We always install curl, because we use it to check for http proxy responsiveness
 		// TODO: Switch to netcat, to avoid using curl here - it's quite big
