@@ -204,6 +204,19 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 		}
 	}
 
+	static class ListChildren extends HostFunction<Iterable<UntypedItem>> {
+		final PlatformLayerKey parent;
+
+		public ListChildren(PlatformLayerKey parent) {
+			this.parent = parent;
+		}
+
+		@Override
+		public Iterable<UntypedItem> apply(final ChildClient child) throws PlatformLayerClientException {
+			return child.client.listChildren(parent);
+		}
+	}
+
 	// static class ListItemsTyped<T> extends HostFunction<Iterable<T>> {
 	// final Class<T> clazz;
 	// final Filter filter;
@@ -649,8 +662,7 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 
 	@Override
 	public Iterable<UntypedItem> listChildren(PlatformLayerKey parent) throws PlatformLayerClientException {
-		// TODO: Implement me!
-		throw new UnsupportedOperationException();
+		return doListConcatenation(getChildClients(parent), AddHostUntyped.wrap(new ListChildren(parent)));
 	}
 
 	@Override
