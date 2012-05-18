@@ -11,8 +11,7 @@ import org.w3c.dom.Element;
 public abstract class TypedItemMapper {
 
 	public <T> T promoteToTyped(UntypedItem untypedItem) throws OpsException {
-
-		ElementInfo elementInfo = untypedItem.getElementInfo();
+		ElementInfo elementInfo = untypedItem.getRootElementInfo();
 
 		Class<T> javaClass = mapToJavaClass(elementInfo);
 

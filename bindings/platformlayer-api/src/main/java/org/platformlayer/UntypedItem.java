@@ -13,6 +13,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import com.google.common.base.Strings;
+
 public class UntypedItem {
 
 	private final Element root;
@@ -108,46 +110,126 @@ public class UntypedItem {
 		return ManagedItemState.valueOf(state);
 	}
 
-	public String getRootNamespace() {
-		String namespace = root.getNamespaceURI();
-		return namespace;
-	}
-
-	public String getRootElementName() {
+	public ElementInfo getRootElementInfo() {
 		String name = null;
-		if (name == null) {
-			// xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns16:networkConnection"
-			String ns = "http://www.w3.org/2001/XMLSchema-instance";
-			String xsiType = root.getAttributeNS(ns, "type");
-			if (xsiType != null) {
-				// String xsiType = xsiTypeNode.getValue();
-				String[] tokens = xsiType.split(":");
-				if (tokens.length == 1) {
-					name = tokens[0];
-				} else if (tokens.length == 2) {
-					// namespace = tokens[0];
-					name = tokens[1];
-				} else {
-					throw new IllegalStateException();
-				}
-				if (name.isEmpty()) {
-					name = null;
-				}
+		String namespace = null;
+
+		// xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns16:networkConnection"
+		String xsiNs = "http://www.w3.org/2001/XMLSchema-instance";
+		String xsiType = root.getAttributeNS(xsiNs, "type");
+		if (xsiType != null) {
+			// String xsiType = xsiTypeNode.getValue();
+			String[] tokens = xsiType.split(":");
+			if (tokens.length == 1) {
+				namespace = null;
+				name = tokens[0];
+			} else if (tokens.length == 2) {
+				name = tokens[1];
+				namespace = mapNamespace(tokens[0]);
+			} else {
+				throw new IllegalStateException();
 			}
 		}
-		if (name == null) {
+
+		if (Strings.isNullOrEmpty(name)) {
 			name = root.getLocalName();
+
+			if (Strings.isNullOrEmpty(name)) {
+				name = null;
+			}
 		}
-		// String name = root.getNodeName();
-		return name;
+
+		if (Strings.isNullOrEmpty(namespace)) {
+			namespace = root.getNamespaceURI();
+
+			if (Strings.isNullOrEmpty(namespace)) {
+				namespace = null;
+			}
+		}
+
+		return new ElementInfo(namespace, name);
+
 	}
 
-	public ElementInfo getElementInfo() {
-		String xmlNamespace = getRootNamespace();
-		String rootElement = getRootElementName();
-
-		return new ElementInfo(xmlNamespace, rootElement);
+	private String mapNamespace(String alias) {
+		String ns = "xmlns";
+		Element rootElement = root.getOwnerDocument().getDocumentElement();
+		String attributeValue = rootElement.getAttribute(ns + ":" + alias);
+		if (attributeValue != null) {
+			return attributeValue;
+		} else {
+			throw new IllegalArgumentException();
+		}
 	}
+
+	// public String getRootNamespace() {
+	// String namespace = null;
+	// if (namespace == null) {
+	// // xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns16:networkConnection"
+	// String ns = "http://www.w3.org/2001/XMLSchema-instance";
+	// String xsiType = root.getAttributeNS(ns, "type");
+	// if (xsiType != null) {
+	// // String xsiType = xsiTypeNode.getValue();
+	// String[] tokens = xsiType.split(":");
+	// if (tokens.length == 1) {
+	// namespace = null;
+	// } else if (tokens.length == 2) {
+	// // namespace = tokens[0];
+	// namespace = tokens[0];
+	// // name = tokens[1];
+	// } else {
+	// throw new IllegalStateException();
+	// }
+	// if (name.isEmpty()) {
+	// name = null;
+	// }
+	// }
+	// }
+	// if (name == null) {
+	// name = root.getLocalName();
+	// }
+	// // String name = root.getNodeName();
+	// return name;
+	//
+	// String namespace = root.getNamespaceURI();
+	// return namespace;
+	// }
+	//
+	// public String getRootElementName() {
+	// String name = null;
+	// if (name == null) {
+	// // xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns16:networkConnection"
+	// String ns = "http://www.w3.org/2001/XMLSchema-instance";
+	// String xsiType = root.getAttributeNS(ns, "type");
+	// if (xsiType != null) {
+	// // String xsiType = xsiTypeNode.getValue();
+	// String[] tokens = xsiType.split(":");
+	// if (tokens.length == 1) {
+	// name = tokens[0];
+	// } else if (tokens.length == 2) {
+	// // namespace = tokens[0];
+	// name = tokens[1];
+	// } else {
+	// throw new IllegalStateException();
+	// }
+	// if (name.isEmpty()) {
+	// name = null;
+	// }
+	// }
+	// }
+	// if (name == null) {
+	// name = root.getLocalName();
+	// }
+	// // String name = root.getNodeName();
+	// return name;
+	// }
+
+	// public ElementInfo getElementInfo() {
+	// String xmlNamespace = getRootNamespace();
+	// String rootElement = getRootElementName();
+	//
+	// return new ElementInfo(xmlNamespace, rootElement);
+	// }
 
 	public String serialize() {
 		try {
