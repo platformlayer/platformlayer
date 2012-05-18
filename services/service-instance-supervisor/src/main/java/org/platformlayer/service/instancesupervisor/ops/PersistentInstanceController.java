@@ -4,13 +4,12 @@ import org.apache.log4j.Logger;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.tree.OpsTreeBase;
-import org.platformlayer.service.instancesupervisor.model.PersistentInstance;
 
 public class PersistentInstanceController extends OpsTreeBase {
 	static final Logger log = Logger.getLogger(PersistentInstanceController.class);
 
 	@Handler
-	public void handler(PersistentInstance instance) throws OpsException {
+	public void handler() {
 
 	}
 
