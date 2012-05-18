@@ -189,6 +189,9 @@ public class MinaSshConnectionWrapper implements Closeable {
 			return true;
 		}
 
+		if (sshSessionStateCode == ClientSession.TIMEOUT) {
+			throw new SshException("Timeout while waiting for session");
+		}
 		throw new SshException("Unexpected state; not authenticated; not closed");
 	}
 
