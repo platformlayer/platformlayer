@@ -51,6 +51,7 @@ ChallengeResponseAuthentication no
 
 # Change to no to disable tunnelled clear text passwords
 #PasswordAuthentication yes
+PasswordAuthentication no
 
 # Kerberos options
 #KerberosAuthentication no
@@ -87,3 +88,6 @@ Subsystem sftp /usr/lib/openssh/sftp-server
 # PAM authentication, then enable this but set PasswordAuthentication
 # and ChallengeResponseAuthentication to 'no'.
 UsePAM yes
+
+# Don't reverse lookup in DNS; causes big pauses when DNS not properly configured
+UseDNS no
