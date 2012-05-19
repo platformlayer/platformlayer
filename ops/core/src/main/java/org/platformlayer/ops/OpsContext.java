@@ -205,4 +205,8 @@ public class OpsContext implements Closeable {
 	public static boolean isConfigure() {
 		return isOperationType(OperationType.Configure);
 	}
+
+	public static boolean isValidate() {
+		return isOperationType(OperationType.Validate);
+	}
 }
