@@ -220,7 +220,12 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 
 		@Override
 		public Iterable<UntypedItem> apply(final ChildClient child) throws PlatformLayerClientException {
-			return child.client.listChildren(parent);
+			try {
+				return child.client.listChildren(parent);
+			} catch (PlatformLayerClientNotFoundException e) {
+				log.warn("Ignoring not found from federated client on: " + e.getUrl());
+				return Collections.emptyList();
+			}
 		}
 	}
 
@@ -631,7 +636,7 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 
 		for (FederatedService service : localClient.listItems(FederatedService.class)) {
 			PlatformLayerConnectionConfiguration config = new PlatformLayerConnectionConfiguration();
-			config.key = service.getId();
+			config.key = service.getKey();
 			config.secret = service.getSecret();
 			config.server = service.getServer();
 			config.tenant = service.getTenant();
