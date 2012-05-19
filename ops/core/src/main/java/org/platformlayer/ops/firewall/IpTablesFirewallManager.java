@@ -26,7 +26,7 @@ public class IpTablesFirewallManager extends FirewallManager {
 		// OpsServer server = smartGetServer(true);
 		Command command = IpTablesManager.buildCommandAddFirewallRule(target, add);
 
-		String key = add.buildKey();
+		String fileName = Sanitizer.forFileName().clean(add.buildKey());
 
 		File scriptDirectory = new File("/etc/iptables/eth0");
 		File transportDirectory;
@@ -40,7 +40,7 @@ public class IpTablesFirewallManager extends FirewallManager {
 		default:
 			throw new IllegalStateException();
 		}
-		File scriptFile = new File(transportDirectory, key);
+		File scriptFile = new File(transportDirectory, fileName);
 
 		ScriptBuilder sb = new ScriptBuilder();
 		sb.add(command);
