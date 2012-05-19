@@ -13,7 +13,7 @@ public abstract class StringWrapper implements CharSequence {
 
 	@Override
 	public String toString() {
-		return getClass().getName() + " [" + key + "]";
+		return getClass().getSimpleName() + " [" + key + "]";
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package org.platformlayer.federation;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.platformlayer.DirectPlatformLayerClient;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.TypedItemMapper;
@@ -15,6 +16,7 @@ import org.platformlayer.ids.FederationKey;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceType;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -23,6 +25,7 @@ import com.google.common.collect.Maps;
  * Maps platform layer keys to one or more children.
  */
 public class FederationMap {
+	private static final Logger log = Logger.getLogger(FederationMap.class);
 
 	// FederationKey privateCloud = new FederationKey("private");
 	// FederationKey publicCloud = new FederationKey("public");
@@ -130,6 +133,10 @@ public class FederationMap {
 		}
 
 		keys.add(buildLocal(path));
+
+		if (keys.size() > 1) {
+			log.debug("Multiple clients for " + path + ": " + Joiner.on(",").join(keys));
+		}
 
 		return keys;
 

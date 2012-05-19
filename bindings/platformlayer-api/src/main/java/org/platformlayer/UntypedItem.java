@@ -263,4 +263,10 @@ public class UntypedItem {
 	public Element getRoot() {
 		return root;
 	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + ":" + getPlatformLayerKey();
+	}
+
 }

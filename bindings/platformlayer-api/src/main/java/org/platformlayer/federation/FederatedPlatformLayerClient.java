@@ -14,6 +14,7 @@ import org.platformlayer.PlatformLayerAuthenticationException;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientBase;
 import org.platformlayer.PlatformLayerClientException;
+import org.platformlayer.PlatformLayerClientNotFoundException;
 import org.platformlayer.TypedItemMapper;
 import org.platformlayer.TypedPlatformLayerClient;
 import org.platformlayer.UntypedItem;
@@ -169,6 +170,11 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 			// }
 
 			return item;
+		}
+
+		@Override
+		public String toString() {
+			return "ChildClient [key=" + key + "]";
 		}
 	}
 
@@ -586,6 +592,7 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 			ChildClient child = getClient(key);
 			clients.add(child);
 		}
+
 		return clients;
 	}
 
