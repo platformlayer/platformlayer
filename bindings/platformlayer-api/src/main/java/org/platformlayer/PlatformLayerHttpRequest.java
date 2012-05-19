@@ -187,8 +187,8 @@ class PlatformLayerHttpRequest implements Closeable {
 			break;
 		case 401:
 			throw new PlatformLayerAuthenticationException("Not authorized (or authorization timed out)");
-			// case 404:
-			// throw new PlatformLayerClientNotFoundException("Not found", httpRequest.getUrl());
+		case 404:
+			throw new PlatformLayerClientNotFoundException("Not found", 404, httpRequest.getUrl());
 		case 500:
 			throw buildExceptionFromErrorStream(httpResponseCode);
 

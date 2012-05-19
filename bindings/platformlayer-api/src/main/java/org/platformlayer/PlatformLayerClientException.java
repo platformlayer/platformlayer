@@ -17,10 +17,10 @@ public class PlatformLayerClientException extends OpsException {
 		this.httpResponseCode = httpResponseCode;
 	}
 
-	public PlatformLayerClientException() {
-		this.serviceFault = null;
-		this.httpResponseCode = null;
-	}
+	// public PlatformLayerClientException() {
+	// this.serviceFault = null;
+	// this.httpResponseCode = null;
+	// }
 
 	public PlatformLayerClientException(String message, Throwable cause) {
 		super(message, cause);

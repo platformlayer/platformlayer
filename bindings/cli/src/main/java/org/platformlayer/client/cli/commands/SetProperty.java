@@ -54,7 +54,6 @@ public class SetProperty extends PlatformLayerCommandRunnerBase {
 				}
 			}
 			element = (Element) child;
-
 		}
 
 		element.setTextContent(value);
