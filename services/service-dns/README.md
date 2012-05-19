@@ -11,4 +11,8 @@ pl put-item networkConnection/ns1-world "{ 'sourceCidr': '0.0.0.0/0', 'destItem'
 pl put-item networkConnection/ns2-world "{ 'sourceCidr': '0.0.0.0/0', 'destItem': 'dnsServer/ns2', 'port': 53, 'protocol': 'Udp' }"
 pl put-item networkConnection/ns3-world "{ 'sourceCidr': '0.0.0.0/0', 'destItem': 'dnsServer/ns3', 'port': 53, 'protocol': 'Udp' }"
 
+
+pl put-item dnsRecord/resolver.platformlayer.net "{ 'dnsName': 'resolver.platformlayer.net', 'address': ['8.8.8.8', '8.8.4.4'] }"
+
+
 ```
