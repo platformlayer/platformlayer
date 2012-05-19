@@ -237,6 +237,8 @@ public class Command {
 			masked = MASKED;
 		} else if (arg instanceof String) {
 			command = escapeQuoted((String) arg);
+		} else if (arg instanceof Number) {
+			command = escapeQuoted(arg.toString());
 		} else if (arg instanceof Inet4Address) {
 			command = escapeQuoted(((Inet4Address) arg).getHostAddress());
 		} else {

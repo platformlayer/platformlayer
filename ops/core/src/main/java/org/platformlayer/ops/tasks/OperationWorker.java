@@ -85,6 +85,9 @@ public class OperationWorker implements Callable<Object> {
 						case Configure:
 							break;
 
+						case Validate:
+							break;
+
 						case Delete:
 							break;
 
@@ -113,6 +116,10 @@ public class OperationWorker implements Callable<Object> {
 						case Configure:
 							repository.changeState(targetItemKey, ManagedItemState.ACTIVE);
 							item.state = ManagedItemState.ACTIVE;
+							break;
+
+						case Validate:
+							// TODO: Change state to healthy??
 							break;
 
 						case Delete:

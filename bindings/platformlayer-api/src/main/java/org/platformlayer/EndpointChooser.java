@@ -29,4 +29,9 @@ public class EndpointChooser extends ScoreChooser<EndpointInfo, Integer> {
 		return chooser;
 	}
 
+	public static EndpointChooser any() {
+		EndpointChooser chooser = new EndpointChooser();
+		return chooser;
+	}
+
 }

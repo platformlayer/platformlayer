@@ -87,4 +87,11 @@ public class EndpointInfo {
 		return InetAddresses.forString(publicIp);
 	}
 
+	public InetSocketAddress asSocketAddress() {
+		if (port == null) {
+			throw new IllegalArgumentException("port is not set");
+		}
+		return new InetSocketAddress(getAddress(), port);
+	}
+
 }
