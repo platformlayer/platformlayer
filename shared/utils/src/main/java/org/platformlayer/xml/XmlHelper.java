@@ -152,7 +152,8 @@ public class XmlHelper {
 		NodeList childNodes = parent.getChildNodes();
 		for (int i = 0; i < childNodes.getLength(); i++) {
 			Node childNode = childNodes.item(i);
-			if (elementName.equals(childNode.getNodeName())) {
+			String nodeName = childNode.getLocalName();
+			if (elementName.equals(nodeName)) {
 				return childNode;
 			}
 		}
