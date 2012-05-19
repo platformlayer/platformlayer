@@ -8,6 +8,7 @@ import org.platformlayer.CastUtils;
 import org.platformlayer.CheckedCallable;
 import org.platformlayer.Filter;
 import org.platformlayer.RepositoryException;
+import org.platformlayer.StateFilter;
 import org.platformlayer.Strings;
 import org.platformlayer.TagFilter;
 import org.platformlayer.auth.crypto.SecretProvider;
@@ -239,6 +240,7 @@ public class ItemServiceImpl implements ItemService {
 						throw new IllegalArgumentException("Could not find unique tag");
 					}
 					Filter filter = TagFilter.byTag(uniqueTag);
+					filter = Filter.and(filter, StateFilter.exclude(ManagedItemState.DELETED));
 
 					existing = null;
 					List<T> existingList = repository.findAll(modelClass, modelKey.getProject(), fetchTags,

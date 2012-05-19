@@ -37,7 +37,7 @@ public class PlatformLayerCloudContext implements CloudContext {
 	public Machine createInstance(MachineCreationRequest request, PlatformLayerKey parent) throws OpsException {
 		Tag uniqueTag = Tag.buildParentTag(parent);
 
-		return cloudHelpers.createInstance(request, parent, uniqueTag);
+		return cloudHelpers.putInstanceByTag(request, parent, uniqueTag);
 	}
 
 	@Inject

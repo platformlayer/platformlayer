@@ -31,47 +31,49 @@ public class RawInstanceController extends OpsTreeBase {
 
 	@Handler
 	public void handler(RawInstance rawMachine) throws OpsException, IOException {
-		String instanceKey = rawMachine.getTags().findUnique(Tag.INSTANCE_KEY);
-		if (instanceKey == null) {
-			RawTarget targetMachine = null;
+		throw new OpsException("TODO: Remove utilization of INSTANCE_KEY");
 
-			for (RawTarget candidate : platformLayer.listItems(RawTarget.class)) {
-				// TODO: Optimize this test
-				Tags tags = candidate.getTags();
-				String allocated = tags.findUnique(Tag.ASSIGNED);
-				if (allocated != null) {
-					continue;
-				}
-
-				targetMachine = candidate;
-				break;
-			}
-
-			if (targetMachine == null) {
-				throw new OpsException("Unable to allocate raw machine");
-			}
-
-			platformLayer.addUniqueTag(OpsSystem.toKey(targetMachine),
-					Tag.buildTag(Tag.ASSIGNED, OpsSystem.toKey(rawMachine)));
-
-			PlatformLayerKey serverId = OpsSystem.toKey(targetMachine);
-
-			OpaqueMachine machine = new OpaqueMachine(NetworkPoint.forPublicHostname(targetMachine.host));
-			SshKey serviceSshKey = service.getSshKey();
-			OpsTarget target = machine.getTarget(serviceSshKey);
-
-			PublicKey sshPublicKey = OpenSshUtils.readSshPublicKey(rawMachine.sshPublicKey);
-			SshAuthorizedKey.ensureSshAuthorization(target, "root", sshPublicKey);
-
-			{
-				TagChanges tagChanges = new TagChanges();
-
-				tagChanges.addTags.add(new Tag(Tag.INSTANCE_KEY, serverId.getUrl()));
-				tagChanges.addTags.add(new Tag(Tag.NETWORK_ADDRESS, targetMachine.host));
-
-				platformLayer.changeTags(OpsSystem.toKey(rawMachine), tagChanges);
-			}
-		}
+		// String instanceKey = rawMachine.getTags().findUnique(Tag.INSTANCE_KEY);
+		// if (instanceKey == null) {
+		// RawTarget targetMachine = null;
+		//
+		// for (RawTarget candidate : platformLayer.listItems(RawTarget.class)) {
+		// // TODO: Optimize this test
+		// Tags tags = candidate.getTags();
+		// String allocated = tags.findUnique(Tag.ASSIGNED);
+		// if (allocated != null) {
+		// continue;
+		// }
+		//
+		// targetMachine = candidate;
+		// break;
+		// }
+		//
+		// if (targetMachine == null) {
+		// throw new OpsException("Unable to allocate raw machine");
+		// }
+		//
+		// platformLayer.addUniqueTag(OpsSystem.toKey(targetMachine),
+		// Tag.buildTag(Tag.ASSIGNED, OpsSystem.toKey(rawMachine)));
+		//
+		// PlatformLayerKey serverId = OpsSystem.toKey(targetMachine);
+		//
+		// OpaqueMachine machine = new OpaqueMachine(NetworkPoint.forPublicHostname(targetMachine.host));
+		// SshKey serviceSshKey = service.getSshKey();
+		// OpsTarget target = machine.getTarget(serviceSshKey);
+		//
+		// PublicKey sshPublicKey = OpenSshUtils.readSshPublicKey(rawMachine.sshPublicKey);
+		// SshAuthorizedKey.ensureSshAuthorization(target, "root", sshPublicKey);
+		//
+		// {
+		// TagChanges tagChanges = new TagChanges();
+		//
+		// tagChanges.addTags.add(new Tag(Tag.INSTANCE_KEY, serverId.getUrl()));
+		// tagChanges.addTags.add(new Tag(Tag.NETWORK_ADDRESS, targetMachine.host));
+		//
+		// platformLayer.changeTags(OpsSystem.toKey(rawMachine), tagChanges);
+		// }
+		// }
 	}
 
 	@Override

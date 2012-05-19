@@ -42,26 +42,28 @@ public class PersistentInstanceMapper extends OpsTreeBase {
 	public void handler(PersistentInstance model) throws OpsException {
 		Machine machine = null;
 
-		// TODO: We should use putItem here...
-
 		Tag tagForInstance = OpsSystem.get().createParentTag(model);
-		boolean instanceIsTagged = false;
+		// boolean instanceIsTagged = false;
 
 		// See if we have an instance id tag
 		{
-			String instanceKey = model.getTags().findUnique(Tag.INSTANCE_KEY);
-			if (instanceKey != null) {
-				InstanceBase foundInstance = cloud.findInstanceByInstanceKey(PlatformLayerKey.parse(instanceKey));
-				if (foundInstance == null) {
-					throw new IllegalStateException("Tagged with instance id, but instance not found: " + instanceKey);
-				}
-				machine = cloudHelpers.toMachine(foundInstance);
-				if (machine == null) {
-					throw new IllegalStateException();
-				}
-
-				instanceIsTagged = true;
-			}
+			// String instanceKey = model.getTags().findUnique(Tag.INSTANCE_KEY);
+			// if (instanceKey != null) {
+			// InstanceBase foundInstance = cloud.findInstanceByInstanceKey(PlatformLayerKey.parse(instanceKey));
+			// if (foundInstance == null) {
+			// throw new IllegalStateException("Tagged with instance id, but instance not found: " + instanceKey);
+			// }
+			// if (foundInstance.getState() == ManagedItemState.DELETED) {
+			// log.warn("Found deleted instance: " + foundInstance);
+			// } else {
+			// machine = cloudHelpers.toMachine(foundInstance);
+			// if (machine == null) {
+			// throw new IllegalStateException();
+			// }
+			// }
+			//
+			// // instanceIsTagged = true;
+			// }
 		}
 
 		if (machine == null) {
@@ -70,13 +72,19 @@ public class PersistentInstanceMapper extends OpsTreeBase {
 		}
 
 		if (!OpsContext.isDelete()) {
-			if (machine == null) {
-				// No machine
-				MachineCreationRequest request = buildMachineCreationRequest(model);
-				request.tags.add(tagForInstance);
+			// We always PUT the machine
+			MachineCreationRequest request = buildMachineCreationRequest(model);
+			request.tags.add(tagForInstance);
 
-				machine = cloudHelpers.createInstance(request, OpsSystem.toKey(model), tagForInstance);
-			}
+			machine = cloudHelpers.putInstanceByTag(request, OpsSystem.toKey(model), tagForInstance);
+
+			// if (machine == null) {
+			// // No machine
+			// MachineCreationRequest request = buildMachineCreationRequest(model);
+			// request.tags.add(tagForInstance);
+			//
+			// machine = cloudHelpers.createInstance(request, OpsSystem.toKey(model), tagForInstance);
+			// }
 		} else {
 			if (machine != null) {
 				cloudHelpers.terminateMachine(machine);

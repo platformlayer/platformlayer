@@ -4,13 +4,12 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import org.apache.log4j.Logger;
-import org.platformlayer.TagFilter;
 import org.platformlayer.core.model.InstanceBase;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
-import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.Tags;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.ops.CloudContext;
@@ -21,7 +20,6 @@ import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.machines.PlatformLayerCloudHelpers;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.machines.ServiceProviderHelpers;
-import org.platformlayer.service.instancesupervisor.v1.PersistentInstance;
 import org.platformlayer.xaas.services.ModelClass;
 import org.platformlayer.xaas.services.ServiceProviderDictionary;
 
@@ -52,47 +50,66 @@ public class InstanceHelpers {
 	@Inject
 	SshKeys sshKeys;
 
+	@Inject
+	Provider<InstanceFinder> instanceFinderProvider;
+
 	public InstanceBase findInstance(Tags tags, PlatformLayerKey modelKey) throws OpsException {
-		// We have to connect to the underlying machine not-via-DNS for Dns service => use instance id
-		// TODO: Should we always use the instance id??
-		{
-			String instanceKey = tags.findUnique(Tag.INSTANCE_KEY);
+		InstanceFinder instanceFinder = instanceFinderProvider.get();
 
-			if (instanceKey != null) {
-				InstanceBase instance = cloud.findInstanceByInstanceKey(PlatformLayerKey.parse(instanceKey));
-				return instance;
-			}
+		instanceFinder.visitChildren(modelKey);
+
+		List<InstanceBase> instances = instanceFinder.getInstances();
+		if (instances.size() == 0) {
+			return null;
+		}
+		if (instances.size() == 1) {
+			return instances.get(0);
 		}
 
-		{
-			// TODO: Do we have to skip this if we've been passed a PersistentInstances?
+		throw new OpsException("Found multiple instances for " + modelKey);
 
-			// String conductorId = ops.buildUrl(modelKey);
-
-			Tag parentTag = Tag.buildParentTag(modelKey);
-
-			// // TODO: Fix this so that we don't get everything...
-			// for (PersistentInstance persistentInstance : platformLayer.listItems(PersistentInstance.class)) {
-			// String systemId = persistentInstance.getTags().findUnique(Tag.PARENT_ID);
-			// if (Objects.equal(conductorId, systemId)) {
-			// String instanceKey = persistentInstance.getTags().findUnique(Tag.INSTANCE_KEY);
-			// if (instanceKey != null) {
-			// return cloud.findMachineByInstanceKey(instanceKey);
-			// }
-			// }
-			// }
-
-			for (PersistentInstance persistentInstance : platformLayer.listItems(PersistentInstance.class,
-					TagFilter.byTag(parentTag))) {
-				String instanceKey = persistentInstance.getTags().findUnique(Tag.INSTANCE_KEY);
-				if (instanceKey != null) {
-					return cloud.findInstanceByInstanceKey(PlatformLayerKey.parse(instanceKey));
-				}
-			}
-
-		}
-
-		return null;
+		//
+		// // We have to connect to the underlying machine not-via-DNS for Dns service => use instance id
+		// // TODO: Should we always use the instance id??
+		// {
+		// String instanceKey = tags.findUnique(Tag.INSTANCE_KEY);
+		//
+		// if (instanceKey != null) {
+		// InstanceBase instance = cloud.findInstanceByInstanceKey(PlatformLayerKey.parse(instanceKey));
+		// return instance;
+		// }
+		// }
+		//
+		// {
+		// // TODO: Do we have to skip this if we've been passed a PersistentInstances?
+		//
+		// Tag parentTag = Tag.buildParentTag(modelKey);
+		//
+		//
+		// // String conductorId = ops.buildUrl(modelKey);
+		//
+		// // // TODO: Fix this so that we don't get everything...
+		// // for (PersistentInstance persistentInstance : platformLayer.listItems(PersistentInstance.class)) {
+		// // String systemId = persistentInstance.getTags().findUnique(Tag.PARENT_ID);
+		// // if (Objects.equal(conductorId, systemId)) {
+		// // String instanceKey = persistentInstance.getTags().findUnique(Tag.INSTANCE_KEY);
+		// // if (instanceKey != null) {
+		// // return cloud.findMachineByInstanceKey(instanceKey);
+		// // }
+		// // }
+		// // }
+		//
+		// for (PersistentInstance persistentInstance : platformLayer.listItems(PersistentInstance.class,
+		// TagFilter.byTag(parentTag))) {
+		// String instanceKey = persistentInstance.getTags().findUnique(Tag.INSTANCE_KEY);
+		// if (instanceKey != null) {
+		// return cloud.findInstanceByInstanceKey(PlatformLayerKey.parse(instanceKey));
+		// }
+		// }
+		//
+		// }
+		//
+		// return null;
 	}
 
 	public InstanceBase findInstance(ItemBase item) throws OpsException {

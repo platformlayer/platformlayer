@@ -10,10 +10,12 @@ import javax.inject.Inject;
 import org.apache.log4j.Logger;
 import org.platformlayer.CastUtils;
 import org.platformlayer.Filter;
+import org.platformlayer.StateFilter;
 import org.platformlayer.TagFilter;
 import org.platformlayer.core.model.InstanceBase;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.MachineCloudBase;
+import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.PublicEndpointBase;
 import org.platformlayer.core.model.Tag;
@@ -110,8 +112,16 @@ public class PlatformLayerCloudHelpers {
 		// throw new UnsupportedOperationException();
 	}
 
-	public Machine createInstance(MachineCreationRequest request, PlatformLayerKey parent, Tag uniqueTag)
+	public Machine putInstanceByTag(MachineCreationRequest request, PlatformLayerKey parent, Tag uniqueTag)
 			throws OpsException {
+		InstanceBase machine = buildInstanceTemplate(request, parent);
+
+		machine = platformLayer.putItemByTag(machine, uniqueTag);
+
+		return toMachine(machine);
+	}
+
+	InstanceBase buildInstanceTemplate(MachineCreationRequest request, PlatformLayerKey parent) throws OpsException {
 		ItemBase cloudItem = scheduler.pickCloud(request);
 
 		InstanceBase machine;
@@ -175,19 +185,23 @@ public class PlatformLayerCloudHelpers {
 		}
 
 		machine.setKey(PlatformLayerKey.fromId(id));
-
-		machine = platformLayer.putItemByTag(machine, uniqueTag);
-
-		return toMachine(machine);
+		return machine;
 	}
 
 	public List<InstanceBase> findMachines(Tag tag) throws OpsException {
 		List<InstanceBase> machines = Lists.newArrayList();
 
+		boolean showDeleted = false;
+
+		Filter filter = TagFilter.byTag(tag);
+		if (!showDeleted) {
+			filter = Filter.and(filter, StateFilter.exclude(ManagedItemState.DELETED));
+		}
+
 		// TODO: Fix this!!
 		for (ModelClass<? extends InstanceBase> modelClass : serviceProviderHelpers
 				.getModelSubclasses(InstanceBase.class)) {
-			for (InstanceBase machine : platformLayer.listItems(modelClass.getJavaClass(), TagFilter.byTag(tag))) {
+			for (InstanceBase machine : platformLayer.listItems(modelClass.getJavaClass(), filter)) {
 				machines.add(machine);
 			}
 		}
