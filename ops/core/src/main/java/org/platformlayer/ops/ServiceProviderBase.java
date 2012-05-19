@@ -10,6 +10,7 @@ import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ServiceInfo;
 import org.platformlayer.ids.ItemType;
+import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.inject.ObjectInjector;
 import org.platformlayer.metrics.model.MetricValues;
@@ -268,6 +269,11 @@ public abstract class ServiceProviderBase implements ServiceProvider {
 						ItemType itemType = key.getItemType();
 						ServiceType serviceType = OpsContext.get().getOpsSystem().getServiceType(itemType);
 						key = key.withServiceType(serviceType);
+					}
+
+					if (key.getProject() == null) {
+						ProjectId projectId = OpsContext.get().getUserInfo().getProjectId();
+						key = key.withProject(projectId);
 					}
 
 					try {
