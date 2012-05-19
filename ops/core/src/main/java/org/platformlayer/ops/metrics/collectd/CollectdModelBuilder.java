@@ -1,5 +1,7 @@
 package org.platformlayer.ops.metrics.collectd;
 
+import java.net.InetAddress;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -16,8 +18,6 @@ import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.templates.TemplateDataSource;
 import org.platformlayer.service.collectd.v1.CollectdService;
-
-import com.google.common.base.Strings;
 
 public class CollectdModelBuilder implements TemplateDataSource {
 	static final Logger log = Logger.getLogger(CollectdModelBuilder.class);
@@ -44,6 +44,7 @@ public class CollectdModelBuilder implements TemplateDataSource {
 		return CollectdHelpers.toCollectdKey(modelKey);
 	}
 
+	@Deprecated
 	public String getCollectdServer() throws OpsException {
 		Iterable<CollectdService> collectdServices = platformLayer.listItems(CollectdService.class);
 		for (CollectdService collectdService : collectdServices) {
@@ -51,9 +52,9 @@ public class CollectdModelBuilder implements TemplateDataSource {
 			Machine machine = instances.findMachine(collectdService);
 			if (machine != null) {
 				NetworkPoint targetNetworkPoint = NetworkPoint.forTargetInContext();
-				String address = machine.findAddress(targetNetworkPoint, CollectdCommon.COLLECTD_PORT);
-				if (!Strings.isNullOrEmpty(address)) {
-					return address;
+				List<InetAddress> addresses = machine.findAddresses(targetNetworkPoint, CollectdCommon.COLLECTD_PORT);
+				if (!addresses.isEmpty()) {
+					return addresses.get(0).getHostAddress();
 				}
 			}
 		}

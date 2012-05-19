@@ -29,7 +29,7 @@ public class HttpSiteDns extends OwnedItem<DnsRecord> {
 
 		Machine machine = instanceHelpers.getMachine(server);
 
-		String address = machine.getAddress(NetworkPoint.forPublicInternet(), 0);
+		String address = machine.getBestAddress(NetworkPoint.forPublicInternet(), 0);
 
 		DnsRecord record = new DnsRecord();
 		record.setDnsName(site.hostname);

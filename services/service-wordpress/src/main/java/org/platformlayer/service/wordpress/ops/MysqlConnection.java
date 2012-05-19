@@ -51,7 +51,7 @@ public class MysqlConnection extends OpsTreeBase implements CustomRecursor {
 
 		Machine machine = instanceHelpers.getMachine(mysqlServer);
 
-		String address = machine.getAddress(NetworkPoint.forTargetInContext(), 3306);
+		String address = machine.getBestAddress(NetworkPoint.forTargetInContext(), 3306);
 		MysqlTarget mysql = new MysqlTarget(address, username, password);
 
 		BindingScope scope = BindingScope.push(mysql);

@@ -2,6 +2,7 @@ package org.platformlayer.service.imagefactory.ops;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -648,8 +649,8 @@ public class DiskImageController {
 		try {
 			final NetworkPoint myNetworkPoint = NetworkPoint.forMe();
 
-			String address = machine.findAddress(myNetworkPoint, 22);
-			if (address != null) {
+			List<InetAddress> addresses = machine.findAddresses(myNetworkPoint, 22);
+			if (!addresses.isEmpty()) {
 				return machine;
 			}
 
@@ -658,8 +659,8 @@ public class DiskImageController {
 				public Machine call() throws Exception {
 					Machine refreshed = cloud.refreshMachine(machine);
 
-					String address = refreshed.findAddress(myNetworkPoint, 22);
-					if (address != null) {
+					List<InetAddress> addresses = refreshed.findAddresses(myNetworkPoint, 22);
+					if (!addresses.isEmpty()) {
 						return refreshed;
 					}
 					return null;

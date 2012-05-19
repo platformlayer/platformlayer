@@ -47,7 +47,7 @@ public class CommonTemplateData implements TemplateDataSource {
 		PostgresqlServer item = platformLayer.getItem(model.database, PostgresqlServer.class);
 
 		Machine itemMachine = instanceHelpers.getMachine(item);
-		String host = itemMachine.getAddress(NetworkPoint.forTargetInContext(), 5432);
+		String host = itemMachine.getBestAddress(NetworkPoint.forTargetInContext(), 5432);
 
 		return "jdbc:postgresql://" + host + ":5432/" + getDatabaseName();
 	}

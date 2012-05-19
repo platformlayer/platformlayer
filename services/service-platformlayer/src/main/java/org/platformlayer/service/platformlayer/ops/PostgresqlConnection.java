@@ -55,7 +55,7 @@ public class PostgresqlConnection extends OpsTreeBase implements CustomRecursor 
 
 		Machine machine = instanceHelpers.getMachine(pgServer);
 
-		String address = machine.getAddress(NetworkPoint.forTargetInContext(), POSTGRES_PORT);
+		String address = machine.getBestAddress(NetworkPoint.forTargetInContext(), POSTGRES_PORT);
 		PostgresTarget mysql = new PostgresTarget(address, username, password);
 
 		BindingScope scope = BindingScope.push(mysql);

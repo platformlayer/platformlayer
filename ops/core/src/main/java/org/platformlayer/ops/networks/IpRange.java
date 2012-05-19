@@ -174,4 +174,8 @@ public abstract class IpRange {
 		return toAddress(addr);
 	}
 
+	public boolean isIpv6() {
+		return this instanceof IpV6Range;
+	}
+
 }

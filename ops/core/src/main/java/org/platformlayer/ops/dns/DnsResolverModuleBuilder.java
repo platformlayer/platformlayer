@@ -1,5 +1,6 @@
 package org.platformlayer.ops.dns;
 
+import java.net.InetAddress;
 import java.util.List;
 import java.util.Map;
 
@@ -33,9 +34,9 @@ public class DnsResolverModuleBuilder implements TemplateDataSource {
 		for (DnsResolverService dnsResolverService : dnsResolverServices) {
 			Machine machine = instances.findMachine(dnsResolverService);
 			if (machine != null) {
-				String address = machine.findAddress(NetworkPoint.forTargetInContext(), 53);
-				if (address != null) {
-					nameservers.add(address);
+				List<InetAddress> addresses = machine.findAddresses(NetworkPoint.forTargetInContext(), 53);
+				for (InetAddress address : addresses) {
+					nameservers.add(address.getHostAddress());
 				}
 			}
 		}

@@ -41,7 +41,7 @@ public class EnsureFirewallIngress {
 
 		// Find the public address, although the OpenStack firewall may be blocking it
 		String network = null; // model.network;
-		publicAddress = machine.getAddress(NetworkPoint.forNetwork(network), model.backendPort);
+		publicAddress = machine.getBestAddress(NetworkPoint.forNetwork(network), model.backendPort);
 
 		if (cloudBehaviours.supportsSecurityGroups()) {
 			Server server = machine.getServer();

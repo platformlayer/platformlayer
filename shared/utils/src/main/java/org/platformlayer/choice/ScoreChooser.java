@@ -7,14 +7,13 @@ import org.platformlayer.ops.OpsException;
 
 import com.google.common.base.Function;
 
-public class ScoreChooser<T, V extends Comparable<V>> implements Chooser<T> {
+public abstract class ScoreChooser<T, V extends Comparable<V>> implements Chooser<T> {
+	@SuppressWarnings("unused")
 	private static final Logger log = Logger.getLogger(ScoreChooser.class);
 
-	final Function<T, V> scoreFunction;
 	final boolean maximize;
 
-	public ScoreChooser(Function<T, V> scoreFunction, boolean maximize) {
-		this.scoreFunction = scoreFunction;
+	public ScoreChooser(boolean maximize) {
 		this.maximize = maximize;
 	}
 
@@ -24,7 +23,7 @@ public class ScoreChooser<T, V extends Comparable<V>> implements Chooser<T> {
 		V bestScore = null;
 
 		for (T candidate : choices) {
-			V score = scoreFunction.apply(candidate);
+			V score = score(candidate);
 
 			if ((best == null) || (maximize && score.compareTo(bestScore) > 0)
 					|| (!maximize && score.compareTo(bestScore) < 0)) {
@@ -36,11 +35,14 @@ public class ScoreChooser<T, V extends Comparable<V>> implements Chooser<T> {
 		return best;
 	}
 
-	public static <T, V extends Comparable<V>> ScoreChooser<T, V> chooseMin(Function<T, V> score) {
-		return new ScoreChooser<T, V>(score, false);
+	protected abstract V score(T candidate);
+
+	public static <T, V extends Comparable<V>> FunctionScoreChooser<T, V> chooseMin(Function<T, V> score) {
+		return new FunctionScoreChooser<T, V>(false, score);
 	}
 
-	public static <T, V extends Comparable<V>> ScoreChooser<T, V> chooseMax(Function<T, V> score) {
-		return new ScoreChooser<T, V>(score, true);
+	public static <T, V extends Comparable<V>> FunctionScoreChooser<T, V> chooseMax(Function<T, V> score) {
+		return new FunctionScoreChooser<T, V>(true, score);
 	}
+
 }

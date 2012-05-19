@@ -87,7 +87,7 @@ public class AptCacheServiceController extends OpsTreeBase implements HttpProxyC
 		// By IP
 		Machine machine = instances.findMachine(model);
 		if (machine != null) {
-			String address = "http://" + machine.getAddress(forNetworkPoint, 3128) + ":3128/";
+			String address = "http://" + machine.getBestAddress(forNetworkPoint, 3128) + ":3128/";
 			return address;
 		}
 		return null;

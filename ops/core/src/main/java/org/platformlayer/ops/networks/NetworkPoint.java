@@ -75,6 +75,10 @@ public class NetworkPoint {
 		return privateNetworkId == null;
 	}
 
+	public boolean isPrivateNetwork() {
+		return this.privateNetworkId != null;
+	}
+
 	public static NetworkPoint forNetwork(String network) {
 		return new NetworkPoint(network, null);
 	}

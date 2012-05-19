@@ -11,6 +11,7 @@ import org.platformlayer.core.model.Tags;
 import com.google.common.base.Objects;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+import com.google.common.net.InetAddresses;
 
 public class EndpointInfo {
 
@@ -49,13 +50,15 @@ public class EndpointInfo {
 
 	}
 
-	public static EndpointInfo findEndpoint(Tags tags, Integer port) {
+	public static List<EndpointInfo> findEndpoints(Tags tags, Integer port) {
+		List<EndpointInfo> endpoints = Lists.newArrayList();
+
 		for (EndpointInfo publicEndpoint : getEndpoints(tags)) {
 			if (publicEndpoint.matches(port)) {
-				return publicEndpoint;
+				endpoints.add(publicEndpoint);
 			}
 		}
-		return null;
+		return endpoints;
 	}
 
 	public String publicIp;
@@ -78,6 +81,10 @@ public class EndpointInfo {
 	@Override
 	public String toString() {
 		return publicIp + ":" + port;
+	}
+
+	public InetAddress getAddress() {
+		return InetAddresses.forString(publicIp);
 	}
 
 }

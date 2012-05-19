@@ -1,30 +1,18 @@
 package org.platformlayer.service.cloud.raw.ops;
 
 import java.io.IOException;
-import java.security.PublicKey;
 
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.platformlayer.core.model.PlatformLayerKey;
-import org.platformlayer.core.model.Tag;
-import org.platformlayer.core.model.TagChanges;
-import org.platformlayer.core.model.Tags;
-import org.platformlayer.crypto.OpenSshUtils;
 import org.platformlayer.ops.Handler;
-import org.platformlayer.ops.OpaqueMachine;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsSystem;
-import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.helpers.ServiceContext;
-import org.platformlayer.ops.helpers.SshKey;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
-import org.platformlayer.ops.networks.NetworkPoint;
-import org.platformlayer.ops.ssh.SshAuthorizedKey;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.raw.model.RawInstance;
-import org.platformlayer.service.cloud.raw.model.RawTarget;
 
 public class RawInstanceController extends OpsTreeBase {
 	static final Logger log = Logger.getLogger(RawInstanceController.class);

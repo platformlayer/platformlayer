@@ -4,8 +4,8 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
+import org.apache.log4j.Logger;
 import org.platformlayer.PlatformLayerClient;
-import org.platformlayer.core.model.InstanceBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
@@ -27,6 +27,8 @@ import org.platformlayer.service.instancesupervisor.model.PersistentInstance;
 import com.google.common.collect.Lists;
 
 public class PersistentInstanceMapper extends OpsTreeBase {
+	private static final Logger log = Logger.getLogger(PersistentInstanceMapper.class);
+
 	@Inject
 	CloudContext cloud;
 

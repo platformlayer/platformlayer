@@ -31,7 +31,7 @@ public class NginxFrontendDns extends OwnedItem {
 
 		Machine machine = instanceHelpers.getMachine(nginxService);
 
-		String address = machine.getAddress(NetworkPoint.forPublicInternet(), 0);
+		String address = machine.getBestAddress(NetworkPoint.forPublicInternet(), 0);
 
 		DnsRecord record = new DnsRecord();
 		record.setDnsName(nginxFrontend.hostname);

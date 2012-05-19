@@ -1,5 +1,7 @@
 package org.platformlayer.ops.endpoints;
 
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.inject.Provider;
 
@@ -38,14 +40,17 @@ public class EndpointDnsRecord {
 			// Create a DNS record
 			Tag parentTag = OpsSystem.get().createParentTag(endpoint);
 
-			EndpointInfo endpointInfo = EndpointInfo.findEndpoint(endpoint.getTags(), destinationPort);
-			if (endpointInfo == null) {
+			List<EndpointInfo> endpoints = EndpointInfo.findEndpoints(endpoint.getTags(), destinationPort);
+			if (endpoints.isEmpty()) {
 				throw new OpsException("Cannot find endpoint for port: " + destinationPort);
 			}
 
 			DnsRecord record = new DnsRecord();
 			record.setDnsName(dnsName);
-			record.getAddress().add(endpointInfo.publicIp);
+			for (EndpointInfo endpointInfo : endpoints) {
+				record.getAddress().add(endpointInfo.publicIp);
+			}
+
 			record.getTags().add(parentTag);
 			record.key = PlatformLayerKey.fromId(dnsName);
 			// endpoint.getId();

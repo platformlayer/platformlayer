@@ -1,5 +1,7 @@
 package org.platformlayer.ops.machines;
 
+import java.net.InetAddress;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -14,6 +16,7 @@ import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.networks.NetworkPoint;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.Lists;
 
 public class PlatformLayerCloudMachine extends MachineBase {
 	static final Logger log = Logger.getLogger(PlatformLayerCloudMachine.class);
@@ -51,27 +54,28 @@ public class PlatformLayerCloudMachine extends MachineBase {
 	// }
 
 	@Override
-	public String findAddress(NetworkPoint src, int destinationPort) {
+	public List<InetAddress> findAddresses(NetworkPoint src, int destinationPort) {
 		String privateNetworkId = src.getPrivateNetworkId();
 		if (Objects.equal(privateNetworkId, NetworkPoint.PRIVATE_NETWORK_ID)) {
 			Tags tags = machine.getTags();
-			List<NetworkAddress> addresses = NetworkAddress.find(tags);
-			NetworkAddress best = NetworkAddress.pickBest(addresses, NetworkStrategy.PREFER_IPV6);
-			if (best != null) {
-				return best.getHostAddress();
-			}
+			List<InetAddress> addresses = InetAddressUtils.find(tags);
+			return addresses;
 		}
 
 		// if (src.isPublicInternet())
 		// We assume that private networks can still reach the public internet, so these work for everyone
 		{
-			EndpointInfo endpoint = EndpointInfo.findEndpoint(machine.getTags(), destinationPort);
-			if (endpoint != null) {
-				return endpoint.publicIp;
+			List<EndpointInfo> endpoints = EndpointInfo.findEndpoints(machine.getTags(), destinationPort);
+			if (!endpoints.isEmpty()) {
+				List<InetAddress> addresses = Lists.newArrayList();
+				for (EndpointInfo endpoint : endpoints) {
+					addresses.add(endpoint.getAddress());
+				}
+				return addresses;
 			}
 		}
 
-		return null;
+		return Collections.emptyList();
 
 		// OpsContext ops = OpsContext.get();
 		// ModelKey modelKey = ops.buildModelKey(item);

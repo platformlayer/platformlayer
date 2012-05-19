@@ -1,5 +1,9 @@
 package org.platformlayer.ops;
 
+import java.net.InetAddress;
+import java.util.Collections;
+import java.util.List;
+
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.networks.NetworkPoint;
 
@@ -28,15 +32,15 @@ public class OpaqueMachine extends MachineBase {
 	}
 
 	@Override
-	public String findAddress(NetworkPoint src, int destinationPort) {
+	public List<InetAddress> findAddresses(NetworkPoint src, int destinationPort) {
 		// TODO: Refactor this logic
 		if (Objects.equal(address.getPrivateNetworkId(), src.getPrivateNetworkId())) {
-			return address.getAddress().getHostAddress();
+			return Collections.singletonList(address.getAddress());
 		}
 		if (address.isPublicInternet()) {
-			return address.getAddress().getHostAddress();
+			return Collections.singletonList(address.getAddress());
 		}
-		return null;
+		return Collections.emptyList();
 	}
 
 	@Override

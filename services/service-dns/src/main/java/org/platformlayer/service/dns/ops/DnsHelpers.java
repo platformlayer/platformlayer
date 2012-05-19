@@ -1,6 +1,7 @@
 package org.platformlayer.service.dns.ops;
 
 import java.io.File;
+import java.util.List;
 
 import javalang7.AutoCloseable;
 
@@ -107,8 +108,8 @@ public class DnsHelpers {
 				continue;
 			}
 
-			EndpointInfo dnsServerEndpoint = EndpointInfo.findEndpoint(dnsServer.getTags(), 53);
-			if (dnsServerEndpoint == null) {
+			List<EndpointInfo> dnsServerEndpoints = EndpointInfo.findEndpoints(dnsServer.getTags(), 53);
+			if (dnsServerEndpoints.isEmpty()) {
 				throw new OpsException("Cannot find endpoint for: " + dnsServer);
 			}
 			// Use the ID to produce a stable identifier
@@ -122,8 +123,10 @@ public class DnsHelpers {
 			}
 
 			// TODO: This might not be the right address in complex networks
-			String address = dnsServerEndpoint.publicIp;
-			dnsFile.addNS(dnsDomain.dnsName, address, dnsName);
+			for (EndpointInfo dnsServerEndpoint : dnsServerEndpoints) {
+				String address = dnsServerEndpoint.publicIp;
+				dnsFile.addNS(dnsDomain.dnsName, address, dnsName);
+			}
 		}
 
 		Iterable<DnsRecord> dnsRecords = platformLayer.listItems(DnsRecord.class);

@@ -1,7 +1,10 @@
 package org.platformlayer.ops;
 
+import java.net.InetAddress;
 import java.security.KeyPair;
+import java.util.List;
 
+import org.platformlayer.InetAddressChooser;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.helpers.SshKey;
 import org.platformlayer.ops.networks.NetworkPoint;
@@ -20,14 +23,31 @@ public abstract class Machine {
 
 	public abstract PlatformLayerKey getKey();
 
-	public abstract String findAddress(NetworkPoint src, int destinationPort);
+	public abstract List<InetAddress> findAddresses(NetworkPoint src, int destinationPort);
 
-	public String getAddress(NetworkPoint src, int destinationPort) throws OpsException {
-		String address = findAddress(src, destinationPort);
+	public InetAddress getBestAddress(NetworkPoint src, int destinationPort, InetAddressChooser chooser)
+			throws OpsException {
+		List<InetAddress> addresses = findAddresses(src, destinationPort);
+		InetAddress address = chooser.choose(addresses);
+
 		if (address == null) {
 			throw new OpsException("Cannot determine appropriate network address");
 		}
 		return address;
 	}
 
+	public String getBestAddress(NetworkPoint src, int destinationPort) throws OpsException {
+		InetAddressChooser chooser;
+		if (src.isPrivateNetwork()) {
+			chooser = InetAddressChooser.preferIpv6();
+		} else {
+			chooser = InetAddressChooser.preferIpv4();
+		}
+
+		InetAddress address = getBestAddress(src, destinationPort, chooser);
+		if (address == null) {
+			return null;
+		}
+		return address.getHostAddress();
+	}
 }

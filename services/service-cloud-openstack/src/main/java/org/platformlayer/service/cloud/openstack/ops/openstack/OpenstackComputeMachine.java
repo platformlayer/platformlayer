@@ -1,5 +1,6 @@
 package org.platformlayer.service.cloud.openstack.ops.openstack;
 
+import java.net.InetAddress;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -13,9 +14,9 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.service.cloud.openstack.model.OpenstackCloud;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.net.InetAddresses;
 
 public class OpenstackComputeMachine extends MachineBase {
 	static final Logger log = Logger.getLogger(OpenstackComputeMachine.class);
@@ -53,20 +54,23 @@ public class OpenstackComputeMachine extends MachineBase {
 	}
 
 	@Override
-	public String findAddress(NetworkPoint src, int destinationPort) {
+	public List<InetAddress> findAddresses(NetworkPoint src, int destinationPort) {
 		// TODO: Check private networks
 
 		OpenstackCloudHelpers helpers = new OpenstackCloudHelpers();
 
+		List<InetAddress> addresses = Lists.newArrayList();
+
 		// We assume that private networks can still reach the public internet, so these work for everyone
 		List<Ip> publicIps = helpers.findPublicIps(cloud, server);
 		for (Ip ip : publicIps) {
-			if (Objects.equal("6", ip.getVersion())) {
-				continue;
-			}
+			// if (Objects.equal("6", ip.getVersion())) {
+			// continue;
+			// }
+
 			String addr = ip.getAddr();
 			if (!Strings.isNullOrEmpty(addr)) {
-				return addr;
+				addresses.add(InetAddresses.forString(addr));
 			}
 		}
 
@@ -100,7 +104,7 @@ public class OpenstackComputeMachine extends MachineBase {
 		// }
 		// }
 
-		return null;
+		return addresses;
 	}
 
 	public List<Tag> buildAddressTags() {

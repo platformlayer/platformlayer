@@ -1,5 +1,7 @@
 package org.platformlayer.ops.networks;
 
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.inject.Provider;
 
@@ -99,12 +101,15 @@ public class PublicEndpoint extends OpsTreeBase {
 							return null;
 						}
 					}
-					EndpointInfo endpointInfo = EndpointInfo.findEndpoint(item.getTags(), publicPort);
-					if (endpointInfo == null) {
+					List<EndpointInfo> endpointInfos = EndpointInfo.findEndpoints(item.getTags(), publicPort);
+					if (endpointInfos.isEmpty()) {
 						throw new OpsException("Cannot find endpoint for port: " + publicPort);
 					}
 
-					tagChanges.addTags.add(endpointInfo.toTag());
+					for (EndpointInfo endpointInfo : endpointInfos) {
+						tagChanges.addTags.add(endpointInfo.toTag());
+					}
+
 					return tagChanges;
 				}
 			};

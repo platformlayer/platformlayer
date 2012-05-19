@@ -1,5 +1,7 @@
 package org.platformlayer.ops.tagger;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.platformlayer.EndpointInfo;
@@ -30,8 +32,8 @@ public class TagFromChildren {
 					// Right now, we have to go through a retry cycle
 					throw new OpsException("Child server not ready");
 				}
-				EndpointInfo endpoint = EndpointInfo.findEndpoint(server.getTags(), port);
-				if (endpoint == null) {
+				List<EndpointInfo> endpoints = EndpointInfo.findEndpoints(server.getTags(), port);
+				if (endpoints.isEmpty()) {
 					// TODO: Cope in future e.g. if we only need one of two in a cluster
 					throw new OpsException("Child server not ready");
 				}
@@ -40,7 +42,9 @@ public class TagFromChildren {
 				// throw new OpsException("Expected exactly one endpoint");
 				// }
 
-				platformLayer.addTag(parentItem.getKey(), endpoint.toTag());
+				for (EndpointInfo endpoint : endpoints) {
+					platformLayer.addTag(parentItem.getKey(), endpoint.toTag());
+				}
 			}
 		}
 	}

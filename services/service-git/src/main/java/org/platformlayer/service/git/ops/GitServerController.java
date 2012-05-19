@@ -1,11 +1,13 @@
 package org.platformlayer.service.git.ops;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
+import org.platformlayer.EndpointChooser;
 import org.platformlayer.EndpointInfo;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
@@ -164,7 +166,10 @@ public class GitServerController extends OpsTreeBase implements TemplateDataSour
 		// String requireLdapGroup = "cn=Git,ou=Groups,dc=com,dc=fathomscale";
 
 		int port = 389;
-		EndpointInfo ldapEndpoint = EndpointInfo.findEndpoint(ldapService.getTags(), port);
+		List<EndpointInfo> endpoints = EndpointInfo.findEndpoints(ldapService.getTags(), port);
+
+		EndpointInfo ldapEndpoint = EndpointChooser.preferIpv4().choose(endpoints);
+
 		if (ldapEndpoint == null) {
 			throw new OpsException("Cannot find suitable LDAP endpoint");
 		}
