@@ -3,7 +3,6 @@ package org.platformlayer.client.cli.commands;
 import java.io.PrintWriter;
 
 import javax.xml.transform.Source;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
 
 import org.kohsuke.args4j.Argument;
@@ -38,13 +37,8 @@ public class GetItem extends PlatformLayerCommandRunnerBase {
 
 		UntypedItem item = (UntypedItem) o;
 
-		String xml;
-		try {
-			Source src = new DOMSource(item.getRoot());
-			xml = XmlHelper.toXml(src, 4);
-		} catch (TransformerException e) {
-			throw new IllegalStateException("Error serializing data", e);
-		}
+		Source src = new DOMSource(item.getRoot());
+		String xml = XmlHelper.toXml(src, 4);
 
 		ansi.println(xml);
 

@@ -44,13 +44,14 @@ import com.google.common.collect.Lists;
 public class XmlHelper {
 	static final Logger log = Logger.getLogger(XmlHelper.class);
 
-	public static XMLStreamReader buildXmlStreamReader(String xml) throws XMLStreamException {
+	public static XMLStreamReader buildXmlStreamReader(String xml)
+			throws XMLStreamException {
 		XMLInputFactory factory = XMLInputFactory.newInstance();
 		return factory.createXMLStreamReader(new StringReader(xml));
 	}
 
-	public static Document parseXmlDocument(String xml, boolean namespaceAware) throws ParserConfigurationException,
-			SAXException, IOException {
+	public static Document parseXmlDocument(String xml, boolean namespaceAware)
+			throws ParserConfigurationException, SAXException, IOException {
 		DocumentBuilder docBuilder = buildDocumentBuilder(namespaceAware);
 		Document doc = docBuilder.parse(new InputSource(new StringReader(xml)));
 
@@ -60,8 +61,8 @@ public class XmlHelper {
 		return doc;
 	}
 
-	public static Document parseXmlDocument(File file, boolean namespaceAware) throws ParserConfigurationException,
-			SAXException, IOException {
+	public static Document parseXmlDocument(File file, boolean namespaceAware)
+			throws ParserConfigurationException, SAXException, IOException {
 		DocumentBuilder docBuilder = buildDocumentBuilder(namespaceAware);
 		Document doc = docBuilder.parse(file);
 
@@ -71,8 +72,9 @@ public class XmlHelper {
 		return doc;
 	}
 
-	public static Document parseXmlDocument(InputStream is, boolean namespaceAware)
-			throws ParserConfigurationException, SAXException, IOException {
+	public static Document parseXmlDocument(InputStream is,
+			boolean namespaceAware) throws ParserConfigurationException,
+			SAXException, IOException {
 		DocumentBuilder docBuilder = buildDocumentBuilder(namespaceAware);
 		Document doc = docBuilder.parse(is);
 
@@ -82,8 +84,10 @@ public class XmlHelper {
 		return doc;
 	}
 
-	private static DocumentBuilder buildDocumentBuilder(boolean namespaceAware) throws ParserConfigurationException {
-		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+	private static DocumentBuilder buildDocumentBuilder(boolean namespaceAware)
+			throws ParserConfigurationException {
+		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory
+				.newInstance();
 		docBuilderFactory.setNamespaceAware(namespaceAware);
 		DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
 		return docBuilder;
@@ -111,39 +115,47 @@ public class XmlHelper {
 	// return DateUtils.smartParse(dateString);
 	// }
 
-	public static String toXml(Node node) throws TransformerException {
+	public static String toXml(Node node) {
 		Source src = new DOMSource(node);
 		return toXml(src, -1);
 	}
 
-	public static String toXml(XMLStreamReader xml) throws TransformerException {
+	public static String toXml(XMLStreamReader xml) {
 		Source src = new StAXSource(xml);
 		return toXml(src, -1);
 	}
 
-	public static String toXml(Source src, int indent) throws TransformerFactoryConfigurationError,
-			TransformerConfigurationException, TransformerException {
-		Transformer transformer = buildXmlTransformer();
-		if (indent >= 0) {
-			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", String.valueOf(indent));
+	public static String toXml(Source src, int indent) {
+		try {
+			Transformer transformer = buildXmlTransformer();
+
+			if (indent >= 0) {
+				transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+				transformer.setOutputProperty(
+						"{http://xml.apache.org/xslt}indent-amount",
+						String.valueOf(indent));
+			}
+
+			StringWriter writer = new StringWriter();
+
+			Result dest = new StreamResult(writer);
+			transformer.transform(src, dest);
+
+			return writer.getBuffer().toString();
+		} catch (TransformerException e) {
+			throw new IllegalArgumentException("Error transforming to XML", e);
 		}
-
-		StringWriter writer = new StringWriter();
-
-		Result dest = new StreamResult(writer);
-		transformer.transform(src, dest);
-
-		return writer.getBuffer().toString();
 	}
 
-	public static String toXml(Document xmlDocument) throws TransformerException {
+	public static String toXml(Document xmlDocument) {
 		return toXml(xmlDocument.getDocumentElement());
 	}
 
-	private static Transformer buildXmlTransformer() throws TransformerFactoryConfigurationError,
+	private static Transformer buildXmlTransformer()
+			throws TransformerFactoryConfigurationError,
 			TransformerConfigurationException {
-		TransformerFactory transformerFactory = TransformerFactory.newInstance();
+		TransformerFactory transformerFactory = TransformerFactory
+				.newInstance();
 		Transformer transformer = transformerFactory.newTransformer();
 		return transformer;
 	}
@@ -163,7 +175,7 @@ public class XmlHelper {
 	public static String safeToXml(Element element) {
 		try {
 			return toXml(element);
-		} catch (TransformerException e) {
+		} catch (IllegalArgumentException e) {
 			return "Error transforming to xml: " + e.toString();
 		}
 	}
@@ -172,7 +184,8 @@ public class XmlHelper {
 		return findUniqueChild(parent, tagName, true);
 	}
 
-	public static Node findUniqueChild(Element parent, String tagName, boolean create) {
+	public static Node findUniqueChild(Element parent, String tagName,
+			boolean create) {
 		NodeList children = parent.getChildNodes();
 		List<Node> matches = Lists.newArrayList();
 		for (int i = 0; i < children.getLength(); i++) {
@@ -186,7 +199,8 @@ public class XmlHelper {
 
 		if (matches.size() == 0) {
 			if (create) {
-				Element element = parent.getOwnerDocument().createElement(tagName);
+				Element element = parent.getOwnerDocument().createElement(
+						tagName);
 				parent.appendChild(element);
 				return element;
 			}
@@ -194,13 +208,10 @@ public class XmlHelper {
 		}
 
 		if (matches.size() != 1) {
-			try {
-				String xml = XmlHelper.toXml(parent);
-				log.warn("Multiple elements in XML: " + xml);
-			} catch (TransformerException e) {
-				throw new IllegalStateException("Error converting to XML", e);
-			}
-			throw new IllegalStateException("Found multiple elements of name: " + tagName);
+			String xml = XmlHelper.toXml(parent);
+			log.warn("Multiple elements in XML: " + xml);
+			throw new IllegalStateException("Found multiple elements of name: "
+					+ tagName);
 		}
 
 		Node child = matches.get(0);
@@ -208,7 +219,8 @@ public class XmlHelper {
 		return child;
 	}
 
-	public static Object unmarshal(JAXBContext jaxbContext, XMLStreamReader xmlStreamReader) throws JAXBException {
+	public static Object unmarshal(JAXBContext jaxbContext,
+			XMLStreamReader xmlStreamReader) throws JAXBException {
 		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 		return unmarshaller.unmarshal(xmlStreamReader);
 	}
@@ -227,8 +239,10 @@ public class XmlHelper {
 		public int hashCode() {
 			final int prime = 31;
 			int result = 1;
-			result = prime * result + ((elementName == null) ? 0 : elementName.hashCode());
-			result = prime * result + ((namespace == null) ? 0 : namespace.hashCode());
+			result = prime * result
+					+ ((elementName == null) ? 0 : elementName.hashCode());
+			result = prime * result
+					+ ((namespace == null) ? 0 : namespace.hashCode());
 			return result;
 		}
 
@@ -271,7 +285,8 @@ public class XmlHelper {
 			elementName = xmlType.name();
 			namespace = xmlType.namespace();
 		} else {
-			XmlRootElement xmlRootElement = clazz.getAnnotation(XmlRootElement.class);
+			XmlRootElement xmlRootElement = clazz
+					.getAnnotation(XmlRootElement.class);
 			if (xmlRootElement != null) {
 				elementName = xmlRootElement.name();
 				namespace = xmlRootElement.namespace();

@@ -1,7 +1,6 @@
 package org.platformlayer;
 
 import javax.xml.bind.JAXBException;
-import javax.xml.transform.TransformerException;
 
 import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.core.model.PlatformLayerKey;
@@ -232,11 +231,7 @@ public class UntypedItem {
 	// }
 
 	public String serialize() {
-		try {
-			return XmlHelper.toXml(this.root);
-		} catch (TransformerException e) {
-			throw new IllegalStateException("Error serializing data", e);
-		}
+		return XmlHelper.toXml(this.root);
 	}
 
 	public PlatformLayerKey getPlatformLayerKey() {

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 
 import org.openstack.utils.Utf8;
 import org.platformlayer.ops.OpsContext;
@@ -67,11 +66,7 @@ public class SolrSchemaFile extends SyntheticXmlFile {
 			fieldsElement.appendChild(el);
 		}
 
-		try {
-			return Utf8.getBytes(XmlHelper.toXml(dom));
-		} catch (TransformerException e) {
-			throw new OpsException("Error re-generating XML", e);
-		}
+		return Utf8.getBytes(XmlHelper.toXml(dom));
 	}
 
 }

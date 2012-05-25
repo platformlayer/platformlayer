@@ -3,8 +3,6 @@ package org.platformlayer.client.cli.output;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 
-import javax.xml.transform.TransformerException;
-
 import org.platformlayer.UntypedItem;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.xml.XmlHelper;
@@ -79,11 +77,7 @@ public class UntypedItemFormatter extends SimpleFormatter<UntypedItem> {
 			return formatCell(childNodes.item(0));
 		}
 
-		try {
-			return XmlHelper.toXml(node);
-		} catch (TransformerException e) {
-			throw new IllegalArgumentException("Error formatting XML to text", e);
-		}
+		return XmlHelper.toXml(node);
 	}
 
 	public static void formatItem(UntypedItem item, Ansi ansi, boolean fullPath) {
