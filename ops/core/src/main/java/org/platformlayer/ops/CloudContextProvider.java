@@ -9,7 +9,12 @@ public class CloudContextProvider implements Provider<CloudContext>, com.google.
 
 	@Override
 	public CloudContext get() {
-		UserInfo userInfo = OpsContext.get().getUserInfo();
+		OpsContext opsContext = OpsContext.get();
+		if (opsContext == null) {
+			return null;
+		}
+
+		UserInfo userInfo = opsContext.getUserInfo();
 		try {
 			return cloudContextRegistry.getCloudContext(userInfo);
 		} catch (OpsException e) {
