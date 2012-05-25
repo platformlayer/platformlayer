@@ -26,7 +26,7 @@ public class StandardService extends OpsTreeBase {
 		return key;
 	}
 
-	public void buildConfig(SupervisorProcessConfig config) {
+	public void buildConfig(SupervisorProcessConfig config) throws OpsException {
 		Map<String, String> properties = config.getProperties();
 		properties.put("command", command.get().buildCommandString());
 
@@ -60,7 +60,11 @@ public class StandardService extends OpsTreeBase {
 			@Override
 			public SupervisorProcessConfig get() {
 				SupervisorProcessConfig config = new SupervisorProcessConfig(getServiceId());
-				buildConfig(config);
+				try {
+					buildConfig(config);
+				} catch (OpsException e) {
+					throw new IllegalStateException("Error while building config", e);
+				}
 				return config;
 			}
 
