@@ -1,5 +1,6 @@
 package org.platformlayer.ops.users;
 
+import java.io.File;
 import java.util.List;
 
 import org.platformlayer.ops.Command;
@@ -17,6 +18,7 @@ public class PosixUser {
 	public String primaryGroup;
 
 	public List<String> secondaryGroups = Lists.newArrayList();
+	public File shell;
 
 	@Handler
 	public void doOperation() throws OpsException {
@@ -27,6 +29,10 @@ public class PosixUser {
 			Command command = Command.build("adduser");
 			command.addLiteral("--system");
 			command.addLiteral("--no-create-home");
+
+			if (shell != null) {
+				command.addLiteral("--shell").addFile(shell);
+			}
 
 			if (!Strings.isNullOrEmpty(primaryGroup)) {
 				command.addLiteral("--ingroup");
@@ -48,13 +54,16 @@ public class PosixUser {
 		}
 	}
 
-	public static PosixUser build(String userName) {
-		return build(userName, null);
+	public static PosixUser build(String userName, boolean allowLogin) {
+		return build(userName, allowLogin, null);
 	}
 
-	public static PosixUser build(String userName, String primaryGroup) {
+	public static PosixUser build(String userName, boolean allowLogin, String primaryGroup) {
 		PosixUser user = Injection.getInstance(PosixUser.class);
 		user.userName = userName;
+		if (allowLogin) {
+			user.shell = new File("/bin/bash");
+		}
 		user.primaryGroup = primaryGroup;
 		return user;
 	}

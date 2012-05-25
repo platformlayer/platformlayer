@@ -55,7 +55,7 @@ public class HttpServerInstall extends OpsTreeBase {
 		{
 			addChild(PosixGroup.build("http"));
 
-			addChild(PosixUser.build("http", "http"));
+			addChild(PosixUser.build("http", false, "http"));
 		}
 		// vm.addChild(CollectdCollector.build());
 

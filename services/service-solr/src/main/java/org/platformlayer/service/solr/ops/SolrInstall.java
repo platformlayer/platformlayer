@@ -58,6 +58,6 @@ public class SolrInstall extends OpsTreeBase {
 		}
 
 		addChild(PosixGroup.build("solr"));
-		addChild(PosixUser.build("solr", "solr"));
+		addChild(PosixUser.build("solr", false, "solr"));
 	}
 }

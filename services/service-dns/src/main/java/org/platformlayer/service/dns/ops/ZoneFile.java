@@ -280,6 +280,11 @@ public class ZoneFile {
 		return data;
 	}
 
+	@Override
+	public String toString() {
+		return getData();
+	}
+
 	public void addA(String dnsName, List<String> addresses) {
 		ARecord a = new ARecord(dnsName, addresses);
 		addRecord(a);

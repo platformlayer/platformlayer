@@ -55,7 +55,7 @@ public class DnsServerInstall extends OpsTreeBase {
 		{
 			addChild(PosixGroup.build("dns"));
 
-			addChild(PosixUser.build("dns", "dns"));
+			addChild(PosixUser.build("dns", false, "dns"));
 		}
 		// vm.addChild(CollectdCollector.build());
 
