@@ -12,9 +12,51 @@ public class Tag {
 
 	// public static final String PLATFORM_LAYER_ID = "platformlayerid";
 
+	public abstract static class TagKey<T> {
+		final String key;
+
+		public TagKey(String key) {
+			this.key = key;
+		}
+
+		public String getKey() {
+			return key;
+		}
+
+		public T findUnique(ItemBase item) {
+			return findUnique(item.getTags());
+		}
+
+		public T findUnique(Tags tags) {
+			String s = tags.findUnique(key);
+			if (s == null) {
+				return null;
+			}
+			return toT(s);
+		}
+
+		protected abstract T toT(String s);
+	}
+
+	public static class KeyTagKey extends TagKey<PlatformLayerKey> {
+		public KeyTagKey(String key) {
+			super(key);
+		}
+
+		@Override
+		protected PlatformLayerKey toT(String s) {
+			return PlatformLayerKey.parse(s);
+		}
+
+		public Tag build(PlatformLayerKey t) {
+			return new Tag(key, t.getUrl());
+		}
+	}
+
 	public static final String PARENT = "parent";
 	// public static final String RELATED = "linked";
 	public static final String ASSIGNED = "assigned";
+	public static final KeyTagKey ASSIGNED_TO = new KeyTagKey("assigned_to");
 
 	public static final String IMAGE_ID = "imageid";
 
