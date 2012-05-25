@@ -17,6 +17,7 @@ import org.platformlayer.ids.ModelKey;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.ops.auth.OpsAuthentication;
+import org.platformlayer.ops.backups.BackupContextFactory;
 import org.platformlayer.ops.ssh.ISshContext;
 import org.platformlayer.ops.tasks.JobRegistry;
 import org.platformlayer.ops.tasks.OperationQueue;
@@ -55,6 +56,9 @@ public class OpsSystem {
 
 	@Inject
 	Provider<OpsAuthentication> authenticationProvider;
+
+	@Inject
+	Provider<BackupContextFactory> backupContextFactory;
 
 	private static OpsSystem INSTANCE;
 
@@ -252,5 +256,9 @@ public class OpsSystem {
 			Thread.currentThread().interrupt();
 			throw new OpsException("Interrupted", e);
 		}
+	}
+
+	public BackupContextFactory getBackupContextFactory() {
+		return backupContextFactory.get();
 	}
 }

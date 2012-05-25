@@ -1,9 +1,7 @@
 package org.platformlayer.ops.backups;
 
 import java.io.IOException;
-import java.util.UUID;
 
-import javax.inject.Inject;
 import javax.xml.bind.JAXBException;
 
 import org.openstack.client.OpenstackCredentials;
@@ -11,13 +9,7 @@ import org.openstack.client.OpenstackException;
 import org.openstack.client.common.OpenstackSession;
 import org.openstack.client.storage.OpenstackStorageClient;
 import org.openstack.utils.Utf8;
-import org.platformlayer.core.model.ItemBase;
-import org.platformlayer.ops.Injection;
-import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.helpers.InstanceHelpers;
-import org.platformlayer.ops.machines.PlatformLayerCloudHelpers;
-import org.platformlayer.ops.machines.StorageConfiguration;
 import org.platformlayer.xml.JaxbHelper;
 
 public class BackupContext {
@@ -25,23 +17,6 @@ public class BackupContext {
 	String containerName;
 
 	OpenstackCredentials credentials;
-
-	public static BackupContext build(ItemBase item) throws OpsException {
-		// TODO: Should be configurable
-		// TODO: Configure cloud target here?
-		String containerName = "backups";
-		String backupId = UUID.randomUUID().toString();
-
-		BackupContext context = Injection.getInstance(BackupContext.class);
-		context.data.id = backupId;
-		context.containerName = containerName;
-
-		Machine machine = context.instances.findMachine(item);
-
-		StorageConfiguration storageConfiguration = context.cloud.getStorageConfiguration(machine);
-		context.credentials = storageConfiguration.getOpenstackCredentials();
-		return context;
-	}
 
 	public void add(BackupItem item) {
 		this.data.items.add(item);
@@ -62,17 +37,6 @@ public class BackupContext {
 	private void ensureContainer() {
 		getStorageClient().root().containers().create(containerName);
 	}
-
-	// private RemoteCurlOpenstackSession getOpenstackSession(OpsTarget target) {
-	// if (openstackSession == null) {
-	// RemoteCurlOpenstackSession session = new RemoteCurlOpenstackSession(target);
-	//
-	// session.authenticate(credentials, false);
-	//
-	// openstackSession = session;
-	// }
-	// return openstackSession;
-	// }
 
 	private OpenstackSession openstackSession = null;
 
@@ -118,11 +82,5 @@ public class BackupContext {
 			throw new OpsException("Error uploading metadata", e);
 		}
 	}
-
-	@Inject
-	InstanceHelpers instances;
-
-	@Inject
-	PlatformLayerCloudHelpers cloud;
 
 }

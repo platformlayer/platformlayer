@@ -27,6 +27,7 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.auth.OpsAuthentication;
 import org.platformlayer.ops.backups.BackupContext;
+import org.platformlayer.ops.backups.BackupContextFactory;
 import org.platformlayer.xaas.repository.ManagedItemRepository;
 import org.platformlayer.xaas.services.ServiceProvider;
 
@@ -92,7 +93,8 @@ public class OperationWorker implements Callable<Object> {
 							break;
 
 						case Backup: {
-							BackupContext backupContext = BackupContext.build(item);
+							BackupContextFactory backupContextFactory = opsSystem.getBackupContextFactory();
+							BackupContext backupContext = backupContextFactory.build(item);
 							scopeItems.add(backupContext);
 						}
 							break;
