@@ -102,6 +102,12 @@
                 <version>${version.project}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>service-zookeeper</artifactId>
+                <version>${version.project}</version>
+            </dependency>
+
 
             <dependency>
                 <groupId>org.platformlayer</groupId>

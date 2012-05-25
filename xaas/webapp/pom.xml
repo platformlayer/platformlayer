@@ -106,6 +106,14 @@
             <artifactId>jersey-json</artifactId>
             <version>${jersey.version}</version>
         </dependency>
+        
+        <!--  Dependencies that some services need, and otherwise don't get included -->
+        <!--  TODO: Fix this... -->
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>2.4.1</version>
+        </dependency>
     </dependencies>
 
 </project>
