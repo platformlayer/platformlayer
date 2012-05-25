@@ -1,4 +1,4 @@
-package org.platformlayer.service.httpfrontend.ops;
+package org.platformlayer.ops.java;
 
 import java.io.File;
 import java.util.List;

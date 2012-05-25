@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Command.Argument;
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.java.JavaCommandBuilder;
 import org.platformlayer.ops.templates.TemplateDataSource;
 
 public class HttpServerTemplateData implements TemplateDataSource {
