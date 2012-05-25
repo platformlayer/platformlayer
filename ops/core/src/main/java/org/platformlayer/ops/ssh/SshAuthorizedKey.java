@@ -37,22 +37,36 @@ public class SshAuthorizedKey {
 
 		File sshDir = new File(homeDir, ".ssh");
 		if (target.getFilesystemInfoFile(sshDir) == null) {
-			target.mkdir(sshDir, "400");
+			target.mkdir(sshDir, "500");
 			target.chown(sshDir, user, null, false, false);
 		}
 
 		File sshAuthorizationsFile = new File(sshDir, "authorized_keys");
 		String sshAuthorizations = target.readTextFile(sshAuthorizationsFile);
 
-		// TODO: Check key not already present??
+		String serialized = SshKeys.serialize(sshPublicKey);
+		boolean keyPresent = sshAuthorizations != null && sshAuthorizations.contains(serialized);
 
-		if (sshAuthorizations == null) {
-			sshAuthorizations = "";
-		} else {
-			sshAuthorizations += "\n";
+		if (OpsContext.isValidate()) {
+			Deviations.assertTrue(keyPresent, "SSH key not present");
 		}
-		sshAuthorizations += SshKeys.serialize(sshPublicKey);
-		FileUpload.upload(target, sshAuthorizationsFile, sshAuthorizations);
+
+		if (OpsContext.isConfigure()) {
+			if (!keyPresent) {
+				if (sshAuthorizations == null) {
+					sshAuthorizations = "";
+				} else {
+					sshAuthorizations += "\n";
+				}
+				sshAuthorizations += serialized;
+
+				FileUpload upload = FileUpload.build(sshAuthorizations);
+				upload.mode = "644";
+				upload.path = sshAuthorizationsFile;
+
+				FileUpload.upload(target, sshAuthorizationsFile, sshAuthorizations);
+			}
+		}
 	}
 
 }
