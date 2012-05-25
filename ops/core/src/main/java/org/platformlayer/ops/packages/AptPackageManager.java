@@ -78,31 +78,35 @@ public class AptPackageManager {
 	//
 	// server.simpleRun(command, new TimeSpan("15m"));
 	// }
-	//
-	// public static List<String> findOutOfDatePackages(OpsServer server) throws OpsException {
-	// SimpleBashCommand command = new SimpleBashCommand("/usr/bin/apt-get");
-	// command.addLiteralArg("-q");
-	// command.addLiteralArg("-u");
-	// command.addLiteralArg("-s");
-	// command.addLiteralArg("upgrade");
-	//
-	// final List<String> packages = Lists.newArrayList();
-	//
-	// ProcessExecution execution = server.simpleRun(command, new TimeSpan("15m"));
-	// String stdout = execution.getStdOut();
-	// Parsers.parseWhitespaceSeparated(execution.getStdOut(), new ParserCallback() {
-	//
-	// @Override
-	// public void gotLine(List<String> items) throws Exception {
-	// if (items.size() < 2)
-	// return;
-	// if ("Inst".equals(items.get(0))) {
-	// String packageName = items.get(1);
-	// packages.add(packageName);
-	// }
-	// }
-	// });
-	//
-	// return packages;
-	// }
+
+	public static List<String> findOutOfDatePackages(OpsTarget target) throws OpsException {
+		Command command = Command.build("apt-get -q -q --simulate dist-upgrade");
+		ProcessExecution execution = target.executeCommand(command);
+
+		final List<String> packages = Lists.newArrayList();
+		for (String line : Splitter.on("\n").split(execution.getStdOut())) {
+			line = line.trim();
+			if (line.isEmpty()) {
+				continue;
+			}
+
+			List<String> tokens = Lists
+					.newArrayList(Splitter.on(CharMatcher.WHITESPACE).omitEmptyStrings().split(line));
+			if (tokens.size() < 2) {
+				continue;
+			}
+
+			String action = tokens.get(0);
+			if (action.equals("Inst")) {
+				// e.g. Inst coreutils [8.13-3.1] (8.13-3.2 Debian:testing [amd64])
+				packages.add(tokens.get(1));
+
+				// New version is in tokens[2]
+				// Current version is in tokens[3], but that's a trick
+			}
+
+		}
+		return packages;
+	}
+
 }
