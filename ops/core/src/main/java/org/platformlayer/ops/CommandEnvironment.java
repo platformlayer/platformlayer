@@ -1,5 +1,6 @@
 package org.platformlayer.ops;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -13,7 +14,7 @@ public class CommandEnvironment {
 		return vars.entrySet();
 	}
 
-	public void add(String key, String value) {
+	public void put(String key, String value) {
 		vars.put(key, value);
 	}
 
@@ -30,5 +31,9 @@ public class CommandEnvironment {
 	@Override
 	public CommandEnvironment clone() {
 		return deepCopy();
+	}
+
+	public Map<String, String> asMap() {
+		return Collections.unmodifiableMap(vars);
 	}
 }

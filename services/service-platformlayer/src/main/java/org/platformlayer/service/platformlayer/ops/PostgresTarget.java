@@ -51,7 +51,7 @@ public class PostgresTarget {
 		command.addArgument(Argument.buildQuoted("--command=", sql).setMasked("--command=" + Command.MASKED));
 
 		CommandEnvironment env = new CommandEnvironment();
-		env.add("PGPASSWORD", password.plaintext());
+		env.put("PGPASSWORD", password.plaintext());
 
 		command.setEnvironment(env);
 		return target.executeCommand(command);

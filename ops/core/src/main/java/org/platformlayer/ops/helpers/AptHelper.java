@@ -31,7 +31,7 @@ public class AptHelper {
 
 	public void install(OpsTarget target, Iterable<String> packageNames) throws OpsException {
 		CommandEnvironment commandEnvironment = buildEnvironmentWithProxy(target);
-		commandEnvironment.add("DEBIAN_FRONTEND", "noninteractive");
+		commandEnvironment.put("DEBIAN_FRONTEND", "noninteractive");
 
 		Command command = Command.build("apt-get install --yes");
 		for (String packageName : packageNames) {

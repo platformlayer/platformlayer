@@ -68,7 +68,7 @@ public class HttpProxyHelper {
 			String proxy = chooseProxy(target, proxies);
 			if (proxy != null) {
 				log.info("Will use http proxy: " + proxy);
-				httpProxyEnvironment.add("http_proxy", proxy);
+				httpProxyEnvironment.put("http_proxy", proxy);
 			} else {
 				log.info("No suitable http proxy found");
 			}
