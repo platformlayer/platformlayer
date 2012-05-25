@@ -56,7 +56,7 @@ public class FederationMap {
 		Map<FederationMapping, PlatformLayerConnectionConfiguration> keys = Maps.newHashMap();
 
 		for (PlatformLayerConnectionConfiguration child : config.systems) {
-			FederationKey host = new FederationKey(child.server);
+			FederationKey host = FederationKey.build(child.server);
 			ProjectId project = new ProjectId(child.tenant);
 			FederationMapping key = new FederationMapping(host, project);
 			if (keys.containsKey(key)) {
@@ -85,7 +85,7 @@ public class FederationMap {
 				throw new IllegalStateException("Cannot find target: " + rule.target);
 			}
 
-			targetHost = new FederationKey(found.server);
+			targetHost = FederationKey.build(found.server);
 			targetProject = new ProjectId(found.tenant);
 		}
 

@@ -141,7 +141,7 @@ public class PlatformLayerKey {
 		FederationKey hostKey = null;
 		String host = uri.getHost();
 		if (!Strings.isNullOrEmpty(host)) {
-			hostKey = new FederationKey(host);
+			hostKey = FederationKey.build(host);
 		}
 
 		String path = uri.getPath();
