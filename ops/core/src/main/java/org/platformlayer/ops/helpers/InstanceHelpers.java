@@ -9,8 +9,6 @@ import javax.inject.Provider;
 import org.apache.log4j.Logger;
 import org.platformlayer.core.model.InstanceBase;
 import org.platformlayer.core.model.ItemBase;
-import org.platformlayer.core.model.PlatformLayerKey;
-import org.platformlayer.core.model.Tags;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.ops.CloudContext;
 import org.platformlayer.ops.Machine;
@@ -53,10 +51,10 @@ public class InstanceHelpers {
 	@Inject
 	Provider<InstanceFinder> instanceFinderProvider;
 
-	public InstanceBase findInstance(Tags tags, PlatformLayerKey modelKey) throws OpsException {
+	public InstanceBase findInstance(ItemBase item) throws OpsException {
 		InstanceFinder instanceFinder = instanceFinderProvider.get();
 
-		instanceFinder.visitChildren(modelKey);
+		instanceFinder.visit(item);
 
 		List<InstanceBase> instances = instanceFinder.getInstances();
 		if (instances.size() == 0) {
@@ -66,7 +64,7 @@ public class InstanceHelpers {
 			return instances.get(0);
 		}
 
-		throw new OpsException("Found multiple instances for " + modelKey);
+		throw new OpsException("Found multiple instances for " + item.getKey());
 
 		//
 		// // We have to connect to the underlying machine not-via-DNS for Dns service => use instance id
@@ -110,13 +108,6 @@ public class InstanceHelpers {
 		// }
 		//
 		// return null;
-	}
-
-	public InstanceBase findInstance(ItemBase item) throws OpsException {
-		Tags tags = item.getTags();
-		PlatformLayerKey platformLayerKey = OpsSystem.toKey(item);
-
-		return findInstance(tags, platformLayerKey);
 	}
 
 	public Machine findMachine(ItemBase item) throws OpsException {

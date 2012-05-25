@@ -5,6 +5,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.platformlayer.core.model.InstanceBase;
 import org.platformlayer.core.model.ItemBase;
+import org.platformlayer.core.model.PlatformLayerKey;
+import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.OpsException;
 
 import com.google.common.collect.Lists;
@@ -16,15 +18,21 @@ public class InstanceFinder extends TreeWalker {
 	List<InstanceBase> instances = Lists.newArrayList();
 
 	@Override
-	public void foundChild(ItemBase child) throws OpsException {
-		super.foundChild(child);
+	protected void foundItem(ItemBase child) throws OpsException {
+		super.foundItem(child);
 
 		if (child instanceof InstanceBase) {
 			instances.add((InstanceBase) child);
+		}
+
+		PlatformLayerKey assignedTo = Tag.ASSIGNED_TO.findUnique(child);
+		if (assignedTo != null) {
+			scheduleVisit(assignedTo);
 		}
 	}
 
 	public List<InstanceBase> getInstances() {
 		return instances;
 	}
+
 }
