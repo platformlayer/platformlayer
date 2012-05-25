@@ -131,6 +131,15 @@ public class DnsHelpers {
 
 		Iterable<DnsRecord> dnsRecords = platformLayer.listItems(DnsRecord.class);
 		for (DnsRecord record : dnsRecords) {
+			switch (record.getState()) {
+			case DELETE_REQUESTED:
+			case DELETED:
+				log.info("Skipping record (deleted/deleting): " + record);
+				continue;
+			default:
+				break;
+			}
+
 			String zone = toZone(record);
 			if (!zone.equals(dnsZone)) {
 				continue;
