@@ -5,7 +5,10 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
+import org.platformlayer.choice.RandomChooser;
 import org.platformlayer.core.model.ManagedItemState;
+import org.platformlayer.core.model.PlatformLayerKey;
+import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.CustomRecursor;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.Machine;
@@ -34,18 +37,30 @@ public class GitServerAssignment extends OpsTreeBase implements CustomRecursor {
 
 	@Handler
 	public void handler(GitRepository model) throws Exception {
-		// TODO: Support backup on that GitServer
-		List<GitService> gitServices = platformLayer.listItems(GitService.class);
+		PlatformLayerKey assignedTo = Tag.ASSIGNED_TO.findUnique(model);
 
-		GitService gitService;
-		if (gitServices.size() == 0) {
-			gitService = null;
-		} else {
-			// TODO: Assign to a single git server
-			if (gitServices.size() != 1) {
-				throw new OpsException("Only 1 git server implemented at the moment");
+		if (OpsContext.isConfigure()) {
+			if (assignedTo == null) {
+				List<GitService> gitServices = platformLayer.listItems(GitService.class);
+
+				if (gitServices.size() == 0) {
+					throw new OpsException("No git service found");
+				}
+
+				GitService gitService = RandomChooser.chooseRandom(gitServices);
+
+				if (gitService == null) {
+					throw new IllegalStateException();
+				}
+
+				assignedTo = gitService.getKey();
+				platformLayer.addTag(model.getKey(), Tag.ASSIGNED_TO.build(assignedTo));
 			}
-			gitService = gitServices.get(0);
+		}
+
+		GitService gitService = null;
+		if (assignedTo != null) {
+			gitService = platformLayer.getItem(assignedTo, GitService.class);
 		}
 
 		if (OpsContext.isDelete()) {
