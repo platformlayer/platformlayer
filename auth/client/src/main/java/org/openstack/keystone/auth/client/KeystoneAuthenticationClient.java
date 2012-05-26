@@ -2,6 +2,7 @@ package org.openstack.keystone.auth.client;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Random;
@@ -37,6 +38,8 @@ public class KeystoneAuthenticationClient {
 	protected static final int MAX_RETRIES = 10;
 
 	static Random random = new Random();
+
+	PrintStream debug;
 
 	public KeystoneAuthenticationClient(String authenticationUrl) {
 		this.authenticationUrl = authenticationUrl;
@@ -76,15 +79,28 @@ public class KeystoneAuthenticationClient {
 				token.populateRequest(httpRequest);
 			}
 
+			if (debug != null) {
+				debug.println(httpRequest.toString());
+			}
+
 			if (postObject != null) {
 				httpRequest.setRequestHeader("Content-Type", "application/xml");
 				String xml = serializeXml(postObject);
 				httpRequest.getOutputStream().write(Utf8.getBytes(xml));
+
+				if (debug != null) {
+					debug.println(xml);
+				}
 			}
 
 			SimpleHttpResponse response = httpRequest.doRequest();
 
 			int responseCode = response.getHttpResponseCode();
+
+			if (debug != null) {
+				debug.println("Response: " + response);
+			}
+
 			switch (responseCode) {
 			case 401:
 				throw new KeystoneAuthenticationException("Platformlayer credentials were not correct");

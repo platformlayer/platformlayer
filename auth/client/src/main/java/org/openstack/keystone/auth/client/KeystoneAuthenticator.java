@@ -1,5 +1,6 @@
 package org.openstack.keystone.auth.client;
 
+import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -51,6 +52,10 @@ public class KeystoneAuthenticator implements Authenticator {
 		} catch (MalformedURLException e) {
 			throw new IllegalStateException("Error parsing URL", e);
 		}
+	}
+
+	public void setDebug(PrintStream debug) {
+		client.debug = debug;
 	}
 
 }

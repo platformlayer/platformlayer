@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.net.ConnectException;
 import java.net.URI;
 
@@ -28,6 +29,8 @@ class PlatformLayerHttpRequest implements Closeable {
 	final PlatformLayerHttpClient client;
 	final SimpleHttpRequest httpRequest;
 	SimpleHttpResponse response;
+
+	PrintStream debug;
 
 	public PlatformLayerHttpRequest(PlatformLayerHttpClient client, String method, URI uri)
 			throws PlatformLayerClientException {
@@ -109,8 +112,16 @@ class PlatformLayerHttpRequest implements Closeable {
 		try {
 			populateHttpRequest(acceptFormat, sendDataFormat);
 
+			if (debug != null) {
+				debug.println("Request" + httpRequest);
+			}
+
 			if (sendData != null) {
 				if (sendData instanceof String) {
+					if (debug != null) {
+						debug.println("Data: " + sendData);
+					}
+
 					String sendDataString = (String) sendData;
 					OutputStreamWriter writer = Utf8.openWriter(getOutputStream());
 					writer.write(sendDataString);
@@ -118,10 +129,18 @@ class PlatformLayerHttpRequest implements Closeable {
 				} else {
 					switch (sendDataFormat) {
 					case XML:
+						if (debug != null) {
+							debug.println("Data: [XML Content]");
+						}
+
 						JaxbHelper jaxbHelper = JaxbHelper.get(sendData.getClass());
 						jaxbHelper.marshal(sendData, false, getOutputStream());
 						break;
 					case JSON:
+						if (debug != null) {
+							debug.println("Data: [JSON Content]");
+						}
+
 						JsonHelper jsonHelper = JsonHelper.build(sendData.getClass());
 						jsonHelper.marshal(sendData, false, getOutputStream());
 						break;
@@ -155,8 +174,16 @@ class PlatformLayerHttpRequest implements Closeable {
 					text = IoUtils.readAll(Utf8.openReader(is));
 				}
 
+				if (debug != null) {
+					debug.println("Response: " + text);
+				}
+
 				return CastUtils.as(text, retvalClass);
 			} else {
+				if (debug != null) {
+					debug.println("Response: XML/JSON content");
+				}
+
 				InputStream is = getInputStream();
 
 				return JaxbHelper.deserializeXmlObject(is, retvalClass, true);
@@ -173,6 +200,10 @@ class PlatformLayerHttpRequest implements Closeable {
 	private void processHttpResponseCode(SimpleHttpResponse response) throws PlatformLayerClientException, IOException {
 		// Send the HTTP request
 		int httpResponseCode = response.getHttpResponseCode();
+
+		if (debug != null) {
+			debug.println("Response: " + response);
+		}
 
 		switch (httpResponseCode) {
 		case 200: // OK

@@ -10,9 +10,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
+
 import com.google.common.collect.Maps;
 
 public class SimpleHttpRequest {
+	static final Logger log = Logger.getLogger(SimpleHttpRequest.class);
+
 	final HttpURLConnection httpConn;
 	final URL url;
 	final String method;
@@ -111,6 +115,19 @@ public class SimpleHttpRequest {
 			return allHeaders;
 		}
 
+		@Override
+		public String toString() {
+			try {
+				StringBuilder sb = new StringBuilder();
+				sb.append(httpConn.getResponseCode() + " " + httpConn.getResponseMessage());
+				return sb.toString();
+			} catch (IOException e) {
+				log.warn("Error in toString", e);
+				return "Exception while calling toString";
+			}
+
+		}
+
 	}
 
 	public OutputStream getOutputStream() throws IOException {
@@ -125,11 +142,15 @@ public class SimpleHttpRequest {
 		return method;
 	}
 
-	// public void addTags(Tags tags) {
-	// if (tags != null) {
-	// for (Tag tag : tags.all()) {
-	// httpConn.setRequestProperty("X-Tag-" + tag.key, tag.value);
-	// }
-	// }
-	// }
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(getMethod() + " " + getUrl() + "\n");
+		for (Entry<String, List<String>> entry : httpConn.getRequestProperties().entrySet()) {
+			sb.append(entry.getKey() + ": " + entry.getValue() + "\n");
+		}
+		sb.append("\n");
+		return sb.toString();
+	}
+
 }

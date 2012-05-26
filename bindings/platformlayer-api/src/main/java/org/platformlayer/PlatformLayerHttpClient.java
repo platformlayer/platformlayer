@@ -1,5 +1,6 @@
 package org.platformlayer;
 
+import java.io.PrintStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -14,6 +15,7 @@ class PlatformLayerHttpClient {
 	static final Logger log = LoggerFactory.getLogger(PlatformLayerHttpClient.class);
 
 	final Authenticator authClient;
+	PrintStream debug = null;
 
 	public PlatformLayerHttpClient(Authenticator authenticator) {
 		this.authClient = authenticator;
@@ -76,6 +78,7 @@ class PlatformLayerHttpClient {
 		int maxRetries = 1;
 		for (int i = 1; i <= maxRetries; i++) {
 			PlatformLayerHttpRequest request = new PlatformLayerHttpRequest(this, method, buildUri(relativePath));
+			request.debug = debug;
 			try {
 				if (i == maxRetries) {
 					return request.doRequest(retvalClass, acceptFormat, sendData, sendDataFormat);
@@ -108,5 +111,14 @@ class PlatformLayerHttpClient {
 		}
 
 		throw new IllegalStateException(); // Unreachable, but the compiler doesn't know that
+	}
+
+	public PrintStream getDebug() {
+		return debug;
+	}
+
+	public void setDebug(PrintStream debug) {
+		this.authClient.setDebug(debug);
+		this.debug = debug;
 	}
 }

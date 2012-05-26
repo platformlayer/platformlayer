@@ -3,6 +3,7 @@ package org.platformlayer;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
@@ -74,6 +75,7 @@ public class DirectPlatformLayerClient extends PlatformLayerClientBase {
 
 		Authenticator authenticator = new KeystoneAuthenticator(tenant, username, secret, server);
 		ProjectId projectId = new ProjectId(tenant);
+
 		return build(authenticator, projectId);
 	}
 
@@ -398,6 +400,10 @@ public class DirectPlatformLayerClient extends PlatformLayerClientBase {
 	@Override
 	public ProjectId getProject() {
 		return projectId;
+	}
+
+	public void setDebug(PrintStream debug) {
+		httpClient.setDebug(debug);
 	}
 
 	// protected String buildRelativePath(ServiceType serviceType, ItemType itemType) {

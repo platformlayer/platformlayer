@@ -1,5 +1,7 @@
 package org.platformlayer.auth;
 
+import java.io.PrintStream;
+
 public class DirectAuthenticator implements Authenticator {
 
 	final AuthenticationToken authenticationToken;
@@ -21,6 +23,11 @@ public class DirectAuthenticator implements Authenticator {
 	@Override
 	public String getHost() {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void setDebug(PrintStream debug) {
+
 	}
 
 }

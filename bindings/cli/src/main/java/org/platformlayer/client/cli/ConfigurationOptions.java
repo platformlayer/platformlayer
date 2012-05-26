@@ -15,14 +15,18 @@ import org.platformlayer.IoUtils;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.ops.OpsException;
 
+import com.fathomdb.cli.CliException;
 import com.fathomdb.cli.CliOptions;
 
 public class ConfigurationOptions extends CliOptions {
 	@Option(name = "-c", aliases = "--config", usage = "config file", required = true)
 	String configFile;
 
+	@Option(name = "-debug", aliases = "--debug", usage = "enable debug output")
+	boolean debug;
+
 	public PlatformLayerClient buildPlatformLayerClient() throws IOException, OpsException {
-		PlatformLayerClient client;
+		DirectPlatformLayerClient client;
 		if (configFile == null) {
 			throw new IllegalArgumentException("Config file is required");
 		}
@@ -51,7 +55,16 @@ public class ConfigurationOptions extends CliOptions {
 			} catch (IOException e) {
 				throw new IOException("Error reading configuration file", e);
 			}
+
+			if (properties.getProperty("platformlayer.username") == null) {
+				throw new CliException("User property not set in configuration file");
+			}
+
 			client = DirectPlatformLayerClient.buildUsingProperties(properties);
+
+			if (debug) {
+				client.setDebug(System.err);
+			}
 
 			// client = FederatedPlatformLayerClient.buildUsingConfig(is);
 		} finally {
