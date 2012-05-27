@@ -6,11 +6,13 @@ import java.security.KeyPair;
 import java.security.PublicKey;
 
 import org.apache.log4j.Logger;
+import org.openstack.utils.Io;
 import org.platformlayer.ApplicationMode;
 import org.platformlayer.IoUtils;
 import org.platformlayer.KeyPairUtils;
 import org.platformlayer.crypto.OpenSshUtils;
 import org.platformlayer.crypto.RsaUtils;
+import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.ops.CloudContext;
 import org.platformlayer.ops.OpsContext;
@@ -45,14 +47,24 @@ public class SshKeys {
 		}
 
 		if (ApplicationMode.isDevelopment()) {
-			File keyFile = new File("/tmp/" + sshKeyName);
-			log.warn("Writing SSH key to " + keyFile);
+			ProjectId project = opsContext.getUserInfo().getProjectId();
 
-			try {
-				String serialized = KeyPairUtils.serialize(keyPair);
-				IoUtils.writeAll(keyFile, serialized);
-			} catch (IOException e) {
-				throw new OpsException("Error serializing SSH key", e);
+			File credentials = Io.resolve("~/.credentials");
+			File ssh = new File(credentials, "ssh");
+			File projectDir = new File(ssh, project.getKey());
+			File keyFile = new File(projectDir, sshKeyName);
+
+			if (!keyFile.exists()) {
+				projectDir.mkdirs();
+
+				log.warn("Writing SSH key to " + keyFile);
+
+				try {
+					String serialized = KeyPairUtils.serialize(keyPair);
+					IoUtils.writeAll(keyFile, serialized);
+				} catch (IOException e) {
+					throw new OpsException("Error serializing SSH key", e);
+				}
 			}
 		}
 

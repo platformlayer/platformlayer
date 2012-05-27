@@ -44,6 +44,9 @@ do_action() {
         "browser")
           x-www-browser $@
           ;;
+        "ssh")
+          ssh -i $2 $1
+          ;;
         *)
           echo "Unknown action: ${verb}"
           exit 1
@@ -60,6 +63,10 @@ set -e
 # Intelligent selection of default format based on command
 # i.e. run as an action if it's an action and user didn't override
 if [[ "$1" == "open-item" ]]; then
+	DEFAULT_FORMAT="action"
+fi
+
+if [[ "$1" == "ssh-item" ]]; then
 	DEFAULT_FORMAT="action"
 fi
 
