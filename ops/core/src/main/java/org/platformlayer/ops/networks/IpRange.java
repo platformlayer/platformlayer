@@ -6,6 +6,8 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Iterator;
 
+import org.openstack.utils.SimpleIterator;
+
 public abstract class IpRange {
 	protected final InetAddress address;
 	protected final int netmaskLength;
