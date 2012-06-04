@@ -2,6 +2,7 @@ package org.platformlayer.core.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlTransient;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Tag {
@@ -12,6 +13,7 @@ public class Tag {
 
 	// public static final String PLATFORM_LAYER_ID = "platformlayerid";
 
+	@XmlTransient
 	public abstract static class TagKey<T> {
 		final String key;
 
@@ -38,6 +40,7 @@ public class Tag {
 		protected abstract T toT(String s);
 	}
 
+	@XmlTransient
 	public static class KeyTagKey extends TagKey<PlatformLayerKey> {
 		public KeyTagKey(String key) {
 			super(key);
