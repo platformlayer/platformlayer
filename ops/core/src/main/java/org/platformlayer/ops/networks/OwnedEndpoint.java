@@ -10,6 +10,7 @@ import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.UniqueTag;
+import org.platformlayer.ops.firewall.FirewallRecord.Transport;
 import org.platformlayer.ops.machines.PlatformLayerCloudHelpers;
 import org.platformlayer.ops.tree.OwnedItem;
 
@@ -17,6 +18,8 @@ public class OwnedEndpoint extends OwnedItem<PublicEndpointBase> {
 	public int publicPort;
 	public int backendPort;
 	public PlatformLayerKey parentItem;
+
+	public Transport transport = null;
 
 	@Inject
 	PlatformLayerCloudHelpers platformLayerCloudHelpers;
@@ -34,6 +37,9 @@ public class OwnedEndpoint extends OwnedItem<PublicEndpointBase> {
 		publicEndpoint.instance = instanceKey;
 		publicEndpoint.key = PlatformLayerKey.fromId(instance.getId() + "_" + publicPort);
 
+		if (transport != null) {
+			publicEndpoint.transport = transport.toString();
+		}
 		// publicEndpoint.getTags().add(OpsSystem.get().createParentTag(instance));
 
 		Tag uniqueTag = UniqueTag.build(instance, String.valueOf(publicPort));

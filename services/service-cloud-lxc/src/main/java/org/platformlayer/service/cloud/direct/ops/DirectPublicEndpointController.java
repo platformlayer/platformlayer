@@ -8,10 +8,12 @@ import javax.inject.Inject;
 import org.apache.log4j.Logger;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.Tags;
+import org.platformlayer.ops.EnumUtils;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsSystem;
+import org.platformlayer.ops.firewall.FirewallRecord.Transport;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.direct.model.DirectInstance;
@@ -38,9 +40,13 @@ public class DirectPublicEndpointController extends OpsTreeBase {
 			publicPorts.tagItems.add(directInstance);
 			publicPorts.tagItems.add(model);
 			publicPorts.uuid = getUuid(model);
-
 			publicPorts.backendPort = model.backendPort;
 			publicPorts.publicPort = model.publicPort;
+
+			if (model.transport != null) {
+				publicPorts.transport = EnumUtils.valueOfCaseInsensitive(Transport.class, model.transport);
+			}
+
 			addChild(publicPorts);
 		}
 	}

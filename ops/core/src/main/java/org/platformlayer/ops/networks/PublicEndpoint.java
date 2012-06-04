@@ -18,6 +18,7 @@ import org.platformlayer.ops.endpoints.EndpointDnsRecord;
 import org.platformlayer.ops.firewall.FirewallEntry;
 import org.platformlayer.ops.firewall.FirewallRecord;
 import org.platformlayer.ops.firewall.FirewallRecord.Protocol;
+import org.platformlayer.ops.firewall.FirewallRecord.Transport;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.machines.PlatformLayerCloudHelpers;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
@@ -40,6 +41,7 @@ public class PublicEndpoint extends OpsTreeBase {
 	public boolean defaultBlocked = true;
 
 	public Protocol protocol = Protocol.Tcp;
+	public Transport transport = null;
 
 	@Inject
 	PlatformLayerHelpers platformLayerClient;
@@ -123,6 +125,5 @@ public class PublicEndpoint extends OpsTreeBase {
 			// Block on machine's firewall
 			addChild(FirewallEntry.build(FirewallRecord.buildBlockPort(protocol, backendPort)));
 		}
-
 	}
 }

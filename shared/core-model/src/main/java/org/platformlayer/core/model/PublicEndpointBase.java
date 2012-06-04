@@ -11,4 +11,6 @@ public class PublicEndpointBase extends ItemBase {
 	public int publicPort;
 	public PlatformLayerKey instance;
 	public int backendPort;
+
+	public String transport;
 }

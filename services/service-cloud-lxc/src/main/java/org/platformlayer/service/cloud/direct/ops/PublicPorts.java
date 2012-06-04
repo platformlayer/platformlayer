@@ -17,6 +17,7 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsProvider;
 import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.OpsTarget;
+import org.platformlayer.ops.firewall.FirewallRecord.Transport;
 import org.platformlayer.ops.helpers.ImageFactory;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.helpers.ServiceContext;
@@ -30,6 +31,7 @@ import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.direct.model.DirectInstance;
 
 import com.google.common.base.Function;
+import com.google.common.base.Objects;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
@@ -39,6 +41,8 @@ public class PublicPorts extends OpsTreeBase {
 	public int backendPort;
 	public int publicPort;
 	public DirectInstance backendItem;
+
+	public Transport transport;
 
 	public String uuid;
 
@@ -126,11 +130,14 @@ public class PublicPorts extends OpsTreeBase {
 
 		final SocketAddressPoolAssignment assignPublicAddress;
 		{
-			assignPublicAddress = injected(SocketAddressPoolAssignment.class);
+			assignPublicAddress = addChild(SocketAddressPoolAssignment.class);
 			assignPublicAddress.holder = DirectCloudUtils.getInstanceDir(backendItem);
-			assignPublicAddress.poolProvider = DirectCloudUtils.getPublicAddressPool4(publicPort);
 
-			cloudHost.addChild(assignPublicAddress);
+			if (Objects.equal(transport, Transport.Ipv6)) {
+				assignPublicAddress.poolProvider = DirectCloudUtils.getAddressPool6();
+			} else {
+				assignPublicAddress.poolProvider = DirectCloudUtils.getPublicAddressPool4(publicPort);
+			}
 		}
 
 		{
