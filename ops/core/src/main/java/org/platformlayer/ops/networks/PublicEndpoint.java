@@ -65,11 +65,11 @@ public class PublicEndpoint extends OpsTreeBase {
 		final OwnedEndpoint endpoint;
 
 		{
-			endpoint = injected(OwnedEndpoint.class);
+			endpoint = addChild(OwnedEndpoint.class);
 			endpoint.publicPort = publicPort;
 			endpoint.backendPort = backendPort;
 			endpoint.parentItem = parentItem;
-			addChild(endpoint);
+			endpoint.transport = transport;
 		}
 
 		if (!Strings.isNullOrEmpty(dnsName)) {
