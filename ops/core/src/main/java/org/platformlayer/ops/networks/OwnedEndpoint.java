@@ -10,7 +10,7 @@ import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.UniqueTag;
-import org.platformlayer.ops.firewall.FirewallRecord.Transport;
+import org.platformlayer.ops.firewall.Transport;
 import org.platformlayer.ops.machines.PlatformLayerCloudHelpers;
 import org.platformlayer.ops.tree.OwnedItem;
 

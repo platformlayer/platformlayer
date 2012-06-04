@@ -14,7 +14,6 @@ import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsProvider;
 import org.platformlayer.ops.OpsTarget;
-import org.platformlayer.ops.firewall.FirewallRecord.Transport;
 import org.platformlayer.ops.machines.InetAddressUtils;
 import org.platformlayer.ops.process.ProcessExecution;
 
@@ -30,8 +29,6 @@ public class ForwardPort {
 	public int privatePort;
 
 	public String uuid;
-
-	public Transport transport;
 
 	/**
 	 * A representation of an iptables rule, that doesn't rely on completely parsing everything

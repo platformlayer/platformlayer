@@ -8,7 +8,6 @@ import org.platformlayer.ops.Command;
 import org.platformlayer.ops.FileUpload;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
-import org.platformlayer.ops.firewall.FirewallRecord.Transport;
 import org.platformlayer.ops.networks.ScriptBuilder;
 
 import com.google.common.base.Objects;

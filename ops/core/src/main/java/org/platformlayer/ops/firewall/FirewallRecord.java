@@ -1,22 +1,10 @@
 package org.platformlayer.ops.firewall;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.platformlayer.ops.EnumUtils;
 
 public class FirewallRecord {
 	static final Logger log = Logger.getLogger(FirewallRecord.class);
-
-	public enum Transport {
-		// TODO: Is transport the right word?
-		Ipv4, Ipv6;
-
-		public static List<Transport> all() {
-			return Arrays.asList(Transport.values());
-		}
-	}
 
 	public enum Protocol {
 		All, Tcp, Udp, Icmp, TcpOrUdp, Esp, Ah;

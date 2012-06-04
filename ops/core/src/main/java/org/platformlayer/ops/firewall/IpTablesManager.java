@@ -10,7 +10,6 @@ import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.firewall.FirewallRecord.Decision;
 import org.platformlayer.ops.firewall.FirewallRecord.Direction;
 import org.platformlayer.ops.firewall.FirewallRecord.Protocol;
-import org.platformlayer.ops.firewall.FirewallRecord.Transport;
 import org.platformlayer.ops.process.ProcessExecution;
 
 import com.google.common.collect.Lists;
