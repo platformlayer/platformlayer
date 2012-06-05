@@ -125,7 +125,5 @@ public class ZookeeperInstance extends OpsTreeBase {
 			service.id = supervisorKey;
 			addChild(service);
 		}
-
-		addChild(ZookeeperStatusChecker.class);
 	}
 }

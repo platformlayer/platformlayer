@@ -86,6 +86,8 @@ public class ZookeeperServerController extends OpsTreeBase {
 			vm.addChild(endpoint);
 		}
 
+		vm.addChild(ZookeeperStatusChecker.class);
+
 		// TODO: Establish round-robin style DNS on clusterDnsName
 		// TODO: Is some form of geo-direction possible?
 	}
