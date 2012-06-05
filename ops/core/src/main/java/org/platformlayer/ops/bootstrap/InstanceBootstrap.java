@@ -8,6 +8,7 @@ import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.SimpleFile;
 import org.platformlayer.ops.firewall.scripts.PersistIptablesScripts;
+import org.platformlayer.ops.packages.AptSourcesConfigurationFile.DefaultAptSourcesConfigurationFile;
 import org.platformlayer.ops.packages.PackageDependency;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
@@ -22,6 +23,8 @@ public class InstanceBootstrap extends OpsTreeBase {
 	@Override
 	protected void addChildren() throws OpsException {
 		addChild(PersistIptablesScripts.class);
+
+		addChild(DefaultAptSourcesConfigurationFile.class);
 
 		addChild(BootstrapLocales.class);
 

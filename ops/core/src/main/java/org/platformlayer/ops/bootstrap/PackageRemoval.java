@@ -12,6 +12,9 @@ public class PackageRemoval {
 
 	@Handler
 	public void handler(OpsTarget target) throws OpsException {
+		// Make sure openssh-server is manually installed (i.e. not through task-ssh-server)
+		target.executeCommand("apt-get install openssh-server");
+
 		// Only for wheezy? Squeeze has a depencency of install-info -> findutils
 		Command command = Command
 				.build("apt-get remove --yes aptitude tasksel tasksel-data man-db manpages libxapian22 libboost-iostreams1.49.0 info install-info");

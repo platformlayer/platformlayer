@@ -13,6 +13,7 @@ import org.platformlayer.ops.machines.PlatformLayerCloudContext;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.networks.IpRange;
 import org.platformlayer.ops.networks.NetworkPoint;
+import org.platformlayer.ops.packages.AptSourcesConfigurationFile.DefaultAptSourcesConfigurationFile;
 import org.platformlayer.ops.packages.PackageDependency;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.direct.model.DirectHost;
@@ -79,6 +80,10 @@ public class DirectHostController extends OpsTreeBase {
 			host.address = NetworkPoint.forPublicHostname(model.host);
 			host.sshKey = service.getSshKey();
 		}
+
+		// TODO: What do we want to bootstrap here??
+		// host.addChild(InstanceBootstrap.class);
+		host.addChild(DefaultAptSourcesConfigurationFile.class);
 
 		// TODO: Do we want to differentiate between an LXC host and a KVM host?
 		host.addChild(PackageDependency.build("lxc"));
