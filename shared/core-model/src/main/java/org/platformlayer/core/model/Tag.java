@@ -1,8 +1,12 @@
 package org.platformlayer.core.model;
 
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlTransient;
+
+import com.google.common.collect.Lists;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Tag {
@@ -29,12 +33,24 @@ public class Tag {
 			return findUnique(item.getTags());
 		}
 
+		public List<T> find(ItemBase item) {
+			return find(item.getTags());
+		}
+
 		public T findUnique(Tags tags) {
 			String s = tags.findUnique(key);
 			if (s == null) {
 				return null;
 			}
 			return toT(s);
+		}
+
+		public List<T> find(Tags tags) {
+			List<T> ret = Lists.newArrayList();
+			for (String s : tags.find(key)) {
+				ret.add(toT(s));
+			}
+			return ret;
 		}
 
 		protected abstract T toT(String s);
@@ -56,18 +72,50 @@ public class Tag {
 		}
 	}
 
+	@XmlTransient
+	public static class StringTagKey extends TagKey<String> {
+		public StringTagKey(String key) {
+			super(key);
+		}
+
+		@Override
+		protected String toT(String s) {
+			return s;
+		}
+
+		public Tag build(String t) {
+			return new Tag(key, t);
+		}
+	}
+
+	@XmlTransient
+	public static class EndpointTagKey extends TagKey<EndpointInfo> {
+		public EndpointTagKey(String key) {
+			super(key);
+		}
+
+		@Override
+		protected EndpointInfo toT(String s) {
+			return EndpointInfo.parseTagValue(s);
+		}
+
+		public Tag build(EndpointInfo t) {
+			return new Tag(key, t.getTagValue());
+		}
+	}
+
 	public static final String PARENT = "parent";
 	// public static final String RELATED = "linked";
 	public static final String ASSIGNED = "assigned";
 	public static final KeyTagKey ASSIGNED_TO = new KeyTagKey("assigned_to");
 
-	public static final String IMAGE_ID = "imageid";
+	public static final StringTagKey IMAGE_ID = new StringTagKey("imageid");
 
 	public static final String INSTANCE_KEY = "instancekey";
 	public static final String NETWORK_ADDRESS = "net.address";
 
 	public static final String HOST_POLICY = "host.policy";
-	public static final String PUBLIC_ENDPOINT = "public-endpoint";
+	public static final EndpointTagKey PUBLIC_ENDPOINT = new EndpointTagKey("public-endpoint");
 	public static final String UNIQUE_ID = "uniqueid";
 
 	public static final String IMAGE_OS_DISTRIBUTION = "org.openstack__1__os_distro";

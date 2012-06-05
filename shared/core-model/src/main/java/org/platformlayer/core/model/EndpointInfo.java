@@ -1,18 +1,16 @@
-package org.platformlayer;
+package org.platformlayer.core.model;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
 import java.util.List;
 
-import org.platformlayer.core.model.Tag;
-import org.platformlayer.core.model.Tags;
+import javax.xml.bind.annotation.XmlTransient;
 
 import com.google.common.base.Objects;
-import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.net.InetAddresses;
 
+@XmlTransient
 public class EndpointInfo {
 
 	public EndpointInfo() {
@@ -34,17 +32,8 @@ public class EndpointInfo {
 	public static List<EndpointInfo> getEndpoints(Tags tags) {
 		List<EndpointInfo> endpoints = Lists.newArrayList();
 
-		for (String publicEndpoint : tags.find(Tag.PUBLIC_ENDPOINT)) {
-			ArrayList<String> components = Lists.newArrayList(Splitter.on(":").split(publicEndpoint));
-			if (components.size() == 2) {
-				EndpointInfo info = new EndpointInfo();
-				info.publicIp = components.get(0);
-				info.port = Integer.parseInt(components.get(1));
-
-				endpoints.add(info);
-			} else {
-				throw new IllegalStateException();
-			}
+		for (EndpointInfo endpoint : Tag.PUBLIC_ENDPOINT.find(tags)) {
+			endpoints.add(endpoint);
 		}
 		return endpoints;
 
@@ -75,7 +64,15 @@ public class EndpointInfo {
 	}
 
 	public Tag toTag() {
-		return new Tag(Tag.PUBLIC_ENDPOINT, publicIp + ":" + port);
+		return Tag.PUBLIC_ENDPOINT.build(this);
+	}
+
+	String getTagValue() {
+		if (publicIp.contains(":")) {
+			return "[" + publicIp + "]:" + port;
+		} else {
+			return publicIp + ":" + port;
+		}
 	}
 
 	@Override
@@ -94,4 +91,38 @@ public class EndpointInfo {
 		return new InetSocketAddress(getAddress(), port);
 	}
 
+	public static EndpointInfo parseTagValue(String s) {
+		int lastColon = s.lastIndexOf(':');
+		if (lastColon == -1) {
+			throw new IllegalStateException();
+		}
+
+		String portString = s.substring(lastColon + 1);
+		String hostString = s.substring(0, lastColon);
+
+		if (hostString.contains(":")) {
+			if (!hostString.startsWith("[")) {
+				throw new IllegalStateException();
+			}
+		}
+
+		hostString = trimSquareBrackets(hostString);
+
+		if (hostString.contains("[") || hostString.contains("]")) {
+			throw new IllegalStateException();
+		}
+
+		EndpointInfo info = new EndpointInfo();
+		info.publicIp = hostString;
+		info.port = Integer.parseInt(portString);
+
+		return info;
+	}
+
+	private static String trimSquareBrackets(String s) {
+		while (s.startsWith("[") && s.endsWith("]")) {
+			s = s.substring(1, s.length() - 1);
+		}
+		return s;
+	}
 }

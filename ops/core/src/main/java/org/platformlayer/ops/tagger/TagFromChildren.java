@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.platformlayer.EndpointInfo;
+import org.platformlayer.core.model.EndpointInfo;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;

@@ -2,7 +2,7 @@ package org.platformlayer.service.cloud.raw.ops;
 
 import javax.inject.Inject;
 
-import org.platformlayer.EndpointInfo;
+import org.platformlayer.core.model.EndpointInfo;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.ops.OpsContext;

@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.platformlayer.EndpointChooser;
-import org.platformlayer.EndpointInfo;
+import org.platformlayer.core.model.EndpointInfo;
 import org.platformlayer.ops.Deviations;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;

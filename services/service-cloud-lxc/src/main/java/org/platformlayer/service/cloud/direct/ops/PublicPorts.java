@@ -9,7 +9,7 @@ import java.util.Properties;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.platformlayer.EndpointInfo;
+import org.platformlayer.core.model.EndpointInfo;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.ops.Handler;

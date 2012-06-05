@@ -4,11 +4,11 @@ import java.io.PrintWriter;
 import java.util.List;
 
 import org.kohsuke.args4j.Argument;
-import org.platformlayer.EndpointInfo;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
 import org.platformlayer.UntypedItem;
 import org.platformlayer.client.cli.model.ItemPath;
+import org.platformlayer.core.model.EndpointInfo;
 import org.platformlayer.core.model.PlatformLayerKey;
 
 public class GetEndpoint extends PlatformLayerCommandRunnerBase {

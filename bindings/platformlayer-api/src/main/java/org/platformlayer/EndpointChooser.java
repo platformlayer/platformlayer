@@ -3,6 +3,7 @@ package org.platformlayer;
 import java.net.InetAddress;
 
 import org.platformlayer.choice.ScoreChooser;
+import org.platformlayer.core.model.EndpointInfo;
 
 public class EndpointChooser extends ScoreChooser<EndpointInfo, Integer> {
 

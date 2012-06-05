@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.platformlayer.EndpointInfo;
+import org.platformlayer.core.model.EndpointInfo;
 import org.platformlayer.core.model.InstanceBase;
 import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.core.model.PlatformLayerKey;

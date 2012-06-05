@@ -8,8 +8,8 @@ import javalang7.AutoCloseable;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.platformlayer.EndpointInfo;
 import org.platformlayer.TimeSpan;
+import org.platformlayer.core.model.EndpointInfo;
 import org.platformlayer.ops.CloudContext;
 import org.platformlayer.ops.FileUpload;
 import org.platformlayer.ops.Machine;

@@ -5,8 +5,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-import org.platformlayer.EndpointInfo;
 import org.platformlayer.PlatformLayerClientException;
+import org.platformlayer.core.model.EndpointInfo;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.PublicEndpointBase;
 import org.platformlayer.core.model.Tag;
