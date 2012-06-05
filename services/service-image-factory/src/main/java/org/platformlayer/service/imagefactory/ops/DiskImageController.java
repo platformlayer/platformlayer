@@ -3,6 +3,7 @@ package org.platformlayer.service.imagefactory.ops;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -38,7 +39,9 @@ import org.platformlayer.ops.filesystem.FilesystemInfo;
 import org.platformlayer.ops.helpers.AptHelper;
 import org.platformlayer.ops.helpers.ServiceContext;
 import org.platformlayer.ops.helpers.SshKey;
+import org.platformlayer.ops.images.CloudImage;
 import org.platformlayer.ops.images.ImageFormat;
+import org.platformlayer.ops.images.ImageStore;
 import org.platformlayer.ops.machines.PlatformLayerCloudHelpers;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.networks.NetworkPoint;
@@ -107,11 +110,35 @@ public class DiskImageController {
 	}
 
 	@Handler
-	public void handler(DiskImage image) throws OpsException, IOException {
+	public void build(DiskImage image) throws OpsException, IOException {
+		String imageId = Tag.IMAGE_ID.findUnique(image);
+
+		if (imageId == null) {
+			// Check for existing image
+
+			MachineCloudBase targetCloud = cloudHelpers.getCloud(image.cloud);
+			DiskImageRecipe recipe = platformLayer.getItem(image.recipeId, DiskImageRecipe.class);
+
+			ImageStore imageStore = cloud.getImageStore(targetCloud);
+
+			List<CloudImage> existingImages = imageStore.findImages(Collections.<Tag> emptyList());
+
+			for (CloudImage existingImage : existingImages) {
+				// TODO: Fetch the parent, fetch the description, see if it's a match??
+				log.info("Image found, but not know whether we can re-use: " + existingImage);
+			}
+		}
+
+		if (imageId == null) {
+			buildImage(image);
+		}
+	}
+
+	public void buildImage(DiskImage image) throws OpsException, IOException {
 		// Assume the worst...
 		opsContext.setFailure(true);
 
-		MachineCloudBase cloudModel = cloudHelpers.getCloud(image.cloud);
+		MachineCloudBase targetCloud = cloudHelpers.getCloud(image.cloud);
 		DiskImageRecipe recipe = platformLayer.getItem(image.recipeId, DiskImageRecipe.class);
 
 		OperatingSystem operatingSystem = getRequestedOperatingSystem(recipe);
@@ -568,13 +595,13 @@ public class DiskImageController {
 			tags.add(opsContext.getOpsSystem().createParentTag(recipe));
 			tags.add(imageFormat.toTag());
 
-			imageId = cloud.getImageStore(cloudModel).uploadImage(target, tags, uploadImageFile, imageInfo.size);
+			imageId = cloud.getImageStore(targetCloud).uploadImage(target, tags, uploadImageFile, imageInfo.size);
 		}
 
 		// Tag the recipe with the image ID
 		{
 			TagChanges tagChanges = new TagChanges();
-			tagChanges.addTags.add(new Tag(Tag.IMAGE_ID, imageId));
+			tagChanges.addTags.add(Tag.IMAGE_ID.build(imageId));
 			platformLayer.changeTags(OpsSystem.toKey(image), tagChanges);
 		}
 
