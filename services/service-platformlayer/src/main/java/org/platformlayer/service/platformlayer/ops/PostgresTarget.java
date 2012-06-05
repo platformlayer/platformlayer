@@ -44,6 +44,8 @@ public class PostgresTarget {
 	public ProcessExecution execute(String sql, String maskedSql) throws OpsException {
 		OpsTarget target = getOpsTarget();
 
+		// We probably want psql -A -t -c "command"
+
 		Command command = Command.build("psql");
 		command.addQuoted("--username=", username);
 		command.addQuoted("--host=", hostname);
