@@ -145,7 +145,7 @@ public class DnsHelpers {
 				continue;
 			}
 
-			dnsFile.addA(record.dnsName, record.address);
+			dnsFile.addAddress(record.dnsName, record.address);
 		}
 
 		return dnsFile;

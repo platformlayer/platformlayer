@@ -55,7 +55,7 @@ public class ZoneFile {
 			if (c == NsRecord.class) {
 				return 1;
 			}
-			if (c == ARecord.class) {
+			if (c == AddressRecord.class) {
 				return 2;
 			}
 			throw new IllegalStateException();
@@ -218,16 +218,19 @@ public class ZoneFile {
 		}
 	}
 
-	static class ARecord extends Record {
+	/*
+	 * An A or AAAA record
+	 */
+	static class AddressRecord extends Record {
 		final String name;
 		final List<String> addresses;
 
-		public ARecord(String name, List<String> addresses) {
+		public AddressRecord(String name, List<String> addresses) {
 			this.name = name;
 			this.addresses = addresses;
 		}
 
-		public ARecord(String name, String address) {
+		public AddressRecord(String name, String address) {
 			this.name = name;
 			this.addresses = Collections.singletonList(address);
 		}
@@ -238,8 +241,13 @@ public class ZoneFile {
 
 			for (String address : addresses) {
 				sb.append(name);
-				sb.append(". A ");
-				sb.append(address);
+				if (address.contains(":")) {
+					sb.append(". AAAA ");
+					sb.append(address);
+				} else {
+					sb.append(". A ");
+					sb.append(address);
+				}
 				sb.append("\n");
 			}
 		}
@@ -250,7 +258,7 @@ public class ZoneFile {
 				return compareByClass(getClass(), o.getClass());
 			}
 
-			ARecord other = (ARecord) o;
+			AddressRecord other = (AddressRecord) o;
 			int v = name.compareTo(other.name);
 			if (v != 0) {
 				return v;
@@ -259,7 +267,6 @@ public class ZoneFile {
 			return 0;
 			// return PrimitiveComparators.compare(addresses, other.addresses)
 		}
-
 	}
 
 	public String getData() {
@@ -285,8 +292,8 @@ public class ZoneFile {
 		return getData();
 	}
 
-	public void addA(String dnsName, List<String> addresses) {
-		ARecord a = new ARecord(dnsName, addresses);
+	public void addAddress(String dnsName, List<String> addresses) {
+		AddressRecord a = new AddressRecord(dnsName, addresses);
 		addRecord(a);
 	}
 
@@ -315,7 +322,7 @@ public class ZoneFile {
 		NsRecord ns = new NsRecord(serverDnsName);
 		addRecord(ns);
 
-		ARecord a = new ARecord(serverDnsName, address);
+		AddressRecord a = new AddressRecord(serverDnsName, address);
 		addRecord(a);
 	}
 
