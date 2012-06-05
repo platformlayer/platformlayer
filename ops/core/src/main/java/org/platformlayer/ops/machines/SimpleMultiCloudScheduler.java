@@ -85,7 +85,7 @@ public class SimpleMultiCloudScheduler implements MultiCloudScheduler {
 		} else if (candidate.getClass().getSimpleName().equals(DirectCloud.class.getSimpleName())) {
 			cost = 10;
 		} else if (candidate.getClass().getSimpleName().equals(OpenstackCloud.class.getSimpleName())) {
-			cost = 9;
+			cost = 50;
 		} else {
 			throw new IllegalStateException();
 		}
