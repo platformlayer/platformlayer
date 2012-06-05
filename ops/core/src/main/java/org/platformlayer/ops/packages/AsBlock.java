@@ -4,6 +4,8 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.util.List;
 
+import org.platformlayer.ops.OpsTarget;
+import org.platformlayer.ops.SshOpsTarget;
 import org.platformlayer.ops.networks.IpRange;
 
 import com.google.common.collect.Lists;
@@ -20,8 +22,8 @@ public class AsBlock {
 		this.country = country;
 	}
 
-	static final AsBlock HETZNER;
-	static final AsBlock SOFTLAYER;
+	public static final AsBlock HETZNER;
+	public static final AsBlock SOFTLAYER;
 
 	static final List<AsBlock> ALL = Lists.newArrayList();
 
@@ -103,6 +105,13 @@ public class AsBlock {
 		}
 
 		return false;
+	}
+
+	public static AsBlock find(OpsTarget target) {
+		SshOpsTarget sshOpsTarget = (SshOpsTarget) target;
+		InetAddress host = sshOpsTarget.getHost();
+
+		return find(host);
 	}
 
 }
