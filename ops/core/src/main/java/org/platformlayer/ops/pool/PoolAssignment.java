@@ -10,15 +10,15 @@ import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 
 public abstract class PoolAssignment<T> implements Provider<T> {
-	public Provider<FilesystemBackedPool> poolProvider;
+	public Provider<ResourcePool> poolProvider;
 
 	public File holder;
 
-	private FilesystemBackedPool cachedPool;
+	private ResourcePool cachedPool;
 
 	private Properties assignedProperties;
 
-	private FilesystemBackedPool getPool() {
+	private ResourcePool getPool() {
 		if (cachedPool == null) {
 			cachedPool = poolProvider.get();
 		}
@@ -27,7 +27,7 @@ public abstract class PoolAssignment<T> implements Provider<T> {
 
 	@Handler
 	public void handler() throws OpsException {
-		FilesystemBackedPool pool = getPool();
+		ResourcePool pool = getPool();
 
 		if (OpsContext.isConfigure()) {
 			if (assignedProperties == null) {

@@ -7,6 +7,7 @@ import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsSystem;
+import org.platformlayer.ops.firewall.Transport;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.networks.PublicEndpoint;
@@ -43,6 +44,9 @@ public class ZookeeperServerController extends OpsTreeBase {
 			endpoint.backendPort = systemPort;
 			endpoint.dnsName = dnsName;
 
+			// We expect this to be used by IPv6 capable client
+			endpoint.transport = Transport.Ipv6;
+
 			endpoint.tagItem = OpsSystem.toKey(model);
 			endpoint.parentItem = OpsSystem.toKey(model);
 
@@ -72,6 +76,9 @@ public class ZookeeperServerController extends OpsTreeBase {
 			endpoint.publicPort = port;
 			endpoint.backendPort = port;
 			endpoint.dnsName = dnsName;
+
+			// We expect this to be used by IPv6 capable client
+			endpoint.transport = Transport.Ipv6;
 
 			endpoint.tagItem = OpsSystem.toKey(model);
 			endpoint.parentItem = OpsSystem.toKey(model);

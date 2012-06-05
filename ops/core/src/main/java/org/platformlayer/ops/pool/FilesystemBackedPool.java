@@ -31,7 +31,7 @@ import com.google.common.collect.Sets;
  * @author justinsb
  * 
  */
-public abstract class FilesystemBackedPool {
+public abstract class FilesystemBackedPool implements ResourcePool {
 	static final Logger log = Logger.getLogger(FilesystemBackedPool.class);
 
 	final PoolBuilder poolBuilder;
@@ -117,7 +117,8 @@ public abstract class FilesystemBackedPool {
 		}
 	}
 
-	String findAssigned(File owner) throws OpsException {
+	@Override
+	public String findAssigned(File owner) throws OpsException {
 		for (FilesystemInfo file : target.getFilesystemInfoDir(assignedDir)) {
 			if (!file.isSymlink()) {
 				continue;
@@ -131,6 +132,7 @@ public abstract class FilesystemBackedPool {
 		return null;
 	}
 
+	@Override
 	public String assign(File owner, boolean required) throws OpsException {
 		String assigned = findAssigned(owner);
 		if (assigned != null) {
@@ -158,6 +160,7 @@ public abstract class FilesystemBackedPool {
 		return null;
 	}
 
+	@Override
 	public void release(File owner, String item) throws OpsException {
 		File symlink = new File(assignedDir, item);
 		FilesystemInfo info = target.getFilesystemInfoFile(symlink);
@@ -172,5 +175,6 @@ public abstract class FilesystemBackedPool {
 		target.rm(symlink);
 	}
 
+	@Override
 	public abstract Properties readProperties(String key) throws OpsException;
 }

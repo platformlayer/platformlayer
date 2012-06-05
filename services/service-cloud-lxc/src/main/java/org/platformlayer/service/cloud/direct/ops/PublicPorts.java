@@ -23,7 +23,9 @@ import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.helpers.ServiceContext;
 import org.platformlayer.ops.machines.PlatformLayerCloudMachine;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
+import org.platformlayer.ops.pool.DelegatingResourcePool;
 import org.platformlayer.ops.pool.PoolBuilder;
+import org.platformlayer.ops.pool.ResourcePool;
 import org.platformlayer.ops.pool.SocketAddressPoolAssignment;
 import org.platformlayer.ops.pool.StaticFilesystemBackedPool;
 import org.platformlayer.ops.tagger.Tagger;
@@ -34,6 +36,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Objects;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.inject.Provider;
 
 public class PublicPorts extends OpsTreeBase {
 	static final Logger log = Logger.getLogger(PublicPorts.class);
@@ -134,13 +137,32 @@ public class PublicPorts extends OpsTreeBase {
 			assignPublicAddress.holder = DirectCloudUtils.getInstanceDir(backendItem);
 
 			if (Objects.equal(transport, Transport.Ipv6)) {
-				assignPublicAddress.poolProvider = DirectCloudUtils.getAddressPool6();
+				assignPublicAddress.poolProvider = new Provider<ResourcePool>() {
+					@Override
+					public ResourcePool get() {
+						final ResourcePool pool = DirectCloudUtils.getAddressPool6().get();
+
+						return new DelegatingResourcePool(pool) {
+							@Override
+							public Properties readProperties(String key) throws OpsException {
+								Properties properties = super.readProperties(key);
+								properties.setProperty("port", "" + publicPort);
+								return properties;
+							}
+						};
+					}
+				};
 			} else {
 				assignPublicAddress.poolProvider = DirectCloudUtils.getPublicAddressPool4(publicPort);
 			}
 		}
 
-		{
+		if (Objects.equal(transport, Transport.Ipv6)) {
+			// TODO: Do we need separate frontend / backend ports really?
+			if (this.publicPort != this.backendPort) {
+				throw new UnsupportedOperationException();
+			}
+		} else {
 			ForwardPort forward = injected(ForwardPort.class);
 			forward.publicAddress = assignPublicAddress;
 			forward.uuid = uuid;

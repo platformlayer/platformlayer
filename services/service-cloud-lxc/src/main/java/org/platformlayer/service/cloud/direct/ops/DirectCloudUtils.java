@@ -17,6 +17,7 @@ import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.pool.FilesystemBackedPool;
 import org.platformlayer.ops.pool.NetworkPoolBuilder;
 import org.platformlayer.ops.pool.PoolBuilder;
+import org.platformlayer.ops.pool.ResourcePool;
 import org.platformlayer.ops.pool.StaticFilesystemBackedPool;
 import org.platformlayer.service.cloud.direct.model.DirectHost;
 import org.platformlayer.service.cloud.direct.model.DirectInstance;
@@ -55,9 +56,9 @@ public class DirectCloudUtils {
 		}
 	}
 
-	private static Provider<FilesystemBackedPool> getPoolProvider(final String key,
+	private static Provider<ResourcePool> getPoolProvider(final String key,
 			final Provider<? extends PoolBuilder> poolBuilderProvider) {
-		return new Provider<FilesystemBackedPool>() {
+		return new Provider<ResourcePool>() {
 			@Override
 			public FilesystemBackedPool get() {
 				OpsTarget target = OpsContext.get().getInstance(OpsTarget.class);
@@ -81,8 +82,8 @@ public class DirectCloudUtils {
 		return tags.findUnique(Tag.NETWORK_ADDRESS);
 	}
 
-	public static Provider<FilesystemBackedPool> getPublicAddressPool4(final int publicPort) {
-		return new Provider<FilesystemBackedPool>() {
+	public static Provider<ResourcePool> getPublicAddressPool4(final int publicPort) {
+		return new Provider<ResourcePool>() {
 			@Override
 			public FilesystemBackedPool get() {
 				OpsTarget target = OpsContext.get().getInstance(OpsTarget.class);
@@ -108,7 +109,7 @@ public class DirectCloudUtils {
 		};
 	}
 
-	public static Provider<FilesystemBackedPool> getPrivateAddressPool4() {
+	public static Provider<ResourcePool> getPrivateAddressPool4() {
 		Provider<PoolBuilder> poolBuilder = new Provider<PoolBuilder>() {
 			@Override
 			public PoolBuilder get() {
@@ -129,7 +130,7 @@ public class DirectCloudUtils {
 		return getPoolProvider("addresses-ipv4-private", poolBuilder);
 	}
 
-	public static Provider<FilesystemBackedPool> getAddressPool6() {
+	public static Provider<ResourcePool> getAddressPool6() {
 		Provider<PoolBuilder> poolBuilder = new Provider<PoolBuilder>() {
 			@Override
 			public PoolBuilder get() {
@@ -150,11 +151,11 @@ public class DirectCloudUtils {
 		return getPoolProvider("addresses-ipv6", poolBuilder);
 	}
 
-	public static Provider<FilesystemBackedPool> getKvmMonitorPortPool() {
+	public static Provider<ResourcePool> getKvmMonitorPortPool() {
 		return getPoolProvider("kvm-monitor", Providers.of(new KvmMonitorPoolBuilder()));
 	}
 
-	public static Provider<FilesystemBackedPool> getVncPortPool() {
+	public static Provider<ResourcePool> getVncPortPool() {
 		return getPoolProvider("kvm-vnc", Providers.of(new VncPortPoolBuilder()));
 	}
 
