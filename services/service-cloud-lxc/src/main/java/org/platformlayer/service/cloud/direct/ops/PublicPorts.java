@@ -130,7 +130,7 @@ public class PublicPorts extends OpsTreeBase {
 
 		final SocketAddressPoolAssignment assignPublicAddress;
 		{
-			assignPublicAddress = addChild(SocketAddressPoolAssignment.class);
+			assignPublicAddress = cloudHost.addChild(SocketAddressPoolAssignment.class);
 			assignPublicAddress.holder = DirectCloudUtils.getInstanceDir(backendItem);
 
 			if (Objects.equal(transport, Transport.Ipv6)) {
