@@ -21,4 +21,10 @@ public abstract class InetSocketAddressPoolBuilder extends PoolBuilderBase<InetS
 		return properties;
 	}
 
+	@Override
+	protected String toKey(InetSocketAddress item) {
+		String s = item.getAddress().getHostAddress() + ":" + item.getPort();
+		return s;
+	}
+
 }
