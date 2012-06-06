@@ -25,19 +25,27 @@ public class FilesystemCasStore implements CasStore {
 		this.host = host;
 	}
 
-	String toRelativePath(Md5Hash hash) {
+	String toRelativePath(Md5Hash hash, int splits) {
 		String hex = hash.toHex();
-		return hex.substring(0, 2) + "/" + hex.substring(2, 4) + "/" + hex;
+
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < splits; i++) {
+			sb.append(hex.subSequence(i * 2, (i + 1) * 2));
+			sb.append("/");
+		}
+		sb.append(hex);
+
+		return sb.toString();
 	}
 
 	@Override
 	public FilesystemCasObject findArtifact(Md5Hash hash) throws Exception {
-		File file = checkDirectory(PATH_SEEDS, hash);
+		File file = checkDirectory(PATH_SEEDS, hash, 0);
 		if (file != null) {
 			return new FilesystemCasObject(this, file, hash);
 		}
 
-		file = checkDirectory(PATH_CACHE, hash);
+		file = checkDirectory(PATH_CACHE, hash, 2);
 		if (file != null) {
 			return new FilesystemCasObject(this, file, hash);
 		}
@@ -45,8 +53,8 @@ public class FilesystemCasStore implements CasStore {
 		return null;
 	}
 
-	private File checkDirectory(File base, Md5Hash hash) throws OpsException {
-		String relativePath = toRelativePath(hash);
+	private File checkDirectory(File base, Md5Hash hash, int splits) throws OpsException {
+		String relativePath = toRelativePath(hash, splits);
 		File seedFile = new File(base, relativePath);
 		FilesystemInfo seedFileInfo = host.getFilesystemInfoFile(seedFile);
 		if (seedFileInfo != null) {
@@ -69,7 +77,7 @@ public class FilesystemCasStore implements CasStore {
 
 		if (!host.isSameMachine(target)) {
 			// Copy to host cache
-			File cachePath = new File(PATH_CACHE, toRelativePath(src.getHash()));
+			File cachePath = new File(PATH_CACHE, toRelativePath(src.getHash(), 2));
 
 			target.mkdir(cachePath.getParentFile());
 

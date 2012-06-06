@@ -10,13 +10,20 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.log4j.Logger;
 import org.openstack.client.OpenstackCredentials;
 import org.platformlayer.crypto.Md5Hash;
+import org.platformlayer.ids.ServiceType;
+import org.platformlayer.ops.Machine;
+import org.platformlayer.ops.OpaqueMachine;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.cas.filesystem.FilesystemCasStore;
 import org.platformlayer.ops.cas.jenkins.JenkinsCasStore;
 import org.platformlayer.ops.cas.jenkins.JenkinsClient;
 import org.platformlayer.ops.cas.openstack.OpenstackCasStore;
+import org.platformlayer.ops.helpers.SshKeys;
+import org.platformlayer.ops.machines.PlatformLayerHelpers;
+import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.openstack.OpenstackCloudHelpers;
+import org.platformlayer.service.machines.direct.v1.DirectHost;
 
 import com.google.common.collect.Lists;
 
@@ -27,6 +34,12 @@ public class CasStoreHelper {
 
 	@Inject
 	OpenstackCloudHelpers openstackClouds;
+
+	@Inject
+	PlatformLayerHelpers platformLayer;
+
+	@Inject
+	SshKeys sshKeys;
 
 	private static OpenstackCasStore buildOpenstack(OpenstackCredentials credentials) {
 		String containerName = "platformlayer-artifacts";
@@ -61,6 +74,8 @@ public class CasStoreHelper {
 	}
 
 	private List<CasStore> getCasStores() throws OpsException {
+		// TODO: Don't cache the list
+		// TODO: I don't think caching is working anyway
 		if (this.casStores == null) {
 			List<CasStore> casStores = Lists.newArrayList();
 			// TODO: Don't hard-code
@@ -70,6 +85,16 @@ public class CasStoreHelper {
 			for (OpenstackCredentials credentials : openstackClouds.findOpenstackClouds()) {
 				casStores.add(buildOpenstack(credentials));
 			}
+
+			// TODO: This is evil
+			for (DirectHost host : platformLayer.listItems(DirectHost.class)) {
+				NetworkPoint targetAddress = NetworkPoint.forPublicHostname(host.getHost());
+				Machine machine = new OpaqueMachine(targetAddress);
+				OpsTarget target = machine.getTarget(sshKeys.findOtherServiceKey(new ServiceType("machines-direct")));
+
+				casStores.add(new FilesystemCasStore(target));
+			}
+
 			this.casStores = casStores;
 		}
 		return this.casStores;
