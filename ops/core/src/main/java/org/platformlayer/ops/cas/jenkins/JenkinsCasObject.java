@@ -12,6 +12,7 @@ import javax.inject.Inject;
 import org.apache.log4j.Logger;
 import org.openstack.utils.Io;
 import org.platformlayer.TimeSpan;
+import org.platformlayer.crypto.Md5Hash;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.CommandEnvironment;
 import org.platformlayer.ops.FileUpload;
@@ -33,8 +34,11 @@ public class JenkinsCasObject implements CasObject {
 
 	private final URI uri;
 
-	public JenkinsCasObject(URI uri) {
+	private final Md5Hash hash;
+
+	public JenkinsCasObject(URI uri, Md5Hash hash) {
 		this.uri = uri;
+		this.hash = hash;
 		Injection.injectMembers(this);
 	}
 
@@ -90,4 +94,10 @@ public class JenkinsCasObject implements CasObject {
 	public NetworkPoint getLocation() throws OpsException {
 		return NetworkPoint.forPublicHostname(uri.getHost());
 	}
+
+	@Override
+	public Md5Hash getHash() {
+		return hash;
+	}
+
 }

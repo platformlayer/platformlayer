@@ -49,6 +49,6 @@ public class JenkinsCasStore implements CasStore {
 		}
 
 		URI url = found.getArtifactUrl();
-		return new JenkinsCasObject(url);
+		return new JenkinsCasObject(url, hash);
 	}
 }

@@ -78,6 +78,11 @@ public class OpenstackCasStore implements CasStore {
 		public NetworkPoint getLocation() {
 			throw new UnsupportedOperationException();
 		}
+
+		@Override
+		public Md5Hash getHash() {
+			return new Md5Hash(storageObject.getHash());
+		}
 	}
 
 	public OpenstackCredentials getCredentials() {

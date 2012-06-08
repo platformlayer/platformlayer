@@ -1,5 +1,6 @@
 package org.platformlayer.ops.cas;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -15,6 +16,7 @@ import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OpaqueMachine;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
+import org.platformlayer.ops.cas.filesystem.FilesystemCasObject;
 import org.platformlayer.ops.cas.filesystem.FilesystemCasStore;
 import org.platformlayer.ops.cas.jenkins.JenkinsCasStore;
 import org.platformlayer.ops.cas.jenkins.JenkinsClient;
@@ -114,6 +116,22 @@ public class CasStoreHelper {
 			log.warn("Error while resolving artifact in " + casStore, e);
 		}
 		return null;
+	}
+
+	public void copy(CasObject src, OpsTarget destTarget, File destPath) throws OpsException {
+		NetworkPoint srcLocation = src.getLocation();
+		NetworkPoint destLocation = destTarget.getNetworkPoint();
+
+		int distance = NetworkPoint.estimateDistance(srcLocation, destLocation);
+		if (distance == 0) {
+			src.copyTo(destTarget, destPath);
+			return;
+		}
+
+		FilesystemCasStore destCasStore = new FilesystemCasStore(destTarget);
+		FilesystemCasObject local = destCasStore.copyToCache(src);
+
+		local.copyTo(destTarget, destPath);
 	}
 
 }

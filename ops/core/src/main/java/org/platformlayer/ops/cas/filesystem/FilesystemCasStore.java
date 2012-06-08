@@ -8,6 +8,7 @@ import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
+import org.platformlayer.ops.cas.CasObject;
 import org.platformlayer.ops.cas.CasStore;
 import org.platformlayer.ops.filesystem.FilesystemInfo;
 import org.platformlayer.ops.images.direct.PeerToPeerCopy;
@@ -92,6 +93,15 @@ public class FilesystemCasStore implements CasStore {
 
 		Command copy = Command.build("cp {0} {1}", fileOnTarget, targetFilePath);
 		target.executeCommand(copy);
+	}
+
+	public FilesystemCasObject copyToCache(CasObject src) throws OpsException {
+		Md5Hash hash = src.getHash();
+		File cachePath = new File(PATH_CACHE, toRelativePath(hash, 2));
+		host.mkdir(cachePath.getParentFile());
+		src.copyTo(host, cachePath);
+
+		return new FilesystemCasObject(this, cachePath, hash);
 	}
 
 	public NetworkPoint getLocation() {

@@ -31,7 +31,7 @@ public class DownloadFileByHash extends ManagedFile {
 			throw new OpsException("Unable to find artifact: " + hash);
 		}
 
-		casObject.copyTo(target, remoteFilePath);
+		casStore.copy(casObject, target, remoteFilePath);
 	}
 
 	@Override
