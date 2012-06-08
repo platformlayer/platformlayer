@@ -7,7 +7,7 @@ import org.platformlayer.ops.EnumUtils;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.firewall.FirewallRecord.Protocol;
+import org.platformlayer.ops.firewall.Protocol;
 import org.platformlayer.ops.firewall.Transport;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.network.model.NetworkConnection;

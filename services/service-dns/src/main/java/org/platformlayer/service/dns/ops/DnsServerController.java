@@ -7,7 +7,7 @@ import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsSystem;
-import org.platformlayer.ops.firewall.FirewallRecord.Protocol;
+import org.platformlayer.ops.firewall.Protocol;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.networks.PublicEndpoint;

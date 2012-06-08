@@ -1,31 +1,9 @@
 package org.platformlayer.ops.firewall;
 
 import org.apache.log4j.Logger;
-import org.platformlayer.ops.EnumUtils;
 
 public class FirewallRecord {
 	static final Logger log = Logger.getLogger(FirewallRecord.class);
-
-	public enum Protocol {
-		All, Tcp, Udp, Icmp, TcpOrUdp, Esp, Ah;
-
-		public static Protocol parse(String proto) {
-			if (proto.equalsIgnoreCase("tcp/udp")) {
-				return TcpOrUdp;
-			}
-			return EnumUtils.valueOfCaseInsensitive(FirewallRecord.Protocol.class, proto);
-		}
-
-		public String toIpfString() {
-			switch (this) {
-			case TcpOrUdp:
-				return "tcp/udp";
-
-			default:
-				return this.toString().toLowerCase();
-			}
-		}
-	}
 
 	public enum Decision {
 		Block, Pass

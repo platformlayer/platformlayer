@@ -9,7 +9,6 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.firewall.FirewallRecord.Decision;
 import org.platformlayer.ops.firewall.FirewallRecord.Direction;
-import org.platformlayer.ops.firewall.FirewallRecord.Protocol;
 import org.platformlayer.ops.process.ProcessExecution;
 
 import com.google.common.collect.Lists;
@@ -403,7 +402,7 @@ public class IpTablesManager {
 		}
 
 		// -p tcp -m tcp
-		if (record.protocol != FirewallRecord.Protocol.All) {
+		if (record.protocol != Protocol.All) {
 			switch (record.protocol) {
 			case Tcp:
 				ipTableRule.append(" -p tcp -m tcp");
