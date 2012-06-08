@@ -20,7 +20,7 @@ public class ZookeeperServiceProvider extends ServiceProviderBase {
 		if (item instanceof ZookeeperCluster) {
 			ZookeeperCluster model = (ZookeeperCluster) item;
 			if (Secret.isNullOrEmpty(model.ipsecSecret)) {
-				model.ipsecSecret = passwords.generateIpsecSecret();
+				model.ipsecSecret = passwords.generateIpsecPSK();
 			}
 		}
 

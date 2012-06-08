@@ -27,7 +27,7 @@ public class Passwords {
 		return Secret.build(new String(password));
 	}
 
-	public Secret generateIpsecSecret() {
+	public Secret generateIpsecPSK() {
 		while (true) {
 			Secret s = generateRandomPassword(64, ALPHANUMERIC_CASE_SENSITIVE);
 			// Avoid 'special' prefixes
