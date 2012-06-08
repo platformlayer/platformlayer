@@ -54,6 +54,7 @@ public class AllowProtocol {
 			if (matches.isEmpty()) {
 				String ruleSpec = "INPUT";
 				ruleSpec += " -p " + protocol;
+				ruleSpec += " -j ACCEPT";
 
 				Command command = Command.build("iptables -t filter -A " + ruleSpec);
 				command.addLiteral("-m").addLiteral("comment");
