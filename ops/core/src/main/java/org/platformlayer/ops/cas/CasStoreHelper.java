@@ -77,6 +77,14 @@ public class CasStoreHelper {
 		}
 
 		CasPickClosest chooser = new CasPickClosest(target);
+
+		if (log.isDebugEnabled()) {
+			log.debug("Found " + matches.size() + " CAS copies");
+			for (CasObject match : matches) {
+				log.debug("\t" + match + " => " + chooser.score(match));
+			}
+		}
+
 		return chooser.choose(matches);
 	}
 
