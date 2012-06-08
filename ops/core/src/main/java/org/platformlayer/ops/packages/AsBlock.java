@@ -58,8 +58,7 @@ public class AsBlock {
 		{
 			AsBlock as = addAsBlock("AS36351", Country.US);
 			as.add("184.173.128.0/18");
-			// as.add("2607:5500::/32");
-			// as.add("2607:f348::/32");
+			as.add("2607:f0d0::/32");
 			SOFTLAYER = as;
 		}
 
