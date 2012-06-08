@@ -104,6 +104,23 @@ public class Tag {
 		}
 	}
 
+	@XmlTransient
+	public static class UuidTagKey extends TagKey<java.util.UUID> {
+		public UuidTagKey(String key) {
+			super(key);
+		}
+
+		@Override
+		protected java.util.UUID toT(String s) {
+			return java.util.UUID.fromString(s);
+		}
+
+		public Tag build(java.util.UUID t) {
+			return new Tag(key, t.toString());
+		}
+
+	}
+
 	public static final String PARENT = "parent";
 	// public static final String RELATED = "linked";
 	public static final String ASSIGNED = "assigned";
@@ -121,7 +138,7 @@ public class Tag {
 	public static final String IMAGE_OS_DISTRIBUTION = "org.openstack__1__os_distro";
 	public static final String IMAGE_OS_VERSION = "org.openstack__1__os_version";
 
-	public static final String UUID = "uuid";
+	public static final UuidTagKey UUID = new UuidTagKey("uuid");
 
 	// public static final String IMAGE_TYPE = "platformlayer.org__type";
 

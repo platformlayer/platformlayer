@@ -17,7 +17,7 @@ import org.platformlayer.ops.OpsProvider;
 import org.platformlayer.ops.endpoints.EndpointDnsRecord;
 import org.platformlayer.ops.firewall.FirewallEntry;
 import org.platformlayer.ops.firewall.FirewallRecord;
-import org.platformlayer.ops.firewall.FirewallRecord.Protocol;
+import org.platformlayer.ops.firewall.Protocol;
 import org.platformlayer.ops.firewall.Transport;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.machines.PlatformLayerCloudHelpers;

@@ -8,7 +8,7 @@ import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.UniqueTag;
-import org.platformlayer.ops.firewall.FirewallRecord.Protocol;
+import org.platformlayer.ops.firewall.Protocol;
 import org.platformlayer.ops.tree.OwnedItem;
 import org.platformlayer.service.network.v1.NetworkConnection;
 
