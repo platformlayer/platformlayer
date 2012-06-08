@@ -3,7 +3,9 @@ package org.platformlayer.ops.cas.openstack;
 import java.io.File;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.openstack.client.OpenstackCredentials;
+import org.openstack.client.OpenstackNotFoundException;
 import org.openstack.client.common.OpenstackSession;
 import org.openstack.client.storage.OpenstackStorageClient;
 import org.openstack.model.storage.StorageObject;
@@ -19,6 +21,8 @@ import org.platformlayer.ops.openstack.DirectOpenstackDownload;
 import com.google.common.collect.Lists;
 
 public class OpenstackCasStore implements CasStore {
+	static final Logger log = Logger.getLogger(OpenstackCasStore.class);
+
 	final String containerName;
 	final OpenstackCredentials credentials;
 
@@ -31,14 +35,20 @@ public class OpenstackCasStore implements CasStore {
 	public CasObject findArtifact(Md5Hash hash) throws Exception {
 		OpenstackStorageClient storageClient = getStorageClient();
 
-		List<StorageObject> storageObjects = Lists.newArrayList(storageClient.listObjects(containerName, null, null));
+		try {
+			List<StorageObject> storageObjects = Lists.newArrayList(storageClient
+					.listObjects(containerName, null, null));
 
-		String findHash = hash.toHex();
-		for (StorageObject storageObject : storageObjects) {
-			String storageObjectHash = storageObject.getHash();
-			if (storageObjectHash.equalsIgnoreCase(findHash)) {
-				return new OpenstackCasObject(storageObject);
+			String findHash = hash.toHex();
+			for (StorageObject storageObject : storageObjects) {
+				String storageObjectHash = storageObject.getHash();
+				if (storageObjectHash.equalsIgnoreCase(findHash)) {
+					return new OpenstackCasObject(storageObject);
+				}
 			}
+		} catch (OpenstackNotFoundException e) {
+			log.debug("Not found (404) returned from Openstack");
+			return null;
 		}
 
 		return null;

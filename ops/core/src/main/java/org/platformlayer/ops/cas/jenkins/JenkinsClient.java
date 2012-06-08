@@ -10,6 +10,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.log4j.Logger;
 import org.openstack.utils.Io;
 import org.platformlayer.IoUtils;
 import org.platformlayer.xml.XmlHelper;
@@ -22,6 +23,8 @@ import org.xml.sax.SAXException;
 import com.google.common.collect.Lists;
 
 public class JenkinsClient {
+	static final Logger log = Logger.getLogger(JenkinsClient.class);
+
 	final URI baseUrl;
 	final HttpClient httpClient;
 
@@ -36,7 +39,7 @@ public class JenkinsClient {
 		try {
 			int statusCode = httpClient.executeMethod(method);
 			if (statusCode != 200) {
-				throw new JenkinsException("Unexpected status code from Jenkins: " + statusCode);
+				throw new JenkinsException("Unexpected status code from Jenkins: " + statusCode, statusCode);
 			}
 			is = method.getResponseBodyAsStream();
 			return Io.readAll(is);
@@ -185,10 +188,17 @@ public class JenkinsClient {
 		URI fingerprintBaseUrl = baseUrl.resolve("fingerprint/" + hash + "/");
 		URI apiXmlUrl = fingerprintBaseUrl.resolve("api/xml");
 
-		String xml = get(apiXmlUrl);
-		Document dom = parse(xml);
-
-		return new FingerprintInfo(dom);
+		try {
+			String xml = get(apiXmlUrl);
+			Document dom = parse(xml);
+			return new FingerprintInfo(dom);
+		} catch (JenkinsException e) {
+			if (404 == e.getHttpStatusCode()) {
+				log.debug("Jenkins returned 404 for " + apiXmlUrl);
+				return null;
+			}
+			throw new JenkinsException("Error resolving artifact", e);
+		}
 	}
 
 	public BuildInfo findBuildInfo(BuildId build) throws JenkinsException {
