@@ -26,4 +26,14 @@ public class Passwords {
 		}
 		return Secret.build(new String(password));
 	}
+
+	public Secret generateIpsecSecret() {
+		while (true) {
+			Secret s = generateRandomPassword(64, ALPHANUMERIC_CASE_SENSITIVE);
+			// Avoid 'special' prefixes
+			if (!s.plaintext().startsWith("0x")) {
+				return s;
+			}
+		}
+	}
 }
