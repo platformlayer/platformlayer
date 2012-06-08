@@ -60,13 +60,15 @@ public class SshAuthorizedKey {
 				} else {
 					sshAuthorizations += "\n";
 				}
-				sshAuthorizations += serialized;
+				sshAuthorizations += serialized + "\n";
 
 				FileUpload upload = FileUpload.build(sshAuthorizations);
 				upload.mode = "644";
 				upload.path = sshAuthorizationsFile;
 
 				FileUpload.upload(target, sshAuthorizationsFile, sshAuthorizations);
+
+				target.chown(sshAuthorizationsFile, "cloudata", null, false, false);
 			}
 		}
 	}
