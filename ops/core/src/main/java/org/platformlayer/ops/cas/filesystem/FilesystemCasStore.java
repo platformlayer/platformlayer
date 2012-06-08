@@ -9,6 +9,7 @@ import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.cas.CasObject;
+import org.platformlayer.ops.cas.CasObjectBase;
 import org.platformlayer.ops.cas.CasStore;
 import org.platformlayer.ops.filesystem.FilesystemInfo;
 import org.platformlayer.ops.images.direct.PeerToPeerCopy;
@@ -78,7 +79,12 @@ public class FilesystemCasStore implements CasStore {
 		Md5Hash hash = src.getHash();
 		File cachePath = new File(PATH_CACHE, toRelativePath(hash, 2));
 		host.mkdir(cachePath.getParentFile());
-		src.copyTo(host, cachePath);
+
+		// This could be copyTo0, but it serves as a nice test that copyTo is falling through correctly
+		// src.copyTo(host, cachePath);
+		// TODO: We're confused by multiple IP addresses (e.g. IPV4 vs IPV6)
+		// TODO: Fix, revert to copyTo, make copyTo0 protected
+		((CasObjectBase) src).copyTo0(host, cachePath);
 
 		return new FilesystemCasObject(hash, this, cachePath);
 	}
@@ -104,7 +110,11 @@ public class FilesystemCasStore implements CasStore {
 			fileOnTarget = src.getPath();
 		}
 
-		Command copy = Command.build("cp {0} {1}", fileOnTarget, targetFilePath);
-		target.executeCommand(copy);
+		if (!fileOnTarget.equals(targetFilePath)) {
+			Command copy = Command.build("cp {0} {1}", fileOnTarget, targetFilePath);
+			target.executeCommand(copy);
+		} else {
+			log.info("Skipping copy as already in destination path: " + fileOnTarget);
+		}
 	}
 }

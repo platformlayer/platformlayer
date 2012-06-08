@@ -33,7 +33,7 @@ public abstract class CasObjectBase implements CasObject {
 		log.info("Estimated distance from " + srcLocation + " to " + destLocation + " => " + distance);
 
 		if (distance == 0) {
-			this.copyTo(destTarget, destPath);
+			this.copyTo0(destTarget, destPath);
 			return;
 		}
 
@@ -44,5 +44,5 @@ public abstract class CasObjectBase implements CasObject {
 		onDest.copyTo(destTarget, destPath);
 	}
 
-	protected abstract void copyTo0(OpsTarget destTarget, File destPath) throws OpsException;
+	public abstract void copyTo0(OpsTarget destTarget, File destPath) throws OpsException;
 }
