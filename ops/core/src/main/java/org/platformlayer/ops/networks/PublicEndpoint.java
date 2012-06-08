@@ -72,20 +72,6 @@ public class PublicEndpoint extends OpsTreeBase {
 			endpoint.transport = transport;
 		}
 
-		if (!Strings.isNullOrEmpty(dnsName)) {
-			EndpointDnsRecord dns = injected(EndpointDnsRecord.class);
-			dns.destinationPort = publicPort;
-			dns.endpointProvider = new Provider<PublicEndpointBase>() {
-				@Override
-				public PublicEndpointBase get() {
-					return endpoint.getItem();
-				}
-			};
-
-			dns.dnsName = dnsName;
-			addChild(dns);
-		}
-
 		if (tagItem != null) {
 			Tagger tagger = injected(Tagger.class);
 
@@ -124,6 +110,20 @@ public class PublicEndpoint extends OpsTreeBase {
 		if (defaultBlocked) {
 			// Block on machine's firewall
 			addChild(FirewallEntry.build(FirewallRecord.buildBlockPort(protocol, backendPort)));
+		}
+
+		if (!Strings.isNullOrEmpty(dnsName)) {
+			EndpointDnsRecord dns = injected(EndpointDnsRecord.class);
+			dns.destinationPort = publicPort;
+			dns.endpointProvider = new Provider<PublicEndpointBase>() {
+				@Override
+				public PublicEndpointBase get() {
+					return endpoint.getItem();
+				}
+			};
+
+			dns.dnsName = dnsName;
+			addChild(dns);
 		}
 	}
 }

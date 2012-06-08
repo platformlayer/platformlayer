@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.dns.DnsResolver;
 import org.platformlayer.ops.helpers.ServiceContext;
 import org.platformlayer.ops.machines.PlatformLayerCloudContext;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
@@ -84,6 +85,7 @@ public class DirectHostController extends OpsTreeBase {
 		// TODO: What do we want to bootstrap here??
 		// host.addChild(InstanceBootstrap.class);
 		host.addChild(DefaultAptSourcesConfigurationFile.class);
+		host.addChild(DnsResolver.class);
 
 		// TODO: Do we want to differentiate between an LXC host and a KVM host?
 		host.addChild(PackageDependency.build("lxc"));

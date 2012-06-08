@@ -11,6 +11,9 @@ public abstract class ScoreChooser<T, V extends Comparable<V>> implements Choose
 	@SuppressWarnings("unused")
 	private static final Logger log = Logger.getLogger(ScoreChooser.class);
 
+	public static final boolean FIND_MINIMUM = false;
+	public static final boolean FIND_MAXIMUM = true;
+
 	final boolean maximize;
 
 	public ScoreChooser(boolean maximize) {

@@ -6,6 +6,9 @@ import java.net.UnknownHostException;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
+import org.platformlayer.ops.packages.AsBlock;
+
+import com.google.common.base.Objects;
 
 public class NetworkPoint {
 	final String privateNetworkId;
@@ -86,6 +89,31 @@ public class NetworkPoint {
 	@Override
 	public String toString() {
 		return "NetworkPoint [privateNetworkId=" + privateNetworkId + ", address=" + address.getHostAddress() + "]";
+	}
+
+	public static int estimateDistance(NetworkPoint a, NetworkPoint b) {
+		if (a.equals(b)) {
+			return 0;
+		}
+
+		if (!Objects.equal(a.getPrivateNetworkId(), b.getPrivateNetworkId())) {
+			// We need to download from A and then upload to B, so d(A, Me) + d(Me, B)
+			// TODO: This is a poor metric. Our metric isn't really rich enough here
+			return 8;
+		}
+
+		AsBlock asA = AsBlock.find(a.getAddress());
+		AsBlock asB = AsBlock.find(b.getAddress());
+
+		if (asA.equals(asB)) {
+			return 1;
+		}
+
+		if (Objects.equal(asA.getCountry(), asB.getCountry())) {
+			return 2;
+		}
+
+		return 4;
 	}
 
 }

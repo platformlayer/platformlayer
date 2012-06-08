@@ -8,13 +8,17 @@ import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
 import org.platformlayer.ops.Machine;
+import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.networks.NetworkPoint;
+import org.platformlayer.ops.packages.AsBlock;
 import org.platformlayer.ops.templates.TemplateDataSource;
 import org.platformlayer.service.dnsresolver.v1.DnsResolverService;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
 public class DnsResolverModuleBuilder implements TemplateDataSource {
@@ -25,6 +29,8 @@ public class DnsResolverModuleBuilder implements TemplateDataSource {
 
 	@Inject
 	InstanceHelpers instances;
+
+	public boolean usePrivateResolvers = true;
 
 	@Override
 	public void buildTemplateModel(Map<String, Object> model) throws OpsException {
@@ -42,7 +48,29 @@ public class DnsResolverModuleBuilder implements TemplateDataSource {
 		}
 
 		if (nameservers.isEmpty()) {
-			log.warn("No (internal) resolvers found; will set up default public nameservers; reconfigure needed");
+			log.warn("No (internal) resolvers found; will set up default public nameservers; reconfigure needed if this changes");
+
+			if (usePrivateResolvers) {
+				OpsTarget target = OpsContext.get().getInstance(OpsTarget.class);
+
+				AsBlock as = AsBlock.find(target);
+
+				if (as != null) {
+					if (Objects.equal(AsBlock.SOFTLAYER, as)) {
+						log.warn("Adding private Softlayer resolvers");
+						nameservers.add("10.0.80.11");
+						nameservers.add("10.0.80.12");
+					}
+
+					if (Objects.equal(AsBlock.HETZNER, as)) {
+						log.warn("Adding private Hetzner resolvers");
+						nameservers.add("213.133.99.99");
+						nameservers.add("213.133.100.100");
+						nameservers.add("213.133.98.98");
+					}
+				}
+			}
+
 			nameservers.add("8.8.8.8");
 			nameservers.add("8.8.4.4");
 
@@ -53,5 +81,4 @@ public class DnsResolverModuleBuilder implements TemplateDataSource {
 		}
 		model.put("nameservers", nameservers);
 	}
-
 }

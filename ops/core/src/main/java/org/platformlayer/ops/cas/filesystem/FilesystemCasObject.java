@@ -6,6 +6,7 @@ import org.platformlayer.crypto.Md5Hash;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.cas.CasObject;
+import org.platformlayer.ops.networks.NetworkPoint;
 
 public class FilesystemCasObject implements CasObject {
 	private final FilesystemCasStore filesystemCasStore;
@@ -29,6 +30,11 @@ public class FilesystemCasObject implements CasObject {
 
 	public Md5Hash getHash() {
 		return hash;
+	}
+
+	@Override
+	public NetworkPoint getLocation() {
+		return filesystemCasStore.getLocation();
 	}
 
 }

@@ -1,7 +1,6 @@
 package org.platformlayer.ops.packages;
 
 import java.io.File;
-import java.net.InetAddress;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -9,7 +8,6 @@ import org.openstack.utils.Utf8;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
-import org.platformlayer.ops.SshOpsTarget;
 import org.platformlayer.ops.filesystem.SyntheticFile;
 
 import com.google.common.base.Joiner;
@@ -53,13 +51,10 @@ public class AptSourcesConfigurationFile extends SyntheticFile {
 	final List<AptSource> sources = Lists.newArrayList();
 
 	public void addDefaults(OpsTarget target) {
-		SshOpsTarget sshOpsTarget = (SshOpsTarget) target;
-		InetAddress host = sshOpsTarget.getHost();
-
 		List<String> areas = Lists.newArrayList();
 		areas.add("main");
 
-		AsBlock asBlock = AsBlock.find(host);
+		AsBlock asBlock = AsBlock.find(target);
 
 		String mainDebianMirror = null;
 		if (asBlock != null) {
@@ -77,7 +72,7 @@ public class AptSourcesConfigurationFile extends SyntheticFile {
 
 			mainDebianMirror = "http://ftp." + country.getTld() + ".debian.org/debian/";
 		} else {
-			log.warn("Could not determine AS-Block for:" + host);
+			log.warn("Could not determine AS-Block for:" + target);
 
 			mainDebianMirror = "http://ftp.debian.org/debian/";
 		}

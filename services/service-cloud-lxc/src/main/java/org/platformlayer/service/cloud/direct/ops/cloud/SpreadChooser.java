@@ -31,6 +31,7 @@ public class SpreadChooser implements Chooser<DirectCloudHost> {
 
 	class HostRecord {
 		List<DirectInstance> matchingPolicy = Lists.newArrayList();
+		List<DirectInstance> all = Lists.newArrayList();
 		DirectCloudHost candidate;
 	}
 
@@ -63,13 +64,19 @@ public class SpreadChooser implements Chooser<DirectCloudHost> {
 				if (Objects.equal(groupId, hostPolicy.groupId)) {
 					record.matchingPolicy.add(instance);
 				}
+
+				record.all.add(instance);
 			}
 		}
 
-		Function<HostRecord, Integer> score = new Function<HostRecord, Integer>() {
+		Function<HostRecord, Float> score = new Function<HostRecord, Float>() {
 			@Override
-			public Integer apply(HostRecord input) {
-				return input.matchingPolicy.size();
+			public Float apply(HostRecord input) {
+				// Lower score is better
+				float score = input.matchingPolicy.size();
+				// For breaking ties
+				score += input.all.size() / 100000.0;
+				return score;
 			}
 		};
 
