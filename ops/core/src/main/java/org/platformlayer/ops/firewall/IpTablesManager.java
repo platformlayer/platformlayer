@@ -181,6 +181,12 @@ public class IpTablesManager {
 						throw new IllegalStateException();
 					}
 					record.keepState = true;
+				} else if (module.equals("comment")) {
+					if (!tokens.remove().equals("--comment")) {
+						throw new IllegalStateException("Expected --comment");
+					}
+					String comment = tokens.remove();
+					record.comment = comment;
 				} else {
 					throw new IllegalArgumentException("Cannot parse -m module in " + rule);
 				}

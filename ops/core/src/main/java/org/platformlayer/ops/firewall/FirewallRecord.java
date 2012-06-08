@@ -24,6 +24,7 @@ public class FirewallRecord {
 	String device;
 	boolean logPacket;
 	public boolean fromIpsec;
+	public String comment;
 
 	public FirewallRecord() {
 	}
