@@ -12,6 +12,9 @@ import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.networks.PublicEndpoint;
 import org.platformlayer.ops.tree.OpsTreeBase;
+import org.platformlayer.ops.vpn.IpsecForPort;
+import org.platformlayer.ops.vpn.IpsecInstall;
+import org.platformlayer.ops.vpn.IpsecPresharedKey;
 import org.platformlayer.service.zookeeper.model.ZookeeperServer;
 
 public class ZookeeperServerController extends OpsTreeBase {
@@ -35,6 +38,16 @@ public class ZookeeperServerController extends OpsTreeBase {
 		vm.publicPorts.add(ZookeeperConstants.ZK_SYSTEM_PORT_1);
 		vm.publicPorts.add(ZookeeperConstants.ZK_SYSTEM_PORT_2);
 
+		vm.addChild(IpsecInstall.class);
+
+		ZookeeperInstanceModel template = injected(ZookeeperInstanceModel.class);
+
+		{
+			IpsecPresharedKey ipsec = vm.addChild(IpsecPresharedKey.class);
+			ipsec.id = IpsecPresharedKey.SHAREDKEY_USER_FQDN;
+			ipsec.secret = template.getIpsecSecret();
+		}
+
 		// The system ports are used for communication between nodes,
 		// so need to be opened early
 		for (int systemPort : ZookeeperConstants.SYSTEM_PORTS) {
@@ -51,6 +64,11 @@ public class ZookeeperServerController extends OpsTreeBase {
 			endpoint.parentItem = OpsSystem.toKey(model);
 
 			vm.addChild(endpoint);
+
+			{
+				IpsecForPort ipsecForPort = vm.addChild(IpsecForPort.class);
+				ipsecForPort.port = systemPort;
+			}
 		}
 
 		vm.hostPolicy.allowRunInContainer = true;
@@ -84,6 +102,11 @@ public class ZookeeperServerController extends OpsTreeBase {
 			endpoint.parentItem = OpsSystem.toKey(model);
 
 			vm.addChild(endpoint);
+
+			{
+				IpsecForPort ipsecForPort = vm.addChild(IpsecForPort.class);
+				ipsecForPort.port = port;
+			}
 		}
 
 		vm.addChild(ZookeeperStatusChecker.class);

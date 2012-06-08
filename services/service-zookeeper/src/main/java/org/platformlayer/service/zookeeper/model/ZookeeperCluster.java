@@ -5,6 +5,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.platformlayer.core.model.ItemBase;
+import org.platformlayer.core.model.Secret;
 import org.platformlayer.service.zookeeper.ops.ZookeeperClusterController;
 import org.platformlayer.xaas.Controller;
 
@@ -15,4 +16,6 @@ public class ZookeeperCluster extends ItemBase {
 	public String dnsName;
 
 	public int clusterSize = 3;
+
+	public Secret ipsecSecret;
 }

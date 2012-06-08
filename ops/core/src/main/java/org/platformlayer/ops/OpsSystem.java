@@ -155,7 +155,7 @@ public class OpsSystem {
 	}
 
 	public Tag createParentTag(ModelKey modelKey) {
-		return new Tag(Tag.PARENT, buildUrl(modelKey));
+		return Tag.PARENT.build(PlatformLayerKey.parse(buildUrl(modelKey)));
 	}
 
 	public String buildUrl(ModelKey modelKey) {

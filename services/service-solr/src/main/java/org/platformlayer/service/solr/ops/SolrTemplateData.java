@@ -33,9 +33,9 @@ public class SolrTemplateData implements TemplateDataSource {
 			cluster = OpsContext.get().getInstance(SolrCluster.class);
 			if (cluster == null) {
 				SolrServer server = getServer();
-				String parent = server.getTags().findUnique(Tag.PARENT);
+				PlatformLayerKey parent = Tag.PARENT.findUnique(server);
 				if (parent != null) {
-					cluster = platformLayer.getItem(PlatformLayerKey.parse(parent), SolrCluster.class);
+					cluster = platformLayer.getItem(parent, SolrCluster.class);
 				}
 			}
 		}

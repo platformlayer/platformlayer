@@ -45,6 +45,14 @@ public class Tag {
 			return toT(s);
 		}
 
+		public Tag findUniqueTag(Tags tags) {
+			return tags.findUniqueTag(key);
+		}
+
+		public Tag findUniqueTag(ItemBase item) {
+			return findUniqueTag(item.getTags());
+		}
+
 		public List<T> find(Tags tags) {
 			List<T> ret = Lists.newArrayList();
 			for (String s : tags.find(key)) {
@@ -121,7 +129,7 @@ public class Tag {
 
 	}
 
-	public static final String PARENT = "parent";
+	public static final KeyTagKey PARENT = new KeyTagKey("parent");
 	// public static final String RELATED = "linked";
 	public static final String ASSIGNED = "assigned";
 	public static final KeyTagKey ASSIGNED_TO = new KeyTagKey("assigned_to");
@@ -202,7 +210,7 @@ public class Tag {
 	}
 
 	public static Tag buildParentTag(PlatformLayerKey key) {
-		return buildTag(Tag.PARENT, key);
+		return Tag.PARENT.build(key);
 	}
 
 	public static Tag buildTag(String tagKey, PlatformLayerKey itemKey) {

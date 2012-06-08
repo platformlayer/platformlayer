@@ -8,6 +8,8 @@ import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
 import org.platformlayer.TagFilter;
+import org.platformlayer.core.model.PlatformLayerKey;
+import org.platformlayer.core.model.Secret;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OpsContext;
@@ -16,6 +18,7 @@ import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.templates.TemplateDataSource;
+import org.platformlayer.service.zookeeper.model.ZookeeperCluster;
 import org.platformlayer.service.zookeeper.model.ZookeeperServer;
 
 import com.google.common.collect.Lists;
@@ -66,7 +69,7 @@ public class ZookeeperInstanceModel implements TemplateDataSource {
 	public List<ZookeeperServer> getClusterServers() throws OpsException {
 		ZookeeperServer model = getModel();
 
-		Tag parentTag = model.getTags().findUniqueTag(Tag.PARENT);
+		Tag parentTag = Tag.PARENT.findUniqueTag(model);
 		if (parentTag == null) {
 			log.warn("Parent tag not set on Zookeeper server; assuming standalone server");
 			return Lists.newArrayList(model);
@@ -103,6 +106,22 @@ public class ZookeeperInstanceModel implements TemplateDataSource {
 		model.put("instanceDir", getInstanceDir());
 		model.put("cluster", getCluster());
 		model.put("myid", getMyId());
+	}
+
+	public Secret getIpsecSecret() throws OpsException {
+		return getClusterModel().ipsecSecret;
+	}
+
+	private ZookeeperCluster getClusterModel() throws OpsException {
+		ZookeeperServer model = getModel();
+
+		PlatformLayerKey parentKey = Tag.PARENT.findUnique(model);
+		if (parentKey == null) {
+			throw new OpsException("Parent tag not set on Zookeeper server");
+		}
+
+		ZookeeperCluster cluster = platformLayer.getItem(parentKey, ZookeeperCluster.class);
+		return cluster;
 	}
 
 }
