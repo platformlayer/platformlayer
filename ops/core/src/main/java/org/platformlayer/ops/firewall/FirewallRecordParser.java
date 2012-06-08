@@ -53,7 +53,7 @@ public class FirewallRecordParser {
 				record.isQuick = true;
 			} else if (nextToken.equals("proto")) {
 				String proto = tokens.remove();
-				record.protocol = FirewallRecord.Protocol.parse(proto);
+				record.protocol = Protocol.parse(proto);
 			} else if (nextToken.equals("on")) {
 				String device = tokens.remove();
 				record.device = device;

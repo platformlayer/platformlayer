@@ -18,6 +18,7 @@ import org.platformlayer.ops.OpsProvider;
 import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.firewall.Transport;
+import org.platformlayer.ops.firewall.simple.ForwardPort;
 import org.platformlayer.ops.helpers.ImageFactory;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.helpers.ServiceContext;
