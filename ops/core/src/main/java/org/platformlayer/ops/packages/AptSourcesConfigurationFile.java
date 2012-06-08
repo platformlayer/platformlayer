@@ -17,6 +17,10 @@ import com.google.common.collect.Lists;
 public class AptSourcesConfigurationFile extends SyntheticFile {
 	private static final Logger log = Logger.getLogger(AptSourcesConfigurationFile.class);
 
+	// Softlayer mirror is currently out of date (June 8 2012)
+	// apt-get update can't cope with one out of date mirror, even if there's another one that is... ?
+	private static final boolean USE_SOFTLAYER_MIRROR = false;
+
 	public static class AptSource {
 		public String url;
 		public String distro;
@@ -65,7 +69,7 @@ public class AptSourcesConfigurationFile extends SyntheticFile {
 				// add(new AptSource("http://mirror.hetzner.de/debian/security", "wheezy/updates", areas));
 			}
 
-			if (Objects.equal(AsBlock.SOFTLAYER, asBlock)) {
+			if (USE_SOFTLAYER_MIRROR && Objects.equal(AsBlock.SOFTLAYER, asBlock)) {
 				add(new AptSource("http://mirrors.service.softlayer.com/debian", "wheezy", areas));
 				add(new AptSource("http://mirrors.service.softlayer.com/debian-security", "wheezy/updates", areas));
 			}
