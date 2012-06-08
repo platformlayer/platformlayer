@@ -23,7 +23,7 @@ import com.google.common.collect.Lists;
 public class CasStoreHelper {
 	static final Logger log = Logger.getLogger(CasStoreHelper.class);
 
-	List<CasStore> casStores;
+	// List<CasStore> casStores;
 
 	@Inject
 	OpenstackCloudHelpers openstackClouds;
@@ -61,18 +61,18 @@ public class CasStoreHelper {
 	}
 
 	private List<CasStore> getCasStores() throws OpsException {
-		if (this.casStores == null) {
-			List<CasStore> casStores = Lists.newArrayList();
-			// TODO: Don't hard-code
-			casStores.add(buildJenkins("http://192.168.128.1:8080/"));
-			casStores.add(buildJenkins("http://192.168.192.36:8080/"));
+		// if (this.casStores == null) {
+		List<CasStore> casStores = Lists.newArrayList();
+		// TODO: Don't hard-code
+		casStores.add(buildJenkins("http://192.168.128.1:8080/"));
+		casStores.add(buildJenkins("http://192.168.192.36:8080/"));
 
-			for (OpenstackCredentials credentials : openstackClouds.findOpenstackClouds()) {
-				casStores.add(buildOpenstack(credentials));
-			}
-			this.casStores = casStores;
+		for (OpenstackCredentials credentials : openstackClouds.findOpenstackClouds()) {
+			casStores.add(buildOpenstack(credentials));
 		}
-		return this.casStores;
+		// this.casStores = casStores;
+		// }
+		return casStores;
 	}
 
 	private CasObject tryFind(CasStore casStore, Md5Hash hash) {
