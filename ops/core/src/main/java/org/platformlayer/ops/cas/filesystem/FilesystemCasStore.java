@@ -44,12 +44,12 @@ public class FilesystemCasStore implements CasStore {
 	public FilesystemCasObject findArtifact(Md5Hash hash) throws Exception {
 		File file = checkDirectory(PATH_SEEDS, hash, 0);
 		if (file != null) {
-			return new FilesystemCasObject(this, file, hash);
+			return new FilesystemCasObject(hash, this, file);
 		}
 
 		file = checkDirectory(PATH_CACHE, hash, 2);
 		if (file != null) {
-			return new FilesystemCasObject(this, file, hash);
+			return new FilesystemCasObject(hash, this, file);
 		}
 
 		return null;
@@ -74,7 +74,20 @@ public class FilesystemCasStore implements CasStore {
 		return null;
 	}
 
-	public void copyTo(FilesystemCasObject src, OpsTarget target, File targetFilePath) throws OpsException {
+	public FilesystemCasObject copyToCache(CasObject src) throws OpsException {
+		Md5Hash hash = src.getHash();
+		File cachePath = new File(PATH_CACHE, toRelativePath(hash, 2));
+		host.mkdir(cachePath.getParentFile());
+		src.copyTo(host, cachePath);
+
+		return new FilesystemCasObject(hash, this, cachePath);
+	}
+
+	public NetworkPoint getLocation() {
+		return this.host.getNetworkPoint();
+	}
+
+	void copyTo(FilesystemCasObject src, OpsTarget target, File targetFilePath) throws OpsException {
 		File fileOnTarget;
 
 		if (!host.isSameMachine(target)) {
@@ -93,18 +106,5 @@ public class FilesystemCasStore implements CasStore {
 
 		Command copy = Command.build("cp {0} {1}", fileOnTarget, targetFilePath);
 		target.executeCommand(copy);
-	}
-
-	public FilesystemCasObject copyToCache(CasObject src) throws OpsException {
-		Md5Hash hash = src.getHash();
-		File cachePath = new File(PATH_CACHE, toRelativePath(hash, 2));
-		host.mkdir(cachePath.getParentFile());
-		src.copyTo(host, cachePath);
-
-		return new FilesystemCasObject(this, cachePath, hash);
-	}
-
-	public NetworkPoint getLocation() {
-		return this.host.getNetworkPoint();
 	}
 }

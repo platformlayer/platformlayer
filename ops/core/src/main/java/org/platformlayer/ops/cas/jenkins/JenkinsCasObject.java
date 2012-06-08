@@ -19,14 +19,14 @@ import org.platformlayer.ops.FileUpload;
 import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
-import org.platformlayer.ops.cas.CasObject;
+import org.platformlayer.ops.cas.CasObjectBase;
 import org.platformlayer.ops.helpers.CurlRequest;
 import org.platformlayer.ops.machines.InetAddressUtils;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.proxy.HttpProxyHelper;
 import org.platformlayer.ops.proxy.HttpProxyHelper.Usage;
 
-public class JenkinsCasObject implements CasObject {
+public class JenkinsCasObject extends CasObjectBase {
 	private static final Logger log = Logger.getLogger(JenkinsCasObject.class);
 
 	@Inject
@@ -34,16 +34,15 @@ public class JenkinsCasObject implements CasObject {
 
 	private final URI uri;
 
-	private final Md5Hash hash;
-
 	public JenkinsCasObject(URI uri, Md5Hash hash) {
+		super(hash);
+
 		this.uri = uri;
-		this.hash = hash;
 		Injection.injectMembers(this);
 	}
 
 	@Override
-	public void copyTo(OpsTarget target, File remoteFilePath) throws OpsException {
+	public void copyTo0(OpsTarget target, File remoteFilePath) throws OpsException {
 		InetAddress host;
 		try {
 			host = InetAddress.getByName(uri.getHost());
@@ -93,11 +92,6 @@ public class JenkinsCasObject implements CasObject {
 	@Override
 	public NetworkPoint getLocation() throws OpsException {
 		return NetworkPoint.forPublicHostname(uri.getHost());
-	}
-
-	@Override
-	public Md5Hash getHash() {
-		return hash;
 	}
 
 }

@@ -5,31 +5,26 @@ import java.io.File;
 import org.platformlayer.crypto.Md5Hash;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
-import org.platformlayer.ops.cas.CasObject;
+import org.platformlayer.ops.cas.CasObjectBase;
 import org.platformlayer.ops.networks.NetworkPoint;
 
-public class FilesystemCasObject implements CasObject {
+public class FilesystemCasObject extends CasObjectBase {
 	private final FilesystemCasStore filesystemCasStore;
 	private final File file;
-	private final Md5Hash hash;
 
-	public FilesystemCasObject(FilesystemCasStore filesystemCasStore, File file, Md5Hash hash) {
+	public FilesystemCasObject(Md5Hash hash, FilesystemCasStore filesystemCasStore, File file) {
+		super(hash);
 		this.filesystemCasStore = filesystemCasStore;
 		this.file = file;
-		this.hash = hash;
 	}
 
 	@Override
-	public void copyTo(OpsTarget target, File remoteFilePath) throws OpsException {
+	public void copyTo0(OpsTarget target, File remoteFilePath) throws OpsException {
 		filesystemCasStore.copyTo(this, target, remoteFilePath);
 	}
 
 	public File getPath() {
 		return file;
-	}
-
-	public Md5Hash getHash() {
-		return hash;
 	}
 
 	@Override

@@ -11,6 +11,7 @@ import org.platformlayer.crypto.Md5Hash;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.cas.CasObject;
+import org.platformlayer.ops.cas.CasObjectBase;
 import org.platformlayer.ops.cas.CasStore;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.openstack.DirectOpenstackDownload;
@@ -59,15 +60,16 @@ public class OpenstackCasStore implements CasStore {
 		return this.session;
 	}
 
-	public class OpenstackCasObject implements CasObject {
+	public class OpenstackCasObject extends CasObjectBase {
 		final StorageObject storageObject;
 
 		public OpenstackCasObject(StorageObject storageObject) {
+			super(new Md5Hash(storageObject.getHash()));
 			this.storageObject = storageObject;
 		}
 
 		@Override
-		public void copyTo(OpsTarget target, File remoteFilePath) throws OpsException {
+		public void copyTo0(OpsTarget target, File remoteFilePath) throws OpsException {
 			String objectPath = storageObject.getName();
 
 			DirectOpenstackDownload download = new DirectOpenstackDownload();
@@ -79,10 +81,6 @@ public class OpenstackCasStore implements CasStore {
 			throw new UnsupportedOperationException();
 		}
 
-		@Override
-		public Md5Hash getHash() {
-			return new Md5Hash(storageObject.getHash());
-		}
 	}
 
 	public OpenstackCredentials getCredentials() {
