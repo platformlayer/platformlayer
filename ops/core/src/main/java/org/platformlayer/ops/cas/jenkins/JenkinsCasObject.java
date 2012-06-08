@@ -21,6 +21,7 @@ import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.cas.CasObject;
 import org.platformlayer.ops.helpers.CurlRequest;
 import org.platformlayer.ops.machines.InetAddressUtils;
+import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.proxy.HttpProxyHelper;
 import org.platformlayer.ops.proxy.HttpProxyHelper.Usage;
 
@@ -85,4 +86,8 @@ public class JenkinsCasObject implements CasObject {
 
 	}
 
+	@Override
+	public NetworkPoint getLocation() throws OpsException {
+		return NetworkPoint.forPublicHostname(uri.getHost());
+	}
 }

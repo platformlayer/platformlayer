@@ -61,16 +61,21 @@ public class CasStoreHelper {
 		FilesystemCasStore filesystemCasStore = new FilesystemCasStore(target);
 		CasObject found = tryFind(filesystemCasStore, hash);
 		if (found != null) {
+			// We're not going to do better
 			return found;
 		}
+
+		List<CasObject> matches = Lists.newArrayList();
 
 		for (CasStore casStore : getCasStores()) {
 			found = tryFind(casStore, hash);
 			if (found != null) {
-				return found;
+				matches.add(found);
 			}
 		}
-		return null;
+
+		CasPickClosest chooser = new CasPickClosest(target);
+		return chooser.choose(matches);
 	}
 
 	private List<CasStore> getCasStores() throws OpsException {

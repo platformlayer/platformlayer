@@ -12,6 +12,7 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.cas.CasObject;
 import org.platformlayer.ops.cas.CasStore;
+import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.openstack.DirectOpenstackDownload;
 
 import com.google.common.collect.Lists;
@@ -71,6 +72,11 @@ public class OpenstackCasStore implements CasStore {
 
 			DirectOpenstackDownload download = new DirectOpenstackDownload();
 			download.download(target, remoteFilePath, getCredentials(), containerName, objectPath);
+		}
+
+		@Override
+		public NetworkPoint getLocation() {
+			throw new UnsupportedOperationException();
 		}
 	}
 

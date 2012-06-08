@@ -11,6 +11,7 @@ import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.cas.CasStore;
 import org.platformlayer.ops.filesystem.FilesystemInfo;
 import org.platformlayer.ops.images.direct.PeerToPeerCopy;
+import org.platformlayer.ops.networks.NetworkPoint;
 
 public class FilesystemCasStore implements CasStore {
 	static final Logger log = Logger.getLogger(FilesystemCasStore.class);
@@ -91,5 +92,9 @@ public class FilesystemCasStore implements CasStore {
 
 		Command copy = Command.build("cp {0} {1}", fileOnTarget, targetFilePath);
 		target.executeCommand(copy);
+	}
+
+	public NetworkPoint getLocation() {
+		return this.host.getNetworkPoint();
 	}
 }
