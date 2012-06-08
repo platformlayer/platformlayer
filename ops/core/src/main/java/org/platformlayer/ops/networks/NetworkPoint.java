@@ -116,4 +116,42 @@ public class NetworkPoint {
 		return 4;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((address == null) ? 0 : address.hashCode());
+		result = prime * result + ((privateNetworkId == null) ? 0 : privateNetworkId.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		NetworkPoint other = (NetworkPoint) obj;
+		if (address == null) {
+			if (other.address != null) {
+				return false;
+			}
+		} else if (!address.equals(other.address)) {
+			return false;
+		}
+		if (privateNetworkId == null) {
+			if (other.privateNetworkId != null) {
+				return false;
+			}
+		} else if (!privateNetworkId.equals(other.privateNetworkId)) {
+			return false;
+		}
+		return true;
+	}
+
 }

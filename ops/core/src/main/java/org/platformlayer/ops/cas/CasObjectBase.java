@@ -2,6 +2,7 @@ package org.platformlayer.ops.cas;
 
 import java.io.File;
 
+import org.apache.log4j.Logger;
 import org.platformlayer.crypto.Md5Hash;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
@@ -10,6 +11,7 @@ import org.platformlayer.ops.cas.filesystem.FilesystemCasStore;
 import org.platformlayer.ops.networks.NetworkPoint;
 
 public abstract class CasObjectBase implements CasObject {
+	static final Logger log = Logger.getLogger(CasObjectBase.class);
 
 	private final Md5Hash hash;
 
@@ -28,6 +30,8 @@ public abstract class CasObjectBase implements CasObject {
 		NetworkPoint destLocation = destTarget.getNetworkPoint();
 
 		int distance = NetworkPoint.estimateDistance(srcLocation, destLocation);
+		log.info("Estimated distance from " + srcLocation + " to " + destLocation + " => " + distance);
+
 		if (distance == 0) {
 			this.copyTo(destTarget, destPath);
 			return;
