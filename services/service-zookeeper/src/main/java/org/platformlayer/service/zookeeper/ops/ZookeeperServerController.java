@@ -2,6 +2,8 @@ package org.platformlayer.service.zookeeper.ops;
 
 import java.io.IOException;
 
+import javax.inject.Inject;
+
 import org.apache.log4j.Logger;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
@@ -10,6 +12,7 @@ import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.firewall.Transport;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
+import org.platformlayer.ops.networks.IpsecHelpers;
 import org.platformlayer.ops.networks.PublicEndpoint;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.ops.vpn.IpsecForPort;
@@ -19,6 +22,9 @@ import org.platformlayer.service.zookeeper.model.ZookeeperServer;
 
 public class ZookeeperServerController extends OpsTreeBase {
 	static final Logger log = Logger.getLogger(ZookeeperServerController.class);
+
+	@Inject
+	IpsecHelpers ipsec;
 
 	@Handler
 	public void doOperation() throws OpsException, IOException {
@@ -43,9 +49,9 @@ public class ZookeeperServerController extends OpsTreeBase {
 		ZookeeperInstanceModel template = injected(ZookeeperInstanceModel.class);
 
 		{
-			IpsecPresharedKey ipsec = vm.addChild(IpsecPresharedKey.class);
-			ipsec.id = IpsecPresharedKey.SHAREDKEY_USER_FQDN;
-			ipsec.secret = template.getIpsecSecret();
+			IpsecPresharedKey psk = vm.addChild(IpsecPresharedKey.class);
+			psk.id = IpsecPresharedKey.SHAREDKEY_USER_FQDN;
+			psk.secret = ipsec.getIpsecSecret();
 		}
 
 		// The system ports are used for communication between nodes,

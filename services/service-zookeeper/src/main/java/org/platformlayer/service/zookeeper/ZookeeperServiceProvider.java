@@ -3,7 +3,6 @@ package org.platformlayer.service.zookeeper;
 import javax.inject.Inject;
 
 import org.platformlayer.core.model.ItemBase;
-import org.platformlayer.core.model.Secret;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.ServiceProviderBase;
 import org.platformlayer.ops.crypto.Passwords;
@@ -19,9 +18,9 @@ public class ZookeeperServiceProvider extends ServiceProviderBase {
 	public void beforeCreateItem(ItemBase item) throws OpsException {
 		if (item instanceof ZookeeperCluster) {
 			ZookeeperCluster model = (ZookeeperCluster) item;
-			if (Secret.isNullOrEmpty(model.ipsecSecret)) {
-				model.ipsecSecret = passwords.generateIpsecPSK();
-			}
+			// if (Secret.isNullOrEmpty(model.ipsecSecret)) {
+			// model.ipsecSecret = passwords.generateIpsecPSK();
+			// }
 		}
 
 		super.beforeCreateItem(item);

@@ -3,12 +3,17 @@ package org.platformlayer.service.network;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import org.platformlayer.core.model.ItemBase;
+import org.platformlayer.core.model.Secret;
 import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.ServiceProviderBase;
+import org.platformlayer.ops.crypto.Passwords;
 import org.platformlayer.ops.networks.IpRange;
 import org.platformlayer.ops.networks.IpV6Range;
+import org.platformlayer.service.network.model.IpsecPolicy;
 import org.platformlayer.service.network.model.PrivateNetwork;
 import org.platformlayer.service.network.model.PrivateNetworkConnection;
 import org.platformlayer.service.network.ops.PrivateNetworkHelpers;
@@ -19,11 +24,22 @@ import com.google.common.collect.Sets;
 @Service("network")
 public class NetworkProvider extends ServiceProviderBase {
 
+	@Inject
+	Passwords passwords;
+
 	@Override
 	public void beforeCreateItem(ItemBase item) throws OpsException {
 		if (item instanceof PrivateNetworkConnection) {
 			populatePrivateNetworkConnection((PrivateNetworkConnection) item);
 		}
+
+		if (item instanceof IpsecPolicy) {
+			IpsecPolicy model = (IpsecPolicy) item;
+			if (Secret.isNullOrEmpty(model.ipsecSecret)) {
+				model.ipsecSecret = passwords.generateIpsecPSK();
+			}
+		}
+
 		super.beforeCreateItem(item);
 	}
 

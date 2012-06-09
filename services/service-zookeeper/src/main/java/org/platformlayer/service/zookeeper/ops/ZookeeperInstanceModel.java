@@ -9,7 +9,6 @@ import javax.inject.Inject;
 import org.apache.log4j.Logger;
 import org.platformlayer.TagFilter;
 import org.platformlayer.core.model.PlatformLayerKey;
-import org.platformlayer.core.model.Secret;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OpsContext;
@@ -106,10 +105,6 @@ public class ZookeeperInstanceModel implements TemplateDataSource {
 		model.put("instanceDir", getInstanceDir());
 		model.put("cluster", getCluster());
 		model.put("myid", getMyId());
-	}
-
-	public Secret getIpsecSecret() throws OpsException {
-		return getClusterModel().ipsecSecret;
 	}
 
 	private ZookeeperCluster getClusterModel() throws OpsException {
