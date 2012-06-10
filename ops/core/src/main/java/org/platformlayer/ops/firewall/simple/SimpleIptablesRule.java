@@ -1,17 +1,9 @@
 package org.platformlayer.ops.firewall.simple;
 
 import java.net.InetAddress;
-import java.util.List;
 
-import org.platformlayer.ops.Command;
-import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.firewall.Protocol;
 import org.platformlayer.ops.machines.InetAddressUtils;
-import org.platformlayer.ops.process.ProcessExecution;
-
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
 
 /**
  * A representation of an iptables rule, that doesn't rely on completely parsing everything
@@ -41,6 +33,10 @@ public class SimpleIptablesRule {
 
 	public boolean isPrerouting() {
 		return normalized.contains("-a prerouting");
+	}
+
+	public boolean isInput() {
+		return normalized.contains("-a input");
 	}
 
 	public boolean isDnat() {
@@ -87,17 +83,6 @@ public class SimpleIptablesRule {
 			throw new UnsupportedOperationException("Cannot convert " + s);
 		}
 		return "-D " + s.substring(3);
-	}
-
-	public static List<SimpleIptablesRule> listRules(OpsTarget target, String chain) throws OpsException {
-		ProcessExecution iptablesExecution = target
-				.executeCommand(Command.build("iptables --list-rules -t {0}", chain));
-		List<SimpleIptablesRule> rules = Lists.newArrayList();
-		for (String line : Splitter.on("\n").split(iptablesExecution.getStdOut())) {
-			SimpleIptablesRule rule = new SimpleIptablesRule(line);
-			rules.add(rule);
-		}
-		return rules;
 	}
 
 }
