@@ -2,6 +2,7 @@ package org.platformlayer.ops.firewall.simple;
 
 import java.net.InetAddress;
 
+import org.platformlayer.ops.firewall.FirewallRecord.Direction;
 import org.platformlayer.ops.firewall.Protocol;
 import org.platformlayer.ops.machines.InetAddressUtils;
 
@@ -83,6 +84,18 @@ public class SimpleIptablesRule {
 			throw new UnsupportedOperationException("Cannot convert " + s);
 		}
 		return "-D " + s.substring(3);
+	}
+
+	public boolean isMatchPolicy() {
+		return normalized.contains("-m policy");
+	}
+
+	public boolean isDirection(Direction direction) {
+		return normalized.contains("--dir " + direction.toString().toLowerCase());
+	}
+
+	public boolean isPolicy(String policy) {
+		return normalized.contains("--pol " + policy.toLowerCase());
 	}
 
 }

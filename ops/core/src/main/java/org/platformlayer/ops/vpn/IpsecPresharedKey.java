@@ -1,7 +1,10 @@
 package org.platformlayer.ops.vpn;
 
 import java.io.File;
+import java.util.List;
+import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.platformlayer.core.model.Secret;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.FileUpload;
@@ -10,9 +13,14 @@ import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 
+import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 public class IpsecPresharedKey {
+	static final Logger log = Logger.getLogger(IpsecPresharedKey.class);
+
 	public static final String SHAREDKEY_USER_FQDN = "sharedkey@platformlayer.org";
 
 	public String id;
@@ -30,28 +38,35 @@ public class IpsecPresharedKey {
 
 			boolean found = false;
 
-			for (String line : Splitter.on("\n").split(psk)) {
-				line = line.trim();
+			// TODO: Extend MapSplitter / add some helper functions??
+			Splitter keyValueSpliter = Splitter.on(CharMatcher.WHITESPACE).limit(2).omitEmptyStrings().trimResults();
+
+			Map<String, String> psks = Maps.newHashMap();
+
+			for (String line : Splitter.on("\n").trimResults().omitEmptyStrings().split(psk)) {
 				if (line.startsWith("#")) {
 					continue;
 				}
 
-				if (!line.startsWith(id)) {
+				List<String> tokens = Lists.newArrayList(keyValueSpliter.split(line));
+				if (tokens.size() != 2) {
+					throw new OpsException("Cannot parse PSK line: " + line);
+				}
+
+				String key = tokens.get(0);
+				String value = tokens.get(1);
+
+				if (psks.containsKey(key)) {
+					// (We could check to see if they're the same, but this is generally not good)
+					throw new OpsException("Found duplicate PSK");
+				}
+				psks.put(key, value);
+
+				if (!key.equals(id)) {
 					continue;
 				}
 
-				String tail = line.substring(id.length());
-				if (tail.isEmpty()) {
-					continue;
-				}
-
-				char firstChar = tail.charAt(0);
-				if (!Character.isWhitespace(firstChar)) {
-					continue;
-				}
-
-				tail = tail.trim();
-				if (tail.equals(secret.plaintext())) {
+				if (value.equals(secret.plaintext())) {
 					found = true;
 				}
 			}

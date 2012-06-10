@@ -9,7 +9,9 @@ import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.SimpleFile;
+import org.platformlayer.ops.firewall.FirewallRecord.Direction;
 import org.platformlayer.ops.firewall.Protocol;
+import org.platformlayer.ops.firewall.simple.AllowPolicy;
 import org.platformlayer.ops.firewall.simple.AllowPort;
 import org.platformlayer.ops.firewall.simple.AllowProtocol;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
@@ -55,6 +57,10 @@ public class IpsecInstall extends OpsTreeBase {
 		// AllowProtocol allowAh = addChild(AllowProtocol.class);
 		// allowAh.protocol = Protocol.Ah;
 		// allowAh.uuid = "ah-" + uuid;
+
+		AllowPolicy allowPolicy = addChild(AllowPolicy.class);
+		allowPolicy.direction = Direction.In;
+		allowPolicy.policy = "ipsec";
 
 		addChild(ManagedService.build("racoon"));
 	}
