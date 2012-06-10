@@ -51,9 +51,10 @@ public class IpsecInstall extends OpsTreeBase {
 		allowEsp.protocol = Protocol.Esp;
 		allowEsp.uuid = "esp-" + uuid;
 
-		AllowProtocol allowAh = addChild(AllowProtocol.class);
-		allowAh.protocol = Protocol.Ah;
-		allowAh.uuid = "ah-" + uuid;
+		// AH iptables allow doesn't seem to work
+		// AllowProtocol allowAh = addChild(AllowProtocol.class);
+		// allowAh.protocol = Protocol.Ah;
+		// allowAh.uuid = "ah-" + uuid;
 
 		addChild(ManagedService.build("racoon"));
 	}
