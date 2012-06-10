@@ -22,7 +22,11 @@ public class IpsecPresharedKey {
 	public void handler(OpsTarget target) throws OpsException {
 		if (OpsContext.isConfigure()) {
 			File pskFile = new File("/etc/racoon/psk.txt");
+
 			String psk = target.readTextFile(pskFile);
+			if (psk == null) {
+				psk = "# Managed by PlatformLayer\n";
+			}
 
 			boolean found = false;
 

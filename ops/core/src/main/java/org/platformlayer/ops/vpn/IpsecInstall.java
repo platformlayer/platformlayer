@@ -10,6 +10,7 @@ import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.SimpleFile;
 import org.platformlayer.ops.firewall.Protocol;
+import org.platformlayer.ops.firewall.simple.AllowPort;
 import org.platformlayer.ops.firewall.simple.AllowProtocol;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.metrics.collectd.ManagedService;
@@ -33,8 +34,18 @@ public class IpsecInstall extends OpsTreeBase {
 		// addChild(SimpleFile.build(getClass(), new File("/etc/racoon/psk.txt")));
 		addChild(SimpleFile.build(getClass(), new File("/etc/ipsec-tools.conf")));
 
+		addChild(IpsecBootstrap.class);
+
 		ItemBase model = OpsContext.get().getInstance(ItemBase.class);
 		String uuid = platformLayerClient.getOrCreateUuid(model).toString();
+
+		// TODO: Rationalize between our complicated version that can open cloud ports, and this streamlined version
+		AllowPort allowIKE = addChild(AllowPort.class);
+		allowIKE.port = 500;
+		allowIKE.protocol = Protocol.Udp;
+		allowIKE.uuid = "ike-" + uuid;
+
+		// TODO: Do we want to open NAT-T (4500?)
 
 		AllowProtocol allowEsp = addChild(AllowProtocol.class);
 		allowEsp.protocol = Protocol.Esp;
