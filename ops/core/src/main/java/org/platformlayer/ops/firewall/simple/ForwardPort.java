@@ -67,7 +67,7 @@ public class ForwardPort extends IptablesSimpleRuleBase {
 	}
 
 	@Override
-	protected String buildRuleSpec() throws OpsException {
+	protected String buildRuleSpec(Protocol protocol) throws OpsException {
 		String dest = privateAddress.get() + ":" + privatePort;
 		InetSocketAddress publicSocketAddress = this.publicAddress.get();
 

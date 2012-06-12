@@ -15,7 +15,7 @@ public class AllowPort extends IptablesSimpleRuleBase {
 	public int port;
 
 	@Override
-	protected String buildRuleSpec() {
+	protected String buildRuleSpec(Protocol protocol) {
 		String ruleSpec = "INPUT";
 
 		ruleSpec += " -p " + protocol;

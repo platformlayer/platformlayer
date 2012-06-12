@@ -8,7 +8,7 @@ public class AllowProtocol extends IptablesSimpleRuleBase {
 	static final Logger log = Logger.getLogger(AllowProtocol.class);
 
 	@Override
-	protected String buildRuleSpec() {
+	protected String buildRuleSpec(Protocol protocol) {
 		String ruleSpec = "INPUT";
 		ruleSpec += " -p " + protocol;
 		ruleSpec += " -j ACCEPT";

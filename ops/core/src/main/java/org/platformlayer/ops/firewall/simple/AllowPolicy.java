@@ -12,7 +12,7 @@ public class AllowPolicy extends IptablesSimpleRuleBase {
 	public Direction direction;
 
 	@Override
-	protected String buildRuleSpec() {
+	protected String buildRuleSpec(Protocol protocol) {
 		String ruleSpec = "INPUT";
 		ruleSpec += " --match policy ";
 		ruleSpec += " --pol " + policy;

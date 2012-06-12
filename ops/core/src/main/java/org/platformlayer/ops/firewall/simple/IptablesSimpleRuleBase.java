@@ -67,7 +67,7 @@ public abstract class IptablesSimpleRuleBase extends OpsTreeBase {
 					checkMatchingRules(matches, protocol);
 
 					if (matches.isEmpty()) {
-						String ruleSpec = buildRuleSpec();
+						String ruleSpec = buildRuleSpec(protocol);
 
 						Command command = SimpleIptablesRules.buildCommand(transport, chain);
 						command.addLiteral("-A").addLiteral(ruleSpec);
@@ -96,7 +96,7 @@ public abstract class IptablesSimpleRuleBase extends OpsTreeBase {
 
 	}
 
-	protected abstract String buildRuleSpec() throws OpsException;
+	protected abstract String buildRuleSpec(Protocol protocol) throws OpsException;
 
 	protected abstract void checkMatchingRules(SimpleIptablesRules matches, Protocol protocol) throws OpsException;
 
