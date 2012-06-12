@@ -1,5 +1,7 @@
 package org.platformlayer.service.zookeeper.ops;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -10,7 +12,7 @@ import org.platformlayer.ops.OpsException;
 
 import com.netflix.curator.framework.CuratorFramework;
 
-public class ZookeeperClient implements Watcher {
+public class ZookeeperClient implements Watcher, Closeable {
 	@SuppressWarnings("unused")
 	private static final Logger log = Logger.getLogger(ZookeeperClient.class);
 
@@ -95,6 +97,11 @@ public class ZookeeperClient implements Watcher {
 		// Thread.currentThread().interrupt();
 		// throw new OpsException("Interrupted while writing zookeeper", e);
 		// }
+	}
+
+	@Override
+	public void close() throws IOException {
+		zk.close();
 	}
 
 }
