@@ -6,12 +6,18 @@ import java.net.Socket;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.apache.log4j.Logger;
 import org.openstack.utils.Io;
+import org.platformlayer.Filter;
+import org.platformlayer.TagFilter;
 import org.platformlayer.TimeSpan;
+import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
+import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.process.ProcessExecution;
 import org.platformlayer.service.zookeeper.model.ZookeeperCluster;
 import org.platformlayer.service.zookeeper.model.ZookeeperServer;
@@ -22,6 +28,9 @@ import com.google.common.collect.Maps;
 
 public class ZookeeperUtils {
 	private static final Logger log = Logger.getLogger(ZookeeperUtils.class);
+
+	@Inject
+	PlatformLayerHelpers platformLayer;
 
 	public static String buildDnsName(ZookeeperServer model) {
 		return buildDnsName(model.clusterId, model.clusterDnsName);
@@ -96,6 +105,11 @@ public class ZookeeperUtils {
 		ProcessExecution execution = target.executeCommand(command);
 
 		return new ZookeeperResponse(execution.getStdOut());
+	}
+
+	public List<ZookeeperServer> getServers(ZookeeperCluster model) throws OpsException {
+		Filter parentFilter = TagFilter.byTag(Tag.buildParentTag(model.getKey()));
+		return Lists.newArrayList(platformLayer.listItems(ZookeeperServer.class, parentFilter));
 	}
 
 }

@@ -5,8 +5,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.platformlayer.Filter;
-import org.platformlayer.TagFilter;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.Handler;
@@ -38,6 +36,9 @@ public class ZookeeperClusterController extends OpsTreeBase implements MachineCl
 	public void handler() throws OpsException {
 
 	}
+
+	@Inject
+	ZookeeperUtils zookeeper;
 
 	static class ZookeeperChildServer extends OwnedItem<ZookeeperServer> {
 		ZookeeperCluster cluster;
@@ -86,11 +87,10 @@ public class ZookeeperClusterController extends OpsTreeBase implements MachineCl
 	@Override
 	public List<Machine> getMachines(Object modelObject, boolean required) throws OpsException {
 		ZookeeperCluster model = (ZookeeperCluster) modelObject;
-		Filter parentFilter = TagFilter.byTag(Tag.buildParentTag(model.getKey()));
 
 		List<Machine> machines = Lists.newArrayList();
 
-		for (ZookeeperServer server : platformLayer.listItems(ZookeeperServer.class, parentFilter)) {
+		for (ZookeeperServer server : zookeeper.getServers(model)) {
 			Machine machine = instances.getMachine(server, required);
 			if (machine != null) {
 				machines.add(machine);
