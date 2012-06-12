@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 
 import org.openstack.utils.Utf8;
 import org.platformlayer.ExceptionUtils;
@@ -13,8 +15,10 @@ import org.platformlayer.ops.process.ProcessExecution;
 import org.platformlayer.ops.process.ProcessExecutionException;
 import org.platformlayer.ops.ssh.SshConnection;
 import org.platformlayer.ops.ssh.SshException;
+import org.platformlayer.ops.ssh.SshPortForward;
 
 import com.google.common.base.Objects;
+import com.google.common.net.InetAddresses;
 
 public class SshOpsTarget extends OpsTargetBase {
 	private final SshConnection sshConnection;
@@ -106,6 +110,32 @@ public class SshOpsTarget extends OpsTargetBase {
 	public NetworkPoint getNetworkPoint() {
 		InetAddress myHost = sshConnection.getHost();
 		return NetworkPoint.forSameNetwork(myHost);
+	}
+
+	public Socket buildTunneledSocket() throws OpsException {
+		try {
+			return sshConnection.buildTunneledSocket();
+		} catch (IOException e) {
+			throw new OpsException("Error setting up SSH port forward", e);
+		} catch (SshException e) {
+			throw new OpsException("Error setting up SSH port forward", e);
+		}
+	}
+
+	public SshPortForward forwardLocalPort(InetSocketAddress remoteSocketAddress) throws OpsException {
+		try {
+			return sshConnection.forwardLocalPort(remoteSocketAddress);
+		} catch (IOException e) {
+			throw new OpsException("Error setting up SSH port forward", e);
+		} catch (SshException e) {
+			throw new OpsException("Error setting up SSH port forward", e);
+		}
+	}
+
+	@Override
+	public String toString() {
+		return "SshOpsTarget [" + sshConnection.getUser() + "@" + InetAddresses.toAddrString(sshConnection.getHost())
+				+ "]";
 	}
 
 }

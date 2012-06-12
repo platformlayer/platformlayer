@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.SocketAddress;
 import java.security.KeyPair;
 
@@ -71,6 +72,11 @@ public abstract class SshConnection implements Closeable {
 	protected abstract byte[] sshReadFile0(String remoteFilePath) throws IOException, InterruptedException,
 			SshException;
 
+	public abstract Socket buildTunneledSocket() throws IOException, SshException;
+
+	public abstract SshPortForward forwardLocalPort(InetSocketAddress remoteSocketAddress) throws IOException,
+			SshException;
+
 	public static void safeClose(SshConnection sshConnection) {
 		if (sshConnection != null) {
 			sshConnection.close();
@@ -120,5 +126,4 @@ public abstract class SshConnection implements Closeable {
 	public void setServerKeyVerifier(IServerKeyVerifier serverKeyVerifier) {
 		this.serverKeyVerifier = serverKeyVerifier;
 	}
-
 }
