@@ -66,7 +66,7 @@ public class ZookeeperClient implements Watcher, Closeable {
 				zk.setData().forPath(zkPath, data);
 			} catch (NoNodeException e) {
 				log.debug("Creating new node after no-node error", e);
-				zk.create().forPath(zkPath, data);
+				zk.create().creatingParentsIfNeeded().forPath(zkPath, data);
 			}
 			// try {
 			// data = zk.getData(zkPath, false, null);
