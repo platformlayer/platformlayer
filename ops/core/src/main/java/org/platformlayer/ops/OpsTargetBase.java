@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.apache.log4j.Logger;
-import org.platformlayer.crypto.Md5Hash;
+import org.openstack.crypto.Md5Hash;
 import org.platformlayer.ops.filesystem.FilesystemInfo;
 import org.platformlayer.ops.process.ProcessExecution;
 import org.platformlayer.ops.process.ProcessExecutionException;

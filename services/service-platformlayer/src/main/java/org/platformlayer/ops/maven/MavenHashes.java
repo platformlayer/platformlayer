@@ -5,8 +5,8 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.openstack.crypto.Md5Hash;
 import org.openstack.utils.Io;
-import org.platformlayer.crypto.Md5Hash;
 
 public class MavenHashes {
 	public static Md5Hash getMd5(Path artifactPath) throws IOException {

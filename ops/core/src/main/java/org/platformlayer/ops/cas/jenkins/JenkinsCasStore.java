@@ -3,7 +3,7 @@ package org.platformlayer.ops.cas.jenkins;
 import java.net.URI;
 
 import org.apache.log4j.Logger;
-import org.platformlayer.crypto.Md5Hash;
+import org.openstack.crypto.Md5Hash;
 import org.platformlayer.ops.cas.CasObject;
 import org.platformlayer.ops.cas.CasStore;
 import org.platformlayer.ops.cas.jenkins.JenkinsClient.BuildId;

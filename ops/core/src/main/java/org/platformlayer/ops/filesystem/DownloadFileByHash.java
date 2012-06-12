@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import org.platformlayer.crypto.Md5Hash;
+import org.openstack.crypto.Md5Hash;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.cas.CasObject;

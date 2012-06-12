@@ -10,9 +10,9 @@ import java.net.UnknownHostException;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
+import org.openstack.crypto.Md5Hash;
 import org.openstack.utils.Io;
 import org.platformlayer.TimeSpan;
-import org.platformlayer.crypto.Md5Hash;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.CommandEnvironment;
 import org.platformlayer.ops.FileUpload;

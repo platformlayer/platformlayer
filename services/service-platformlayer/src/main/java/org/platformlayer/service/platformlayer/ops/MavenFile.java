@@ -6,11 +6,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.openstack.client.OpenstackCredentials;
+import org.openstack.crypto.Md5Hash;
 import org.openstack.filesystem.HashAttributes;
 import org.openstack.filesystem.OpenstackFileSystem;
 import org.openstack.filesystem.OpenstackPath;
 import org.platformlayer.TimeSpan;
-import org.platformlayer.crypto.Md5Hash;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;

@@ -2,7 +2,7 @@ package org.platformlayer.ops.cas;
 
 import java.io.File;
 
-import org.platformlayer.crypto.Md5Hash;
+import org.openstack.crypto.Md5Hash;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.networks.NetworkPoint;

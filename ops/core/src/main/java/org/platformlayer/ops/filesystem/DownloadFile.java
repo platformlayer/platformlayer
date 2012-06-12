@@ -8,7 +8,7 @@ import java.net.URISyntaxException;
 import javax.inject.Inject;
 
 import org.platformlayer.TimeSpan;
-import org.platformlayer.crypto.Md5Hash;
+import org.openstack.crypto.Md5Hash;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.CommandEnvironment;
 import org.platformlayer.ops.OpsException;

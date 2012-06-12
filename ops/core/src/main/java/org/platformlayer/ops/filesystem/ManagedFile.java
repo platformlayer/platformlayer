@@ -6,7 +6,7 @@ import java.io.IOException;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.platformlayer.crypto.Md5Hash;
+import org.openstack.crypto.Md5Hash;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OperationType;
 import org.platformlayer.ops.OpsContext;

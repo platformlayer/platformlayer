@@ -8,7 +8,7 @@ import java.io.InputStream;
 import org.apache.log4j.Logger;
 import org.platformlayer.IoUtils;
 import org.platformlayer.crypto.CryptoUtils;
-import org.platformlayer.crypto.Md5Hash;
+import org.openstack.crypto.Md5Hash;
 import org.platformlayer.ops.FileUpload;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;

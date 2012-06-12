@@ -2,7 +2,7 @@ package org.platformlayer.ops;
 
 import java.io.File;
 
-import org.platformlayer.crypto.Md5Hash;
+import org.openstack.crypto.Md5Hash;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.process.ProcessExecution;
 

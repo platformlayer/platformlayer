@@ -9,7 +9,7 @@ import javax.inject.Inject;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.log4j.Logger;
 import org.openstack.client.OpenstackCredentials;
-import org.platformlayer.crypto.Md5Hash;
+import org.openstack.crypto.Md5Hash;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OpaqueMachine;

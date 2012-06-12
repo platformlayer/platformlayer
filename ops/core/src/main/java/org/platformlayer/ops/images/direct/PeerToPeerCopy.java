@@ -15,10 +15,10 @@ import java.util.concurrent.Future;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
+import org.openstack.crypto.Md5Hash;
 import org.openstack.utils.Hex;
 import org.platformlayer.ExceptionUtils;
 import org.platformlayer.TimeSpan;
-import org.platformlayer.crypto.Md5Hash;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;

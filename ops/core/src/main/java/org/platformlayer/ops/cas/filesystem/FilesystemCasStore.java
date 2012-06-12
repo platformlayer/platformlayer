@@ -3,7 +3,7 @@ package org.platformlayer.ops.cas.filesystem;
 import java.io.File;
 
 import org.apache.log4j.Logger;
-import org.platformlayer.crypto.Md5Hash;
+import org.openstack.crypto.Md5Hash;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsException;
