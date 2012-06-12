@@ -152,6 +152,11 @@ public abstract class OpsTargetBase implements OpsTarget {
 
 	@Override
 	public void mkdir(File path, String fileMode) throws OpsException {
+		if (path.equals(new File("/"))) {
+			log.debug("Skipping mkdir on root (never needed): " + path);
+			return;
+		}
+
 		Command command = Command.build("mkdir");
 		command.addLiteral("-p");
 		if (fileMode != null) {
