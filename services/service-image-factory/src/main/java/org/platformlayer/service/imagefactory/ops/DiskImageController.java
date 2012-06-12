@@ -36,7 +36,6 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.filesystem.FilesystemInfo;
-import org.platformlayer.ops.helpers.AptHelper;
 import org.platformlayer.ops.helpers.ServiceContext;
 import org.platformlayer.ops.helpers.SshKey;
 import org.platformlayer.ops.images.CloudImage;
@@ -45,6 +44,7 @@ import org.platformlayer.ops.images.ImageStore;
 import org.platformlayer.ops.machines.PlatformLayerCloudHelpers;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.networks.NetworkPoint;
+import org.platformlayer.ops.packages.AptPackageManager;
 import org.platformlayer.ops.process.ProcessExecution;
 import org.platformlayer.ops.process.ProcessExecutionException;
 import org.platformlayer.ops.proxy.HttpProxyHelper;
@@ -84,7 +84,7 @@ public class DiskImageController {
 	ServiceContext service;
 
 	@Inject
-	AptHelper apt;
+	AptPackageManager apt;
 
 	@Inject
 	HttpProxyHelper httpProxies;
@@ -200,7 +200,7 @@ public class DiskImageController {
 
 		File tempDir = target.createTempDir();
 
-		apt.update(target);
+		apt.update(target, true);
 
 		// We need to install curl first so we can detect the performance of our proxies
 		apt.install(target, "curl"); // Needed for proxy testing at least
@@ -388,7 +388,7 @@ public class DiskImageController {
 
 		target.executeCommand("mount -t proc proc {0}", new File(rootfsDir, "proc"));
 
-		apt.update(chrootTarget);
+		apt.update(chrootTarget, true);
 		target.executeCommand("chroot {0} locale-gen en_US.utf8", rootfsDir);
 
 		target.executeCommand("chroot {0} /bin/bash -c \"DEBIAN_FRONTEND=noninteractive dpkg-reconfigure locales\"",
@@ -424,7 +424,7 @@ public class DiskImageController {
 		if (recipe.repository != null) {
 			addRepositories(chrootTarget, recipe.repository);
 
-			apt.update(chrootTarget);
+			apt.update(chrootTarget, true);
 		}
 
 		if (recipe.addPackage != null) {

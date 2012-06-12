@@ -4,6 +4,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Map;
 
 import javalang7.AutoCloseable;
 import javalang7.Utils;
@@ -19,6 +20,7 @@ import org.platformlayer.ops.tasks.JobRecord;
 import org.platformlayer.ops.tasks.OperationInvoker;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.inject.Injector;
 
 public class OpsContext implements Closeable {
@@ -35,6 +37,8 @@ public class OpsContext implements Closeable {
 	final JobLogger jobLogger;
 
 	final JobRecord jobRecord;
+
+	final Map<Object, Object> cacheMap = Maps.newHashMap();
 
 	public OpsContext(OpsSystem opsSystem, JobRecord jobRecord, UserInfo userInfo,
 			ServiceConfiguration serviceConfiguration) {
@@ -208,5 +212,9 @@ public class OpsContext implements Closeable {
 
 	public static boolean isValidate() {
 		return isOperationType(OperationType.Validate);
+	}
+
+	public Map<Object, Object> getCacheMap() {
+		return cacheMap;
 	}
 }

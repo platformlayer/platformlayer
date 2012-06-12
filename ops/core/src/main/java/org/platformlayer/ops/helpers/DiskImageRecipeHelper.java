@@ -4,13 +4,14 @@ import javax.inject.Inject;
 
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
+import org.platformlayer.ops.packages.AptPackageManager;
 import org.platformlayer.service.imagefactory.v1.DiskImageRecipe;
 import org.platformlayer.service.imagefactory.v1.Repository;
 import org.platformlayer.service.imagefactory.v1.RepositoryKey;
 
 public class DiskImageRecipeHelper {
 	@Inject
-	AptHelper apt;
+	AptPackageManager apt;
 
 	public void applyRecipe(OpsTarget target, DiskImageRecipe recipe) throws OpsException {
 		for (RepositoryKey repositoryKey : recipe.getRepositoryKey()) {
@@ -26,7 +27,7 @@ public class DiskImageRecipeHelper {
 		}
 
 		// We definitely want to update if we added a repository etc above
-		apt.update(target);
+		apt.update(target, true);
 		apt.upgrade(target);
 
 		for (String packageName : recipe.getAddPackage()) {

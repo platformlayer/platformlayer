@@ -9,7 +9,6 @@ import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
-import org.platformlayer.ops.helpers.AptHelper;
 import org.platformlayer.service.imagefactory.v1.ConfigurePackage;
 import org.platformlayer.service.imagefactory.v1.DiskImageRecipe;
 import org.platformlayer.service.imagefactory.v1.Repository;
@@ -21,7 +20,7 @@ public class PackageDependency implements HasDiskImageRecipe {
 	public String packageName;
 
 	@Inject
-	AptHelper apt;
+	AptPackageManager apt;
 
 	public Repository repository;
 
@@ -37,7 +36,7 @@ public class PackageDependency implements HasDiskImageRecipe {
 
 		if (OpsContext.isConfigure()) {
 			OpsTarget target = OpsContext.get().getInstance(OpsTarget.class);
-			List<String> installedPackages = AptPackageManager.getInstalledPackageInfo(target);
+			List<String> installedPackages = apt.getInstalledPackageInfo(target);
 
 			if (!installedPackages.contains(packageName)) {
 				if (repositoryKey != null) {
@@ -57,7 +56,7 @@ public class PackageDependency implements HasDiskImageRecipe {
 				// as that could well be the reason we're running the operation!
 
 				// We definitely want to update if we added a repository etc above
-				apt.update(target);
+				apt.update(target, false);
 
 				apt.install(target, packageName);
 			}
