@@ -30,7 +30,7 @@ public class HttpServerInstall extends OpsTreeBase {
 
 		{
 			// TODO: Auto-update this?? Add JenkinsLatest?
-			Md5Hash hash = new Md5Hash("5e3ee648c7be990e6e4fac0f33b2730a");
+			Md5Hash hash = new Md5Hash("354bdde5696312c5a36e1617985e1e83");
 
 			File archiveFile = new File(installDir, "httpfrontend-server.tar.gz");
 
