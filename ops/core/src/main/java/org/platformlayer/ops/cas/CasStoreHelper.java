@@ -2,14 +2,13 @@ package org.platformlayer.ops.cas;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
 
 import javax.inject.Inject;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.log4j.Logger;
 import org.openstack.client.OpenstackCredentials;
-import org.openstack.crypto.Md5Hash;
+import org.platformlayer.cas.CasStoreList;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OpaqueMachine;
@@ -24,8 +23,6 @@ import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.openstack.OpenstackCloudHelpers;
 import org.platformlayer.service.machines.direct.v1.DirectHost;
-
-import com.google.common.collect.Lists;
 
 public class CasStoreHelper {
 	static final Logger log = Logger.getLogger(CasStoreHelper.class);
@@ -57,39 +54,14 @@ public class CasStoreHelper {
 		return new JenkinsCasStore(jenkinsClient);
 	}
 
-	public CasObject findArtifact(OpsTarget target, Md5Hash hash) throws OpsException {
-		FilesystemCasStore filesystemCasStore = new FilesystemCasStore(target);
-		CasObject found = tryFind(filesystemCasStore, hash);
-		if (found != null) {
-			// We're not going to do better
-			return found;
-		}
-
-		List<CasObject> matches = Lists.newArrayList();
-
-		for (CasStore casStore : getCasStores()) {
-			found = tryFind(casStore, hash);
-			if (found != null) {
-				matches.add(found);
-			}
-		}
-
-		CasPickClosest chooser = new CasPickClosest(target);
-
-		if (log.isDebugEnabled()) {
-			log.debug("Found " + matches.size() + " CAS copies");
-			for (CasObject match : matches) {
-				log.debug("\t" + match + " => " + chooser.score(match));
-			}
-		}
-
-		return chooser.choose(matches);
-	}
-
-	private List<CasStore> getCasStores() throws OpsException {
+	public CasStoreList getCasStores(OpsTarget target) throws OpsException {
 		// TODO: Reintroduce (some) caching?
 		// if (this.casStores == null) {
-		List<CasStore> casStores = Lists.newArrayList();
+		CasStoreList casStores = new CasStoreList();
+
+		FilesystemCasStore filesystemCasStore = new FilesystemCasStore(new OpsCasTarget(target));
+		casStores.addPrimary(filesystemCasStore);
+
 		// TODO: Don't hard-code
 		casStores.add(buildJenkins("http://192.168.128.1:8080/"));
 		casStores.add(buildJenkins("http://192.168.192.36:8080/"));
@@ -102,26 +74,15 @@ public class CasStoreHelper {
 		for (DirectHost host : platformLayer.listItems(DirectHost.class)) {
 			NetworkPoint targetAddress = NetworkPoint.forPublicHostname(host.getHost());
 			Machine machine = new OpaqueMachine(targetAddress);
-			OpsTarget target = machine.getTarget(sshKeys.findOtherServiceKey(new ServiceType("machines-direct")));
+			OpsTarget machineTarget = machine
+					.getTarget(sshKeys.findOtherServiceKey(new ServiceType("machines-direct")));
 
-			casStores.add(new FilesystemCasStore(target));
+			casStores.add(new FilesystemCasStore(new OpsCasTarget(machineTarget)));
 		}
 
 		// this.casStores = casStores;
 		// }
 		return casStores;
-	}
-
-	private CasObject tryFind(CasStore casStore, Md5Hash hash) {
-		try {
-			CasObject uri = casStore.findArtifact(hash);
-			if (uri != null) {
-				return uri;
-			}
-		} catch (Exception e) {
-			log.warn("Error while resolving artifact in " + casStore, e);
-		}
-		return null;
 	}
 
 }

@@ -3,14 +3,16 @@ package org.platformlayer.ops.cas.filesystem;
 import java.io.File;
 
 import org.apache.log4j.Logger;
+import org.openstack.crypto.ByteString;
 import org.openstack.crypto.Md5Hash;
+import org.platformlayer.cas.CasStore;
+import org.platformlayer.cas.CasStoreObject;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
-import org.platformlayer.ops.cas.CasObject;
-import org.platformlayer.ops.cas.CasObjectBase;
-import org.platformlayer.ops.cas.CasStore;
+import org.platformlayer.ops.cas.OpsCasObjectBase;
+import org.platformlayer.ops.cas.OpsCasTarget;
 import org.platformlayer.ops.filesystem.FilesystemInfo;
 import org.platformlayer.ops.images.direct.PeerToPeerCopy;
 import org.platformlayer.ops.networks.NetworkPoint;
@@ -24,11 +26,11 @@ public class FilesystemCasStore implements CasStore {
 
 	final OpsTarget host;
 
-	public FilesystemCasStore(OpsTarget host) {
-		this.host = host;
+	public FilesystemCasStore(OpsCasTarget destTarget) {
+		this.host = destTarget.getOpsTarget();
 	}
 
-	String toRelativePath(Md5Hash hash, int splits) {
+	String toRelativePath(ByteString hash, int splits) {
 		String hex = hash.toHex();
 
 		StringBuilder sb = new StringBuilder();
@@ -42,7 +44,7 @@ public class FilesystemCasStore implements CasStore {
 	}
 
 	@Override
-	public FilesystemCasObject findArtifact(Md5Hash hash) throws Exception {
+	public FilesystemCasObject findArtifact(ByteString hash) throws Exception {
 		File file = checkDirectory(PATH_SEEDS, hash, 0);
 		if (file != null) {
 			return new FilesystemCasObject(hash, this, file);
@@ -56,7 +58,7 @@ public class FilesystemCasStore implements CasStore {
 		return null;
 	}
 
-	private File checkDirectory(File base, Md5Hash hash, int splits) throws OpsException {
+	private File checkDirectory(File base, ByteString hash, int splits) throws OpsException {
 		String relativePath = toRelativePath(hash, splits);
 		File seedFile = new File(base, relativePath);
 		FilesystemInfo seedFileInfo = host.getFilesystemInfoFile(seedFile);
@@ -75,8 +77,8 @@ public class FilesystemCasStore implements CasStore {
 		return null;
 	}
 
-	public FilesystemCasObject copyToCache(CasObject src) throws OpsException {
-		Md5Hash hash = src.getHash();
+	public FilesystemCasObject copyToCache(CasStoreObject src) throws OpsException {
+		ByteString hash = src.getHash();
 		File cachePath = new File(PATH_CACHE, toRelativePath(hash, 2));
 		host.mkdir(cachePath.getParentFile());
 
@@ -84,7 +86,7 @@ public class FilesystemCasStore implements CasStore {
 		// src.copyTo(host, cachePath);
 		// TODO: We're confused by multiple IP addresses (e.g. IPV4 vs IPV6)
 		// TODO: Fix, revert to copyTo, make copyTo0 protected
-		((CasObjectBase) src).copyTo0(host, cachePath);
+		((OpsCasObjectBase) src).copyTo0(host, cachePath);
 
 		return new FilesystemCasObject(hash, this, cachePath);
 	}

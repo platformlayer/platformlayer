@@ -6,10 +6,12 @@ import java.io.IOException;
 import javax.inject.Inject;
 
 import org.openstack.crypto.Md5Hash;
+import org.platformlayer.cas.CasStoreList;
+import org.platformlayer.cas.CasStoreObject;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
-import org.platformlayer.ops.cas.CasObject;
 import org.platformlayer.ops.cas.CasStoreHelper;
+import org.platformlayer.ops.cas.OpsCasTarget;
 
 public class DownloadFileByHash extends ManagedFile {
 	public Md5Hash hash;
@@ -21,9 +23,10 @@ public class DownloadFileByHash extends ManagedFile {
 	protected void uploadFile(OpsTarget target, File remoteFilePath) throws IOException, OpsException {
 		target.mkdir(remoteFilePath.getParentFile());
 
-		CasObject casObject;
+		CasStoreObject casObject;
 		try {
-			casObject = casStore.findArtifact(target, hash);
+			CasStoreList casStores = casStore.getCasStores(target);
+			casObject = casStores.findArtifact(new OpsCasTarget(target), hash);
 		} catch (Exception e) {
 			throw new OpsException("Error while resolving artifact:" + hash, e);
 		}
@@ -31,7 +34,11 @@ public class DownloadFileByHash extends ManagedFile {
 			throw new OpsException("Unable to find artifact: " + hash);
 		}
 
-		casObject.copyTo(target, remoteFilePath);
+		try {
+			casObject.copyTo(new OpsCasTarget(target), remoteFilePath);
+		} catch (Exception e) {
+			throw new OpsException("Error copying file to remote CAS", e);
+		}
 	}
 
 	@Override

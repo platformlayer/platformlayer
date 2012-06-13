@@ -10,23 +10,25 @@ import java.net.UnknownHostException;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.openstack.crypto.Md5Hash;
+import org.openstack.crypto.ByteString;
 import org.openstack.utils.Io;
 import org.platformlayer.TimeSpan;
+import org.platformlayer.cas.CasLocation;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.CommandEnvironment;
 import org.platformlayer.ops.FileUpload;
 import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
-import org.platformlayer.ops.cas.CasObjectBase;
+import org.platformlayer.ops.cas.OpsCasLocation;
+import org.platformlayer.ops.cas.OpsCasObjectBase;
 import org.platformlayer.ops.helpers.CurlRequest;
 import org.platformlayer.ops.machines.InetAddressUtils;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.proxy.HttpProxyHelper;
 import org.platformlayer.ops.proxy.HttpProxyHelper.Usage;
 
-public class JenkinsCasObject extends CasObjectBase {
+public class JenkinsCasObject extends OpsCasObjectBase {
 	private static final Logger log = Logger.getLogger(JenkinsCasObject.class);
 
 	@Inject
@@ -34,7 +36,7 @@ public class JenkinsCasObject extends CasObjectBase {
 
 	private final URI uri;
 
-	public JenkinsCasObject(URI uri, Md5Hash hash) {
+	public JenkinsCasObject(ByteString hash, URI uri) {
 		super(hash);
 
 		this.uri = uri;
@@ -90,8 +92,8 @@ public class JenkinsCasObject extends CasObjectBase {
 	}
 
 	@Override
-	public NetworkPoint getLocation() throws OpsException {
-		return NetworkPoint.forPublicHostname(uri.getHost());
+	public CasLocation getLocation() throws OpsException {
+		return new OpsCasLocation(NetworkPoint.forPublicHostname(uri.getHost()));
 	}
 
 }

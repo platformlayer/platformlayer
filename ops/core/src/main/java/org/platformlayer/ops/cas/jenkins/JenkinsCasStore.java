@@ -3,9 +3,9 @@ package org.platformlayer.ops.cas.jenkins;
 import java.net.URI;
 
 import org.apache.log4j.Logger;
-import org.openstack.crypto.Md5Hash;
-import org.platformlayer.ops.cas.CasObject;
-import org.platformlayer.ops.cas.CasStore;
+import org.openstack.crypto.ByteString;
+import org.platformlayer.cas.CasStore;
+import org.platformlayer.cas.CasStoreObject;
 import org.platformlayer.ops.cas.jenkins.JenkinsClient.BuildId;
 import org.platformlayer.ops.cas.jenkins.JenkinsClient.BuildInfo;
 import org.platformlayer.ops.cas.jenkins.JenkinsClient.BuildInfo.ArtifactInfo;
@@ -21,7 +21,7 @@ public class JenkinsCasStore implements CasStore {
 	}
 
 	@Override
-	public CasObject findArtifact(Md5Hash hash) throws JenkinsException {
+	public CasStoreObject findArtifact(ByteString hash) throws JenkinsException {
 		FingerprintInfo fingerprint = client.findByFingerprint(hash.toHex());
 		if (fingerprint == null) {
 			return null;
@@ -49,6 +49,6 @@ public class JenkinsCasStore implements CasStore {
 		}
 
 		URI url = found.getArtifactUrl();
-		return new JenkinsCasObject(url, hash);
+		return new JenkinsCasObject(hash, url);
 	}
 }

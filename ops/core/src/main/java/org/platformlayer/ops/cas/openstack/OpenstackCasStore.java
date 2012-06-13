@@ -8,14 +8,15 @@ import org.openstack.client.OpenstackCredentials;
 import org.openstack.client.OpenstackNotFoundException;
 import org.openstack.client.common.OpenstackSession;
 import org.openstack.client.storage.OpenstackStorageClient;
+import org.openstack.crypto.ByteString;
 import org.openstack.crypto.Md5Hash;
 import org.openstack.model.storage.StorageObject;
+import org.platformlayer.cas.CasLocation;
+import org.platformlayer.cas.CasStore;
+import org.platformlayer.cas.CasStoreObject;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
-import org.platformlayer.ops.cas.CasObject;
-import org.platformlayer.ops.cas.CasObjectBase;
-import org.platformlayer.ops.cas.CasStore;
-import org.platformlayer.ops.networks.NetworkPoint;
+import org.platformlayer.ops.cas.OpsCasObjectBase;
 import org.platformlayer.ops.openstack.DirectOpenstackDownload;
 
 import com.google.common.collect.Lists;
@@ -32,7 +33,7 @@ public class OpenstackCasStore implements CasStore {
 	}
 
 	@Override
-	public CasObject findArtifact(Md5Hash hash) throws Exception {
+	public CasStoreObject findArtifact(ByteString hash) throws Exception {
 		OpenstackStorageClient storageClient = getStorageClient();
 
 		try {
@@ -70,7 +71,7 @@ public class OpenstackCasStore implements CasStore {
 		return this.session;
 	}
 
-	public class OpenstackCasObject extends CasObjectBase {
+	public class OpenstackCasObject extends OpsCasObjectBase {
 		final StorageObject storageObject;
 
 		public OpenstackCasObject(StorageObject storageObject) {
@@ -87,7 +88,7 @@ public class OpenstackCasStore implements CasStore {
 		}
 
 		@Override
-		public NetworkPoint getLocation() {
+		public CasLocation getLocation() {
 			throw new UnsupportedOperationException();
 		}
 
