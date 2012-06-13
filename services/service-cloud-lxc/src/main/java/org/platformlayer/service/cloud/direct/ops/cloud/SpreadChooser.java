@@ -24,6 +24,8 @@ public class SpreadChooser implements Chooser<DirectCloudHost> {
 	@SuppressWarnings("unused")
 	private static final Logger log = Logger.getLogger(SpreadChooser.class);
 
+	public static final String DEFAULT_GROUP = "default";
+
 	@Inject
 	PlatformLayerHelpers platformLayer;
 

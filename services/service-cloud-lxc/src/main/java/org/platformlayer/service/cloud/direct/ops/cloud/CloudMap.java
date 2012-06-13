@@ -5,7 +5,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.platformlayer.choice.Chooser;
-import org.platformlayer.choice.RandomChooser;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.helpers.InstanceHelpers;
@@ -95,7 +94,9 @@ public class CloudMap {
 
 	private Chooser<DirectCloudHost> buildChooser(DirectInstance model) {
 		if (model.hostPolicy == null || Strings.isNullOrEmpty(model.hostPolicy.groupId)) {
-			return RandomChooser.build();
+			// Leverage least-loaded functionality of SpreadChooser
+			return SpreadChooser.build(SpreadChooser.DEFAULT_GROUP);
+			// return RandomChooser.build();
 		} else {
 			return SpreadChooser.build(model.hostPolicy.groupId);
 		}
