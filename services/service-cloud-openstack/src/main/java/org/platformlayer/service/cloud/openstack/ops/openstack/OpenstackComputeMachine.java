@@ -114,8 +114,8 @@ public class OpenstackComputeMachine extends MachineBase {
 
 		List<Ip> publicIps = helpers.findPublicIps(cloud, server);
 		for (Ip ip : publicIps) {
-			String addr = ip.getAddr();
-			tags.add(new Tag(Tag.NETWORK_ADDRESS, addr));
+			InetAddress addr = InetAddresses.forString(ip.getAddr());
+			tags.add(Tag.NETWORK_ADDRESS.build(addr));
 		}
 
 		return tags;

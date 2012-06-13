@@ -5,8 +5,6 @@ import java.io.File;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-import org.platformlayer.core.model.Tag;
-import org.platformlayer.core.model.Tags;
 import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OpaqueMachine;
 import org.platformlayer.ops.OpsContext;
@@ -75,11 +73,6 @@ public class DirectCloudUtils {
 				return new StaticFilesystemBackedPool(poolBuilder, target, resourceDir, assignedDir);
 			}
 		};
-	}
-
-	public static String getNetworkAddress(DirectInstance instance) {
-		Tags tags = instance.getTags();
-		return tags.findUnique(Tag.NETWORK_ADDRESS);
 	}
 
 	public static Provider<ResourcePool> getPublicAddressPool4(final int publicPort) {

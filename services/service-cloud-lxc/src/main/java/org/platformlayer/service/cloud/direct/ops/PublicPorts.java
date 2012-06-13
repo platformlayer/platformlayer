@@ -2,6 +2,7 @@ package org.platformlayer.service.cloud.direct.ops;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Properties;
@@ -9,8 +10,10 @@ import java.util.Properties;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
+import org.platformlayer.InetAddressChooser;
 import org.platformlayer.core.model.EndpointInfo;
 import org.platformlayer.core.model.ItemBase;
+import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
@@ -22,6 +25,7 @@ import org.platformlayer.ops.firewall.simple.ForwardPort;
 import org.platformlayer.ops.helpers.ImageFactory;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.helpers.ServiceContext;
+import org.platformlayer.ops.machines.InetAddressUtils;
 import org.platformlayer.ops.machines.PlatformLayerCloudMachine;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.pool.DelegatingResourcePool;
@@ -177,7 +181,17 @@ public class PublicPorts extends OpsTreeBase {
 					PlatformLayerCloudMachine instanceMachine = (PlatformLayerCloudMachine) instanceHelpers
 							.getMachine(backendItem);
 					DirectInstance instance = (DirectInstance) instanceMachine.getInstance();
-					return DirectCloudUtils.getNetworkAddress(instance);
+					List<InetAddress> addresses = Tag.NETWORK_ADDRESS.find(instance);
+					InetAddress address = InetAddressChooser.preferIpv4().choose(addresses);
+					if (address == null) {
+						throw new IllegalStateException();
+					}
+
+					if (InetAddressUtils.isIpv6(address)) {
+						// We can't NAT IPV4 -> IPV6 (I think)
+						throw new IllegalStateException();
+					}
+					return address.getHostAddress();
 				}
 			};
 			forward.privatePort = backendPort;

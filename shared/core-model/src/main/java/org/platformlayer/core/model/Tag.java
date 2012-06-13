@@ -1,5 +1,6 @@
 package org.platformlayer.core.model;
 
+import java.net.InetAddress;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -7,6 +8,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlTransient;
 
 import com.google.common.collect.Lists;
+import com.google.common.net.InetAddresses;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Tag {
@@ -129,6 +131,22 @@ public class Tag {
 
 	}
 
+	@XmlTransient
+	public static class AddressTagKey extends TagKey<InetAddress> {
+		public AddressTagKey(String key) {
+			super(key);
+		}
+
+		@Override
+		protected InetAddress toT(String s) {
+			return InetAddresses.forString(s);
+		}
+
+		public Tag build(InetAddress t) {
+			return new Tag(key, t.getHostAddress());
+		}
+	}
+
 	public static final KeyTagKey PARENT = new KeyTagKey("parent");
 	// public static final String RELATED = "linked";
 	public static final String ASSIGNED = "assigned";
@@ -137,7 +155,7 @@ public class Tag {
 	public static final StringTagKey IMAGE_ID = new StringTagKey("imageid");
 
 	public static final String INSTANCE_KEY = "instancekey";
-	public static final String NETWORK_ADDRESS = "net.address";
+	public static final AddressTagKey NETWORK_ADDRESS = new AddressTagKey("net.address");
 
 	public static final String HOST_POLICY = "host.policy";
 	public static final EndpointTagKey PUBLIC_ENDPOINT = new EndpointTagKey("public-endpoint");

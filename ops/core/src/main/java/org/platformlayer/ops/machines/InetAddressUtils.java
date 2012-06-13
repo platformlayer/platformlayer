@@ -3,15 +3,9 @@ package org.platformlayer.ops.machines;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
-import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.platformlayer.core.model.Tag;
-import org.platformlayer.core.model.Tags;
 import org.platformlayer.ops.networks.IpRange;
-
-import com.google.common.collect.Lists;
-import com.google.common.net.InetAddresses;
 
 public class InetAddressUtils {
 	private static final Logger log = Logger.getLogger(InetAddressUtils.class);
@@ -44,15 +38,4 @@ public class InetAddressUtils {
 	public static boolean isIpv4(InetAddress address) {
 		return address instanceof Inet4Address;
 	}
-
-	public static List<InetAddress> find(Tags tags) {
-		List<InetAddress> addresses = Lists.newArrayList();
-
-		for (String address : tags.find(Tag.NETWORK_ADDRESS)) {
-			addresses.add(InetAddresses.forString(address));
-		}
-
-		return addresses;
-	}
-
 }

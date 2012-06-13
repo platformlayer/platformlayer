@@ -8,6 +8,8 @@ import java.util.Properties;
 
 import org.platformlayer.core.model.Tag;
 
+import com.google.common.net.InetAddresses;
+
 public class AddressModel {
 	String cidr;
 	String gateway;
@@ -82,7 +84,8 @@ public class AddressModel {
 	}
 
 	public Tag toTag() {
-		return new Tag(Tag.NETWORK_ADDRESS, getAddress());
+		InetAddress address = InetAddresses.forString(getAddress());
+		return Tag.NETWORK_ADDRESS.build(address);
 	}
 
 }

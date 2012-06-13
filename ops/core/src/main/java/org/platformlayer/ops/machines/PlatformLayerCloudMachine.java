@@ -9,6 +9,7 @@ import org.platformlayer.core.model.EndpointInfo;
 import org.platformlayer.core.model.InstanceBase;
 import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.core.model.PlatformLayerKey;
+import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.Tags;
 import org.platformlayer.ops.MachineBase;
 import org.platformlayer.ops.OpsException;
@@ -58,7 +59,7 @@ public class PlatformLayerCloudMachine extends MachineBase {
 		String privateNetworkId = src.getPrivateNetworkId();
 		if (Objects.equal(privateNetworkId, NetworkPoint.PRIVATE_NETWORK_ID)) {
 			Tags tags = machine.getTags();
-			List<InetAddress> addresses = InetAddressUtils.find(tags);
+			List<InetAddress> addresses = Tag.NETWORK_ADDRESS.find(tags);
 			return addresses;
 		}
 

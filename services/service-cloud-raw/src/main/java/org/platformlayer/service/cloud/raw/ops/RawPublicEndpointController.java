@@ -1,7 +1,10 @@
 package org.platformlayer.service.cloud.raw.ops;
 
+import java.net.InetAddress;
+
 import javax.inject.Inject;
 
+import org.platformlayer.InetAddressChooser;
 import org.platformlayer.core.model.EndpointInfo;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
@@ -41,10 +44,8 @@ public class RawPublicEndpointController extends OpsTreeBase {
 				public TagChanges get() throws OpsException {
 					RawInstance instance = platformLayerClient.getItem(model.instance, RawInstance.class);
 
-					String publicAddress = null;
-					for (String tagValue : instance.getTags().find(Tag.NETWORK_ADDRESS)) {
-						publicAddress = tagValue;
-					}
+					InetAddressChooser chooser = InetAddressChooser.preferIpv4();
+					InetAddress publicAddress = chooser.choose(Tag.NETWORK_ADDRESS.find(instance.getTags()));
 
 					if (publicAddress == null) {
 						throw new OpsException("Cannot find address for instance: " + model.instance);
