@@ -68,7 +68,7 @@ public class SshAuthorizedKey {
 
 				FileUpload.upload(target, sshAuthorizationsFile, sshAuthorizations);
 
-				target.chown(sshAuthorizationsFile, "cloudata", null, false, false);
+				target.chown(sshAuthorizationsFile, user, null, false, false);
 			}
 		}
 	}
