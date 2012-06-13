@@ -110,6 +110,8 @@ public class IpTablesManager {
 					record.protocol = Protocol.Udp;
 				} else if (proto.equals("icmp")) {
 					record.protocol = Protocol.Icmp;
+				} else if (proto.equals("ipv6-icmp")) {
+					record.protocol = Protocol.Icmp;
 				} else if (proto.equals("esp")) {
 					record.protocol = Protocol.Esp;
 				} else if (proto.equals("ah")) {
