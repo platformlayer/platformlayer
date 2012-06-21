@@ -11,7 +11,6 @@ import org.platformlayer.ops.CustomRecursor;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.helpers.ServiceContext;
@@ -53,7 +52,7 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
 
 	@Handler
 	public void doOperation() throws OpsException, IOException {
-		Tag tag = new Tag(Tag.ASSIGNED, OpsSystem.toKey(instance).getUrl());
+		Tag tag = new Tag(Tag.ASSIGNED, instance.getKey().getUrl());
 		List<DirectHost> hosts = Lists.newArrayList(platformLayer.listItems(DirectHost.class, TagFilter.byTag(tag)));
 
 		if (hosts.size() > 1) {
@@ -67,7 +66,7 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
 				DirectCloudHost cloudHost = cloudMap.pickHost(instance);
 				host = cloudHost.getModel();
 
-				platformLayer.addTag(OpsSystem.toKey(host), tag);
+				platformLayer.addTag(host.getKey(), tag);
 			} else {
 				throw new OpsException("Instance not yet assigned");
 			}

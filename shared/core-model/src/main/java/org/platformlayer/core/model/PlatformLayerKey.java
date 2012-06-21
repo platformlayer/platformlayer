@@ -251,6 +251,10 @@ public class PlatformLayerKey {
 		return new PlatformLayerKey(null, null, null, null, new ManagedItemId(id));
 	}
 
+	public static PlatformLayerKey fromServiceAndItem(String serviceType, String itemType) {
+		return new PlatformLayerKey(null, null, new ServiceType(serviceType), ItemType.wrap(itemType), null);
+	}
+
 	@Override
 	public String toString() {
 		return getUrl();

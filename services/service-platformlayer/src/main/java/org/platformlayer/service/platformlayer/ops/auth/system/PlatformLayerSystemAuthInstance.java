@@ -46,8 +46,8 @@ public class PlatformLayerSystemAuthInstance extends ZippedService {
 			endpoint.backendPort = PORT_AUTH_SYSTEM;
 			endpoint.dnsName = model.dnsName;
 
-			endpoint.tagItem = OpsSystem.toKey(model);
-			endpoint.parentItem = OpsSystem.toKey(model);
+			endpoint.tagItem = model.getKey();
+			endpoint.parentItem = model.getKey();
 
 			addChild(endpoint);
 		}

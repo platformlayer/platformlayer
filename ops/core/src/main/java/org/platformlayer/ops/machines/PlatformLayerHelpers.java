@@ -11,9 +11,7 @@ import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.Tags;
-import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.OpsSystem;
 
 public class PlatformLayerHelpers extends TypedPlatformLayerClient {
 	@Inject
@@ -29,7 +27,7 @@ public class PlatformLayerHelpers extends TypedPlatformLayerClient {
 		uuid = UUID.randomUUID();
 		Tag uuidTag = Tag.UUID.build(uuid);
 		tags.add(uuidTag);
-		this.addTag(OpsSystem.toKey(model), uuidTag);
+		this.addTag(model.getKey(), uuidTag);
 		return uuid;
 	}
 
@@ -39,13 +37,8 @@ public class PlatformLayerHelpers extends TypedPlatformLayerClient {
 		this.serviceProviderHelpers = serviceProviderHelpers;
 	}
 
-	public static PlatformLayerHelpers build(PlatformLayerClient client) {
-		ServiceProviderHelpers serviceProviderHelpers = Injection.getInstance(ServiceProviderHelpers.class);
-		return new PlatformLayerHelpers(client, serviceProviderHelpers);
-	}
-
 	public <T extends ItemBase> T refresh(T item) throws OpsException {
-		item = getItem(OpsSystem.toKey(item));
+		item = getItem(item.getKey());
 		return item;
 	}
 
@@ -55,7 +48,7 @@ public class PlatformLayerHelpers extends TypedPlatformLayerClient {
 		}
 
 		try {
-			deleteItem(OpsSystem.toKey(item));
+			deleteItem(item.getKey());
 		} catch (PlatformLayerClientException e) {
 			throw new OpsException("Error deleting persistent instance", e);
 		}

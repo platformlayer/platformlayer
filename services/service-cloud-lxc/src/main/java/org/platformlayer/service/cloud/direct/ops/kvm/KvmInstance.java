@@ -187,7 +187,7 @@ public class KvmInstance extends OpsTreeBase {
 				public TagChanges get() {
 					TagChanges tagChanges = new TagChanges();
 
-					tagChanges.addTags.add(new Tag(Tag.INSTANCE_KEY, OpsSystem.toKey(model).getUrl()));
+					tagChanges.addTags.add(new Tag(Tag.INSTANCE_KEY, model.getKey().getUrl()));
 
 					AddressModel ipv4 = address4.get();
 					AddressModel ipv6 = address6.get();

@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ids.ManagedItemId;
+import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobLog;
@@ -24,27 +25,30 @@ public class JobRecord {
 	JobState state;
 
 	boolean isDone;
+	private final ProjectId jobProjectId;
 
-	public JobRecord(PlatformLayerKey targetItemKey, OperationType operationType, OpsAuthentication auth) {
-		this(new JobKey(targetItemKey, operationType), targetItemKey.getServiceType(), auth);
+	public JobRecord(PlatformLayerKey targetItemKey, OperationType operationType, OpsAuthentication auth,
+			ProjectId jobProjectId) {
+		this(new JobKey(targetItemKey, operationType), targetItemKey.getServiceType(), auth, jobProjectId);
 	}
 
-	JobRecord(JobKey key, ServiceType serviceType, OpsAuthentication auth) {
+	JobRecord(JobKey key, ServiceType serviceType, OpsAuthentication auth, ProjectId jobProjectId) {
 		this.key = key;
 		this.serviceType = serviceType;
 		this.auth = auth;
+		this.jobProjectId = jobProjectId;
 
 		this.jobId = UUID.randomUUID().toString();
 
 		this.log = new JobLog();
 	}
 
-	public JobRecord(ServiceType serviceType, OpsAuthentication auth) {
-		this(null, serviceType, auth);
+	public JobRecord(ServiceType serviceType, OpsAuthentication auth, ProjectId jobProjectId) {
+		this(null, serviceType, auth, jobProjectId);
 	}
 
 	public PlatformLayerKey getJobKey() {
-		PlatformLayerKey jobKey = JobData.buildKey(auth.getProjectId(), new ManagedItemId(jobId));
+		PlatformLayerKey jobKey = JobData.buildKey(jobProjectId, new ManagedItemId(jobId));
 		return jobKey;
 	}
 

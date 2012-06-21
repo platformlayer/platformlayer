@@ -14,9 +14,8 @@ public class CloudContextProvider implements Provider<CloudContext>, com.google.
 			return null;
 		}
 
-		UserInfo userInfo = opsContext.getUserInfo();
 		try {
-			return cloudContextRegistry.getCloudContext(userInfo);
+			return cloudContextRegistry.getCloudContext();
 		} catch (OpsException e) {
 			throw new IllegalStateException("Error getting cloud context", e);
 		}

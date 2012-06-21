@@ -72,7 +72,7 @@ public class OpenstackPublicEndpointController extends OpsTreeBase {
 
 			Tagger tagger = injected(Tagger.class);
 
-			tagger.platformLayerKey = OpsSystem.toKey(model);
+			tagger.platformLayerKey = model.getKey();
 			tagger.tagChangesProvider = tagChanges;
 
 			instanceMapper.addChild(tagger);

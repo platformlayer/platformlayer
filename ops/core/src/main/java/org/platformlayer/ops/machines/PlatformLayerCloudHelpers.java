@@ -25,7 +25,6 @@ import org.platformlayer.ops.MachineCreationRequest;
 import org.platformlayer.ops.OpaqueMachine;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.helpers.SshKey;
 import org.platformlayer.ops.helpers.SshKeys;
@@ -77,7 +76,7 @@ public class PlatformLayerCloudHelpers {
 			throw new IllegalStateException();
 		}
 
-		platformLayer.deleteItem(OpsSystem.toKey(instance));
+		platformLayer.deleteItem(instance.getKey());
 	}
 
 	private InstanceBase toInstance(Machine machine) {
@@ -176,7 +175,7 @@ public class PlatformLayerCloudHelpers {
 		if (parent != null) {
 			machine.getTags().add(Tag.buildParentTag(parent));
 		}
-		machine.cloud = OpsSystem.toKey(cloudItem);
+		machine.cloud = cloudItem.getKey();
 		machine.hostPolicy = request.hostPolicy;
 
 		String id = request.hostname;

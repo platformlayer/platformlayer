@@ -24,7 +24,7 @@ public class ItemTagger {
 		ItemBase item = OpsContext.get().getInstance(ItemBase.class);
 		String matchingTag = item.getTags().findUnique(tag.key);
 		if (!Objects.equal(matchingTag, tag.getValue())) {
-			platformLayerClient.addTag(OpsSystem.toKey(item), tag);
+			platformLayerClient.addTag(item.getKey(), tag);
 		}
 	}
 

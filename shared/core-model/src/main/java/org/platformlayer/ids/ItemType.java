@@ -8,4 +8,11 @@ public class ItemType extends StringWrapper {
 		super(key);
 	}
 
+	public static ItemType wrap(String itemType) {
+		if (itemType == null) {
+			return null;
+		}
+		return new ItemType(itemType);
+	}
+
 }

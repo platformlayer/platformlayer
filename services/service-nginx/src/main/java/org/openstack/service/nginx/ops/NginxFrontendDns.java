@@ -10,7 +10,6 @@ import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.UniqueTag;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.networks.NetworkPoint;
@@ -37,7 +36,7 @@ public class NginxFrontendDns extends OwnedItem {
 		record.setDnsName(nginxFrontend.hostname);
 		record.getAddress().add(address);
 
-		Tag parentTag = Tag.buildParentTag(OpsSystem.toKey(nginxFrontend));
+		Tag parentTag = Tag.buildParentTag(nginxFrontend.getKey());
 		record.getTags().add(parentTag);
 		Tag uniqueTag = UniqueTag.build(nginxService, nginxFrontend);
 		record.getTags().add(uniqueTag);

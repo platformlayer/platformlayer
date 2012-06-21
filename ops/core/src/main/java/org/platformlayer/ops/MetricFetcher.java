@@ -52,7 +52,7 @@ public class MetricFetcher {
 		String collectdMachineKey = null;
 		{
 			// TODO: Multiple machines per service
-			PlatformLayerKey modelKey = OpsSystem.toKey(managedItem);
+			PlatformLayerKey modelKey = managedItem.getKey();
 			collectdMachineKey = CollectdHelpers.toCollectdKey(modelKey);
 		}
 

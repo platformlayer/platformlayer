@@ -40,7 +40,7 @@ public class CollectdModelBuilder implements TemplateDataSource {
 	private String getCollectdHostKey() {
 		// TODO: Multiple machines per service
 		ItemBase managed = OpsContext.get().getInstance(ItemBase.class);
-		PlatformLayerKey modelKey = OpsSystem.toKey(managed);
+		PlatformLayerKey modelKey = managed.getKey();
 		return CollectdHelpers.toCollectdKey(modelKey);
 	}
 

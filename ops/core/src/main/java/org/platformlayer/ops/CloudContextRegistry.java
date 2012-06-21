@@ -16,18 +16,18 @@ public class CloudContextRegistry {
 	@Inject
 	OpsSystem ops;
 
-	public CloudContext getCloudContext(UserInfo userInfo) throws OpsException {
-		OpsConfig config = userInfo.getConfig();
-
-		String type = config.getString("compute.type", "platformlayer");
-		// if (type.equals("openstack")) {
-		// // OpenstackCloudContext currently is stateless (probably shouldn't be!!)
-		// return ops.getInjector().getInstance(OpenstackCloudContext.class);
+	public CloudContext getCloudContext() throws OpsException {
+		// OpsConfig config = userInfo.getConfig();
+		//
+		// String type = config.getString("compute.type", "platformlayer");
+		// // if (type.equals("openstack")) {
+		// // // OpenstackCloudContext currently is stateless (probably shouldn't be!!)
+		// // return ops.getInjector().getInstance(OpenstackCloudContext.class);
+		// // }
+		// if (type.equals("platformlayer")) {
+		return ops.getInjector().getInstance(PlatformLayerCloudContext.class);
 		// }
-		if (type.equals("platformlayer")) {
-			return ops.getInjector().getInstance(PlatformLayerCloudContext.class);
-		}
-		throw new OpsException("Unknown compute.type value: " + type);
+		// throw new OpsException("Unknown compute.type value: " + type);
 	}
 
 	private SshConnection getSshConnection(String host, String user, KeyPair sshKeyPair) throws OpsException {

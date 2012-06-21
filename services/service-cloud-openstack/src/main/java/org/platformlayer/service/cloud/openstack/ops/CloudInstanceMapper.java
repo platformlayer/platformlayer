@@ -24,7 +24,6 @@ import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.MachineCreationRequest;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.helpers.ServiceContext;
@@ -82,7 +81,7 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
 			if (createInstance && !OpsContext.isDelete()) {
 				MachineCreationRequest request = buildMachineCreationRequest();
 
-				PlatformLayerKey instanceKey = OpsSystem.toKey(instance);
+				PlatformLayerKey instanceKey = instance.getKey();
 				request.tags.add(Tag.buildParentTag(instanceKey));
 
 				String serverName = buildServerName();
@@ -91,7 +90,7 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
 
 				{
 					Tag instanceTag = new Tag(Tag.ASSIGNED, created.getId());
-					platformLayer.addTag(OpsSystem.toKey(instance), instanceTag);
+					platformLayer.addTag(instance.getKey(), instanceTag);
 				}
 
 				assignedInstanceIds.add(created.getId());
@@ -195,7 +194,7 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
 		if (!Strings.isNullOrEmpty(instance.hostname)) {
 			serverName += instance.hostname;
 		} else {
-			serverName += OpsSystem.toKey(instance).getUrl();
+			serverName += instance.getKey().getUrl();
 		}
 		return serverName;
 	}

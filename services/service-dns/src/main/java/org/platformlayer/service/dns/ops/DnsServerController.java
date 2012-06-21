@@ -52,8 +52,8 @@ public class DnsServerController extends OpsTreeBase {
 			endpoint.dnsName = model.dnsName;
 			endpoint.protocol = Protocol.Udp;
 
-			endpoint.tagItem = OpsSystem.toKey(model);
-			endpoint.parentItem = OpsSystem.toKey(model);
+			endpoint.tagItem = model.getKey();
+			endpoint.parentItem = model.getKey();
 
 			vm.addChild(endpoint);
 		}

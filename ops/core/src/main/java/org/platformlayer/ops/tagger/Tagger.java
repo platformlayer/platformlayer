@@ -23,7 +23,7 @@ public class Tagger {
 	public static Tagger build(ItemBase item, OpsProvider<TagChanges> tagChanges) {
 		OpsContext opsContext = OpsContext.get();
 		Tagger tagger = opsContext.getInjector().getInstance(Tagger.class);
-		tagger.platformLayerKey = OpsSystem.toKey(item);
+		tagger.platformLayerKey = item.getKey();
 		tagger.tagChangesProvider = tagChanges;
 		return tagger;
 	}

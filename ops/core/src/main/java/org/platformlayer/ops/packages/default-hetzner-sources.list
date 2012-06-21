@@ -1,0 +1,21 @@
+#######################################################################################
+# Hetzner APT-Mirror
+
+deb     http://mirror.hetzner.de/debian/packages squeeze main contrib non-free
+deb     http://mirror.hetzner.de/debian/security squeeze/updates main contrib non-free
+
+
+
+#######################################################################################
+# Backupmirror
+#
+
+deb     http://ftp.uni-bayreuth.de/linux/Debian/debian/  squeeze  main non-free contrib
+deb-src http://ftp.uni-bayreuth.de/linux/Debian/debian/  squeeze  main non-free contrib
+
+deb     http://security.debian.org/  squeeze/updates  main contrib non-free
+deb-src http://security.debian.org/  squeeze/updates  main contrib non-free
+
+## backports
+deb     http://mirror.hetzner.de/debian/backports squeeze-backports main contrib non-free
+deb     http://backports.debian.org/debian-backports squeeze-backports main contrib non-free

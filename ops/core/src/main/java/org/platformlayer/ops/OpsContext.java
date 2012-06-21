@@ -12,7 +12,9 @@ import javalang7.Utils;
 import org.apache.log4j.Logger;
 import org.platformlayer.ApplicationMode;
 import org.platformlayer.CheckedCallable;
+import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.Scope;
+import org.platformlayer.auth.OpsProject;
 import org.platformlayer.ops.log.JobLogger;
 import org.platformlayer.ops.model.metrics.MetricConfig;
 import org.platformlayer.ops.networks.NetworkPoint;
@@ -27,7 +29,6 @@ public class OpsContext implements Closeable {
 	static final Logger log = Logger.getLogger(OpsContext.class);
 
 	final OpsSystem opsSystem;
-	final UserInfo userInfo;
 	final List<AutoCloseable> ownedObjects = Lists.newArrayList();
 
 	final ServiceConfiguration serviceConfiguration;
@@ -40,14 +41,19 @@ public class OpsContext implements Closeable {
 
 	final Map<Object, Object> cacheMap = Maps.newHashMap();
 
-	public OpsContext(OpsSystem opsSystem, JobRecord jobRecord, UserInfo userInfo,
-			ServiceConfiguration serviceConfiguration) {
+	final PlatformLayerClient platformLayerClient;
+
+	final List<OpsProject> projects;
+
+	public OpsContext(OpsSystem opsSystem, JobRecord jobRecord, ServiceConfiguration serviceConfiguration,
+			PlatformLayerClient platformLayerClient, List<OpsProject> projects) {
 		super();
 		this.opsSystem = opsSystem;
 		this.jobRecord = jobRecord;
-		this.userInfo = userInfo;
 		this.serviceConfiguration = serviceConfiguration;
 		this.jobLogger = new JobLogger(jobRecord.getLog());
+		this.platformLayerClient = platformLayerClient;
+		this.projects = projects;
 	}
 
 	public static OpsContext get() {
@@ -60,10 +66,6 @@ public class OpsContext implements Closeable {
 
 	public <T> T getInstance(Class<T> clazz) {
 		return BindingScope.get().getInstance(clazz);
-	}
-
-	public UserInfo getUserInfo() {
-		return userInfo;
 	}
 
 	public static <T, E extends Exception> T runInContext(OpsContext opsContext, CheckedCallable<T, E> callable)
@@ -217,4 +219,24 @@ public class OpsContext implements Closeable {
 	public Map<Object, Object> getCacheMap() {
 		return cacheMap;
 	}
+
+	public PlatformLayerClient getPlatformLayerClient() throws OpsException {
+		return platformLayerClient;
+	}
+
+	public List<OpsProject> getEncryptingProjects() {
+		return projects;
+	}
+
+	// public OpsProject getProject() {
+	// return auth.getProject();
+	// }
+	//
+	// public ProjectId getProjectId() {
+	// OpsProject project = getProject();
+	// if (project == null) {
+	// return null;
+	// }
+	// return new ProjectId(project.key);
+	// }
 }

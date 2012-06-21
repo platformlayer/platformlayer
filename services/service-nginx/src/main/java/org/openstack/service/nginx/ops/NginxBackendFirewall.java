@@ -6,7 +6,6 @@ import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.OpsContext;
-import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.UniqueTag;
 import org.platformlayer.ops.firewall.Protocol;
 import org.platformlayer.ops.tree.OwnedItem;
@@ -26,11 +25,11 @@ public class NginxBackendFirewall extends OwnedItem {
 
 		NetworkConnection networkConnection = new NetworkConnection();
 		networkConnection.setDestItem(nginxBackend.backend);
-		networkConnection.setSourceItem(OpsSystem.toKey(nginxService));
+		networkConnection.setSourceItem(nginxService.getKey());
 		networkConnection.setPort(port);
 		networkConnection.setProtocol(protocol.toString());
 
-		Tag parentTag = Tag.buildParentTag(OpsSystem.toKey(nginxBackend));
+		Tag parentTag = Tag.buildParentTag(nginxBackend.getKey());
 		networkConnection.getTags().add(parentTag);
 		Tag uniqueTag = UniqueTag.build(nginxService, nginxBackend);
 		networkConnection.getTags().add(uniqueTag);

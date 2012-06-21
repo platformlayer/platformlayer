@@ -43,7 +43,7 @@ public class UniqueTag {
 	}
 
 	private static String append(String s, ItemBase item) {
-		PlatformLayerKey key = OpsSystem.toKey(item);
+		PlatformLayerKey key = item.getKey();
 		if (key.getHost() != null) {
 			throw new UnsupportedOperationException();
 		}

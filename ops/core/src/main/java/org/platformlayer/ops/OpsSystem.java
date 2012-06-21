@@ -8,16 +8,15 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.platformlayer.TimeSpan;
-import org.platformlayer.core.model.ItemBase;
+import org.platformlayer.auth.UserRepository;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ServiceInfo;
-import org.platformlayer.core.model.Tag;
 import org.platformlayer.ids.ItemType;
 import org.platformlayer.ids.ModelKey;
-import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.ops.auth.OpsAuthentication;
 import org.platformlayer.ops.backups.BackupContextFactory;
+import org.platformlayer.ops.multitenant.SimpleMultitenantConfiguration;
 import org.platformlayer.ops.ssh.ISshContext;
 import org.platformlayer.ops.tasks.JobRegistry;
 import org.platformlayer.ops.tasks.OperationQueue;
@@ -25,6 +24,7 @@ import org.platformlayer.xaas.repository.ManagedItemRepository;
 import org.platformlayer.xaas.services.ServiceProvider;
 import org.platformlayer.xaas.services.ServiceProviderDictionary;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.inject.Injector;
 
@@ -59,6 +59,9 @@ public class OpsSystem {
 
 	@Inject
 	Provider<BackupContextFactory> backupContextFactory;
+
+	@Inject
+	UserRepository userRepository;
 
 	private static OpsSystem INSTANCE;
 
@@ -124,15 +127,15 @@ public class OpsSystem {
 	// return modelKey;
 	// }
 
-	private ProjectId getProject() {
-		// TODO: Can we just do this?
-		// return Scope.get().get(ProjectId.class)
-		OpsAuthentication authentication = authenticationProvider.get();
-		if (authentication == null) {
-			throw new SecurityException("Not authorized");
-		}
-		return authentication.getProjectId();
-	}
+	// private ProjectId getProject() {
+	// // TODO: Can we just do this?
+	// // return Scope.get().get(ProjectId.class)
+	// OpsAuthentication authentication = authenticationProvider.get();
+	// if (authentication == null) {
+	// throw new SecurityException("Not authorized");
+	// }
+	// return authentication.getProjectId();
+	// }
 
 	// public Tag createPlatformLayerLink(ItemBase item) {
 	// ModelKey modelKey = buildModelKey(item);
@@ -149,23 +152,14 @@ public class OpsSystem {
 	// return new Tag(key, buildUrl(modelKey));
 	// }
 
-	public Tag createParentTag(ItemBase parent) {
-		PlatformLayerKey parentKey = OpsSystem.toKey(parent);
-		return Tag.buildParentTag(parentKey);
-	}
-
-	public Tag createParentTag(ModelKey modelKey) {
-		return Tag.PARENT.build(PlatformLayerKey.parse(buildUrl(modelKey)));
-	}
-
-	public String buildUrl(ModelKey modelKey) {
-		String url = modelKey.getProject().getKey() + "/" + modelKey.getServiceType().getKey() + "/"
-				+ modelKey.getItemType().getKey();
-		if (modelKey.getItemKey() != null) {
-			url += "/" + modelKey.getItemKey().getKey();
-		}
-		return url;
-	}
+	// public String buildUrl(ModelKey modelKey) {
+	// String url = modelKey.getProject().getKey() + "/" + modelKey.getServiceType().getKey() + "/"
+	// + modelKey.getItemType().getKey();
+	// if (modelKey.getItemKey() != null) {
+	// url += "/" + modelKey.getItemKey().getKey();
+	// }
+	// return url;
+	// }
 
 	// public Tag createOwnerTag(ItemBase item) {
 	// ModelKey modelKey = buildModelKey(item);
@@ -181,15 +175,6 @@ public class OpsSystem {
 	// throw new IllegalArgumentException();
 	// return new PlatformLayerKey(modelClass.getServiceType(), modelClass.getItemType(), id);
 	// }
-
-	public static PlatformLayerKey toKey(ItemBase item) {
-		if (item.key != null) {
-			return item.key;
-		}
-
-		throw new IllegalStateException();
-		// return toKey(item.getClass(), new ManagedItemId(item.getId()));
-	}
 
 	// public static PlatformLayerKey toKey(String path) throws OpsException {
 	// if (path == null)
@@ -242,12 +227,12 @@ public class OpsSystem {
 		return "http://127.0.0.1:8082/v0/";
 	}
 
-	public static OpsSystem get() {
-		if (INSTANCE == null) {
-			throw new IllegalStateException();
-		}
-		return INSTANCE;
-	}
+	// public static OpsSystem get() {
+	// if (INSTANCE == null) {
+	// throw new IllegalStateException();
+	// }
+	// return INSTANCE;
+	// }
 
 	public static void safeSleep(TimeSpan timeSpan) throws OpsException {
 		try {
@@ -260,5 +245,22 @@ public class OpsSystem {
 
 	public BackupContextFactory getBackupContextFactory() {
 		return backupContextFactory.get();
+	}
+
+	Optional<MultitenantConfiguration> multitenantConfiguration;
+
+	public MultitenantConfiguration getMultitenantConfiguration() throws OpsException {
+		if (multitenantConfiguration == null) {
+			String projectKey = configuration.lookup("multitenant.project", null);
+			if (projectKey == null) {
+				multitenantConfiguration = Optional.absent();
+			} else {
+				MultitenantConfiguration config = SimpleMultitenantConfiguration.build(configuration, userRepository);
+
+				multitenantConfiguration = Optional.of(config);
+			}
+		}
+
+		return multitenantConfiguration.orNull();
 	}
 }

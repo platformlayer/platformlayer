@@ -38,7 +38,7 @@ public abstract class Machine {
 
 	public String getBestAddress(NetworkPoint src, int destinationPort) throws OpsException {
 		InetAddressChooser chooser;
-		if (src.isPrivateNetwork()) {
+		if (!src.isPublicAddress()) {
 			chooser = InetAddressChooser.preferIpv6();
 		} else {
 			chooser = InetAddressChooser.preferIpv4();

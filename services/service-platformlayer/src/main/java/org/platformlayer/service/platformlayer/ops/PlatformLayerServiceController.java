@@ -62,7 +62,7 @@ public class PlatformLayerServiceController extends OpsTreeBase {
 
 			net.destItem = model.database;
 			net.port = PostgresTarget.POSTGRES_PORT;
-			net.sourceItemKey = OpsSystem.toKey(model);
+			net.sourceItemKey = model.getKey();
 
 			vm.addChild(net);
 		}
@@ -95,7 +95,7 @@ public class PlatformLayerServiceController extends OpsTreeBase {
 		{
 			PlatformLayerFirewallEntry net = injected(PlatformLayerFirewallEntry.class);
 
-			net.destItem = OpsSystem.toKey(model);
+			net.destItem = model.getKey();
 			net.sourceCidr = "127.0.0.1/32";
 			net.port = PlatformLayerSystemAuthInstance.PORT_AUTH_SYSTEM;
 

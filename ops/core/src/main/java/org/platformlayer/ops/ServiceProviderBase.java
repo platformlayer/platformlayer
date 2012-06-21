@@ -10,11 +10,9 @@ import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ServiceInfo;
 import org.platformlayer.ids.ItemType;
-import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.inject.ObjectInjector;
 import org.platformlayer.metrics.model.MetricValues;
-import org.platformlayer.ops.auth.OpsAuthentication;
 import org.platformlayer.ops.helpers.ServiceContext;
 import org.platformlayer.ops.helpers.SshKey;
 import org.platformlayer.xaas.Controller;
@@ -153,12 +151,7 @@ public abstract class ServiceProviderBase implements ServiceProvider {
 
 	@Override
 	public void validateAuthorization(ServiceAuthorization serviceAuthorization) throws OpsException {
-		OpsConfig opsConfig = OpsConfig.build(serviceAuthorization);
-
-		OpsAuthentication opsAuth = null;
-		UserInfo userInfo = new UserInfo(opsAuth, opsConfig);
-
-		CloudContext cloudContext = cloudContextRegistry.getCloudContext(userInfo);
+		CloudContext cloudContext = cloudContextRegistry.getCloudContext();
 		cloudContext.validate();
 	}
 
@@ -272,8 +265,8 @@ public abstract class ServiceProviderBase implements ServiceProvider {
 					}
 
 					if (key.getProject() == null) {
-						ProjectId projectId = OpsContext.get().getUserInfo().getProjectId();
-						key = key.withProject(projectId);
+						throw new UnsupportedOperationException();
+						// key = key.withProject(OpsContext.get().getProjectId());
 					}
 
 					try {

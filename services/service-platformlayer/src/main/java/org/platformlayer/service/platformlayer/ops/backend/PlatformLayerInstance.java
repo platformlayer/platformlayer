@@ -47,8 +47,8 @@ public class PlatformLayerInstance extends ZippedService {
 			endpoint.backendPort = PORT_PLATFORMLAYER;
 			endpoint.dnsName = model.dnsName;
 
-			endpoint.tagItem = OpsSystem.toKey(model);
-			endpoint.parentItem = OpsSystem.toKey(model);
+			endpoint.tagItem = model.getKey();
+			endpoint.parentItem = model.getKey();
 
 			addChild(endpoint);
 		}

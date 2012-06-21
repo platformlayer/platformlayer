@@ -13,7 +13,6 @@ import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.service.dns.v1.DnsRecord;
@@ -38,7 +37,7 @@ public class EndpointDnsRecord {
 
 		if (OpsContext.isConfigure()) {
 			// Create a DNS record
-			Tag parentTag = OpsSystem.get().createParentTag(endpoint);
+			Tag parentTag = Tag.buildParentTag(endpoint.getKey());
 
 			List<EndpointInfo> endpoints = EndpointInfo.findEndpoints(endpoint.getTags(), destinationPort);
 			if (endpoints.isEmpty()) {

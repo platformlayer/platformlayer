@@ -54,8 +54,8 @@ public class DesktopController extends OpsTreeBase {
 			endpoint.backendPort = 22;
 			endpoint.dnsName = model.dnsName;
 
-			endpoint.tagItem = OpsSystem.toKey(model);
-			endpoint.parentItem = OpsSystem.toKey(model);
+			endpoint.tagItem = model.getKey();
+			endpoint.parentItem = model.getKey();
 
 			instance.addChild(endpoint);
 		}

@@ -9,6 +9,7 @@ import javax.inject.Singleton;
 
 import org.platformlayer.RepositoryException;
 import org.platformlayer.core.model.PlatformLayerKey;
+import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ops.OperationType;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsSystem;
@@ -33,10 +34,21 @@ public class JobRegistry {
 	@Inject
 	JobGraph jobGraph;
 
+	@Inject
+	OpsContextBuilder opsContextBuilder;
+
 	public PlatformLayerKey enqueueOperation(OperationType operationType, OpsAuthentication auth,
 			PlatformLayerKey targetItem) {
 		JobKey key = new JobKey(targetItem, operationType);
-		JobRecord jobRecord = new JobRecord(key, targetItem.getServiceType(), auth);
+
+		ProjectId projectId;
+		try {
+			projectId = opsContextBuilder.getRunAsProjectId(auth);
+		} catch (OpsException e) {
+			throw new IllegalStateException("Error getting projectId", e);
+		}
+
+		JobRecord jobRecord = new JobRecord(key, targetItem.getServiceType(), auth, projectId);
 
 		return jobGraph.trigger(jobRecord);
 	}

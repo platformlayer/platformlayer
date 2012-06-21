@@ -66,8 +66,8 @@ public class ZookeeperServerController extends OpsTreeBase {
 			// We expect this to be used by IPv6 capable client
 			endpoint.transport = Transport.Ipv6;
 
-			endpoint.tagItem = OpsSystem.toKey(model);
-			endpoint.parentItem = OpsSystem.toKey(model);
+			endpoint.tagItem = model.getKey();
+			endpoint.parentItem = model.getKey();
 
 			vm.addChild(endpoint);
 
@@ -104,8 +104,8 @@ public class ZookeeperServerController extends OpsTreeBase {
 			// We expect this to be used by IPv6 capable client
 			endpoint.transport = Transport.Ipv6;
 
-			endpoint.tagItem = OpsSystem.toKey(model);
-			endpoint.parentItem = OpsSystem.toKey(model);
+			endpoint.tagItem = model.getKey();
+			endpoint.parentItem = model.getKey();
 
 			vm.addChild(endpoint);
 

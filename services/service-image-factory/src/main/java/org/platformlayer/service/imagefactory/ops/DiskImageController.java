@@ -33,7 +33,6 @@ import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.MachineCreationRequest;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.filesystem.FilesystemInfo;
 import org.platformlayer.ops.helpers.ServiceContext;
@@ -190,7 +189,7 @@ public class DiskImageController {
 		// We don't need a lot of memory to build a disk image (I think!)
 		request.minimumMemoryMB = 256;
 
-		Machine machine = cloud.createInstance(request, OpsSystem.toKey(image));
+		Machine machine = cloud.createInstance(request, image.getKey());
 
 		opsContext.takeOwnership(machine);
 
@@ -592,7 +591,7 @@ public class DiskImageController {
 		// Upload & tag the image with the recipe ID
 		{
 			Tags tags = new Tags();
-			tags.add(opsContext.getOpsSystem().createParentTag(recipe));
+			tags.add(Tag.buildParentTag(recipe.getKey()));
 			tags.add(imageFormat.toTag());
 
 			imageId = cloud.getImageStore(targetCloud).uploadImage(target, tags, uploadImageFile, imageInfo.size);
@@ -602,7 +601,7 @@ public class DiskImageController {
 		{
 			TagChanges tagChanges = new TagChanges();
 			tagChanges.addTags.add(Tag.IMAGE_ID.build(imageId));
-			platformLayer.changeTags(OpsSystem.toKey(image), tagChanges);
+			platformLayer.changeTags(image.getKey(), tagChanges);
 		}
 
 		// Our pessimism proved unfounded...

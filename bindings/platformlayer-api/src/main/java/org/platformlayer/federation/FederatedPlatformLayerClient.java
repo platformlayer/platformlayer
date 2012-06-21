@@ -1,6 +1,5 @@
 package org.platformlayer.federation;
 
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -50,7 +49,7 @@ import com.google.common.collect.Maps;
 public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 	static final Logger log = Logger.getLogger(FederatedPlatformLayerClient.class);
 
-	// TODO: We could maybe do this with a Dynamic Proxy ??
+	// TODO: We could maybe do this with a Dynamic Proxy (i.e. MethodInvocation magic)??
 
 	final ForkJoinStrategy forkJoinPool;
 
@@ -58,7 +57,11 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 
 	final FederationMap federationMap;
 
-	public FederatedPlatformLayerClient(FederationMap federationMap, ForkJoinStrategy forkJoinPool) {
+	final ProjectId defaultProject;
+
+	public FederatedPlatformLayerClient(ProjectId defaultProject, FederationMap federationMap,
+			ForkJoinStrategy forkJoinPool) {
+		this.defaultProject = defaultProject;
 		this.federationMap = federationMap;
 		this.forkJoinPool = forkJoinPool;
 
@@ -79,39 +82,30 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 	// return buildUsingProperties(properties);
 	// }
 
-	public static FederatedPlatformLayerClient buildUsingConfig(InputStream is, TypedItemMapper mapper)
-			throws OpsException {
-		FederationConfiguration federationMapConfig = SmartDeserialization.deserialize(FederationConfiguration.class,
-				is);
-		FederationMap federationMap = new FederationMap(mapper, federationMapConfig);
-
-		// int parallelism = Runtime.getRuntime().availableProcessors();
-		// // Because we're doing lots of HTTP requests, rather than being CPU bound, we massively increase the
-		// parallelism
-		// parallelism *= 256;
-
-		ForkJoinStrategy forkJoinPool = new FakeForkJoinStrategy();
-
-		return new FederatedPlatformLayerClient(federationMap, forkJoinPool);
-	}
+	// public static FederatedPlatformLayerClient buildUsingConfig(InputStream is, TypedItemMapper mapper)
+	// throws OpsException {
+	// FederationConfiguration federationMapConfig = SmartDeserialization.deserialize(FederationConfiguration.class,
+	// is);
+	// FederationMap federationMap = new FederationMap(mapper, federationMapConfig);
+	//
+	// // int parallelism = Runtime.getRuntime().availableProcessors();
+	// // // Because we're doing lots of HTTP requests, rather than being CPU bound, we massively increase the
+	// // parallelism
+	// // parallelism *= 256;
+	//
+	// ForkJoinStrategy forkJoinPool = new FakeForkJoinStrategy();
+	//
+	// return new FederatedPlatformLayerClient(federationMap, forkJoinPool);
+	// }
 
 	void buildClients() {
 		// TODO: Fork/Join?
 
-		for (FederationMapping key : federationMap.getAllKeys()) {
+		for (FederationMapping key : federationMap.getAllTargetKeys()) {
 			TypedPlatformLayerClient client = federationMap.buildClient(key);
 
 			ChildClient child = new ChildClient(key, client);
 			childClients.put(key, child);
-		}
-
-		TypedPlatformLayerClient localClient = federationMap.getLocalClient();
-		if (localClient != null) {
-			FederationKey host = FederationKey.LOCAL_FEDERATION_KEY;
-			ProjectId project = localClient.getProject();
-			FederationMapping mapKey = new FederationMapping(host, project);
-			ChildClient childClient = new ChildClient(mapKey, localClient);
-			childClients.put(childClient.key, childClient);
 		}
 
 		if (childClients.isEmpty()) {
@@ -556,12 +550,13 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 
 		FederationKey host = plk.getHost();
 		if (host == null) {
-			host = FederationKey.LOCAL_FEDERATION_KEY;
+			host = FederationKey.LOCAL;
 		}
 
 		ProjectId project = plk.getProject();
 		if (project == null) {
-			project = federationMap.getLocalClient().getProject();
+			project = defaultProject;
+			// project = federationMap.getLocalClient().getProject();
 		}
 
 		ChildClient childClient = getClient(new FederationMapping(host, project));
@@ -607,7 +602,7 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 		}
 
 		if (key.host == null) {
-			key = new FederationMapping(FederationKey.LOCAL_FEDERATION_KEY, key.project);
+			key = new FederationMapping(FederationKey.LOCAL, key.project);
 		}
 
 		ChildClient child = this.childClients.get(key);
@@ -630,7 +625,35 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 		return item;
 	}
 
-	public static PlatformLayerClient build(TypedPlatformLayerClient localClient, TypedItemMapper mapper)
+	// public static PlatformLayerClient build(TypedPlatformLayerClient localClient, TypedItemMapper mapper)
+	// throws OpsException {
+	// FederationMap federationMap = buildFederationMap(localClient, mapper);
+	//
+	// ForkJoinStrategy forkJoinPool = new FakeForkJoinStrategy();
+	//
+	// return new FederatedPlatformLayerClient(federationMap, forkJoinPool);
+	// }
+
+	public static PlatformLayerClient build(ProjectId defaultProject, FederationMap federationMap) throws OpsException {
+		ForkJoinStrategy forkJoinPool = new FakeForkJoinStrategy();
+
+		return new FederatedPlatformLayerClient(defaultProject, federationMap, forkJoinPool);
+	}
+
+	public static FederationMap buildFederationMap(TypedPlatformLayerClient localClient, TypedItemMapper mapper)
+			throws OpsException {
+		FederationConfiguration federationMapConfig = buildFederationConfiguration(localClient);
+
+		FederationMap federationMap = new FederationMap(mapper, federationMapConfig);
+
+		if (localClient != null) {
+			federationMap.addDefault(localClient);
+		}
+
+		return federationMap;
+	}
+
+	public static FederationConfiguration buildFederationConfiguration(TypedPlatformLayerClient localClient)
 			throws OpsException {
 		FederationConfiguration federationMapConfig = new FederationConfiguration();
 
@@ -652,13 +675,7 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 
 			federationMapConfig.rules.add(rule);
 		}
-
-		ForkJoinStrategy forkJoinPool = new FakeForkJoinStrategy();
-
-		FederationMap federationMap = new FederationMap(mapper, federationMapConfig);
-		federationMap.setLocalClient(localClient);
-
-		return new FederatedPlatformLayerClient(federationMap, forkJoinPool);
+		return federationMapConfig;
 	}
 
 	@Override
@@ -680,7 +697,7 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 
 	@Override
 	public ProjectId getProject() {
-		return federationMap.getLocalClient().getProject();
+		return defaultProject; // federationMap.getLocalClient().getProject();
 	}
 
 }

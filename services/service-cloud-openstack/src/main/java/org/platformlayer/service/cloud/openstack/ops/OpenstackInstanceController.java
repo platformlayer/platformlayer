@@ -46,7 +46,7 @@ public class OpenstackInstanceController extends OpsTreeBase {
 					OpenstackComputeMachine machine = OpsContext.get().getInstance(OpenstackComputeMachine.class);
 
 					TagChanges tagChanges = new TagChanges();
-					tagChanges.addTags.add(new Tag(Tag.INSTANCE_KEY, OpsSystem.toKey(model).getUrl()));
+					tagChanges.addTags.add(new Tag(Tag.INSTANCE_KEY, model.getKey().getUrl()));
 					tagChanges.addTags.addAll(machine.buildAddressTags());
 
 					return tagChanges;
