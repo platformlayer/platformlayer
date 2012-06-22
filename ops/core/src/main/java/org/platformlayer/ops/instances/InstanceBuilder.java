@@ -119,7 +119,7 @@ public class InstanceBuilder extends OpsTreeBase implements CustomRecursor {
 			// Add tag with instance id to persistent instance (very helpful for
 			// DNS service!)
 			PlatformLayerKey machineKey = machine.getKey();
-			platformLayer.addTag(item.getKey(), new Tag(Tag.INSTANCE_KEY, machineKey.getUrl()));
+			platformLayer.addTag(item.getKey(), Tag.INSTANCE_KEY.build(machineKey));
 		}
 
 		SshKey sshKey = service.getSshKey();
