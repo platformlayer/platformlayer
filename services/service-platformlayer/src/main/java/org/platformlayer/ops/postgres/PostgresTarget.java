@@ -1,4 +1,4 @@
-package org.platformlayer.service.platformlayer.ops;
+package org.platformlayer.ops.postgres;
 
 import org.platformlayer.core.model.Secret;
 import org.platformlayer.ops.Command;

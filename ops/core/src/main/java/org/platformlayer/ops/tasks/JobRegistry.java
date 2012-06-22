@@ -55,14 +55,22 @@ public class JobRegistry {
 
 	private static final int RECENT_JOB_COUNT = 100;
 
-	public List<JobRecord> getActiveJobs() {
+	public List<JobRecord> getActiveJobs(ProjectId projectId) {
 		List<JobRecord> jobs = Lists.newArrayList();
 		synchronized (activeJobs) {
-			jobs.addAll(activeJobs.values());
+			for (JobRecord job : activeJobs.values()) {
+				if (!job.getJobKey().getProject().equals(projectId)) {
+					continue;
+				}
+				jobs.add(job);
+			}
 		}
 		synchronized (recentJobs) {
-			for (JobRecord recentJob : recentJobs) {
-				jobs.add(recentJob);
+			for (JobRecord job : recentJobs) {
+				if (!job.getJobKey().getProject().equals(projectId)) {
+					continue;
+				}
+				jobs.add(job);
 			}
 		}
 		return jobs;

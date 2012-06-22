@@ -43,7 +43,7 @@
         </dependency>
 
 
-		<!-- Jetty WebServer -->
+        <!-- Jetty WebServer -->
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-webapp</artifactId>
@@ -53,14 +53,14 @@
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
         </dependency>
 
-		<!-- Jackson is better at serializing collections than the built in Jersey 
-			stuff -->
+        <!-- Jackson is better at serializing collections than the built 
+            in Jersey stuff -->
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-xc</artifactId>
@@ -72,14 +72,14 @@
 
 
 
-		<!-- Guice dependencies -->
+        <!-- Guice dependencies -->
         <dependency>
             <groupId>com.google.inject.extensions</groupId>
             <artifactId>guice-servlet</artifactId>
             <version>3.0</version>
         </dependency>
 
-		<!-- Guice-Jersey integration -->
+        <!-- Guice-Jersey integration -->
         <dependency>
             <groupId>com.sun.jersey.contribs</groupId>
             <artifactId>jersey-guice</artifactId>
@@ -99,21 +99,46 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        
-        <!--  We add jersey-json explicitly, because otherwise it tends not to get included -->
+
+        <!-- We add jersey-json explicitly, because otherwise it tends not 
+            to get included -->
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-json</artifactId>
             <version>${jersey.version}</version>
         </dependency>
-        
-        <!--  Dependencies that some services need, and otherwise don't get included -->
-        <!--  TODO: Fix this... -->
+
+        <!-- Dependencies that some services need, and otherwise don't get 
+            included -->
+        <!-- TODO: Fix this... -->
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
             <version>2.4.1</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/main/assembly/tarfile.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

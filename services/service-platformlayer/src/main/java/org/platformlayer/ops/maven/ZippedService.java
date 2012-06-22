@@ -1,4 +1,4 @@
-package org.platformlayer.service.platformlayer.ops;
+package org.platformlayer.ops.maven;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +11,6 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.ManagedDirectory;
 import org.platformlayer.ops.filesystem.ManagedSymlink;
 import org.platformlayer.ops.java.JavaVirtualMachine;
-import org.platformlayer.ops.maven.MavenReference;
 import org.platformlayer.ops.packages.PackageDependency;
 import org.platformlayer.ops.supervisor.SupervisorInstance;
 import org.platformlayer.ops.supervisor.SupervisordService;

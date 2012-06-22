@@ -1,21 +1,21 @@
 package org.platformlayer.service.platformlayer.ops;
 
 import java.util.Map;
+import java.util.Properties;
 
 import javax.inject.Inject;
 
+import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Secret;
 import org.platformlayer.ops.Machine;
-import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.networks.NetworkPoint;
-import org.platformlayer.ops.templates.TemplateDataSource;
-import org.platformlayer.service.platformlayer.model.PlatformLayerService;
+import org.platformlayer.ops.standardservice.StandardTemplateData;
 import org.platformlayer.service.postgresql.model.PostgresqlServer;
 
-public class CommonTemplateData implements TemplateDataSource {
+public abstract class CommonTemplateData extends StandardTemplateData {
 
 	@Inject
 	PlatformLayerHelpers platformLayer;
@@ -38,13 +38,11 @@ public class CommonTemplateData implements TemplateDataSource {
 		return Secret.build("platformlayer-password");
 	}
 
-	PlatformLayerService getPlatformLayerService() {
-		return OpsContext.get().getInstance(PlatformLayerService.class);
-	}
+	protected abstract PlatformLayerKey getDatabaseKey();
 
-	private String getJdbcUrl() throws OpsException {
-		PlatformLayerService model = getPlatformLayerService();
-		PostgresqlServer item = platformLayer.getItem(model.database, PostgresqlServer.class);
+	protected String getJdbcUrl() throws OpsException {
+		PlatformLayerKey database = getDatabaseKey();
+		PostgresqlServer item = platformLayer.getItem(database, PostgresqlServer.class);
 
 		Machine itemMachine = instanceHelpers.getMachine(item);
 		String host = itemMachine.getBestAddress(NetworkPoint.forTargetInContext(), 5432);
@@ -54,6 +52,18 @@ public class CommonTemplateData implements TemplateDataSource {
 
 	public String getDatabaseName() {
 		return "platformlayer";
+	}
+
+	@Override
+	protected Properties getConfigurationProperties() throws OpsException {
+		Properties properties = new Properties();
+		properties.put("auth.jdbc.driverClassName", "org.postgresql.Driver");
+
+		properties.put("auth.jdbc.url", getJdbcUrl());
+		properties.put("auth.jdbc.username", getDatabaseUsername());
+		properties.put("auth.jdbc.password", getDatabasePassword());
+
+		return properties;
 	}
 
 }

@@ -1,4 +1,4 @@
-package org.platformlayer.service.platformlayer.ops;
+package org.platformlayer.ops.maven;
 
 import java.io.IOException;
 import java.net.URI;

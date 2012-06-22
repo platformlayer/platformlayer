@@ -1,4 +1,4 @@
-package org.platformlayer.service.platformlayer.ops;
+package org.platformlayer.ops.postgres;
 
 import javax.inject.Inject;
 

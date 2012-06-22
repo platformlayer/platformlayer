@@ -1,4 +1,4 @@
-package org.platformlayer.service.platformlayer.ops;
+package org.platformlayer.ops.maven;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,8 +16,6 @@ import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.filesystem.ManagedFile;
-import org.platformlayer.ops.maven.MavenReference;
-import org.platformlayer.ops.maven.MavenResolver;
 import org.platformlayer.ops.openstack.DirectOpenstackDownload;
 
 public class MavenFile extends ManagedFile {

@@ -6,16 +6,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
-import org.platformlayer.service.platformlayer.ops.backend.PlatformLayerServiceController;
+import org.platformlayer.service.platformlayer.ops.auth.system.SystemAuthServiceController;
 import org.platformlayer.xaas.Controller;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
-@Controller(PlatformLayerServiceController.class)
-public class PlatformLayerService extends ItemBase {
+@Controller(SystemAuthServiceController.class)
+public class SystemAuthService extends ItemBase {
 	public String dnsName;
 
 	public PlatformLayerKey database;
-
-	public String multitenantItems;
 }

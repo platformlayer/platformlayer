@@ -1,4 +1,4 @@
-package org.platformlayer.service.platformlayer.ops;
+package org.platformlayer.ops.postgres;
 
 import org.apache.log4j.Logger;
 import org.platformlayer.ops.Handler;
