@@ -18,7 +18,6 @@ import org.platformlayer.ops.packages.AsBlock;
 import org.platformlayer.ops.templates.TemplateDataSource;
 import org.platformlayer.service.dnsresolver.v1.DnsResolverService;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
 public class DnsResolverModuleBuilder implements TemplateDataSource {
@@ -56,18 +55,15 @@ public class DnsResolverModuleBuilder implements TemplateDataSource {
 				AsBlock as = AsBlock.find(target);
 
 				if (as != null) {
-					if (Objects.equal(AsBlock.SOFTLAYER, as)) {
-						log.warn("Adding private Softlayer resolvers");
-						nameservers.add("10.0.80.11");
-						nameservers.add("10.0.80.12");
-					}
-
-					if (Objects.equal(AsBlock.HETZNER, as)) {
-						log.warn("Adding private Hetzner resolvers");
-						nameservers.add("213.133.99.99");
-						nameservers.add("213.133.100.100");
-						nameservers.add("213.133.98.98");
-					}
+					// We had problems with the SL resolvers...
+					/*
+					 * if (Objects.equal(AsBlock.SOFTLAYER, as)) { log.warn("Adding private Softlayer resolvers");
+					 * nameservers.add("10.0.80.11"); nameservers.add("10.0.80.12"); }
+					 * 
+					 * if (Objects.equal(AsBlock.HETZNER, as)) { log.warn("Adding private Hetzner resolvers");
+					 * nameservers.add("213.133.99.99"); nameservers.add("213.133.100.100");
+					 * nameservers.add("213.133.98.98"); }
+					 */
 				}
 			}
 

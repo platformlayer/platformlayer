@@ -17,4 +17,22 @@ public class HostPolicy {
 	 * e.g. "Not the same machine, but otherwise as close as possible"
 	 */
 	public String groupId;
+
+	public float scoreSameGroup;
+
+	public float scoreSameItemType;
+
+	public void configureSpread(String placementKey) {
+		this.groupId = placementKey;
+		this.scoreSameGroup = -100;
+	}
+
+	/**
+	 * Position near other members of the group, but avoid instances with the same type
+	 */
+	public void configureCluster(String placementKey) {
+		this.groupId = placementKey;
+		this.scoreSameGroup = 10;
+		this.scoreSameItemType = -100;
+	}
 }

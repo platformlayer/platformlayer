@@ -1,7 +1,7 @@
 package org.platformlayer.ops.standardservice;
 
 import java.io.File;
-import java.util.Properties;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -43,10 +43,10 @@ public abstract class StandardServiceInstance extends OpsTreeBase {
 		{
 			PropertiesConfigFile conf = addChild(PropertiesConfigFile.class);
 			conf.filePath = template.getConfigurationFile();
-			conf.propertiesSupplier = new Supplier<Properties>() {
+			conf.propertiesSupplier = new Supplier<Map<String, String>>() {
 
 				@Override
-				public Properties get() {
+				public Map<String, String> get() {
 					try {
 						return template.getConfigurationProperties();
 					} catch (OpsException e) {

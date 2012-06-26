@@ -71,8 +71,14 @@ public class OpsContextBuilder {
 
 		MultitenantConfiguration multitenant = opsSystem.getMultitenantConfiguration();
 		if (multitenant != null) {
-			runAsProject = multitenant.getMasterProject();
-			projects.add(runAsProject);
+			OpsProject masterProject = multitenant.getMasterProject();
+			if (runAsProject.key.equals(masterProject.key)) {
+				// We're in the master project
+				multitenant = null;
+			} else {
+				runAsProject = masterProject;
+				projects.add(runAsProject);
+			}
 		}
 
 		TypedPlatformLayerClient defaultClient = buildClient(runAsProject);

@@ -1,7 +1,7 @@
 package org.platformlayer.service.platformlayer.ops.auth.system;
 
 import java.io.File;
-import java.util.Properties;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.platformlayer.core.model.PlatformLayerKey;
@@ -42,8 +42,8 @@ public class SystemAuthInstanceModel extends CommonTemplateData {
 	}
 
 	@Override
-	protected Properties getConfigurationProperties() throws OpsException {
-		Properties properties = super.getConfigurationProperties();
+	protected Map<String, String> getConfigurationProperties() throws OpsException {
+		Map<String, String> properties = super.getConfigurationProperties();
 
 		// #auth.user.module=org.platformlayer.auth.keystone.KeystoneOpsUserModule
 		properties.put("auth.system.module", "org.platformlayer.auth.keystone.KeystoneOpsSystemModule");
@@ -54,7 +54,7 @@ public class SystemAuthInstanceModel extends CommonTemplateData {
 	}
 
 	@Override
-	protected PlatformLayerKey getDatabaseKey() {
+	protected PlatformLayerKey getAuthDatabaseKey() {
 		return getModel().database;
 	}
 

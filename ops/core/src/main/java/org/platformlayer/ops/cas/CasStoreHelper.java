@@ -72,7 +72,15 @@ public class CasStoreHelper {
 
 		// TODO: This is evil
 		for (DirectHost host : platformLayer.listItems(DirectHost.class)) {
-			NetworkPoint targetAddress = NetworkPoint.forPublicHostname(host.getHost());
+			// TODO: Getting the IP like this is also evil
+			NetworkPoint targetAddress;
+			// if (host.getIpv6() != null) {
+			// IpRange ipv6Range = IpV6Range.parse(host.getIpv6());
+			// targetAddress = NetworkPoint.forPublicHostname(ipv6Range.getGatewayAddress());
+			// } else {
+			targetAddress = NetworkPoint.forPublicHostname(host.getHost());
+			// }
+
 			Machine machine = new OpaqueMachine(targetAddress);
 			OpsTarget machineTarget = machine
 					.getTarget(sshKeys.findOtherServiceKey(new ServiceType("machines-direct")));

@@ -1,7 +1,7 @@
 package org.platformlayer.ops.standardservice;
 
 import java.io.File;
-import java.util.Properties;
+import java.util.Map;
 
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsException;
@@ -45,5 +45,9 @@ public abstract class StandardTemplateData implements TemplateDataSource {
 		return new File(getConfigDir(), "configuration.properties");
 	}
 
-	protected abstract Properties getConfigurationProperties() throws OpsException;
+	protected abstract Map<String, String> getConfigurationProperties() throws OpsException;
+
+	// public String getDatabaseName() {
+	// return "main";
+	// }
 }

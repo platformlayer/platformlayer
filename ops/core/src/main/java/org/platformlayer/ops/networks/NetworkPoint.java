@@ -44,6 +44,7 @@ public class NetworkPoint {
 			return new NetworkPoint(null, addr);
 		}
 
+		// This isn't technically required, but IPV6 means that we have a flat address space
 		throw new IllegalStateException();
 	}
 
@@ -88,6 +89,16 @@ public class NetworkPoint {
 		return new NetworkPoint(null, null);
 	}
 
+	public static NetworkPoint forPublicHostname(InetAddress address) {
+		String privateNetwork = null;
+		if (!InetAddressUtils.isPublic(address)) {
+			log.warn("Assigning fake private-network id for non-public IP");
+			// Assign a unique private network
+			privateNetwork = UUID.randomUUID().toString();
+		}
+		return new NetworkPoint(privateNetwork, address);
+	}
+
 	public static NetworkPoint forPublicHostname(String hostname) throws OpsException {
 		InetAddress address;
 		try {
@@ -96,13 +107,7 @@ public class NetworkPoint {
 			throw new OpsException("Error resolving hostname", e);
 		}
 
-		String privateNetwork = null;
-		if (!InetAddressUtils.isPublic(address)) {
-			log.warn("Assigning fake private-network id for non-public IP");
-			// Assign a unique private network
-			privateNetwork = UUID.randomUUID().toString();
-		}
-		return new NetworkPoint(privateNetwork, address);
+		return forPublicHostname(address);
 	}
 
 	public static NetworkPoint forTargetInContext() {

@@ -7,7 +7,7 @@ import org.platformlayer.ops.standardservice.StandardTemplateData;
 public class SystemAuthInstall extends StandardServiceInstall {
 	@Override
 	protected Md5Hash getMd5Hash() {
-		Md5Hash hash = new Md5Hash("12ac4f6850123ebd9564baf5aa1cab");
+		Md5Hash hash = new Md5Hash("7f048fb3d87028cbc50781b37db43d97");
 		return hash;
 	}
 

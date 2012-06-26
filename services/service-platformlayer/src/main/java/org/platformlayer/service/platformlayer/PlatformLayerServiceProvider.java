@@ -5,4 +5,5 @@ import org.platformlayer.xaas.Service;
 
 @Service("platformlayer")
 public class PlatformLayerServiceProvider extends ServiceProviderBase {
+
 }

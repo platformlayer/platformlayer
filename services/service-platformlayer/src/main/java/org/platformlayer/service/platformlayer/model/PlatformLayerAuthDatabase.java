@@ -8,19 +8,21 @@ import org.platformlayer.core.model.Generate;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Secret;
-import org.platformlayer.service.platformlayer.ops.backend.PlatformLayerServiceController;
+import org.platformlayer.service.platformlayer.ops.authdb.PlatformLayerAuthDatabaseController;
 import org.platformlayer.xaas.Controller;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
-@Controller(PlatformLayerServiceController.class)
-public class PlatformLayerService extends ItemBase {
-	public String dnsName;
+@Controller(PlatformLayerAuthDatabaseController.class)
+public class PlatformLayerAuthDatabase extends ItemBase {
+	public PlatformLayerKey server;
 
-	public PlatformLayerKey database;
-
-	public String multitenantItems;
+	@Generate("platformlayer_auth")
+	public String username;
 
 	@Generate
-	public Secret multitenantPassword;
+	public Secret password;
+
+	@Generate("platformlayer_auth")
+	public String databaseName;
 }

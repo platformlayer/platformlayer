@@ -31,6 +31,7 @@ public class UserAuthServiceController extends OpsTreeBase {
 		{
 			vm = InstanceBuilder.build(dnsName, DiskImageRecipeBuilder.buildDiskImageRecipe(this));
 			vm.publicPorts.add(port);
+			vm.hostPolicy.configureCluster(template.getPlacementKey());
 
 			// TODO: This needs to be configurable (?)
 			vm.minimumMemoryMb = 2048;

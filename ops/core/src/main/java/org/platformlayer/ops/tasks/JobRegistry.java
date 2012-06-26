@@ -16,6 +16,7 @@ import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.auth.OpsAuthentication;
 import org.platformlayer.xaas.repository.JobRepository;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -59,7 +60,7 @@ public class JobRegistry {
 		List<JobRecord> jobs = Lists.newArrayList();
 		synchronized (activeJobs) {
 			for (JobRecord job : activeJobs.values()) {
-				if (!job.getJobKey().getProject().equals(projectId)) {
+				if (!Objects.equal(job.getJobKey().getProject(), projectId)) {
 					continue;
 				}
 				jobs.add(job);
