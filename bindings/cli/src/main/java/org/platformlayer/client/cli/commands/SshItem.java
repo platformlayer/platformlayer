@@ -56,8 +56,6 @@ public class SshItem extends PlatformLayerCommandRunnerBase {
 			// Hmmm... user? key?
 			action = new ClientAction(ClientAction.ClientActionType.SSH, user + "@" + sshAddress.getHostAddress(),
 					sshKey.getAbsolutePath());
-
-			System.out.println(action);
 		}
 
 		return action;

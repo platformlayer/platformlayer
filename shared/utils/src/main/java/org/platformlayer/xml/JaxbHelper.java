@@ -20,6 +20,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchema;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.stream.StreamSource;
@@ -29,6 +31,7 @@ import org.apache.log4j.Logger;
 import org.openstack.utils.Utf8;
 import org.platformlayer.CastUtils;
 import org.platformlayer.IoUtils;
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import com.google.common.base.Function;
@@ -236,6 +239,25 @@ public class JaxbHelper {
 		Marshaller marshaller = borrowMarshaller(formatted);
 		try {
 			marshaller.marshal(object, os);
+		} finally {
+			returnToPool(marshaller);
+		}
+	}
+
+	public Document marshalToDom(Object object) throws JAXBException {
+		Marshaller marshaller = borrowMarshaller(false);
+		try {
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			dbf.setNamespaceAware(true);
+			Document doc;
+			try {
+				doc = dbf.newDocumentBuilder().newDocument();
+			} catch (ParserConfigurationException e) {
+				throw new IllegalStateException("Error creating XML document", e);
+			}
+
+			marshaller.marshal(object, doc);
+			return doc;
 		} finally {
 			returnToPool(marshaller);
 		}

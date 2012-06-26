@@ -76,6 +76,35 @@ public class UntypedItem {
 		return tags;
 	}
 
+	public void setTags(Tags tags) {
+		Document tagsDocument;
+
+		JaxbHelper helper = JaxbHelper.get(Tags.class);
+		try {
+			tagsDocument = helper.marshalToDom(tags);
+		} catch (JAXBException e) {
+			throw new IllegalStateException("Error parsing tags data", e);
+		}
+
+		String xml = XmlHelper.safeToXml(tagsDocument.getDocumentElement());
+
+		Node newTags = tagsDocument.getDocumentElement();// XmlHelper.findUniqueChild(tagsDocument.getDocumentElement(),
+															// "tags");
+		Node imported = root.getOwnerDocument().adoptNode(newTags);
+
+		Node existing = XmlHelper.findUniqueChild(root, "tags");
+		if (existing == null) {
+			root.appendChild(imported);
+		} else {
+			root.replaceChild(imported, existing);
+		}
+
+		xml = XmlHelper.safeToXml(root);
+
+		// To avoid any possible state problems, we set to null rather than copying
+		this.tags = null;
+	}
+
 	// public String getId() {
 	// Node idElement = findIdElement();
 	// if (idElement == null)
