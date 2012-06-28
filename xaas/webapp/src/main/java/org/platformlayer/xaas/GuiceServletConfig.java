@@ -3,7 +3,6 @@ package org.platformlayer.xaas;
 import java.util.List;
 
 import org.platformlayer.guice.JdbcGuiceModule;
-import org.platformlayer.ops.GuiceOpsConfig;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Guice;
@@ -21,7 +20,7 @@ public class GuiceServletConfig extends GuiceServletContextListener {
 	}
 
 	protected void addModules(List<Module> modules) {
-		modules.add(new GuiceOpsConfig());
+		// modules.add(new GuiceOpsConfig());
 		modules.add(new GuiceXaasConfig());
 		modules.add(new JdbcGuiceModule());
 		addServletModule(modules);

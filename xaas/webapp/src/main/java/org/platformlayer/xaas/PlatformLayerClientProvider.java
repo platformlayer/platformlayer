@@ -15,7 +15,7 @@ public class PlatformLayerClientProvider implements Provider<PlatformLayerClient
 	@Override
 	public PlatformLayerClient get() {
 		try {
-			return opsContext.getUserInfo().getPlatformLayerClient();
+			return opsContext.getPlatformLayerClient();
 		} catch (OpsException e) {
 			throw new IllegalStateException("Error building conductor client", e);
 		}

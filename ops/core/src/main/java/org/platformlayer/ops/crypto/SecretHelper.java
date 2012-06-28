@@ -12,7 +12,6 @@ import org.platformlayer.auth.UserRepository;
 import org.platformlayer.auth.crypto.SecretStore;
 import org.platformlayer.crypto.AesUtils;
 import org.platformlayer.ops.OpsContext;
-import org.platformlayer.ops.UserInfo;
 
 public class SecretHelper {
 	@Inject
@@ -39,33 +38,33 @@ public class SecretHelper {
 				}
 			}
 
-			UserInfo user = OpsContext.get().getUserInfo();
-			OpsProject project = user.getProject();
-			if (project.isLocked()) {
-				throw new IllegalStateException();
-				// {
-				// UserInfo user = OpsContext.get().getUserInfo();
-				// ProjectId projectId = user.getProjectId();
-				// OpsProject project = userRepository.findProjectByKey(projectId.getKey());
-				// if (project == null) {
-				// throw new IllegalStateException("Project not found");
-				// }
-				//
-				// OpsUser opsUser = userRepository.findUser(user.getUserKey());
-				// if (project == null) {
-				// throw new IllegalStateException("User not found");
-				// }
-				//
-				// SecretStore secretStore = new SecretStore(project.secretData);
-				// projectKey = secretStore.getSecretFromUser(opsUser);
-				//
-				// project.unlockWithUser(opsUser);
-				//
-				// SecretKey projectSecret = project.getProjectSecret();
-				// }
-			}
+			for (OpsProject project : OpsContext.get().getEncryptingProjects()) {
+				if (project.isLocked()) {
+					throw new IllegalStateException();
+					// {
+					// UserInfo user = OpsContext.get().getUserInfo();
+					// ProjectId projectId = user.getProjectId();
+					// OpsProject project = userRepository.findProjectByKey(projectId.getKey());
+					// if (project == null) {
+					// throw new IllegalStateException("Project not found");
+					// }
+					//
+					// OpsUser opsUser = userRepository.findUser(user.getUserKey());
+					// if (project == null) {
+					// throw new IllegalStateException("User not found");
+					// }
+					//
+					// SecretStore secretStore = new SecretStore(project.secretData);
+					// projectKey = secretStore.getSecretFromUser(opsUser);
+					//
+					// project.unlockWithUser(opsUser);
+					//
+					// SecretKey projectSecret = project.getProjectSecret();
+					// }
+				}
 
-			writer.writeLockedByProjectKey(plaintext, project.id, project.getProjectSecret());
+				writer.writeLockedByProjectKey(plaintext, project.id, project.getProjectSecret());
+			}
 
 			// for (int userId : keyStore.getProjectIds()) {
 			// SecretKey secretKey = keyStore.findUserSecret(userId);
@@ -122,9 +121,7 @@ public class SecretHelper {
 
 		SecretKey secretKey = null;
 
-		UserInfo userInfo = OpsContext.get().getUserInfo();
-		if (userInfo != null) {
-			OpsProject project = userInfo.getProject();
+		for (OpsProject project : OpsContext.get().getEncryptingProjects()) {
 			secretKey = secretStore.getSecretFromProject(project.id, project.getProjectSecret());
 		}
 

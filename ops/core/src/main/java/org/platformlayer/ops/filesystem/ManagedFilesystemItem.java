@@ -6,8 +6,9 @@ import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
+import org.platformlayer.ops.tree.OpsTreeBase;
 
-public abstract class ManagedFilesystemItem {
+public abstract class ManagedFilesystemItem extends OpsTreeBase {
 	// static final Logger log = Logger.getLogger(ManagedFilesystemOpsItem.class);
 	//
 	public File filePath;
@@ -138,6 +139,10 @@ public abstract class ManagedFilesystemItem {
 		return this;
 	}
 
+	@Override
+	protected void addChildren() throws OpsException {
+	}
+
 	// public String getGroup() {
 	// return group;
 	// }
@@ -159,4 +164,5 @@ public abstract class ManagedFilesystemItem {
 	// throw new OpsException("Could not get MD5 of " + vfsPath, e);
 	// }
 	// }
+
 }

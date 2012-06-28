@@ -1,28 +1,30 @@
-package org.platformlayer.service.platformlayer.ops;
+package org.platformlayer.ops.postgres;
 
 import javax.inject.Inject;
 
+import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Secret;
 import org.platformlayer.ops.BindingScope;
 import org.platformlayer.ops.CustomRecursor;
 import org.platformlayer.ops.Handler;
-import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OperationRecursor;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.databases.Database;
+import org.platformlayer.ops.databases.DatabaseTarget;
 import org.platformlayer.ops.helpers.InstanceHelpers;
+import org.platformlayer.ops.helpers.ProviderHelper;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
-import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.tree.OpsTreeBase;
-import org.platformlayer.service.postgresql.model.PostgresqlServer;
 
-public class PostgresqlConnection extends OpsTreeBase implements CustomRecursor {
+public class DatabaseConnection extends OpsTreeBase implements CustomRecursor {
 	public static final int POSTGRES_PORT = 5432;
 
 	public PlatformLayerKey key;
 	public String username;
 	public Secret password;
+	public String databaseName;
 
 	@Inject
 	PlatformLayerHelpers platformLayer;
@@ -30,10 +32,13 @@ public class PostgresqlConnection extends OpsTreeBase implements CustomRecursor 
 	@Inject
 	InstanceHelpers instanceHelpers;
 
-	public static PostgresqlConnection build(PlatformLayerKey key) {
-		PostgresqlConnection mysql = injected(PostgresqlConnection.class);
-		mysql.key = key;
-		return mysql;
+	@Inject
+	ProviderHelper providers;
+
+	public static DatabaseConnection build(PlatformLayerKey key) {
+		DatabaseConnection db = injected(DatabaseConnection.class);
+		db.key = key;
+		return db;
 	}
 
 	@Handler
@@ -42,23 +47,21 @@ public class PostgresqlConnection extends OpsTreeBase implements CustomRecursor 
 
 	@Override
 	public void doRecurseOperation() throws OpsException {
-		PostgresqlServer pgServer = platformLayer.getItem(key, PostgresqlServer.class);
+		ItemBase server = platformLayer.getItem(key);
+
+		Database database = providers.toInterface(server);
 
 		String username = this.username;
 		if (username == null) {
-			username = "postgres";
+			username = database.getRootUsername(server);
 		}
 
 		if (username.equals("postgres") && password == null) {
-			password = pgServer.rootPassword;
+			password = database.getRootPassword(server);
 		}
 
-		Machine machine = instanceHelpers.getMachine(pgServer);
-
-		String address = machine.getBestAddress(NetworkPoint.forTargetInContext(), POSTGRES_PORT);
-		PostgresTarget mysql = new PostgresTarget(address, username, password);
-
-		BindingScope scope = BindingScope.push(mysql);
+		DatabaseTarget dbTarget = database.buildDatabaseTarget(server, username, password, databaseName);
+		BindingScope scope = BindingScope.push(dbTarget);
 		try {
 			OpsContext opsContext = OpsContext.get();
 			OperationRecursor.doRecurseChildren(opsContext, this);

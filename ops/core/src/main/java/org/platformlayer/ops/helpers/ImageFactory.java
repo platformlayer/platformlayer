@@ -13,7 +13,6 @@ import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.CloudContext;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.images.CloudImage;
 import org.platformlayer.ops.images.ImageFormat;
 import org.platformlayer.ops.images.ImageStore;
@@ -100,7 +99,7 @@ public class ImageFactory {
 	public CloudImage getOrCreateImageId(MachineCloudBase targetCloud, List<ImageFormat> formats,
 			DiskImageRecipe recipeTemplate) throws OpsException {
 		DiskImageRecipe recipeItem = getOrCreateRecipe(recipeTemplate);
-		PlatformLayerKey recipeKey = OpsSystem.toKey(recipeItem);
+		PlatformLayerKey recipeKey = recipeItem.getKey();
 
 		return getOrCreateImageId(targetCloud, formats, recipeKey);
 	}
@@ -131,7 +130,7 @@ public class ImageFactory {
 		String id = "image-" + recipeKey.getItemId().getKey();
 		imageTemplate.setKey(PlatformLayerKey.fromId(id));
 
-		PlatformLayerKey cloudKey = OpsSystem.toKey(targetCloud);
+		PlatformLayerKey cloudKey = targetCloud.getKey();
 		imageTemplate.setCloud(cloudKey);
 
 		DiskImage image = getOrCreateImage(imageTemplate);

@@ -6,15 +6,16 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.platformlayer.core.model.Generate;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
+import org.platformlayer.core.model.Secret;
 import org.platformlayer.core.model.ServiceInfo;
 import org.platformlayer.ids.ItemType;
-import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.inject.ObjectInjector;
 import org.platformlayer.metrics.model.MetricValues;
-import org.platformlayer.ops.auth.OpsAuthentication;
+import org.platformlayer.ops.crypto.Passwords;
 import org.platformlayer.ops.helpers.ServiceContext;
 import org.platformlayer.ops.helpers.SshKey;
 import org.platformlayer.xaas.Controller;
@@ -26,6 +27,7 @@ import org.platformlayer.xaas.services.ModelClass;
 import org.platformlayer.xaas.services.Models;
 import org.platformlayer.xaas.services.ServiceProvider;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 public abstract class ServiceProviderBase implements ServiceProvider {
@@ -123,6 +125,8 @@ public abstract class ServiceProviderBase implements ServiceProvider {
 	public void beforeCreateItem(ItemBase item) throws OpsException {
 		resolveKeys(item);
 
+		autoPopulate(item);
+
 		CreationValidator validator = Injection.getInstance(CreationValidator.class);
 		validator.validateCreateItem(item);
 	}
@@ -153,12 +157,7 @@ public abstract class ServiceProviderBase implements ServiceProvider {
 
 	@Override
 	public void validateAuthorization(ServiceAuthorization serviceAuthorization) throws OpsException {
-		OpsConfig opsConfig = OpsConfig.build(serviceAuthorization);
-
-		OpsAuthentication opsAuth = null;
-		UserInfo userInfo = new UserInfo(opsAuth, opsConfig);
-
-		CloudContext cloudContext = cloudContextRegistry.getCloudContext(userInfo);
+		CloudContext cloudContext = cloudContextRegistry.getCloudContext();
 		cloudContext.validate();
 	}
 
@@ -272,14 +271,54 @@ public abstract class ServiceProviderBase implements ServiceProvider {
 					}
 
 					if (key.getProject() == null) {
-						ProjectId projectId = OpsContext.get().getUserInfo().getProjectId();
-						key = key.withProject(projectId);
+						key = key.withProject(OpsContext.get().getPlatformLayerClient().getProject());
 					}
 
 					try {
 						field.set(item, key);
 					} catch (IllegalAccessException e) {
 						throw new IllegalStateException("Error setting field: " + field, e);
+					}
+				}
+			}
+		}
+	}
+
+	public void autoPopulate(Object item) throws OpsException {
+		Class<? extends Object> itemClass = item.getClass();
+		for (Field field : itemClass.getFields()) {
+			Generate defaultAnnotation = field.getAnnotation(Generate.class);
+
+			if (defaultAnnotation != null) {
+				Class<?> fieldType = field.getType();
+
+				Object value;
+				try {
+					value = field.get(item);
+				} catch (IllegalAccessException e) {
+					throw new IllegalStateException("Error getting field: " + field, e);
+				}
+
+				if (value == null) {
+					String defaultValue = defaultAnnotation.value();
+					if (!Strings.isNullOrEmpty(defaultValue)) {
+						value = defaultValue;
+					} else {
+						if (fieldType == Secret.class) {
+							Passwords passwords = new Passwords();
+
+							Secret secret = passwords.generateRandomPassword(12);
+							value = secret;
+
+						}
+					}
+
+					if (value != null) {
+						try {
+							field.set(item, value);
+						} catch (IllegalAccessException e) {
+							throw new IllegalStateException("Error setting field: " + field, e);
+						}
 					}
 				}
 			}

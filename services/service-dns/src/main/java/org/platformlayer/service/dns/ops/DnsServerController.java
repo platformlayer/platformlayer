@@ -6,7 +6,6 @@ import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.firewall.Protocol;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
@@ -32,7 +31,7 @@ public class DnsServerController extends OpsTreeBase {
 		PlatformLayerKey key = model.getKey();
 		String groupId = key.withId(new ManagedItemId("primary")).getUrl();
 		groupId = groupId.replace("/dnsServer/", "/dnsCluster/");
-		vm.hostPolicy.groupId = groupId;
+		vm.hostPolicy.configureSpread(groupId);
 
 		vm.addTagToManaged = true;
 		vm.publicPorts.add(53);
@@ -52,8 +51,8 @@ public class DnsServerController extends OpsTreeBase {
 			endpoint.dnsName = model.dnsName;
 			endpoint.protocol = Protocol.Udp;
 
-			endpoint.tagItem = OpsSystem.toKey(model);
-			endpoint.parentItem = OpsSystem.toKey(model);
+			endpoint.tagItem = model.getKey();
+			endpoint.parentItem = model.getKey();
 
 			vm.addChild(endpoint);
 		}

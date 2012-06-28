@@ -44,7 +44,7 @@ public class WordpressServiceController extends OpsTreeBase {
 			net.destItem = model.databaseItem;
 			net.port = 3306;
 
-			PlatformLayerKey sourceKey = OpsSystem.toKey(model);
+			PlatformLayerKey sourceKey = model.getKey();
 			net.sourceItemKey = sourceKey;
 
 			instance.addChild(net);
@@ -89,8 +89,8 @@ public class WordpressServiceController extends OpsTreeBase {
 			// We expect nginx to front-end us, so we don't put the dnsName
 			// endpoint.dnsName = model.dnsName;
 
-			endpoint.tagItem = OpsSystem.toKey(model);
-			endpoint.parentItem = OpsSystem.toKey(model);
+			endpoint.tagItem = model.getKey();
+			endpoint.parentItem = model.getKey();
 
 			instance.addChild(endpoint);
 		}

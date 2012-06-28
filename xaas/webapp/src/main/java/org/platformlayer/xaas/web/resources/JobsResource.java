@@ -45,7 +45,7 @@ public class JobsResource extends XaasResourceBase {
 	@GET
 	@Produces({ XML, JSON })
 	public JobDataList getJobDataList() {
-		List<JobRecord> jobList = jobRegistry.getActiveJobs();
+		List<JobRecord> jobList = jobRegistry.getActiveJobs(getProject());
 		JobDataList jobs = new JobDataList();
 		jobs.jobs = Lists.newArrayList();
 		for (JobRecord record : jobList) {

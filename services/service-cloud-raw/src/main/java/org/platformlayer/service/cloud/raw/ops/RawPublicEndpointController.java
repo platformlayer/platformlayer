@@ -58,7 +58,7 @@ public class RawPublicEndpointController extends OpsTreeBase {
 					return tagChanges;
 				}
 			};
-			tagger.platformLayerKey = OpsSystem.toKey(model);
+			tagger.platformLayerKey = model.getKey();
 			tagger.tagChangesProvider = tagChanges;
 
 			addChild(tagger);

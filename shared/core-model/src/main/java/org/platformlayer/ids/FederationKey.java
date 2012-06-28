@@ -6,7 +6,7 @@ import com.google.common.base.Strings;
 
 public class FederationKey extends StringWrapper {
 
-	public static final FederationKey LOCAL_FEDERATION_KEY = new FederationKey("");
+	public static final FederationKey LOCAL = new FederationKey("");
 
 	private FederationKey(String key) {
 		super(key);
@@ -19,7 +19,7 @@ public class FederationKey extends StringWrapper {
 
 	public static FederationKey build(String server) {
 		if (Strings.isNullOrEmpty(server)) {
-			return LOCAL_FEDERATION_KEY;
+			return LOCAL;
 		}
 		return new FederationKey(server);
 	}

@@ -260,6 +260,8 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 			secret.unlock(itemSecret);
 
 			byte[] plaintext = AesUtils.decrypt(itemSecret, data);
+			String xml = new String(plaintext);
+
 			T model = (T) jaxb.unmarshal(plaintext);
 
 			model.state = ManagedItemState.fromCode(stateCode);

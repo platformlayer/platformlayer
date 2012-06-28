@@ -7,7 +7,7 @@ import org.platformlayer.auth.OpsUser;
 import org.platformlayer.auth.UserRepository;
 
 public class CreateProject extends KeystoneCommandRunnerBase {
-	@Argument(index = 0)
+	@Argument(index = 0, required = true)
 	public String projectKey;
 
 	public CreateProject() {

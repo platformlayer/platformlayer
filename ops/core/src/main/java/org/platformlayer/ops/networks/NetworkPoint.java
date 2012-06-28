@@ -2,44 +2,83 @@ package org.platformlayer.ops.networks;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.List;
+import java.util.UUID;
 
+import org.apache.log4j.Logger;
+import org.platformlayer.InetAddressChooser;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
+import org.platformlayer.ops.machines.InetAddressUtils;
 import org.platformlayer.ops.packages.AsBlock;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.Lists;
 
 public class NetworkPoint {
+	private static final Logger log = Logger.getLogger(NetworkPoint.class);
+
 	final String privateNetworkId;
 	final InetAddress address;
 
-	// For now, we assume there's one private network
-	public static final String PRIVATE_NETWORK_ID = "private";
+	// // For now, we assume there's one private network
+	// public static final String PRIVATE_NETWORK_ID = "private";
 
-	public NetworkPoint(String privateNetworkId, InetAddress address) {
+	private NetworkPoint(String privateNetworkId, InetAddress address) {
 		this.privateNetworkId = privateNetworkId;
 		this.address = address;
 	}
 
-	public static String getMyNetworkKey() {
-		// We assume we're on the private network
-		return PRIVATE_NETWORK_ID;
-	}
+	// public static String getMyNetworkKey() {
+	// // We assume we're on the private network
+	// return PRIVATE_NETWORK_ID;
+	// }
 
-	public static NetworkPoint forSameNetwork(InetAddress address) {
-		return new NetworkPoint(getMyNetworkKey(), address);
-	}
+	// public static NetworkPoint forSameNetwork(InetAddress address) {
+	// return new NetworkPoint(getMyNetworkKey(), address);
+	// }
 
-	public static NetworkPoint forMe() {
-		// TODO: This is probably not the address we really want...
-		InetAddress myAddress;
-		try {
-			myAddress = InetAddress.getLocalHost();
-		} catch (UnknownHostException e) {
-			throw new IllegalStateException("Cannot get my IP", e);
+	public static NetworkPoint forSshAddress(InetAddress addr) {
+		if (InetAddressUtils.isIpv6(addr)) {
+			return new NetworkPoint(null, addr);
 		}
-		return forSameNetwork(myAddress);
+
+		// This isn't technically required, but IPV6 means that we have a flat address space
+		throw new IllegalStateException();
+	}
+
+	static InetAddress myAddress;
+
+	public static NetworkPoint forMe() throws OpsException {
+		if (myAddress == null) {
+			List<InetAddress> localAddresses = InetAddressUtils.getLocalAddresses();
+
+			List<InetAddress> valid = Lists.newArrayList();
+			for (InetAddress localAddress : localAddresses) {
+				if (InetAddressUtils.isIpv4(localAddress)) {
+					continue;
+				}
+
+				if (localAddress.isLinkLocalAddress()) {
+					continue;
+				}
+				if (localAddress.isLoopbackAddress()) {
+					continue;
+				}
+
+				valid.add(localAddress);
+			}
+
+			InetAddress address = InetAddressChooser.preferIpv6().choose(valid);
+
+			if (!InetAddressUtils.isIpv6(address)) {
+				throw new OpsException("We must have an IPV6 address");
+			}
+			myAddress = address;
+		}
+
+		return new NetworkPoint(null, myAddress);
 	}
 
 	public static NetworkPoint forTarget(OpsTarget target) {
@@ -50,6 +89,16 @@ public class NetworkPoint {
 		return new NetworkPoint(null, null);
 	}
 
+	public static NetworkPoint forPublicHostname(InetAddress address) {
+		String privateNetwork = null;
+		if (!InetAddressUtils.isPublic(address)) {
+			log.warn("Assigning fake private-network id for non-public IP");
+			// Assign a unique private network
+			privateNetwork = UUID.randomUUID().toString();
+		}
+		return new NetworkPoint(privateNetwork, address);
+	}
+
 	public static NetworkPoint forPublicHostname(String hostname) throws OpsException {
 		InetAddress address;
 		try {
@@ -57,7 +106,8 @@ public class NetworkPoint {
 		} catch (UnknownHostException e) {
 			throw new OpsException("Error resolving hostname", e);
 		}
-		return new NetworkPoint(null, address);
+
+		return forPublicHostname(address);
 	}
 
 	public static NetworkPoint forTargetInContext() {
@@ -66,29 +116,36 @@ public class NetworkPoint {
 		return forTarget(target);
 	}
 
-	public String getPrivateNetworkId() {
+	private String getPrivateNetworkId() {
 		return privateNetworkId;
 	}
 
-	public InetAddress getAddress() {
+	private InetAddress getAddress() {
 		return address;
 	}
 
-	public boolean isPublicInternet() {
-		return privateNetworkId == null;
+	public boolean isPublicAddress() {
+		return this.privateNetworkId == null;
 	}
 
-	public boolean isPrivateNetwork() {
-		return this.privateNetworkId != null;
-	}
-
-	public static NetworkPoint forNetwork(String network) {
-		return new NetworkPoint(network, null);
-	}
+	// private static NetworkPoint forNetwork(String network) {
+	// return new NetworkPoint(network, null);
+	// }
 
 	@Override
 	public String toString() {
 		return "NetworkPoint [privateNetworkId=" + privateNetworkId + ", address=" + address.getHostAddress() + "]";
+	}
+
+	public List<InetAddress> findReachableAddresses(NetworkPoint src) {
+		List<InetAddress> reachables = Lists.newArrayList();
+
+		if (Objects.equal(src.getPrivateNetworkId(), getPrivateNetworkId())) {
+			reachables.add(getAddress());
+		} else if (isPublicAddress()) {
+			reachables.add(getAddress());
+		}
+		return reachables;
 	}
 
 	public static int estimateDistance(NetworkPoint a, NetworkPoint b) {
@@ -96,7 +153,7 @@ public class NetworkPoint {
 			return 0;
 		}
 
-		if (!Objects.equal(a.getPrivateNetworkId(), b.getPrivateNetworkId())) {
+		if (a.isPublicAddress() != b.isPublicAddress()) {
 			// We need to download from A and then upload to B, so d(A, Me) + d(Me, B)
 			// TODO: This is a poor metric. Our metric isn't really rich enough here
 			return 8;
@@ -105,12 +162,14 @@ public class NetworkPoint {
 		AsBlock asA = AsBlock.find(a.getAddress());
 		AsBlock asB = AsBlock.find(b.getAddress());
 
-		if (asA.equals(asB)) {
-			return 1;
-		}
+		if (asA != null && asB != null) {
+			if (asA.equals(asB)) {
+				return 1;
+			}
 
-		if (Objects.equal(asA.getCountry(), asB.getCountry())) {
-			return 2;
+			if (Objects.equal(asA.getCountry(), asB.getCountry())) {
+				return 2;
+			}
 		}
 
 		return 4;

@@ -70,4 +70,11 @@ public class ProviderHelper {
 
 		return providers;
 	}
+
+	public <T> T toInterface(ItemBase item) throws OpsException {
+		ModelClass<? extends ItemBase> modelClass = serviceProviderDictionary.getModelClass(item.getClass());
+
+		Object controller = modelClass.getProvider().getController(item.getClass());
+		return (T) controller;
+	}
 }

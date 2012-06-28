@@ -22,7 +22,6 @@ import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.bootstrap.InstanceBootstrap;
 import org.platformlayer.ops.dns.DnsResolver;
@@ -87,7 +86,7 @@ public class InstanceBuilder extends OpsTreeBase implements CustomRecursor {
 	public void doOperation() throws OpsException, IOException {
 		ItemBase item = ops.getInstance(ItemBase.class);
 
-		Tag parentTag = ops.getOpsSystem().createParentTag(item);
+		Tag parentTag = Tag.buildParentTag(item.getKey());
 
 		PersistentInstance persistentInstanceTemplate = buildPersistentInstanceTemplate();
 
@@ -120,7 +119,7 @@ public class InstanceBuilder extends OpsTreeBase implements CustomRecursor {
 			// Add tag with instance id to persistent instance (very helpful for
 			// DNS service!)
 			PlatformLayerKey machineKey = machine.getKey();
-			platformLayer.addTag(OpsSystem.toKey(item), new Tag(Tag.INSTANCE_KEY, machineKey.getUrl()));
+			platformLayer.addTag(item.getKey(), Tag.INSTANCE_KEY.build(machineKey));
 		}
 
 		SshKey sshKey = service.getSshKey();
@@ -163,7 +162,7 @@ public class InstanceBuilder extends OpsTreeBase implements CustomRecursor {
 		persistentInstanceTemplate.setMinimumRam(minimumMemoryMb);
 		persistentInstanceTemplate.setCloud(cloud);
 		persistentInstanceTemplate.setHostPolicy(hostPolicy);
-		persistentInstanceTemplate.setRecipe(OpsSystem.toKey(recipe));
+		persistentInstanceTemplate.setRecipe(recipe.getKey());
 
 		String id = dnsName;
 		if (Strings.isNullOrEmpty(id)) {

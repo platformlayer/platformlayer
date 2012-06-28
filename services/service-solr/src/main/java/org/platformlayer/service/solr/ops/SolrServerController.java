@@ -55,8 +55,8 @@ public class SolrServerController extends OpsTreeBase {
 			endpoint.backendPort = port;
 			endpoint.dnsName = model.dnsName;
 
-			endpoint.tagItem = OpsSystem.toKey(model);
-			endpoint.parentItem = OpsSystem.toKey(model);
+			endpoint.tagItem = model.getKey();
+			endpoint.parentItem = model.getKey();
 
 			vm.addChild(endpoint);
 		}

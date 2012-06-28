@@ -14,7 +14,6 @@ import org.platformlayer.ops.CloudContext;
 import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.MachineCreationRequest;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.images.ImageStore;
 import org.platformlayer.xaas.services.ModelClass;
 
@@ -113,7 +112,7 @@ public class PlatformLayerCloudContext implements CloudContext {
 	}
 
 	public void terminate(ItemBase machine) throws OpsException {
-		platformLayerClient.deleteItem(OpsSystem.toKey(machine));
+		platformLayerClient.deleteItem(machine.getKey());
 	}
 
 	@Override

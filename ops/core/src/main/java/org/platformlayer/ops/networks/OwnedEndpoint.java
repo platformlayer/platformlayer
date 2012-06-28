@@ -8,7 +8,6 @@ import org.platformlayer.core.model.PublicEndpointBase;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.UniqueTag;
 import org.platformlayer.ops.firewall.Transport;
 import org.platformlayer.ops.machines.PlatformLayerCloudHelpers;
@@ -28,7 +27,7 @@ public class OwnedEndpoint extends OwnedItem<PublicEndpointBase> {
 	protected PublicEndpointBase buildItemTemplate() throws OpsException {
 		InstanceBase instance = OpsContext.get().getInstance(InstanceBase.class);
 
-		PlatformLayerKey instanceKey = OpsSystem.toKey(instance);
+		PlatformLayerKey instanceKey = instance.getKey();
 
 		PublicEndpointBase publicEndpoint = platformLayerCloudHelpers.createPublicEndpoint(instance, parentItem);
 		// publicEndpoint.network = network;

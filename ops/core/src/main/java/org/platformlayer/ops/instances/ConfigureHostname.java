@@ -12,6 +12,8 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.process.ProcessExecution;
 
+import com.google.common.base.Splitter;
+
 public class ConfigureHostname {
 	public String hostname;
 
@@ -30,9 +32,22 @@ public class ConfigureHostname {
 
 		// Fix hostname
 		File hostsFile = new File("/etc/hosts");
+
+		String hostLine = "127.0.0.1\t" + hostname;
+
 		String hosts = target.readTextFile(hostsFile);
-		hosts += "\n127.0.0.1\t" + hostname + "\n";
-		FileUpload.upload(target, hostsFile, hosts);
+
+		boolean found = false;
+		for (String line : Splitter.on("\n").trimResults().split(hosts)) {
+			if (line.equals(hostLine)) {
+				found = true;
+			}
+		}
+
+		if (!found) {
+			hosts += "\n" + hostLine + "\n";
+			FileUpload.upload(target, hostsFile, hosts);
+		}
 
 		FileUpload.upload(target, new File("/etc/hostname"), hostname);
 

@@ -6,7 +6,6 @@ import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
 import org.platformlayer.PlatformLayerClient;
-import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.core.model.Tags;
@@ -18,7 +17,6 @@ import org.platformlayer.ops.MachineCreationRequest;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsProvider;
-import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.machines.PlatformLayerCloudHelpers;
 import org.platformlayer.ops.tagger.Tagger;
 import org.platformlayer.ops.tree.OpsTreeBase;
@@ -42,7 +40,7 @@ public class PersistentInstanceMapper extends OpsTreeBase {
 	public void handler(PersistentInstance model) throws OpsException {
 		Machine machine = null;
 
-		Tag tagForInstance = OpsSystem.get().createParentTag(model);
+		Tag tagForInstance = Tag.buildParentTag(model.getKey());
 		// boolean instanceIsTagged = false;
 
 		// See if we have an instance id tag
@@ -76,14 +74,14 @@ public class PersistentInstanceMapper extends OpsTreeBase {
 			MachineCreationRequest request = buildMachineCreationRequest(model);
 			request.tags.add(tagForInstance);
 
-			machine = cloudHelpers.putInstanceByTag(request, OpsSystem.toKey(model), tagForInstance);
+			machine = cloudHelpers.putInstanceByTag(request, model.getKey(), tagForInstance);
 
 			// if (machine == null) {
 			// // No machine
 			// MachineCreationRequest request = buildMachineCreationRequest(model);
 			// request.tags.add(tagForInstance);
 			//
-			// machine = cloudHelpers.createInstance(request, OpsSystem.toKey(model), tagForInstance);
+			// machine = cloudHelpers.createInstance(request, model.getKey(), tagForInstance);
 			// }
 		} else {
 			if (machine != null) {
@@ -131,7 +129,7 @@ public class PersistentInstanceMapper extends OpsTreeBase {
 			// Add tag with instance id to persistent instance (very helpful for DNS service!)
 
 			Tagger tagger = injected(Tagger.class);
-			tagger.platformLayerKey = OpsSystem.toKey(model);
+			tagger.platformLayerKey = model.getKey();
 			tagger.tagChangesProvider = new OpsProvider<TagChanges>() {
 
 				@Override
@@ -146,10 +144,9 @@ public class PersistentInstanceMapper extends OpsTreeBase {
 						throw new OpsException("No machine in scope");
 					}
 
-					PlatformLayerKey serverId = machine.getKey();
 					TagChanges changeTags = new TagChanges();
-					changeTags.addTags.add(new Tag(Tag.INSTANCE_KEY, serverId.getUrl()));
-					platformLayer.changeTags(OpsSystem.toKey(model), changeTags);
+					changeTags.addTags.add(Tag.INSTANCE_KEY.build(machine.getKey()));
+					platformLayer.changeTags(model.getKey(), changeTags);
 					return changeTags;
 				}
 			};

@@ -142,8 +142,8 @@ public class GitServerController extends OpsTreeBase implements TemplateDataSour
 			endpoint.backendPort = PORT;
 			endpoint.dnsName = model.dnsName;
 
-			endpoint.tagItem = OpsSystem.toKey(model);
-			endpoint.parentItem = OpsSystem.toKey(model);
+			endpoint.tagItem = model.getKey();
+			endpoint.parentItem = model.getKey();
 
 			vm.addChild(endpoint);
 		}

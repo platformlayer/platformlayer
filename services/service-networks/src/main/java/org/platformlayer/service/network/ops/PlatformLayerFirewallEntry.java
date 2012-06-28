@@ -7,7 +7,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.platformlayer.InetAddressChooser;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.Handler;
@@ -28,6 +27,7 @@ import org.platformlayer.ops.tree.LateBound;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Iterables;
 
 public class PlatformLayerFirewallEntry extends OpsTreeBase {
 	static final Logger log = Logger.getLogger(PlatformLayerFirewallEntry.class);
@@ -106,24 +106,34 @@ public class PlatformLayerFirewallEntry extends OpsTreeBase {
 						PortAddressFilter destFilter = PortAddressFilter.withPortRange(port, port);
 						FirewallRecord destRule = FirewallRecord.pass().protocol(protocol).in().dest(destFilter);
 
+						List<InetAddress> addresses = sourceMachine.findAddresses(targetNetworkPoint, port);
+
 						if (transport == Transport.Ipv4) {
-							InetAddress address = sourceMachine.getBestAddress(targetNetworkPoint, port,
-									InetAddressChooser.preferIpv4());
-							if (InetAddressUtils.isIpv6(address)) {
-								return null;
-							}
+							Iterables.removeIf(addresses, InetAddressUtils.IS_IPV6);
 
-							PortAddressFilter srcFilter = PortAddressFilter.withCidr(address.getHostAddress() + "/32");
-							destRule = destRule.source(srcFilter).setTransport(transport);
+							if (addresses.size() == 1) {
+								PortAddressFilter srcFilter = PortAddressFilter.withCidr(addresses.get(0)
+										.getHostAddress() + "/32");
+								destRule = destRule.source(srcFilter).setTransport(transport);
+							} else {
+								if (addresses.isEmpty()) {
+									return null;
+								}
+								throw new IllegalStateException("Not implemented");
+							}
 						} else {
-							InetAddress address = sourceMachine.getBestAddress(targetNetworkPoint, port,
-									InetAddressChooser.preferIpv6());
-							if (InetAddressUtils.isIpv4(address)) {
-								return null;
-							}
+							Iterables.removeIf(addresses, InetAddressUtils.IS_IPV4);
 
-							PortAddressFilter srcFilter = PortAddressFilter.withCidr(address.getHostAddress() + "/128");
-							destRule = destRule.source(srcFilter).setTransport(transport);
+							if (addresses.size() == 1) {
+								PortAddressFilter srcFilter = PortAddressFilter.withCidr(addresses.get(0)
+										.getHostAddress() + "/128");
+								destRule = destRule.source(srcFilter).setTransport(transport);
+							} else {
+								if (addresses.isEmpty()) {
+									return null;
+								}
+								throw new IllegalStateException("Not implemented");
+							}
 						}
 
 						FirewallEntry entry = FirewallEntry.build(destRule);

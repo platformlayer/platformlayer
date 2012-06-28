@@ -4,18 +4,20 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.platformlayer.core.model.ItemBase;
+import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Secret;
-import org.platformlayer.ops.Machine;
-import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.databases.Database;
+import org.platformlayer.ops.databases.DatabaseHelper;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
-import org.platformlayer.ops.networks.NetworkPoint;
-import org.platformlayer.ops.templates.TemplateDataSource;
-import org.platformlayer.service.platformlayer.model.PlatformLayerService;
-import org.platformlayer.service.postgresql.model.PostgresqlServer;
+import org.platformlayer.ops.standardservice.StandardTemplateData;
+import org.platformlayer.service.platformlayer.model.PlatformLayerAuthDatabase;
 
-public class CommonTemplateData implements TemplateDataSource {
+import com.google.common.collect.Maps;
+
+public abstract class CommonTemplateData extends StandardTemplateData {
 
 	@Inject
 	PlatformLayerHelpers platformLayer;
@@ -23,37 +25,68 @@ public class CommonTemplateData implements TemplateDataSource {
 	@Inject
 	InstanceHelpers instanceHelpers;
 
+	@Inject
+	DatabaseHelper databases;
+
 	@Override
 	public void buildTemplateModel(Map<String, Object> model) throws OpsException {
-		model.put("jdbcUrl", getJdbcUrl());
-		model.put("jdbcUsername", getDatabaseUsername());
-		model.put("jdbcPassword", getDatabasePassword().plaintext());
+		// model.put("jdbcUrl", getJdbcUrl());
+		// model.put("jdbcUsername", getDatabaseUsername());
+		// model.put("jdbcPassword", getDatabasePassword().plaintext());
 	}
 
-	public String getDatabaseUsername() {
-		return "platformlayer_ops";
+	public String getAuthDatabaseUsername() throws OpsException {
+		return getAuthDatabase().username;
 	}
 
-	public Secret getDatabasePassword() {
-		return Secret.build("platformlayer-password");
+	public Secret getAuthDatabasePassword() throws OpsException {
+		return getAuthDatabase().password;
+		// return Secret.build("platformlayer-password");
 	}
 
-	PlatformLayerService getPlatformLayerService() {
-		return OpsContext.get().getInstance(PlatformLayerService.class);
+	public PlatformLayerKey getAuthDatabaseServerKey() throws OpsException {
+		PlatformLayerKey serverKey = getAuthDatabase().server;
+		return serverKey;
 	}
 
-	private String getJdbcUrl() throws OpsException {
-		PlatformLayerService model = getPlatformLayerService();
-		PostgresqlServer item = platformLayer.getItem(model.database, PostgresqlServer.class);
-
-		Machine itemMachine = instanceHelpers.getMachine(item);
-		String host = itemMachine.getBestAddress(NetworkPoint.forTargetInContext(), 5432);
-
-		return "jdbc:postgresql://" + host + ":5432/" + getDatabaseName();
+	public PlatformLayerAuthDatabase getAuthDatabase() throws OpsException {
+		PlatformLayerKey authDatabaseKey = getAuthDatabaseKey();
+		PlatformLayerAuthDatabase authDatabase = platformLayer
+				.getItem(authDatabaseKey, PlatformLayerAuthDatabase.class);
+		return authDatabase;
 	}
 
-	public String getDatabaseName() {
-		return "platformlayer";
+	public String getAuthDatabaseName() throws OpsException {
+		return getAuthDatabase().databaseName;
+	}
+
+	protected abstract PlatformLayerKey getAuthDatabaseKey();
+
+	protected String getAuthJdbcUrl() throws OpsException {
+		PlatformLayerKey serverKey = getAuthDatabase().server;
+
+		ItemBase serverItem = (ItemBase) platformLayer.getItem(serverKey);
+		Database server = databases.toDatabase(serverItem);
+
+		String jdbc = server.getJdbcUrl(serverItem, getAuthDatabaseName());
+		return jdbc;
+	}
+
+	@Override
+	protected Map<String, String> getConfigurationProperties() throws OpsException {
+		Map<String, String> properties = Maps.newHashMap();
+		properties.put("auth.jdbc.driverClassName", "org.postgresql.Driver");
+
+		properties.put("auth.jdbc.url", getAuthJdbcUrl());
+		properties.put("auth.jdbc.username", getAuthDatabaseUsername());
+		properties.put("auth.jdbc.password", getAuthDatabasePassword().plaintext());
+
+		return properties;
+	}
+
+	public String getPlacementKey() {
+		PlatformLayerKey databaseKey = getAuthDatabaseKey();
+		return "platformlayer-" + databaseKey.getItemId().getKey();
 	}
 
 }

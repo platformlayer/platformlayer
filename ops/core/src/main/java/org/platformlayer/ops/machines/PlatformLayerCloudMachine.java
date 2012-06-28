@@ -1,7 +1,6 @@
 package org.platformlayer.ops.machines;
 
 import java.net.InetAddress;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -13,10 +12,8 @@ import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.Tags;
 import org.platformlayer.ops.MachineBase;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.networks.NetworkPoint;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
 public class PlatformLayerCloudMachine extends MachineBase {
@@ -32,14 +29,14 @@ public class PlatformLayerCloudMachine extends MachineBase {
 
 	@Override
 	public void terminate() throws OpsException {
-		platformLayerClient.deleteItem(OpsSystem.toKey(machine));
+		platformLayerClient.deleteItem(machine.getKey());
 
 		// context.terminate(machine);
 	}
 
 	@Override
 	public PlatformLayerKey getKey() {
-		return OpsSystem.toKey(machine);
+		return machine.getKey();
 	}
 
 	public InstanceBase getInstance() {
@@ -56,11 +53,23 @@ public class PlatformLayerCloudMachine extends MachineBase {
 
 	@Override
 	public List<InetAddress> findAddresses(NetworkPoint src, int destinationPort) {
-		String privateNetworkId = src.getPrivateNetworkId();
-		if (Objects.equal(privateNetworkId, NetworkPoint.PRIVATE_NETWORK_ID)) {
+		List<InetAddress> matching = Lists.newArrayList();
+
+		// String privateNetworkId = src.getPrivateNetworkId();
+		{
 			Tags tags = machine.getTags();
 			List<InetAddress> addresses = Tag.NETWORK_ADDRESS.find(tags);
-			return addresses;
+
+			for (InetAddress address : addresses) {
+				if (InetAddressUtils.isPublic(address)) {
+					matching.add(address);
+				} else {
+					if (!src.isPublicAddress()) {
+						// They could both be on the same public network
+						throw new IllegalStateException("Not implemented");
+					}
+				}
+			}
 		}
 
 		// if (src.isPublicInternet())
@@ -68,15 +77,13 @@ public class PlatformLayerCloudMachine extends MachineBase {
 		{
 			List<EndpointInfo> endpoints = EndpointInfo.findEndpoints(machine.getTags(), destinationPort);
 			if (!endpoints.isEmpty()) {
-				List<InetAddress> addresses = Lists.newArrayList();
 				for (EndpointInfo endpoint : endpoints) {
-					addresses.add(endpoint.getAddress());
+					matching.add(endpoint.getAddress());
 				}
-				return addresses;
 			}
 		}
 
-		return Collections.emptyList();
+		return matching;
 
 		// OpsContext ops = OpsContext.get();
 		// ModelKey modelKey = ops.buildModelKey(item);

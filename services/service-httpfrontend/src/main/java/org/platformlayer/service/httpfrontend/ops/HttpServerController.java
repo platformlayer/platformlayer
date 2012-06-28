@@ -6,7 +6,6 @@ import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.networks.PublicEndpoint;
@@ -33,7 +32,7 @@ public class HttpServerController extends OpsTreeBase {
 		PlatformLayerKey key = model.getKey();
 		String groupId = key.withId(new ManagedItemId("primary")).getUrl();
 		groupId = groupId.replace("/httpServer/", "/httpCluster/");
-		vm.hostPolicy.groupId = groupId;
+		vm.hostPolicy.configureSpread(groupId);
 
 		// vm.minimumMemoryMb = 512;
 
@@ -48,8 +47,8 @@ public class HttpServerController extends OpsTreeBase {
 			endpoint.backendPort = HttpHelpers.PORT;
 			endpoint.dnsName = model.dnsName;
 
-			endpoint.tagItem = OpsSystem.toKey(model);
-			endpoint.parentItem = OpsSystem.toKey(model);
+			endpoint.tagItem = model.getKey();
+			endpoint.parentItem = model.getKey();
 
 			vm.addChild(endpoint);
 		}

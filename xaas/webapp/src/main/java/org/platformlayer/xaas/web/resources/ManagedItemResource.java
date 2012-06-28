@@ -114,7 +114,7 @@ public class ManagedItemResource extends XaasResourceBase {
 		boolean fetchTags = true;
 		ItemBase item = getManagedItem(fetchTags);
 
-		Tag parentTag = Tag.buildParentTag(OpsSystem.toKey(item));
+		Tag parentTag = Tag.buildParentTag(item.getKey());
 		Filter filter = TagFilter.byTag(parentTag);
 		List<ItemBase> roots = itemService.listAll(getAuthentication(), filter);
 		ManagedItemCollection<ItemBase> collection = new ManagedItemCollection<ItemBase>();

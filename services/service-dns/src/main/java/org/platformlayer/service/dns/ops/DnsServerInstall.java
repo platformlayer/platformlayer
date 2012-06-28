@@ -30,7 +30,7 @@ public class DnsServerInstall extends OpsTreeBase {
 
 		{
 			// TODO: Auto-update this?? Add JenkinsLatest?
-			Md5Hash hash = new Md5Hash("5e3ee648c7be990e6e4fac0f33b2730a");
+			Md5Hash hash = new Md5Hash("961054ea59f730d87fca8a70cb34be47");
 
 			File archiveFile = new File(installDir, "dns-server.tar.gz");
 

@@ -2,6 +2,7 @@ package org.platformlayer.xaas;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -23,10 +24,17 @@ import org.platformlayer.guice.xaas.TagEntity;
 import org.platformlayer.inject.ObjectInjector;
 import org.platformlayer.jdbc.simplejpa.ResultSetMappers;
 import org.platformlayer.jdbc.simplejpa.ResultSetMappersProvider;
+import org.platformlayer.ops.OpsConfiguration;
+import org.platformlayer.ops.OpsContext;
+import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.crypto.OpsKeyStore;
 import org.platformlayer.ops.crypto.SimpleOpsKeyStore;
+import org.platformlayer.ops.guice.OpsContextProvider;
+import org.platformlayer.ops.ssh.ISshContext;
 import org.platformlayer.ops.tasks.OperationQueue;
 import org.platformlayer.ops.tasks.SimpleOperationQueue;
+import org.platformlayer.ssh.mina.MinaSshContext;
 import org.platformlayer.xaas.discovery.AnnotationDiscovery;
 import org.platformlayer.xaas.discovery.JerseyAnnotationDiscovery;
 import org.platformlayer.xaas.ops.InProcessChangeQueue;
@@ -40,19 +48,34 @@ import org.platformlayer.xaas.web.jaxrs.JaxbContextHelper;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
-import com.google.inject.name.Names;
 
 public class GuiceXaasConfig extends AbstractModule {
 
 	@Override
 	protected void configure() {
 		File file = new File("configuration.properties");
+		Properties applicationProperties;
 		try {
-			Names.bindProperties(binder(), PropertyUtils.loadProperties(file));
+			applicationProperties = PropertyUtils.loadProperties(file);
 		} catch (IOException e) {
 			throw new IllegalStateException("Error loading configuration file: " + file, e);
 		}
 
+		OpsConfiguration configuration;
+		try {
+			configuration = new OpsConfiguration(applicationProperties);
+			bind(OpsConfiguration.class).toInstance(configuration);
+		} catch (OpsException e) {
+			throw new IllegalStateException("Cannot load system configuration", e);
+		}
+
+		configuration.bindProperties(binder());
+
+		bind(ISshContext.class).to(MinaSshContext.class);
+
+		bind(OpsSystem.class);
+
+		bind(OpsContext.class).toProvider(OpsContextProvider.class);
 		bind(UserRepository.class).to(JdbcUserRepository.class).asEagerSingleton();
 
 		bind(ResultSetMappers.class).toProvider(

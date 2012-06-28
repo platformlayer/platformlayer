@@ -1,4 +1,4 @@
-package org.platformlayer.service.platformlayer.ops;
+package org.platformlayer.ops.databases;
 
 import org.platformlayer.core.model.Secret;
 import org.platformlayer.ops.Command;
@@ -9,14 +9,14 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.process.ProcessExecution;
 
-public class PostgresTarget {
+public class SshPostgresTarget {
 	public static final int POSTGRES_PORT = 5432;
 
 	final String hostname;
 	final String username;
 	Secret password;
 
-	public PostgresTarget(String hostname, String username, Secret password) {
+	public SshPostgresTarget(String hostname, String username, Secret password) {
 		this.hostname = hostname;
 		this.username = username;
 		this.password = password;

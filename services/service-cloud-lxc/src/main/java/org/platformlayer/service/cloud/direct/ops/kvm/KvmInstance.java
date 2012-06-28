@@ -17,7 +17,6 @@ import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsProvider;
-import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.filesystem.ManagedDirectory;
 import org.platformlayer.ops.images.ImageFormat;
@@ -187,7 +186,7 @@ public class KvmInstance extends OpsTreeBase {
 				public TagChanges get() {
 					TagChanges tagChanges = new TagChanges();
 
-					tagChanges.addTags.add(new Tag(Tag.INSTANCE_KEY, OpsSystem.toKey(model).getUrl()));
+					tagChanges.addTags.add(Tag.INSTANCE_KEY.build(model.getKey()));
 
 					AddressModel ipv4 = address4.get();
 					AddressModel ipv6 = address6.get();

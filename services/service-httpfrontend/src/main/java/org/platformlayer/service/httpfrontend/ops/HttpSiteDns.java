@@ -7,7 +7,6 @@ import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.UniqueTag;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.networks.NetworkPoint;
@@ -35,7 +34,7 @@ public class HttpSiteDns extends OwnedItem<DnsRecord> {
 		record.setDnsName(site.hostname);
 		record.getAddress().add(address);
 
-		Tag parentTag = Tag.buildParentTag(OpsSystem.toKey(site));
+		Tag parentTag = Tag.buildParentTag(site.getKey());
 		record.getTags().add(parentTag);
 		Tag uniqueTag = UniqueTag.build(server, site);
 		record.getTags().add(uniqueTag);

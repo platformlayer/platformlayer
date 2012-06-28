@@ -154,7 +154,7 @@ public class Tag {
 
 	public static final StringTagKey IMAGE_ID = new StringTagKey("imageid");
 
-	public static final String INSTANCE_KEY = "instancekey";
+	public static final KeyTagKey INSTANCE_KEY = new KeyTagKey("instancekey");
 	public static final AddressTagKey NETWORK_ADDRESS = new AddressTagKey("net.address");
 
 	public static final String HOST_POLICY = "host.policy";

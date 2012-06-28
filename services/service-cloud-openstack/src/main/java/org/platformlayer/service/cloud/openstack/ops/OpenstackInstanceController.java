@@ -11,7 +11,6 @@ import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsProvider;
-import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.helpers.ImageFactory;
 import org.platformlayer.ops.tagger.Tagger;
 import org.platformlayer.ops.tree.OpsTreeBase;
@@ -46,7 +45,7 @@ public class OpenstackInstanceController extends OpsTreeBase {
 					OpenstackComputeMachine machine = OpsContext.get().getInstance(OpenstackComputeMachine.class);
 
 					TagChanges tagChanges = new TagChanges();
-					tagChanges.addTags.add(new Tag(Tag.INSTANCE_KEY, OpsSystem.toKey(model).getUrl()));
+					tagChanges.addTags.add(Tag.INSTANCE_KEY.build(model.getKey()));
 					tagChanges.addTags.addAll(machine.buildAddressTags());
 
 					return tagChanges;
@@ -68,5 +67,4 @@ public class OpenstackInstanceController extends OpsTreeBase {
 		// }
 		// }
 	}
-
 }

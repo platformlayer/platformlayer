@@ -11,7 +11,6 @@ import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.filesystem.SimpleFile;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
@@ -61,8 +60,8 @@ public class AptCacheServiceController extends OpsTreeBase implements HttpProxyC
 			endpoint.backendPort = PORT;
 			endpoint.dnsName = model.dnsName;
 
-			endpoint.tagItem = OpsSystem.toKey(model);
-			endpoint.parentItem = OpsSystem.toKey(model);
+			endpoint.tagItem = model.getKey();
+			endpoint.parentItem = model.getKey();
 
 			instance.addChild(endpoint);
 		}

@@ -18,7 +18,6 @@ import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsProvider;
-import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.firewall.Transport;
 import org.platformlayer.ops.firewall.simple.ForwardPort;
@@ -176,7 +175,7 @@ public class PublicPorts extends OpsTreeBase {
 				@Override
 				public String get() throws OpsException {
 					// Refresh item to pick up new tags
-					backendItem = platformLayerClient.getItem(OpsSystem.toKey(backendItem), DirectInstance.class);
+					backendItem = platformLayerClient.getItem(backendItem.getKey(), DirectInstance.class);
 
 					PlatformLayerCloudMachine instanceMachine = (PlatformLayerCloudMachine) instanceHelpers
 							.getMachine(backendItem);
@@ -218,7 +217,7 @@ public class PublicPorts extends OpsTreeBase {
 
 			for (ItemBase tagItem : tagItems) {
 				Tagger tagger = addChild(Tagger.class);
-				tagger.platformLayerKey = OpsSystem.toKey(tagItem);
+				tagger.platformLayerKey = tagItem.getKey();
 				tagger.tagChangesProvider = tagChanges;
 			}
 		}

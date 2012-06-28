@@ -109,7 +109,7 @@ public class SshOpsTarget extends OpsTargetBase {
 	@Override
 	public NetworkPoint getNetworkPoint() {
 		InetAddress myHost = sshConnection.getHost();
-		return NetworkPoint.forSameNetwork(myHost);
+		return NetworkPoint.forSshAddress(myHost);
 	}
 
 	public Socket buildTunneledSocket() throws OpsException {

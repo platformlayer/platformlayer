@@ -15,7 +15,6 @@ import org.platformlayer.service.cloud.direct.model.DirectHost;
 import org.platformlayer.service.cloud.direct.model.DirectInstance;
 import org.platformlayer.service.cloud.direct.ops.DirectCloudUtils;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 public class CloudMap {
@@ -93,13 +92,15 @@ public class CloudMap {
 	}
 
 	private Chooser<DirectCloudHost> buildChooser(DirectInstance model) {
-		if (model.hostPolicy == null || Strings.isNullOrEmpty(model.hostPolicy.groupId)) {
-			// Leverage least-loaded functionality of SpreadChooser
-			return SpreadChooser.build(SpreadChooser.DEFAULT_GROUP);
-			// return RandomChooser.build();
-		} else {
-			return SpreadChooser.build(model.hostPolicy.groupId);
-		}
+		return ScoreHostPolicy.build(model.hostPolicy, model);
+		//
+		// if (model.hostPolicy == null || Strings.isNullOrEmpty(model.hostPolicy.groupId)) {
+		// // Leverage least-loaded functionality of SpreadChooser
+		// return SpreadChooser.build(SpreadChooser.DEFAULT_GROUP);
+		// // return RandomChooser.build();
+		// } else {
+		// return SpreadChooser.build(model.hostPolicy.groupId);
+		// }
 	}
 
 	// public ImageStore getImageStore() {

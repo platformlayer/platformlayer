@@ -9,7 +9,7 @@ import org.platformlayer.ids.ServiceType;
 public interface ServiceProviderDictionary {
 	ServiceProvider getServiceProvider(ServiceType serviceType);
 
-	<T extends ItemBase> ModelClass<T> getModelClass(Class<T> serviceType);
+	<T extends ItemBase> ModelClass<T> getModelClass(Class<T> itemClass);
 
 	List<ServiceInfo> getAllServices(boolean management);
 
