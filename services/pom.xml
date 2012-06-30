@@ -34,7 +34,9 @@
         <module>service-cloud-lxc</module>
         <module>service-cloud-raw</module>
         <module>service-cloud-openstack</module>
+<!--
         <module>service-cloud-googlecompute</module>
+-->
         <module>service-image-store</module>
         <module>service-networks</module>
         <module>service-federation</module>
