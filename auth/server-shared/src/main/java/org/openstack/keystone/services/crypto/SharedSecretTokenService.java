@@ -25,7 +25,7 @@ public class SharedSecretTokenService implements TokenService {
 	static final long TIME_OFFSET = 1234567890;
 
 	public SharedSecretTokenService(String secret) {
-		// TODO: Use different keys
+		// I don't think there's actually any benefit to using different keys
 		this.systemSecretKeySpec = CryptoUtils.deriveHmacSha1Key(secret);
 		this.userSecretKeySpec = CryptoUtils.deriveHmacSha1Key(secret);
 	}

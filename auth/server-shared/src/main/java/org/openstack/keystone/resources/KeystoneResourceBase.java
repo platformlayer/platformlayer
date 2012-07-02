@@ -1,9 +1,11 @@
 package org.openstack.keystone.resources;
 
+import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
@@ -31,6 +33,9 @@ public class KeystoneResourceBase {
 	@Context
 	HttpHeaders httpHeaders;
 
+	@Context
+	HttpServletRequest request;
+
 	protected void throw404NotFound() {
 		throw new WebApplicationException(404);
 	}
@@ -51,15 +56,34 @@ public class KeystoneResourceBase {
 		return authHeader.get(0);
 	}
 
-	protected TokenInfo requireSystemToken() {
-		String authHeader = getAuthHeader();
+	protected void requireSystemToken() {
+		TokenInfo myTokenInfo = null;
 
-		TokenInfo myTokenInfo = authentication.validateToken(true, authHeader);
-		if (myTokenInfo == null || !myTokenInfo.isSystem()) {
-			throwUnauthorized();
+		String authHeader = getAuthHeader();
+		if (authHeader != null) {
+			myTokenInfo = authentication.validateToken(true, authHeader);
+
+			if (myTokenInfo != null && myTokenInfo.isSystem()) {
+				return;
+			}
 		}
 
-		return myTokenInfo;
+		X509Certificate[] certChain = (X509Certificate[]) request.getAttribute("javax.servlet.request.X509Certificate");
+		if (certChain != null && certChain.length != 0) {
+			X509Certificate head = certChain[0];
+
+			boolean isSystem = true;
+			AuthenticationInfo authenticated = authentication.authenticate(isSystem, certChain);
+			if (authenticated != null) {
+				return;
+			}
+
+			log.debug("Certificate authentication request failed for " + head);
+		}
+
+		throwUnauthorized();
+
+		// return myTokenInfo;
 	}
 
 	protected boolean isNullOrEmpty(List<?> list) {

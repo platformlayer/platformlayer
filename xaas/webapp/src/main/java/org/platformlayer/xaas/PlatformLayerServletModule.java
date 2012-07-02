@@ -3,13 +3,10 @@ package org.platformlayer.xaas;
 import java.util.Map;
 
 import org.openstack.keystone.service.AuthenticationTokenValidator;
-import org.openstack.keystone.service.DevelopmentTokenValidator;
 import org.openstack.keystone.service.KeystoneTokenValidator;
 import org.openstack.keystone.service.OpenstackAuthenticationFilterBase;
-import org.platformlayer.ApplicationMode;
 import org.platformlayer.Scope;
 import org.platformlayer.ScopeFilter;
-import org.platformlayer.WellKnownPorts;
 import org.platformlayer.ops.auth.OpsAuthentication;
 import org.platformlayer.xaas.web.resources.RootResource;
 
@@ -35,21 +32,11 @@ public class PlatformLayerServletModule extends JerseyServletModule {
 		bind(OpsAuthentication.class).toProvider(ScopeOpsAuthenticatorProvider.class);
 		bind(Scope.class).toProvider(ScopeProvider.class);
 
-		{
-			String keystoneServiceUrl = "http://127.0.0.1:" + WellKnownPorts.PORT_PLATFORMLAYER_AUTH_ADMIN + "/";
-			String keystoneServiceToken = "auth_token";
-
-			KeystoneTokenValidator keystoneTokenValidator = new KeystoneTokenValidator(keystoneServiceUrl,
-					keystoneServiceToken);
-
-			bind(KeystoneTokenValidator.class).toInstance(keystoneTokenValidator);
-		}
-
-		if (ApplicationMode.isDevelopment()) {
-			bind(AuthenticationTokenValidator.class).to(DevelopmentTokenValidator.class);
-		} else {
-			bind(AuthenticationTokenValidator.class).to(KeystoneTokenValidator.class);
-		}
+		// if (ApplicationMode.isDevelopment()) {
+		// bind(AuthenticationTokenValidator.class).to(DevelopmentTokenValidator.class);
+		// } else {
+		bind(AuthenticationTokenValidator.class).to(KeystoneTokenValidator.class);
+		// }
 
 		bind(OpenstackAuthenticationFilterBase.class).to(OpsAuthenticationFilter.class).asEagerSingleton();
 

@@ -6,6 +6,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
+import org.platformlayer.core.model.Secret;
 import org.platformlayer.service.platformlayer.ops.auth.system.SystemAuthServiceController;
 import org.platformlayer.xaas.Controller;
 

@@ -1,9 +1,17 @@
 package org.openstack.keystone.server;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.security.KeyStore;
 import java.util.EnumSet;
 
+import javax.net.ssl.TrustManager;
+
+import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.DispatcherType;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -16,11 +24,41 @@ public class KeystoneAdminServer {
 
 	public static void main(String[] args) throws Exception {
 		KeystoneAdminServer server = new KeystoneAdminServer();
-		server.start(WellKnownPorts.PORT_PLATFORMLAYER_AUTH_ADMIN);
+
+		File keystoreFile = new File("keystore.jks");
+		String keystoreSecret = "notasecret";
+
+		KeyStore keystore;
+
+		try {
+			keystore = KeyStore.getInstance("JKS");
+			InputStream keystoreInput = new FileInputStream(keystoreFile);
+			keystore.load(keystoreInput, keystoreSecret.toCharArray());
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Error loading SSL certificate from: " + keystoreFile.getAbsolutePath(),
+					e);
+		}
+
+		server.start(WellKnownPorts.PORT_PLATFORMLAYER_AUTH_ADMIN, keystore, keystoreSecret);
 	}
 
-	public void start(int port) throws Exception {
-		this.server = new Server(port);
+	public void start(int port, KeyStore keystore, String keystorePassword) throws Exception {
+		this.server = new Server();
+
+		CustomTrustManagerSslContextFactory sslContextFactory = new CustomTrustManagerSslContextFactory();
+
+		sslContextFactory.setKeyStore(keystore);
+		sslContextFactory.setKeyStorePassword(keystorePassword);
+
+		sslContextFactory.setWantClientAuth(true);
+
+		TrustManager[] trustManagers = new TrustManager[] { new AcceptAllClientCertificatesTrustManager() };
+
+		sslContextFactory.setTrustManagers(trustManagers);
+
+		SslSelectChannelConnector connector = new SslSelectChannelConnector(sslContextFactory);
+		connector.setPort(port);
+		server.setConnectors(new Connector[] { connector });
 
 		ServletContextHandler context = new ServletContextHandler();
 		context.setContextPath("/");

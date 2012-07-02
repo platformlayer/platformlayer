@@ -2,12 +2,15 @@ package org.openstack.keystone.service;
 
 import java.util.List;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.TrustManager;
+
 import org.openstack.docs.identity.api.v2.Role;
 import org.openstack.docs.identity.api.v2.Tenant;
 import org.openstack.docs.identity.api.v2.UserValidation;
 import org.openstack.docs.identity.api.v2.ValidateAccess;
 import org.openstack.docs.identity.api.v2.ValidateTokenResponse;
-import org.openstack.keystone.auth.client.Keystone;
 import org.platformlayer.PlatformLayerClientException;
 import org.platformlayer.WellKnownPorts;
 import org.platformlayer.http.SimpleHttpRequest;
@@ -20,19 +23,32 @@ import com.google.common.collect.Lists;
 public class KeystoneTokenValidator extends RestfulClient implements AuthenticationTokenValidator {
 	static final Logger log = LoggerFactory.getLogger(KeystoneTokenValidator.class);
 
-	public static final String DEFAULT_AUTHENTICATION_URL = "http://127.0.0.1:"
+	public static final String DEFAULT_AUTHENTICATION_URL = "https://127.0.0.1:"
 			+ WellKnownPorts.PORT_PLATFORMLAYER_AUTH_ADMIN + "/";
 
-	final String authenticationToken;
+	final KeyManager keyManager;
 
-	public KeystoneTokenValidator(String baseUrl, String authenticationToken) {
+	final TrustManager trustManager;
+
+	final HostnameVerifier hostnameVerifier;
+
+	public KeystoneTokenValidator(String baseUrl, KeyManager keyManager, TrustManager trustManager,
+			HostnameVerifier hostnameVerifier) {
 		super(baseUrl);
-		this.authenticationToken = authenticationToken;
+		this.keyManager = keyManager;
+		this.trustManager = trustManager;
+		this.hostnameVerifier = hostnameVerifier;
 	}
 
 	@Override
 	protected void addHeaders(SimpleHttpRequest httpRequest) {
-		httpRequest.setRequestHeader(Keystone.AUTH_HEADER, authenticationToken);
+		httpRequest.setTrustManager(trustManager);
+		httpRequest.setKeyManager(keyManager);
+		if (hostnameVerifier != null) {
+			httpRequest.setHostnameVerifier(hostnameVerifier);
+		}
+		// httpRequest.setRequestHeader(Keystone.AUTH_HEADER, authenticationToken);
+
 	}
 
 	// public KeystoneAuthenticationToken authenticate(String tenantName, PasswordCredentials passwordCredentials)

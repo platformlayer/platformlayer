@@ -6,9 +6,22 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.security.GeneralSecurityException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.UnrecoverableKeyException;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
 
 import org.apache.log4j.Logger;
 
@@ -45,6 +58,11 @@ public class SimpleHttpRequest {
 
 	SimpleHttpResponse response;
 
+	private KeyManager keyManager;
+	private TrustManager trustManager;
+
+	private HostnameVerifier hostnameVerifier;
+
 	public SimpleHttpResponse doRequest() throws IOException {
 		if (response == null) {
 			response = doRequest0();
@@ -54,6 +72,37 @@ public class SimpleHttpRequest {
 
 	protected SimpleHttpResponse doRequest0() throws IOException {
 		return new SimpleHttpResponse();
+	}
+
+	SSLSocketFactory buildSslSocketFactory() throws NoSuchAlgorithmException, UnrecoverableKeyException,
+			KeyStoreException, KeyManagementException {
+		SSLContext context = SSLContext.getInstance("TLS");
+
+		// context.getClientSessionContext().setEndpointIdentificationAlgorithm();
+		// KeyStore keyStore = KeyStore.getInstance("PKCS12");
+		// keyStore.load(new FileInputStream(privateKeyFile), privateKeyPassword.toCharArray());
+
+		// InputStream keyInput = new FileInputStream(pKeyFile);
+		// keyStore.load(keyInput, pKeyPassword.toCharArray());
+		// keyInput.close();
+
+		// We need to pass a keystore password, though I don't think it's used
+		// String keystorePassword = "password";
+		KeyManager[] keyManagers = null;
+		if (keyManager != null) {
+			keyManagers = new KeyManager[] { keyManager };
+		}
+
+		TrustManager[] trustManagers = null;
+
+		if (trustManager != null) {
+			trustManagers = new TrustManager[] { trustManager };
+		}
+
+		context.init(keyManagers, trustManagers, new SecureRandom());
+
+		return context.getSocketFactory();
+
 	}
 
 	public class SimpleHttpResponse {
@@ -151,6 +200,36 @@ public class SimpleHttpRequest {
 		}
 		sb.append("\n");
 		return sb.toString();
+	}
+
+	public void setKeyManager(KeyManager keyManager) {
+		this.keyManager = keyManager;
+
+		updateSslParameters();
+	}
+
+	private void updateSslParameters() {
+		HttpsURLConnection https = (HttpsURLConnection) httpConn;
+		try {
+			https.setSSLSocketFactory(buildSslSocketFactory());
+		} catch (GeneralSecurityException e) {
+			throw new IllegalArgumentException("Error loading certificate", e);
+		}
+	}
+
+	public TrustManager getTrustManager() {
+		return trustManager;
+	}
+
+	public void setTrustManager(TrustManager trustManager) {
+		this.trustManager = trustManager;
+
+		updateSslParameters();
+	}
+
+	public void setHostnameVerifier(HostnameVerifier hostnameVerifier) {
+		HttpsURLConnection https = (HttpsURLConnection) httpConn;
+		https.setHostnameVerifier(hostnameVerifier);
 	}
 
 }

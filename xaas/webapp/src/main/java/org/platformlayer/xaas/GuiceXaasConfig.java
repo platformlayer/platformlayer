@@ -1,15 +1,22 @@
 package org.platformlayer.xaas;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.security.KeyStore;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.TrustManager;
 import javax.sql.DataSource;
 
+import org.openstack.keystone.service.KeystoneTokenValidator;
 import org.openstack.utils.PropertyUtils;
 import org.platformlayer.PlatformLayerClient;
+import org.platformlayer.WellKnownPorts;
 import org.platformlayer.auth.JdbcUserRepository;
 import org.platformlayer.auth.OpsProject;
 import org.platformlayer.auth.OpsUser;
@@ -107,6 +114,62 @@ public class GuiceXaasConfig extends AbstractModule {
 		bind(ChangeQueue.class).to(InProcessChangeQueue.class);
 
 		bind(PlatformLayerClient.class).toProvider(PlatformLayerClientProvider.class);
+
+		{
+			String keystoneServiceUrl = configuration.lookup("auth.system.url", "https://127.0.0.1:"
+					+ WellKnownPorts.PORT_PLATFORMLAYER_AUTH_ADMIN + "/");
+			// String keystoneServiceToken = "auth_token";
+
+			String certFilePath = configuration.lookup("auth.system.cert", "keystore.jks");
+			String secret = configuration.lookup("auth.system.cert.password", "notasecret");
+
+			File certFile = new File(certFilePath);
+
+			if (!certFile.exists()) {
+				throw new IllegalArgumentException("Certificate file not found: " + certFile.getAbsolutePath());
+			}
+			// KeyStore keyStore = KeyStore.getInstance("PKCS12");
+			// keyStore.load(new FileInputStream(privateKeyFile), privateKeyPassword.toCharArray());
+
+			// InputStream keyInput = new FileInputStream(pKeyFile);
+			// keyStore.load(keyInput, pKeyPassword.toCharArray());
+			// keyInput.close();
+
+			HostnameVerifier hostnameVerifier = null;
+
+			// We need to pass a keystore password, though I don't think it's used
+			// String keystorePassword = "password";
+			ClientCertificateKeyManager keyManager = null;
+			try {
+				KeyStore keystore = KeyStore.getInstance("JKS");
+				InputStream keystoreInput = new FileInputStream(certFile);
+				keystore.load(keystoreInput, secret.toCharArray());
+				keystoreInput.close();
+
+				keyManager = new ClientCertificateKeyManager(keystore, secret);
+
+				// System.out.println("Keystore has " + keystore.size() + " keys");
+				// clientCertificateInfo = new KeystoreInfo(clientCert, secret);
+			} catch (Exception e) {
+				throw new IllegalArgumentException("Error loading client certificate", e);
+			}
+
+			TrustManager trustManager = null;
+
+			String trustKey = configuration.lookup("auth.system.key", null);
+
+			if (trustKey != null) {
+				trustManager = new PublicKeyTrustManager(trustKey);
+
+				hostnameVerifier = new AcceptAllHostnameVerifier();
+			}
+
+			KeystoneTokenValidator keystoneTokenValidator = new KeystoneTokenValidator(keystoneServiceUrl, keyManager,
+					trustManager, hostnameVerifier);
+
+			bind(KeystoneTokenValidator.class).toInstance(keystoneTokenValidator);
+		}
+
 	}
 
 }

@@ -162,7 +162,7 @@ public class JdbcUserRepository implements UserRepository {
 
 			byte[] hashedPassword = PasswordHash.doPasswordHash(password);
 
-			KeyPair userRsaKeyPair = RsaUtils.generateRsaKeyPair(1024);
+			KeyPair userRsaKeyPair = RsaUtils.generateRsaKeyPair(RsaUtils.SMALL_KEYSIZE);
 
 			byte[] privateKeyData = RsaUtils.serialize(userRsaKeyPair.getPrivate());
 			privateKeyData = AesUtils.encrypt(userSecret, privateKeyData);
@@ -428,7 +428,7 @@ public class JdbcUserRepository implements UserRepository {
 				project = new OpsProject();
 				project.setProjectSecret(projectSecret);
 
-				KeyPair projectRsaKeyPair = RsaUtils.generateRsaKeyPair(1024);
+				KeyPair projectRsaKeyPair = RsaUtils.generateRsaKeyPair(RsaUtils.SMALL_KEYSIZE);
 				project.setPublicKey(projectRsaKeyPair.getPublic());
 				project.setPrivateKey(projectRsaKeyPair.getPrivate());
 			} catch (IOException e) {

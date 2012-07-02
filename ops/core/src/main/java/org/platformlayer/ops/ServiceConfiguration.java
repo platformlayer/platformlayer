@@ -10,7 +10,6 @@ import org.platformlayer.ApplicationMode;
 import org.platformlayer.IoUtils;
 import org.platformlayer.KeyPairUtils;
 import org.platformlayer.RepositoryException;
-import org.platformlayer.crypto.RsaUtils;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceMetadataKey;
 import org.platformlayer.ids.ServiceType;
@@ -42,15 +41,15 @@ public class ServiceConfiguration {
 		return findSshKey(serviceType);
 	}
 
-	public KeyPair findKeyPair(ServiceMetadataKey keyId, int createLength) throws OpsException {
-		ProjectId project = getProject();
-		KeyPair keyPair = findKeyPair(serviceType, project, keyId);
-		if (createLength > 0 && keyPair == null) {
-			keyPair = RsaUtils.generateRsaKeyPair(createLength);
-			storeKeyPair(serviceType, project, keyId, keyPair);
-		}
-		return keyPair;
-	}
+	// public KeyPair findKeyPair(ServiceMetadataKey keyId, int createLength) throws OpsException {
+	// ProjectId project = getProject();
+	// KeyPair keyPair = findKeyPair(serviceType, project, keyId);
+	// if (createLength > 0 && keyPair == null) {
+	// keyPair = RsaUtils.generateRsaKeyPair(createLength);
+	// storeKeyPair(serviceType, project, keyId, keyPair);
+	// }
+	// return keyPair;
+	// }
 
 	@Deprecated
 	public KeyPair findSshKey(ServiceType serviceType) throws OpsException {

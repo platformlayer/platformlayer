@@ -21,7 +21,8 @@ import org.platformlayer.IoUtils;
 public class RsaUtils {
 	private static final String ALGORITHM = "RSA";
 	// private static final String PROVIDER = "SunJSSE";
-	private static final int DEFAULT_KEYSIZE = 2048;
+	public static final int DEFAULT_KEYSIZE = 2048;
+	public static final int SMALL_KEYSIZE = 1024;
 
 	public static KeyPair generateRsaKeyPair() {
 		return generateRsaKeyPair(DEFAULT_KEYSIZE);
