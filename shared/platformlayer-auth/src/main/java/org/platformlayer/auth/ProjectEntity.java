@@ -67,7 +67,7 @@ public class ProjectEntity implements OpsProject {
 
 	public void unlockWithProject(ProjectEntity project) {
 		SecretStore secretStore = new SecretStore(this.secretData);
-		this.projectSecret = secretStore.getSecretFromProject(project.id, project.getProjectSecret());
+		this.projectSecret = secretStore.getSecretFromProject(project);
 		if (this.projectSecret == null) {
 			throw new SecurityException();
 		}

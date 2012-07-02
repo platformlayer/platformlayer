@@ -17,10 +17,10 @@ public class KeystoneOpsAuthenticator implements KeystoneUserAuthenticator {
 	UserDatabase repository;
 
 	@Override
-	public UserEntity authenticate(String username, String password) throws AuthenticatorException {
+	public UserEntity authenticate(String project, String username, String password) throws AuthenticatorException {
 		UserEntity user;
 		try {
-			user = (UserEntity) repository.authenticateWithPassword(username, password);
+			user = (UserEntity) repository.authenticateWithPassword(project, username, password);
 		} catch (RepositoryException e) {
 			throw new AuthenticatorException("Error while authenticating user", e);
 		}

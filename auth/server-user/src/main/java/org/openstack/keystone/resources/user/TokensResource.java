@@ -67,7 +67,7 @@ public class TokensResource extends KeystoneResourceBase {
 
 		UserEntity user = null;
 		try {
-			user = userAuthenticator.authenticate(username, password);
+			user = userAuthenticator.authenticate(project, username, password);
 		} catch (AuthenticatorException e) {
 			// An exception indicates something went wrong (i.e. not just bad credentials)
 			log.warn("Error while getting user info", e);

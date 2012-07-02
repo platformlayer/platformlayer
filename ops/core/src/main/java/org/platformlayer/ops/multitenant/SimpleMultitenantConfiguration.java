@@ -53,7 +53,7 @@ public class SimpleMultitenantConfiguration implements MultitenantConfiguration 
 
 		OpsUser user;
 		try {
-			user = userRepository.authenticateWithPassword(username, password);
+			user = userRepository.authenticateWithPassword(projectKey, username, password);
 		} catch (RepositoryException e) {
 			throw new OpsException(message, e);
 		}

@@ -118,7 +118,7 @@ public class SecretHelper {
 		SecretKey secretKey = null;
 
 		for (OpsProject project : OpsContext.get().getEncryptingProjects()) {
-			secretKey = secretStore.getSecretFromProject(project.getId(), project.getProjectSecret());
+			secretKey = secretStore.getSecretFromProject(project);
 		}
 
 		if (secretKey == null) {

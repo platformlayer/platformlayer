@@ -6,7 +6,7 @@ import org.platformlayer.auth.ProjectEntity;
 import org.platformlayer.auth.UserEntity;
 
 public interface KeystoneUserAuthenticator {
-	UserEntity authenticate(String username, String password) throws AuthenticatorException;
+	UserEntity authenticate(String project, String username, String password) throws AuthenticatorException;
 
 	// byte[] getUserSecret(String userIdString, byte[] tokenSecret) throws AuthenticatorException;
 

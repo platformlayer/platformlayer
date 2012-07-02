@@ -1,13 +1,9 @@
 package org.platformlayer.auth;
 
-import javax.crypto.SecretKey;
-
 import org.platformlayer.RepositoryException;
 
 public interface UserRepository {
-	OpsUser authenticateWithPassword(String username, String password) throws RepositoryException;
-
-	OpsProject authenticateProject(String projectKey, SecretKey secret) throws RepositoryException;
+	OpsUser authenticateWithPassword(String projectKey, String username, String password) throws RepositoryException;
 
 	OpsProject findProject(OpsUser user, String projectKey) throws RepositoryException;
 }

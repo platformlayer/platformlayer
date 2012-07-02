@@ -3,7 +3,6 @@ package org.platformlayer.auth;
 import java.io.PrintStream;
 
 public class DirectAuthenticator implements Authenticator {
-
 	final DirectAuthenticationToken authenticationToken;
 
 	public DirectAuthenticator(DirectAuthenticationToken authenticationToken) {

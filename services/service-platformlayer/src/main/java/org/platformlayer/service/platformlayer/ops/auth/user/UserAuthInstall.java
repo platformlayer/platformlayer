@@ -7,7 +7,8 @@ import org.platformlayer.ops.standardservice.StandardTemplateData;
 public class UserAuthInstall extends StandardServiceInstall {
 	@Override
 	protected Md5Hash getMd5Hash() {
-		Md5Hash hash = new Md5Hash("79b8e3187cc2ef5bbe84701fa64b5dc6");
+		// keystone-webapp-user-1.0-SNAPSHOT-bin.tar.gz
+		Md5Hash hash = new Md5Hash("54bb4072b6b91ffaa185f8e9e059dc19");
 		return hash;
 	}
 

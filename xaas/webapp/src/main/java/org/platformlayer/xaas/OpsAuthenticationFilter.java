@@ -1,5 +1,7 @@
 package org.platformlayer.xaas;
 
+import java.util.List;
+
 import javax.crypto.SecretKey;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -10,6 +12,7 @@ import org.openstack.keystone.service.KeystoneAuthentication;
 import org.openstack.keystone.service.OpenstackAuthenticationFilterBase;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.Scope;
+import org.platformlayer.auth.DirectAuthenticationToken;
 import org.platformlayer.auth.OpsProject;
 import org.platformlayer.auth.OpsUser;
 import org.platformlayer.auth.UserRepository;
@@ -18,6 +21,9 @@ import org.platformlayer.crypto.CryptoUtils;
 import org.platformlayer.model.Authentication;
 import org.platformlayer.ops.auth.OpsAuthentication;
 import org.platformlayer.xaas.keystone.KeystoneUser;
+
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 
 public class OpsAuthenticationFilter extends OpenstackAuthenticationFilterBase {
 	static final Logger log = Logger.getLogger(OpsAuthenticationFilter.class);
@@ -88,27 +94,52 @@ public class OpsAuthenticationFilter extends OpenstackAuthenticationFilterBase {
 		// throw new SecurityException("Timestamp skew too large");
 		// }
 
-		String projectPrefix = "project:";
+		OpsProject project = null;
+
+		String projectPrefix = DirectAuthenticationToken.PREFIX;
 
 		if (authKey.startsWith(projectPrefix)) {
-			String projectKey = authKey.substring(projectPrefix.length());
+			List<String> projectTokens = Lists.newArrayList(Splitter.on(':').limit(3).split(authKey));
+			if (projectTokens.size() == 3) {
+				final String projectKey = projectTokens.get(2);
+				final int projectId = Integer.parseInt(projectTokens.get(1));
 
-			SecretKey secret;
-			try {
-				secret = AesUtils.deserializeKey(CryptoUtils.fromBase64(secretString));
-			} catch (Exception e) {
-				log.debug("Error while deserializing user provided secret", e);
-				return null;
+				final SecretKey secret;
+				try {
+					secret = AesUtils.deserializeKey(CryptoUtils.fromBase64(secretString));
+				} catch (Exception e) {
+					log.debug("Error while deserializing user provided secret", e);
+					return null;
+				}
+
+				project = new OpsProject() {
+					@Override
+					public boolean isLocked() {
+						return secret != null;
+					}
+
+					@Override
+					public SecretKey getProjectSecret() {
+						return secret;
+					}
+
+					@Override
+					public int getId() {
+						return projectId;
+					}
+
+					@Override
+					public String getName() {
+						return projectKey;
+					}
+				};
 			}
+		}
 
-			OpsProject project = userRepository.authenticateProject(projectKey, secret);
-			if (project == null) {
-				return null;
-			}
-
-			return new DirectAuthentication(project);
-		} else {
+		if (project == null) {
 			return null;
 		}
+
+		return new DirectAuthentication(project);
 	}
 }

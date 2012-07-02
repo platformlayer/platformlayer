@@ -53,8 +53,12 @@ class PlatformLayerHttpTransport {
 	// }
 
 	private URI buildUri(String relativePath) throws PlatformLayerClientException {
+		if (relativePath.startsWith("/")) {
+			relativePath = relativePath.substring(1);
+		}
+
 		String urlString = getPlatformLayerEndpoint();
-		if (!urlString.endsWith("/") && !relativePath.startsWith("/")) {
+		if (!urlString.endsWith("/")) {
 			urlString += "/";
 		}
 		urlString += relativePath;

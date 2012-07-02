@@ -44,7 +44,10 @@ public class KeystoneCliContext extends CliContextBase {
 		if (username == null || password == null) {
 			throw new IllegalArgumentException("Must specify username & password");
 		}
-		UserEntity user = (UserEntity) getUserRepository().authenticateWithPassword(username, password);
+
+		String project = null;
+
+		UserEntity user = (UserEntity) getUserRepository().authenticateWithPassword(project, username, password);
 		if (user == null) {
 			throw new SecurityException("Credentials were not valid");
 		}

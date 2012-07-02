@@ -548,7 +548,8 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 	}
 
 	@Override
-	public UserEntity authenticateWithPassword(String username, String password) throws RepositoryException {
+	public UserEntity authenticateWithPassword(String project, String username, String password)
+			throws RepositoryException {
 		UserEntity user = findUser(username);
 
 		if (user == null) {
@@ -564,22 +565,23 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 		return user;
 	}
 
-	@Override
-	public OpsProject authenticateProject(String projectKey, SecretKey secret) throws RepositoryException {
-		ProjectEntity project = findProjectByKey(projectKey);
-
-		if (project == null) {
-			return null;
-		}
-
-		project.setProjectSecret(secret);
-
-		if (!project.isSecretValid()) {
-			return null;
-		}
-
-		return project;
-	}
+	// @Override
+	// public OpsProject authenticateProject(int projectId, String projectKey, SecretKey secret)
+	// throws RepositoryException {
+	// ProjectEntity project = findProjectByKey(projectKey);
+	//
+	// if (project == null) {
+	// return null;
+	// }
+	//
+	// project.setProjectSecret(secret);
+	//
+	// if (!project.isSecretValid()) {
+	// return null;
+	// }
+	//
+	// return project;
+	// }
 
 	@Override
 	public ProjectEntity findProject(OpsUser user, String projectKey) throws RepositoryException {
