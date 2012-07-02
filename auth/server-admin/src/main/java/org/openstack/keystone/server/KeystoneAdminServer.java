@@ -1,8 +1,6 @@
 package org.openstack.keystone.server;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.security.KeyStore;
 import java.util.EnumSet;
 
@@ -15,6 +13,7 @@ import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.openstack.crypto.KeyStoreUtils;
 import org.platformlayer.WellKnownPorts;
 
 import com.google.inject.servlet.GuiceFilter;
@@ -31,9 +30,7 @@ public class KeystoneAdminServer {
 		KeyStore keystore;
 
 		try {
-			keystore = KeyStore.getInstance("JKS");
-			InputStream keystoreInput = new FileInputStream(keystoreFile);
-			keystore.load(keystoreInput, keystoreSecret.toCharArray());
+			keystore = KeyStoreUtils.load(keystoreFile, keystoreSecret);
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Error loading SSL certificate from: " + keystoreFile.getAbsolutePath(),
 					e);

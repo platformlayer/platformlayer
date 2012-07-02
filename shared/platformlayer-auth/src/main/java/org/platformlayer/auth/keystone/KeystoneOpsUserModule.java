@@ -6,6 +6,7 @@ import org.openstack.keystone.services.SystemAuthenticator;
 import org.openstack.keystone.services.UserAuthenticator;
 import org.platformlayer.auth.JdbcUserRepository;
 import org.platformlayer.auth.OpsProject;
+import org.platformlayer.auth.OpsServiceAccount;
 import org.platformlayer.auth.OpsUser;
 import org.platformlayer.auth.UserRepository;
 import org.platformlayer.guice.GuiceDataSourceProvider;
@@ -29,6 +30,7 @@ public class KeystoneOpsUserModule extends AbstractModule {
 
 		bind(SystemAuthenticator.class).to(ClientCertificateSystemAuthenticator.class).asEagerSingleton();
 
-		bind(ResultSetMappers.class).toProvider(ResultSetMappersProvider.build(OpsUser.class, OpsProject.class));
+		bind(ResultSetMappers.class).toProvider(
+				ResultSetMappersProvider.build(OpsUser.class, OpsProject.class, OpsServiceAccount.class));
 	}
 }

@@ -1,9 +1,11 @@
 package org.platformlayer.auth;
 
+import java.security.cert.X509Certificate;
 import java.util.List;
 
 import javax.crypto.SecretKey;
 
+import org.openstack.keystone.services.ServiceAccount;
 import org.platformlayer.RepositoryException;
 
 public interface UserRepository {
@@ -29,6 +31,10 @@ public interface UserRepository {
 	OpsProject createProject(String key, OpsUser owner) throws RepositoryException;
 
 	List<String> listAllProjectNames(String prefix) throws RepositoryException;
+
+	ServiceAccount findServiceAccount(String name, byte[] publicKey) throws RepositoryException;
+
+	ServiceAccount createServiceAccount(X509Certificate cert) throws RepositoryException;
 
 	// ItemBase getManagedItem(ModelKey modelKey, boolean fetchTags) throws RepositoryException;
 	//

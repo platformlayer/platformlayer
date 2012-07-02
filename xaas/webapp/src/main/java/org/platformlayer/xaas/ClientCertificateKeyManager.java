@@ -9,14 +9,12 @@ import java.security.Principal;
 import java.security.PrivateKey;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
-import java.util.Enumeration;
 import java.util.List;
 
 import javax.net.ssl.X509KeyManager;
 
 import org.apache.log4j.Logger;
-
-import com.google.common.collect.Lists;
+import org.openstack.crypto.KeyStoreUtils;
 
 public class ClientCertificateKeyManager implements X509KeyManager {
 
@@ -41,7 +39,7 @@ public class ClientCertificateKeyManager implements X509KeyManager {
 	@Override
 	public String chooseClientAlias(String[] keyType, Principal[] issuers, Socket socket) {
 		try {
-			List<String> aliases = getAliases();
+			List<String> aliases = KeyStoreUtils.getAliases(keystore);
 			if (aliases.size() == 1) {
 				return aliases.get(0);
 			}
@@ -50,18 +48,6 @@ public class ClientCertificateKeyManager implements X509KeyManager {
 		}
 
 		throw new UnsupportedOperationException();
-	}
-
-	private List<String> getAliases() throws KeyStoreException {
-		List<String> ret = Lists.newArrayList();
-
-		Enumeration<String> aliases = keystore.aliases();
-		while (aliases.hasMoreElements()) {
-			String alias = aliases.nextElement();
-			ret.add(alias);
-		}
-
-		return ret;
 	}
 
 	@Override

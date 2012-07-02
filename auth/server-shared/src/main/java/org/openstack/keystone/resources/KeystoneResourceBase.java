@@ -15,7 +15,7 @@ import org.openstack.keystone.model.Auth;
 import org.openstack.keystone.services.AuthenticationFacade;
 import org.openstack.keystone.services.AuthenticationInfo;
 import org.openstack.keystone.services.AuthenticatorException;
-import org.openstack.keystone.services.SystemAuth;
+import org.openstack.keystone.services.ServiceAccount;
 import org.openstack.keystone.services.SystemAuthenticator;
 import org.openstack.keystone.services.TokenInfo;
 import org.platformlayer.TimeSpan;
@@ -61,12 +61,12 @@ public class KeystoneResourceBase {
 	@Inject
 	SystemAuthenticator systemAuthenticator;
 
-	protected void requireSystemToken() {
+	protected void requireSystemToken() throws AuthenticatorException {
 		X509Certificate[] certChain = (X509Certificate[]) request.getAttribute("javax.servlet.request.X509Certificate");
 		if (certChain != null && certChain.length != 0) {
 			X509Certificate head = certChain[0];
 
-			SystemAuth auth = systemAuthenticator.authenticate(certChain);
+			ServiceAccount auth = systemAuthenticator.authenticate(certChain);
 			if (auth != null) {
 				return;
 			}

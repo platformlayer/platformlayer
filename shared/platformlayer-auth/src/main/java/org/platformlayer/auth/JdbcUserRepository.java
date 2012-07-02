@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.KeyPair;
 import java.security.PublicKey;
+import java.security.cert.X509Certificate;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -261,6 +262,12 @@ public class JdbcUserRepository implements UserRepository {
 
 		@Query("UPDATE projects SET secret=? WHERE id=?")
 		int updateProjectSecret(byte[] secret, int projectId) throws SQLException;
+
+		@Query("SELECT * FROM service_accounts WHERE subject=? and public_key=?")
+		OpsServiceAccount findServiceAccount(String subject, byte[] publicKey) throws SQLException;
+
+		@Query("INSERT INTO service_accounts (subject, public_key) VALUES (?, ?)")
+		int insertServiceAccount(String subject, byte[] publicKey) throws SQLException;
 	}
 
 	@Inject
@@ -366,6 +373,14 @@ public class JdbcUserRepository implements UserRepository {
 		public OpsProject findProjectByKey(String key) throws SQLException {
 			return queries.findProjectByKey(key);
 		}
+
+		public OpsServiceAccount findServiceAccount(String subject, byte[] publicKey) throws SQLException {
+			return queries.findServiceAccount(subject, publicKey);
+		}
+
+		public int insertServiceAccount(String subject, byte[] publicKey) throws SQLException {
+			return queries.insertServiceAccount(subject, publicKey);
+		}
 	}
 
 	@Override
@@ -459,6 +474,69 @@ public class JdbcUserRepository implements UserRepository {
 			return created;
 		} catch (SQLException e) {
 			throw new RepositoryException("Error creating project", e);
+		} finally {
+			db.close();
+		}
+	}
+
+	@Override
+	@JdbcTransaction
+	public OpsServiceAccount findServiceAccount(String subject, byte[] publicKey) throws RepositoryException {
+		if (publicKey == null || subject == null) {
+			throw new IllegalArgumentException();
+		}
+
+		DbHelper db = new DbHelper();
+		try {
+			return db.findServiceAccount(subject, publicKey);
+		} catch (SQLException e) {
+			throw new RepositoryException("Error reading system account", e);
+		} finally {
+			db.close();
+		}
+	}
+
+	@Override
+	@JdbcTransaction
+	public OpsServiceAccount createServiceAccount(X509Certificate cert) throws RepositoryException {
+		DbHelper db = new DbHelper();
+		try {
+			// byte[] secretData;
+			//
+			// SecretKey userSecret = AesUtils.generateKey();
+			//
+			// try {
+			// byte[] plaintext = AesUtils.serialize(userSecret);
+			//
+			// byte[] tokenSecret = CryptoUtils.generateSecureRandom(plaintext.length);
+			//
+			// ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			// SecretStore.Writer writer = new SecretStore.Writer(baos);
+			//
+			// writer.writeUserPassword(plaintext, password);
+			// writer.writeLockedByToken(plaintext, OpsUser.TOKEN_ID_DEFAULT, tokenSecret);
+			// writer.close();
+			//
+			// secretData = baos.toByteArray();
+			// } catch (IOException e) {
+			// throw new RepositoryException("Error encrypting secrets", e);
+			// }
+			//
+			// byte[] hashedPassword = PasswordHash.doPasswordHash(password);
+			//
+			// KeyPair userRsaKeyPair = RsaUtils.generateRsaKeyPair(RsaUtils.SMALL_KEYSIZE);
+			//
+			// byte[] privateKeyData = RsaUtils.serialize(userRsaKeyPair.getPrivate());
+			// privateKeyData = AesUtils.encrypt(userSecret, privateKeyData);
+			// byte[] publicKeyData = RsaUtils.serialize(userRsaKeyPair.getPublic());
+			String subject = cert.getSubjectDN().getName();
+			byte[] publicKey = cert.getPublicKey().getEncoded();
+
+			db.insertServiceAccount(subject, publicKey);
+
+			return findServiceAccount(subject, publicKey);
+		} catch (SQLException e) {
+			throw new RepositoryException("Error creating service account", e);
 		} finally {
 			db.close();
 		}

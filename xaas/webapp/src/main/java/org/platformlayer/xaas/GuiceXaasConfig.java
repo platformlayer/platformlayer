@@ -1,9 +1,7 @@
 package org.platformlayer.xaas;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.KeyStore;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
@@ -13,6 +11,7 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.TrustManager;
 import javax.sql.DataSource;
 
+import org.openstack.crypto.KeyStoreUtils;
 import org.openstack.keystone.service.KeystoneTokenValidator;
 import org.openstack.utils.PropertyUtils;
 import org.platformlayer.PlatformLayerClient;
@@ -141,10 +140,7 @@ public class GuiceXaasConfig extends AbstractModule {
 			// String keystorePassword = "password";
 			ClientCertificateKeyManager keyManager = null;
 			try {
-				KeyStore keystore = KeyStore.getInstance("JKS");
-				InputStream keystoreInput = new FileInputStream(certFile);
-				keystore.load(keystoreInput, secret.toCharArray());
-				keystoreInput.close();
+				KeyStore keystore = KeyStoreUtils.load(certFile, secret);
 
 				keyManager = new ClientCertificateKeyManager(keystore, secret);
 

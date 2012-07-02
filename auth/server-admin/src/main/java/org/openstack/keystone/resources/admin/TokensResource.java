@@ -42,7 +42,12 @@ public class TokensResource extends KeystoneResourceBase {
 	@Path("{tokenId}")
 	public ValidateTokenResponse validateToken(@HeaderParam("X-Auth-Token") String myToken,
 			@PathParam("tokenId") String checkToken, @QueryParam("belongsTo") String tenantId) {
-		requireSystemToken();
+		try {
+			requireSystemToken();
+		} catch (AuthenticatorException e) {
+			log.warn("Error while checking system token", e);
+			throwInternalError();
+		}
 
 		TokenInfo checkTokenInfo = authentication.validateToken(checkToken);
 		if (checkTokenInfo == null) {
