@@ -12,3 +12,7 @@ create table user_projects (user_id int, project_id int);
 create unique index user_projects_index on user_projects (user_id, project_id);
 grant all on user_projects to platformlayer_auth;
 
+create table service_accounts (subject varchar, public_key bytea);
+create index service_accounts_index on service_accounts (public_key);
+grant all on service_accounts to platformlayer_auth;
+

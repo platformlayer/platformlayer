@@ -9,7 +9,7 @@ import org.openstack.keystone.services.ServiceAccount;
 
 @Entity
 @Table(name = "service_accounts")
-public class OpsServiceAccount implements ServiceAccount {
+public class ServiceAccountEntity implements ServiceAccount {
 	@Id
 	public String subject;
 

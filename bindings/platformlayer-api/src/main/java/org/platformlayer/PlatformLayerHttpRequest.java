@@ -26,13 +26,13 @@ import org.slf4j.LoggerFactory;
 class PlatformLayerHttpRequest implements Closeable {
 	static final Logger log = LoggerFactory.getLogger(PlatformLayerHttpRequest.class);
 
-	final PlatformLayerHttpClient client;
+	final PlatformLayerHttpTransport client;
 	final SimpleHttpRequest httpRequest;
 	SimpleHttpResponse response;
 
 	PrintStream debug;
 
-	public PlatformLayerHttpRequest(PlatformLayerHttpClient client, String method, URI uri)
+	public PlatformLayerHttpRequest(PlatformLayerHttpTransport client, String method, URI uri)
 			throws PlatformLayerClientException {
 		this.client = client;
 		try {

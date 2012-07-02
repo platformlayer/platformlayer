@@ -11,14 +11,17 @@ import org.platformlayer.exceptions.OpenstackClientConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class PlatformLayerHttpClient {
-	static final Logger log = LoggerFactory.getLogger(PlatformLayerHttpClient.class);
+class PlatformLayerHttpTransport {
+	static final Logger log = LoggerFactory.getLogger(PlatformLayerHttpTransport.class);
 
 	final Authenticator authClient;
 	PrintStream debug = null;
 
-	public PlatformLayerHttpClient(Authenticator authenticator) {
-		this.authClient = authenticator;
+	final String platformlayerEndpoint;
+
+	public PlatformLayerHttpTransport(String platformlayerEndpoint, Authenticator authClient) {
+		this.platformlayerEndpoint = platformlayerEndpoint;
+		this.authClient = authClient;
 	}
 
 	private static final long SLEEP_BETWEEN_RETRIES = 200;
@@ -39,12 +42,15 @@ class PlatformLayerHttpClient {
 	}
 
 	private String getPlatformLayerEndpoint() throws PlatformLayerClientException {
-		String url = getAuthenticationToken().getServiceUrl(DirectPlatformLayerClient.SERVICE_PLATFORMLAYER);
-		if (url == null) {
-			throw new PlatformLayerClientException("PlatformLayer endpoint not found");
-		}
-		return url;
+		return platformlayerEndpoint;
 	}
+
+	// String url = getAuthenticationToken().getServiceUrl(DirectPlatformLayerClient.SERVICE_PLATFORMLAYER);
+	// if (url == null) {
+	// throw new PlatformLayerClientException("PlatformLayer endpoint not found");
+	// }
+	// return url;
+	// }
 
 	private URI buildUri(String relativePath) throws PlatformLayerClientException {
 		String urlString = getPlatformLayerEndpoint();

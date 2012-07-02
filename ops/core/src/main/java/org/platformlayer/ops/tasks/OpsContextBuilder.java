@@ -5,11 +5,10 @@ import java.util.List;
 import javax.crypto.SecretKey;
 import javax.inject.Inject;
 
-import org.platformlayer.DirectPlatformLayerClient;
+import org.platformlayer.HttpPlatformLayerClient;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.TypedPlatformLayerClient;
-import org.platformlayer.auth.AuthenticationToken;
 import org.platformlayer.auth.DirectAuthenticationToken;
 import org.platformlayer.auth.DirectAuthenticator;
 import org.platformlayer.auth.OpsProject;
@@ -56,7 +55,7 @@ public class OpsContextBuilder {
 			runAsProject = multitenant.getMasterProject();
 		}
 
-		ProjectId runAsProjectId = new ProjectId(runAsProject.key);
+		ProjectId runAsProjectId = new ProjectId(runAsProject.getName());
 		return runAsProjectId;
 	}
 
@@ -72,7 +71,7 @@ public class OpsContextBuilder {
 		MultitenantConfiguration multitenant = opsSystem.getMultitenantConfiguration();
 		if (multitenant != null) {
 			OpsProject masterProject = multitenant.getMasterProject();
-			if (runAsProject.key.equals(masterProject.key)) {
+			if (runAsProject.getName().equals(masterProject.getName())) {
 				// We're in the master project
 				multitenant = null;
 			} else {
@@ -108,7 +107,7 @@ public class OpsContextBuilder {
 
 		federationMap.addDefault(defaultClient);
 
-		ProjectId runAsProjectId = new ProjectId(runAsProject.key);
+		ProjectId runAsProjectId = new ProjectId(runAsProject.getName());
 		PlatformLayerClient platformLayerClient = FederatedPlatformLayerClient.build(runAsProjectId, federationMap);
 
 		ServiceConfiguration serviceConfiguration = new ServiceConfiguration(serviceAuthenticationService, serviceType,
@@ -151,20 +150,23 @@ public class OpsContextBuilder {
 
 	private TypedPlatformLayerClient buildClient(OpsProject project) {
 		DirectAuthenticator directAuthenticator = buildDirectAuthenticator(project);
-		ProjectId projectId = new ProjectId(project.key);
+		ProjectId projectId = new ProjectId(project.getName());
 
-		DirectPlatformLayerClient client = DirectPlatformLayerClient.build(directAuthenticator, projectId);
+		String platformlayerEndpoint = directAuthenticator.getAuthenticationToken().getPlatformLayerServiceUrl();
+
+		HttpPlatformLayerClient client = HttpPlatformLayerClient.build(platformlayerEndpoint, directAuthenticator,
+				projectId);
 
 		return new PlatformLayerHelpers(client, serviceProviderHelpers);
 
 	}
 
 	private DirectAuthenticator buildDirectAuthenticator(OpsProject project) {
-		String keyId = "project:" + project.key;
+		String keyId = "project:" + project.getName();
 		SecretKey secret = project.getProjectSecret();
 		String platformLayerUrl = OpsSystem.getPlatformLayerUrlBase();
-		platformLayerUrl += project.key;
-		AuthenticationToken token = new DirectAuthenticationToken(platformLayerUrl, keyId, secret);
+		platformLayerUrl += project.getName();
+		DirectAuthenticationToken token = new DirectAuthenticationToken(platformLayerUrl, keyId, secret);
 		DirectAuthenticator directAuthenticator = new DirectAuthenticator(token);
 		return directAuthenticator;
 	}

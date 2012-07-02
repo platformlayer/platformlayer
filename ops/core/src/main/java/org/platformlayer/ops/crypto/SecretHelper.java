@@ -8,7 +8,6 @@ import javax.crypto.SecretKey;
 import javax.inject.Inject;
 
 import org.platformlayer.auth.OpsProject;
-import org.platformlayer.auth.UserRepository;
 import org.platformlayer.auth.crypto.SecretStore;
 import org.platformlayer.crypto.AesUtils;
 import org.platformlayer.ops.OpsContext;
@@ -18,9 +17,6 @@ public class SecretHelper {
 	OpsKeyStore keyStore;
 
 	// TODO: We need to use the project secret, not the item secret
-
-	@Inject
-	UserRepository userRepository;
 
 	public byte[] encodeItemSecret(SecretKey itemSecret) {
 		try {
@@ -63,7 +59,7 @@ public class SecretHelper {
 					// }
 				}
 
-				writer.writeLockedByProjectKey(plaintext, project.id, project.getProjectSecret());
+				writer.writeLockedByProjectKey(plaintext, project.getId(), project.getProjectSecret());
 			}
 
 			// for (int userId : keyStore.getProjectIds()) {
@@ -122,7 +118,7 @@ public class SecretHelper {
 		SecretKey secretKey = null;
 
 		for (OpsProject project : OpsContext.get().getEncryptingProjects()) {
-			secretKey = secretStore.getSecretFromProject(project.id, project.getProjectSecret());
+			secretKey = secretStore.getSecretFromProject(project.getId(), project.getProjectSecret());
 		}
 
 		if (secretKey == null) {

@@ -15,7 +15,7 @@ import java.util.Properties;
 
 import org.openstack.client.utils.RandomUtil;
 import org.openstack.utils.Io;
-import org.platformlayer.DirectPlatformLayerClient;
+import org.platformlayer.HttpPlatformLayerClient;
 import org.platformlayer.IoUtils;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientBase;
@@ -86,7 +86,7 @@ public class PlatformLayerTestContext {
 			} catch (IOException e) {
 				throw new IOException("Error reading configuration file", e);
 			}
-			client = DirectPlatformLayerClient.buildUsingProperties(properties);
+			client = HttpPlatformLayerClient.buildUsingProperties(properties);
 		} finally {
 			if (is != System.in) {
 				IoUtils.safeClose(is);

@@ -1,10 +1,12 @@
 package org.platformlayer.model;
 
 public interface Authentication {
-	String getProject();
+	ProjectAuthentication getProject();
 
 	String getUserKey();
 
+	// TODO: Remove
+	@Deprecated
 	boolean isInRole(String project, RoleId role);
 
 	byte[] getUserSecret();

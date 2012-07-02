@@ -30,7 +30,9 @@ import org.platformlayer.jdbc.JdbcUtils;
 import org.platformlayer.jdbc.proxy.Query;
 import org.platformlayer.jdbc.proxy.QueryFactory;
 
-public class JdbcUserRepository implements UserRepository {
+import com.google.common.collect.Lists;
+
+public class JdbcUserRepository implements UserRepository, UserDatabase {
 	static final Logger log = Logger.getLogger(JdbcUserRepository.class);
 
 	@Inject
@@ -42,12 +44,12 @@ public class JdbcUserRepository implements UserRepository {
 			throws RepositoryException {
 		DbHelper db = new DbHelper();
 		try {
-			OpsUser user = db.findUserByKey(username);
+			UserEntity user = db.findUserByKey(username);
 			if (user == null) {
 				throw new RepositoryException("User not found");
 			}
 
-			OpsProject project = db.findProjectByKey(projectKey);
+			ProjectEntity project = db.findProjectByKey(projectKey);
 			if (project == null) {
 				throw new RepositoryException("Project not found");
 			}
@@ -85,12 +87,12 @@ public class JdbcUserRepository implements UserRepository {
 			throws RepositoryException {
 		DbHelper db = new DbHelper();
 		try {
-			OpsProject grantToProject = db.findProjectByKey(grantToProjectKey);
+			ProjectEntity grantToProject = db.findProjectByKey(grantToProjectKey);
 			if (grantToProject == null) {
 				throw new RepositoryException("Project not found");
 			}
 
-			OpsProject onProject = db.findProjectByKey(onProjectKey);
+			ProjectEntity onProject = db.findProjectByKey(onProjectKey);
 			if (onProject == null) {
 				throw new RepositoryException("Project not found");
 			}
@@ -127,7 +129,9 @@ public class JdbcUserRepository implements UserRepository {
 	public List<OpsProject> listProjectsByUserId(int userId) throws RepositoryException {
 		DbHelper db = new DbHelper();
 		try {
-			return db.findProjectsByUserId(userId);
+			List<OpsProject> projects = Lists.newArrayList();
+			projects.addAll(db.findProjectsByUserId(userId));
+			return projects;
 		} catch (SQLException e) {
 			throw new RepositoryException("Error reading groups", e);
 		} finally {
@@ -153,7 +157,7 @@ public class JdbcUserRepository implements UserRepository {
 				SecretStore.Writer writer = new SecretStore.Writer(baos);
 
 				writer.writeUserPassword(plaintext, password);
-				writer.writeLockedByToken(plaintext, OpsUser.TOKEN_ID_DEFAULT, tokenSecret);
+				writer.writeLockedByToken(plaintext, UserEntity.TOKEN_ID_DEFAULT, tokenSecret);
 				writer.close();
 
 				secretData = baos.toByteArray();
@@ -181,10 +185,10 @@ public class JdbcUserRepository implements UserRepository {
 
 	@Override
 	@JdbcTransaction
-	public OpsUser findUserById(int userId) throws RepositoryException {
+	public UserEntity findUserById(int userId) throws RepositoryException {
 		DbHelper db = new DbHelper();
 		try {
-			OpsUser user = db.findUserById(userId);
+			UserEntity user = db.findUserById(userId);
 
 			return user;
 		} catch (SQLException e) {
@@ -249,22 +253,22 @@ public class JdbcUserRepository implements UserRepository {
 		List<String> listProjects(String keyLike) throws SQLException;
 
 		@Query("SELECT * FROM users WHERE key=?")
-		OpsUser findUserByKey(String key) throws SQLException;
+		UserEntity findUserByKey(String key) throws SQLException;
 
 		@Query("SELECT * FROM users WHERE id=?")
-		OpsUser findUserById(int userId) throws SQLException;
+		UserEntity findUserById(int userId) throws SQLException;
 
 		@Query("SELECT p.* FROM projects as p, user_projects as up WHERE up.user_id=? and p.id = up.project_id")
-		List<OpsProject> findProjectsByUserId(int userId) throws SQLException;
+		List<ProjectEntity> findProjectsByUserId(int userId) throws SQLException;
 
 		@Query("SELECT * FROM projects WHERE key=?")
-		OpsProject findProjectByKey(String key) throws SQLException;
+		ProjectEntity findProjectByKey(String key) throws SQLException;
 
 		@Query("UPDATE projects SET secret=? WHERE id=?")
 		int updateProjectSecret(byte[] secret, int projectId) throws SQLException;
 
 		@Query("SELECT * FROM service_accounts WHERE subject=? and public_key=?")
-		OpsServiceAccount findServiceAccount(String subject, byte[] publicKey) throws SQLException;
+		ServiceAccountEntity findServiceAccount(String subject, byte[] publicKey) throws SQLException;
 
 		@Query("INSERT INTO service_accounts (subject, public_key) VALUES (?, ?)")
 		int insertServiceAccount(String subject, byte[] publicKey) throws SQLException;
@@ -296,7 +300,7 @@ public class JdbcUserRepository implements UserRepository {
 		}
 
 		public Integer findUserId(String key) throws SQLException {
-			OpsUser user = findUserByKey(key);
+			UserEntity user = findUserByKey(key);
 			if (user == null) {
 				return null;
 			}
@@ -341,7 +345,7 @@ public class JdbcUserRepository implements UserRepository {
 			return userId;
 		}
 
-		public OpsUser findUserByKey(String key) throws SQLException {
+		public UserEntity findUserByKey(String key) throws SQLException {
 			return queries.findUserByKey(key);
 		}
 
@@ -353,11 +357,11 @@ public class JdbcUserRepository implements UserRepository {
 			return queries.listProjects(keyLike);
 		}
 
-		public OpsUser findUserById(int userId) throws SQLException {
+		public UserEntity findUserById(int userId) throws SQLException {
 			return queries.findUserById(userId);
 		}
 
-		public List<OpsProject> findProjectsByUserId(int userId) throws SQLException {
+		public List<ProjectEntity> findProjectsByUserId(int userId) throws SQLException {
 			return queries.findProjectsByUserId(userId);
 		}
 
@@ -370,11 +374,11 @@ public class JdbcUserRepository implements UserRepository {
 			return queries.insertProject(key, secretData, metadata, publicKeyData, privateKeyData);
 		}
 
-		public OpsProject findProjectByKey(String key) throws SQLException {
+		public ProjectEntity findProjectByKey(String key) throws SQLException {
 			return queries.findProjectByKey(key);
 		}
 
-		public OpsServiceAccount findServiceAccount(String subject, byte[] publicKey) throws SQLException {
+		public ServiceAccountEntity findServiceAccount(String subject, byte[] publicKey) throws SQLException {
 			return queries.findServiceAccount(subject, publicKey);
 		}
 
@@ -385,7 +389,7 @@ public class JdbcUserRepository implements UserRepository {
 
 	@Override
 	@JdbcTransaction
-	public OpsUser findUser(String username) throws RepositoryException {
+	public UserEntity findUser(String username) throws RepositoryException {
 		DbHelper db = new DbHelper();
 		try {
 			return db.findUserByKey(username);
@@ -398,7 +402,7 @@ public class JdbcUserRepository implements UserRepository {
 
 	@Override
 	@JdbcTransaction
-	public OpsProject findProjectByKey(String key) throws RepositoryException {
+	public ProjectEntity findProjectByKey(String key) throws RepositoryException {
 		DbHelper db = new DbHelper();
 		try {
 			return findProjectByKey(db, key);
@@ -407,9 +411,9 @@ public class JdbcUserRepository implements UserRepository {
 		}
 	}
 
-	OpsProject findProjectByKey(DbHelper db, String key) throws RepositoryException {
+	ProjectEntity findProjectByKey(DbHelper db, String key) throws RepositoryException {
 		try {
-			OpsProject project = db.findProjectByKey(key);
+			ProjectEntity project = db.findProjectByKey(key);
 
 			return project;
 		} catch (SQLException e) {
@@ -421,14 +425,15 @@ public class JdbcUserRepository implements UserRepository {
 
 	@Override
 	@JdbcTransaction
-	public OpsProject createProject(String key, OpsUser owner) throws RepositoryException {
+	public OpsProject createProject(String key, OpsUser ownerObject) throws RepositoryException {
+		UserEntity owner = (UserEntity) ownerObject;
 		if (owner.id == 0 || owner.isLocked()) {
 			throw new IllegalArgumentException();
 		}
 
 		DbHelper db = new DbHelper();
 		try {
-			OpsProject project;
+			ProjectEntity project;
 
 			byte[] secretData;
 			byte[] metadata;
@@ -448,7 +453,7 @@ public class JdbcUserRepository implements UserRepository {
 				byte[] metadataPlaintext = Utf8.getBytes(metadataString);
 				metadata = AesUtils.encrypt(projectSecret, metadataPlaintext);
 
-				project = new OpsProject();
+				project = new ProjectEntity();
 				project.setProjectSecret(projectSecret);
 
 				KeyPair projectRsaKeyPair = RsaUtils.generateRsaKeyPair(RsaUtils.SMALL_KEYSIZE);
@@ -463,7 +468,7 @@ public class JdbcUserRepository implements UserRepository {
 				throw new RepositoryException("Unexpected number of rows inserted");
 			}
 
-			OpsProject created = findProjectByKey(db, key);
+			ProjectEntity created = findProjectByKey(db, key);
 
 			if (created == null) {
 				throw new RepositoryException("Created project not found");
@@ -481,7 +486,7 @@ public class JdbcUserRepository implements UserRepository {
 
 	@Override
 	@JdbcTransaction
-	public OpsServiceAccount findServiceAccount(String subject, byte[] publicKey) throws RepositoryException {
+	public ServiceAccountEntity findServiceAccount(String subject, byte[] publicKey) throws RepositoryException {
 		if (publicKey == null || subject == null) {
 			throw new IllegalArgumentException();
 		}
@@ -498,7 +503,7 @@ public class JdbcUserRepository implements UserRepository {
 
 	@Override
 	@JdbcTransaction
-	public OpsServiceAccount createServiceAccount(X509Certificate cert) throws RepositoryException {
+	public ServiceAccountEntity createServiceAccount(X509Certificate cert) throws RepositoryException {
 		DbHelper db = new DbHelper();
 		try {
 			// byte[] secretData;
@@ -540,5 +545,55 @@ public class JdbcUserRepository implements UserRepository {
 		} finally {
 			db.close();
 		}
+	}
+
+	@Override
+	public UserEntity authenticateWithPassword(String username, String password) throws RepositoryException {
+		UserEntity user = findUser(username);
+
+		if (user == null) {
+			return null;
+		}
+
+		if (!user.isPasswordMatch(password)) {
+			return null;
+		}
+
+		user.unlockWithPassword(password);
+
+		return user;
+	}
+
+	@Override
+	public OpsProject authenticateProject(String projectKey, SecretKey secret) throws RepositoryException {
+		ProjectEntity project = findProjectByKey(projectKey);
+
+		if (project == null) {
+			return null;
+		}
+
+		project.setProjectSecret(secret);
+
+		if (!project.isSecretValid()) {
+			return null;
+		}
+
+		return project;
+	}
+
+	@Override
+	public ProjectEntity findProject(OpsUser user, String projectKey) throws RepositoryException {
+		ProjectEntity project = findProjectByKey(projectKey);
+
+		if (project == null) {
+			return null;
+		}
+		project.unlockWithUser(user);
+
+		if (!project.isSecretValid()) {
+			return null;
+		}
+
+		return project;
 	}
 }

@@ -6,8 +6,8 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.TrustManager;
 
+import org.openstack.docs.identity.api.v2.ProjectValidation;
 import org.openstack.docs.identity.api.v2.Role;
-import org.openstack.docs.identity.api.v2.Tenant;
 import org.openstack.docs.identity.api.v2.UserValidation;
 import org.openstack.docs.identity.api.v2.ValidateAccess;
 import org.openstack.docs.identity.api.v2.ValidateTokenResponse;
@@ -77,17 +77,17 @@ public class KeystoneTokenValidator extends RestfulClient implements Authenticat
 
 			ValidateAccess access = response.getAccess();
 
-			Tenant tenant = access.getToken().getTenant();
-			String tenantId = tenant.getId();
-			if (tenantId == null) {
+			ProjectValidation project = access.getProject();
+			String projectId = project.getId();
+			if (projectId == null) {
 				return null;
 			}
 
 			List<String> roles = Lists.newArrayList();
 			UserValidation userInfo = access.getUser();
 			for (Role role : userInfo.getRoles()) {
-				if (!role.getTenantId().equals(tenantId)) {
-					throw new IllegalStateException("Tenant mismatch: " + role.getTenantId() + " vs " + tenantId);
+				if (!role.getTenantId().equals(projectId)) {
+					throw new IllegalStateException("Tenant mismatch: " + role.getTenantId() + " vs " + projectId);
 				}
 				roles.add(role.getName());
 			}
@@ -95,7 +95,7 @@ public class KeystoneTokenValidator extends RestfulClient implements Authenticat
 			byte[] userSecret = userInfo.getSecret();
 			String userKey = userInfo.getName();
 
-			KeystoneAuthentication auth = new KeystoneAuthentication(userKey, tenantId, userSecret, roles);
+			KeystoneAuthentication auth = new KeystoneAuthentication(userKey, project, userSecret, roles);
 			return auth;
 		} catch (PlatformLayerClientException e) {
 			if (e.getHttpResponseCode() != null && e.getHttpResponseCode() == 404) {

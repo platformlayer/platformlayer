@@ -1,7 +1,6 @@
 package org.openstack.keystone.resources;
 
 import java.security.cert.X509Certificate;
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -11,14 +10,11 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 
 import org.apache.log4j.Logger;
-import org.openstack.keystone.model.Auth;
-import org.openstack.keystone.services.AuthenticationFacade;
-import org.openstack.keystone.services.AuthenticationInfo;
 import org.openstack.keystone.services.AuthenticatorException;
 import org.openstack.keystone.services.ServiceAccount;
 import org.openstack.keystone.services.SystemAuthenticator;
-import org.openstack.keystone.services.TokenInfo;
 import org.platformlayer.TimeSpan;
+import org.platformlayer.auth.keystone.KeystoneUserAuthenticator;
 
 public class KeystoneResourceBase {
 	static final Logger log = Logger.getLogger(KeystoneResourceBase.class);
@@ -29,14 +25,20 @@ public class KeystoneResourceBase {
 	public static final String APPLICATION_JSON = javax.ws.rs.core.MediaType.APPLICATION_JSON;
 	public static final String APPLICATION_XML = javax.ws.rs.core.MediaType.APPLICATION_XML;
 
-	@Inject
-	protected AuthenticationFacade authentication;
+	// @Inject
+	// protected AuthenticationFacade authentication;
 
 	@Context
 	HttpHeaders httpHeaders;
 
 	@Context
 	HttpServletRequest request;
+
+	@Inject
+	SystemAuthenticator systemAuthenticator;
+
+	@Inject
+	protected KeystoneUserAuthenticator userAuthenticator;
 
 	protected void throw404NotFound() {
 		throw new WebApplicationException(404);
@@ -57,9 +59,6 @@ public class KeystoneResourceBase {
 		}
 		return authHeader.get(0);
 	}
-
-	@Inject
-	SystemAuthenticator systemAuthenticator;
 
 	protected void requireSystemToken() throws AuthenticatorException {
 		X509Certificate[] certChain = (X509Certificate[]) request.getAttribute("javax.servlet.request.X509Certificate");
@@ -83,33 +82,4 @@ public class KeystoneResourceBase {
 		return (list == null) || (list.isEmpty());
 	}
 
-	protected TokenInfo tryAuthenticate(Auth request) throws AuthenticatorException {
-		String username = null;
-		String password = null;
-		String scope = request.tenantName;
-
-		if (request.passwordCredentials != null) {
-			username = request.passwordCredentials.username;
-			password = request.passwordCredentials.password;
-		}
-
-		AuthenticationInfo authenticated = authentication.authenticate(username, password);
-		if (authenticated == null) {
-			log.debug("Authentication request failed for " + username);
-
-			return null;
-		}
-
-		return buildToken(scope, authenticated.getUserId(), authenticated.getTokenSecret());
-	}
-
-	private TokenInfo buildToken(String scope, String userId, byte[] tokenSecret) {
-		Date now = new Date();
-		Date expiration = TOKEN_VALIDITY.addTo(now);
-
-		byte flags = 0;
-		TokenInfo tokenInfo = new TokenInfo(flags, scope, userId, expiration, tokenSecret);
-
-		return tokenInfo;
-	}
 }

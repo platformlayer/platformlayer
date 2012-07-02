@@ -2,8 +2,8 @@ package org.platformlayer.keystone.cli.commands;
 
 import org.kohsuke.args4j.Argument;
 import org.platformlayer.RepositoryException;
-import org.platformlayer.auth.OpsUser;
-import org.platformlayer.auth.UserRepository;
+import org.platformlayer.auth.UserDatabase;
+import org.platformlayer.auth.UserEntity;
 import org.platformlayer.keystone.cli.model.UserName;
 
 public class ListProjects extends KeystoneCommandRunnerBase {
@@ -16,12 +16,12 @@ public class ListProjects extends KeystoneCommandRunnerBase {
 
 	@Override
 	public Object runCommand() throws RepositoryException {
-		UserRepository userRepository = getContext().getUserRepository();
+		UserDatabase userRepository = getContext().getUserRepository();
 
 		// if (username == null) {
 		// return userRepository.listAllProjectNames(null);
 		// } else {
-		OpsUser user = userRepository.findUser(username.getKey());
+		UserEntity user = (UserEntity) userRepository.findUser(username.getKey());
 		if (user == null) {
 			throw new IllegalArgumentException("User not found");
 		}

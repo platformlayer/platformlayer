@@ -10,4 +10,6 @@ public class ValidateAccess {
 	public Token token;
 
 	public UserValidation user;
+
+	public ProjectValidation project;
 }

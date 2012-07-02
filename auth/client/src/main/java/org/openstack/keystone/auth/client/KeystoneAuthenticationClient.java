@@ -53,11 +53,11 @@ public class KeystoneAuthenticationClient {
 		return doSimpleRequest(token, "GET", "tokens", null, TenantsList.class);
 	}
 
-	public KeystoneAuthenticationToken authenticate(String tenantName, PasswordCredentials passwordCredentials)
+	public KeystoneAuthenticationToken authenticate(String project, PasswordCredentials passwordCredentials)
 			throws KeystoneAuthenticationException {
 		Auth auth = new Auth();
 		auth.setPasswordCredentials(passwordCredentials);
-		auth.setTenantName(tenantName);
+		auth.setProject(project);
 
 		AuthenticateRequest request = new AuthenticateRequest();
 		request.setAuth(auth);

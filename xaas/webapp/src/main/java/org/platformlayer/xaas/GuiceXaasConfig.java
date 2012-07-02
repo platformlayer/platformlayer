@@ -16,9 +16,6 @@ import org.openstack.keystone.service.KeystoneTokenValidator;
 import org.openstack.utils.PropertyUtils;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.WellKnownPorts;
-import org.platformlayer.auth.JdbcUserRepository;
-import org.platformlayer.auth.OpsProject;
-import org.platformlayer.auth.OpsUser;
 import org.platformlayer.auth.UserRepository;
 import org.platformlayer.guice.GuiceDataSourceProvider;
 import org.platformlayer.guice.GuiceObjectInjector;
@@ -43,6 +40,7 @@ import org.platformlayer.ops.tasks.SimpleOperationQueue;
 import org.platformlayer.ssh.mina.MinaSshContext;
 import org.platformlayer.xaas.discovery.AnnotationDiscovery;
 import org.platformlayer.xaas.discovery.JerseyAnnotationDiscovery;
+import org.platformlayer.xaas.keystone.KeystoneUserRepository;
 import org.platformlayer.xaas.ops.InProcessChangeQueue;
 import org.platformlayer.xaas.repository.JobRepository;
 import org.platformlayer.xaas.repository.ManagedItemRepository;
@@ -82,10 +80,9 @@ public class GuiceXaasConfig extends AbstractModule {
 		bind(OpsSystem.class);
 
 		bind(OpsContext.class).toProvider(OpsContextProvider.class);
-		bind(UserRepository.class).to(JdbcUserRepository.class).asEagerSingleton();
+		bind(UserRepository.class).to(KeystoneUserRepository.class).asEagerSingleton();
 
-		bind(ResultSetMappers.class).toProvider(
-				ResultSetMappersProvider.build(OpsUser.class, OpsProject.class, ItemEntity.class, TagEntity.class));
+		bind(ResultSetMappers.class).toProvider(ResultSetMappersProvider.build(ItemEntity.class, TagEntity.class));
 
 		bind(DataSource.class).toProvider(new GuiceDataSourceProvider("platformlayer.jdbc.", null));
 

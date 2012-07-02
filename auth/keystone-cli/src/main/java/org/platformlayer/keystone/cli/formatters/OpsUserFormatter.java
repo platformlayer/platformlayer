@@ -19,8 +19,8 @@ public class OpsUserFormatter extends SimpleFormatter<OpsUser> {
 	public void visit(OpsUser o, OutputSink sink) throws IOException {
 		LinkedHashMap<String, Object> values = Maps.newLinkedHashMap();
 
-		values.put("id", o.id);
-		values.put("key", o.key);
+		// values.put("id", o.id);
+		values.put("user", o.toString());
 
 		sink.outputRow(values);
 	}

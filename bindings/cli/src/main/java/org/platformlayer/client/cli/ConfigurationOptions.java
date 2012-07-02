@@ -10,7 +10,7 @@ import java.util.Properties;
 import org.kohsuke.args4j.Option;
 import org.openstack.utils.Io;
 import org.openstack.utils.NoCloseInputStream;
-import org.platformlayer.DirectPlatformLayerClient;
+import org.platformlayer.HttpPlatformLayerClient;
 import org.platformlayer.IoUtils;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.ops.OpsException;
@@ -26,7 +26,7 @@ public class ConfigurationOptions extends CliOptions {
 	boolean debug;
 
 	public PlatformLayerClient buildPlatformLayerClient() throws IOException, OpsException {
-		DirectPlatformLayerClient client;
+		HttpPlatformLayerClient client;
 		if (configFile == null) {
 			throw new IllegalArgumentException("Config file is required");
 		}
@@ -60,7 +60,7 @@ public class ConfigurationOptions extends CliOptions {
 				throw new CliException("User property not set in configuration file");
 			}
 
-			client = DirectPlatformLayerClient.buildUsingProperties(properties);
+			client = HttpPlatformLayerClient.buildUsingProperties(properties);
 
 			if (debug) {
 				client.setDebug(System.err);

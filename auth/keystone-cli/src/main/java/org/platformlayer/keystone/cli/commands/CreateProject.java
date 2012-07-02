@@ -3,8 +3,8 @@ package org.platformlayer.keystone.cli.commands;
 import org.kohsuke.args4j.Argument;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.auth.OpsProject;
-import org.platformlayer.auth.OpsUser;
-import org.platformlayer.auth.UserRepository;
+import org.platformlayer.auth.UserDatabase;
+import org.platformlayer.auth.UserEntity;
 
 public class CreateProject extends KeystoneCommandRunnerBase {
 	@Argument(index = 0, required = true)
@@ -16,10 +16,10 @@ public class CreateProject extends KeystoneCommandRunnerBase {
 
 	@Override
 	public Object runCommand() throws RepositoryException {
-		UserRepository userRepository = getContext().getUserRepository();
+		UserDatabase userRepository = getContext().getUserRepository();
 
 		// We need to login to unlock the user key so we can encrypt the project key!
-		OpsUser me = getContext().login();
+		UserEntity me = getContext().loginDirect();
 
 		OpsProject project = userRepository.createProject(projectKey, me);
 

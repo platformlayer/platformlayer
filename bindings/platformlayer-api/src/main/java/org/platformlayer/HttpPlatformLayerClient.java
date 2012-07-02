@@ -34,23 +34,23 @@ import org.platformlayer.xml.UnmarshalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DirectPlatformLayerClient extends PlatformLayerClientBase {
+public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 	public static final String SERVICE_PLATFORMLAYER = "platformlayer";
 
-	static final Logger log = LoggerFactory.getLogger(DirectPlatformLayerClient.class);
+	static final Logger log = LoggerFactory.getLogger(HttpPlatformLayerClient.class);
 
 	List<ServiceInfo> services;
 
 	private final ProjectId projectId;
 
-	private final PlatformLayerHttpClient httpClient;
+	private final PlatformLayerHttpTransport httpClient;
 
-	private DirectPlatformLayerClient(PlatformLayerHttpClient httpClient, ProjectId projectId) {
+	private HttpPlatformLayerClient(PlatformLayerHttpTransport httpClient, ProjectId projectId) {
 		this.httpClient = httpClient;
 		this.projectId = projectId;
 	}
 
-	public static DirectPlatformLayerClient buildUsingSavedConfiguration(String key) throws IOException {
+	public static HttpPlatformLayerClient buildUsingSavedConfiguration(String key) throws IOException {
 		File credentialsFile = new File(System.getProperty("user.home") + File.separator + ".credentials"
 				+ File.separator + key);
 		if (!credentialsFile.exists()) {
@@ -67,30 +67,34 @@ public class DirectPlatformLayerClient extends PlatformLayerClientBase {
 		return buildUsingProperties(properties);
 	}
 
-	public static DirectPlatformLayerClient buildUsingConfiguration(PlatformLayerConnectionConfiguration config) {
-		String tenant = config.tenant;
+	public static HttpPlatformLayerClient buildUsingConfiguration(PlatformLayerConnectionConfiguration config) {
+		String project = config.tenant;
 		String server = config.server;
 		String username = config.username;
 		String secret = config.secret;
+		String platformlayerEndpoint = config.platformlayerEndpoint;
 
-		Authenticator authenticator = new KeystoneAuthenticator(tenant, username, secret, server);
-		ProjectId projectId = new ProjectId(tenant);
+		Authenticator authenticator = new KeystoneAuthenticator(project, username, secret, server);
+		ProjectId projectId = new ProjectId(project);
 
-		return build(authenticator, projectId);
+		return build(platformlayerEndpoint, authenticator, projectId);
 	}
 
-	public static DirectPlatformLayerClient buildUsingProperties(Properties properties) {
+	public static HttpPlatformLayerClient buildUsingProperties(Properties properties) {
 		PlatformLayerConnectionConfiguration config = new PlatformLayerConnectionConfiguration();
 		config.tenant = properties.getProperty("platformlayer.tenant");
 		config.server = properties.getProperty("platformlayer.auth");
 		config.username = properties.getProperty("platformlayer.username");
 		config.secret = properties.getProperty("platformlayer.password");
+		config.platformlayerEndpoint = properties.getProperty("platformlayer.url");
 
 		return buildUsingConfiguration(config);
 	}
 
-	public static DirectPlatformLayerClient build(Authenticator authenticator, ProjectId projectId) {
-		return new DirectPlatformLayerClient(new PlatformLayerHttpClient(authenticator), projectId);
+	public static HttpPlatformLayerClient build(String platformlayerEndpoint, Authenticator authenticator,
+			ProjectId projectId) {
+		return new HttpPlatformLayerClient(new PlatformLayerHttpTransport(platformlayerEndpoint, authenticator),
+				projectId);
 	}
 
 	@Override

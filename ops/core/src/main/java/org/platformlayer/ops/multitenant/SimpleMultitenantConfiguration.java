@@ -51,37 +51,21 @@ public class SimpleMultitenantConfiguration implements MultitenantConfiguration 
 			throw new OpsException(message);
 		}
 
+		OpsUser user;
+		try {
+			user = userRepository.authenticateWithPassword(username, password);
+		} catch (RepositoryException e) {
+			throw new OpsException(message, e);
+		}
+
 		OpsProject project;
 		try {
-			project = userRepository.findProjectByKey(projectKey);
+			project = userRepository.findProject(user, projectKey);
 		} catch (RepositoryException e) {
 			throw new OpsException(message, e);
 		}
 
 		if (project == null) {
-			throw new OpsException(message);
-		}
-
-		OpsUser user;
-		try {
-			user = userRepository.findUser(username);
-		} catch (RepositoryException e) {
-			throw new OpsException(message, e);
-		}
-
-		if (user == null) {
-			throw new OpsException(message);
-		}
-
-		if (!user.isPasswordMatch(password)) {
-			throw new OpsException(message);
-		}
-
-		user.unlockWithPassword(password);
-
-		project.unlockWithUser(user);
-
-		if (!project.isSecretValid()) {
 			throw new OpsException(message);
 		}
 

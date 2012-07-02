@@ -2,7 +2,7 @@ package org.platformlayer.keystone.cli.autocomplete;
 
 import java.util.List;
 
-import org.platformlayer.auth.UserRepository;
+import org.platformlayer.auth.UserDatabase;
 import org.platformlayer.keystone.cli.KeystoneCliContext;
 
 import com.fathomdb.cli.CliContext;
@@ -18,7 +18,7 @@ public class UserNameAutoCompleter extends SimpleArgumentAutoCompleter {
 		}
 
 		KeystoneCliContext keystoneContext = (KeystoneCliContext) context;
-		UserRepository userRepository = keystoneContext.getUserRepository();
+		UserDatabase userRepository = keystoneContext.getUserRepository();
 		List<String> userIds = userRepository.listAllUserNames(prefix);
 		addSuffix(userIds, " ");
 

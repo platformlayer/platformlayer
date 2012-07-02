@@ -18,4 +18,6 @@ public class PlatformLayerConnectionConfiguration {
 	public String username;
 
 	public String secret;
+
+	public String platformlayerEndpoint;
 }

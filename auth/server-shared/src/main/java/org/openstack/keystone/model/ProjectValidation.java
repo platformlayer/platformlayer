@@ -2,12 +2,11 @@ package org.openstack.keystone.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Access {
-	public Token token;
+public class ProjectValidation {
+	public String id;
+	public String name;
 
-	// public List<Service> serviceCatalog;
+	public byte[] secret;
 }

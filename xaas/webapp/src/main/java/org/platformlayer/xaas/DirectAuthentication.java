@@ -1,8 +1,11 @@
 package org.platformlayer.xaas;
 
+import javax.crypto.SecretKey;
+
 import org.apache.log4j.Logger;
 import org.platformlayer.auth.OpsProject;
 import org.platformlayer.model.Authentication;
+import org.platformlayer.model.ProjectAuthentication;
 import org.platformlayer.model.RoleId;
 
 public class DirectAuthentication implements Authentication {
@@ -15,8 +18,23 @@ public class DirectAuthentication implements Authentication {
 	}
 
 	@Override
-	public String getProject() {
-		return project.key;
+	public ProjectAuthentication getProject() {
+		return new ProjectAuthentication() {
+			@Override
+			public SecretKey getSecret() {
+				return project.getProjectSecret();
+			}
+
+			@Override
+			public String getName() {
+				return project.getName();
+			}
+
+			@Override
+			public String getId() {
+				return "" + project.getId();
+			}
+		};
 	}
 
 	@Override

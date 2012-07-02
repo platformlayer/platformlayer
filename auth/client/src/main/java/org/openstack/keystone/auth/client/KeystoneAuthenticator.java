@@ -9,7 +9,7 @@ import org.platformlayer.auth.AuthenticationToken;
 import org.platformlayer.auth.Authenticator;
 
 public class KeystoneAuthenticator implements Authenticator {
-	final String tenantId;
+	final String project;
 
 	final String username;
 	final String password;
@@ -18,8 +18,8 @@ public class KeystoneAuthenticator implements Authenticator {
 
 	AuthenticationToken token = null;
 
-	public KeystoneAuthenticator(String tenantId, String username, String password, String server) {
-		this.tenantId = tenantId;
+	public KeystoneAuthenticator(String project, String username, String password, String server) {
+		this.project = project;
 		this.username = username;
 		this.password = password;
 		String authenticationUrl = server != null ? server : KeystoneAuthenticationClient.DEFAULT_AUTHENTICATION_URL;
@@ -34,7 +34,7 @@ public class KeystoneAuthenticator implements Authenticator {
 			passwordCredentials.setUsername(username);
 			passwordCredentials.setPassword(password);
 
-			token = client.authenticate(tenantId, passwordCredentials);
+			token = client.authenticate(project, passwordCredentials);
 		}
 		return token;
 	}
@@ -54,6 +54,7 @@ public class KeystoneAuthenticator implements Authenticator {
 		}
 	}
 
+	@Override
 	public void setDebug(PrintStream debug) {
 		client.debug = debug;
 	}

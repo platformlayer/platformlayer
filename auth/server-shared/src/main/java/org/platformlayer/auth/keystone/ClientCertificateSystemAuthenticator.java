@@ -12,13 +12,13 @@ import org.openstack.keystone.services.ServiceAccount;
 import org.openstack.keystone.services.SystemAuthenticator;
 import org.openstack.utils.Hex;
 import org.platformlayer.RepositoryException;
-import org.platformlayer.auth.UserRepository;
+import org.platformlayer.auth.UserDatabase;
 
 public class ClientCertificateSystemAuthenticator implements SystemAuthenticator {
 	private static final Logger log = Logger.getLogger(ClientCertificateSystemAuthenticator.class);
 
 	@Inject
-	UserRepository repository;
+	UserDatabase repository;
 
 	@Override
 	public ServiceAccount authenticate(X509Certificate[] certChain) throws AuthenticatorException {

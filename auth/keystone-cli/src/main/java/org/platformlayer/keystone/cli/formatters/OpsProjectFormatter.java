@@ -19,7 +19,7 @@ public class OpsProjectFormatter extends SimpleFormatter<OpsProject> {
 	public void visit(OpsProject o, OutputSink sink) throws IOException {
 		LinkedHashMap<String, Object> values = Maps.newLinkedHashMap();
 
-		values.put("key", o.key);
+		values.put("name", o.getName());
 
 		sink.outputRow(values);
 	}

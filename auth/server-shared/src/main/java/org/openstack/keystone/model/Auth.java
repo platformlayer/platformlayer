@@ -14,7 +14,7 @@ public class Auth {
 	public PasswordCredentials passwordCredentials;
 
 	@XmlAttribute
-	public String tenantName;
+	public String project;
 
 	public Token token;
 

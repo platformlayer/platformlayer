@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.openstack.keystone.service.AuthenticationTokenValidator;
+import org.openstack.keystone.service.KeystoneAuthentication;
 import org.openstack.keystone.service.OpenstackAuthenticationFilterBase;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.Scope;
@@ -16,6 +17,7 @@ import org.platformlayer.crypto.AesUtils;
 import org.platformlayer.crypto.CryptoUtils;
 import org.platformlayer.model.Authentication;
 import org.platformlayer.ops.auth.OpsAuthentication;
+import org.platformlayer.xaas.keystone.KeystoneUser;
 
 public class OpsAuthenticationFilter extends OpenstackAuthenticationFilterBase {
 	static final Logger log = Logger.getLogger(OpsAuthenticationFilter.class);
@@ -41,31 +43,14 @@ public class OpsAuthenticationFilter extends OpenstackAuthenticationFilterBase {
 				throw new IllegalStateException();
 			}
 		} else {
-			String projectKey = auth.getProject();
-			project = userRepository.findProjectByKey(projectKey);
+			KeystoneUser keystoneUser = new KeystoneUser((KeystoneAuthentication) auth);
+			user = keystoneUser;
+
+			String projectKey = auth.getProject().getName();
+			project = userRepository.findProject(user, projectKey);
 
 			if (project == null) {
 				log.warn("Project not found: " + projectKey);
-				throw new SecurityException();
-			}
-
-			int userId = Integer.parseInt(auth.getUserKey());
-			user = userRepository.findUserById(userId);
-			if (user == null) {
-				log.warn("User not found: " + userId);
-				throw new SecurityException();
-			}
-
-			byte[] userSecret = auth.getUserSecret();
-			if (userSecret == null) {
-				throw new SecurityException();
-			}
-
-			user.unlock(AesUtils.deserializeKey(userSecret));
-
-			project.unlockWithUser(user);
-
-			if (!project.isSecretValid()) {
 				throw new SecurityException();
 			}
 		}
@@ -116,14 +101,8 @@ public class OpsAuthenticationFilter extends OpenstackAuthenticationFilterBase {
 				return null;
 			}
 
-			OpsProject project = userRepository.findProjectByKey(projectKey);
+			OpsProject project = userRepository.authenticateProject(projectKey, secret);
 			if (project == null) {
-				return null;
-			}
-
-			project.setProjectSecret(secret);
-
-			if (!project.isSecretValid()) {
 				return null;
 			}
 

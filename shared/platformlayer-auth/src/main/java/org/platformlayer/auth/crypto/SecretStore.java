@@ -274,14 +274,14 @@ public class SecretStore {
 		SecretStoreDecoder visitor = new SecretStoreDecoder() {
 			@Override
 			public void visitUserKey(int userId, byte[] data) {
-				if (userId == user.id) {
+				if (userId == user.getId()) {
 					setSecretKey(decryptSymetricKey(user.getUserSecret(), data));
 				}
 			}
 
 			@Override
 			public void visitAsymetricUserKey(int userId, byte[] data) {
-				if (userId == user.id) {
+				if (userId == user.getId()) {
 					PrivateKey privateKey = user.getPrivateKey();
 					setSecretKey(decryptAsymetricKey(privateKey, data));
 				}

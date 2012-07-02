@@ -1,8 +1,8 @@
 package org.platformlayer.keystone.cli;
 
 import org.platformlayer.RepositoryException;
-import org.platformlayer.auth.OpsUser;
-import org.platformlayer.auth.UserRepository;
+import org.platformlayer.auth.UserDatabase;
+import org.platformlayer.auth.UserEntity;
 import org.platformlayer.keystone.cli.commands.KeystoneCommandRegistry;
 import org.platformlayer.keystone.cli.formatters.KeystoneFormatterRegistry;
 import org.platformlayer.keystone.cli.guice.CliModule;
@@ -27,30 +27,27 @@ public class KeystoneCliContext extends CliContextBase {
 		this.injector = Guice.createInjector(new CliModule(options));
 	}
 
-	public UserRepository getUserRepository() {
+	public UserDatabase getUserRepository() {
 		try {
-			return injector.getInstance(UserRepository.class);
+			return injector.getInstance(UserDatabase.class);
 		} catch (ConfigurationException e) {
 			throw new CliException("Database not configured; must set auth.system.module in configuration");
 		}
 	}
 
-	public OpsUser login() throws RepositoryException {
+	/**
+	 * Logs in the current user, directly accessing the database
+	 */
+	public UserEntity loginDirect() throws RepositoryException {
 		String username = options.getUsername();
 		String password = options.getPassword();
 		if (username == null || password == null) {
 			throw new IllegalArgumentException("Must specify username & password");
 		}
-		OpsUser user = getUserRepository().findUser(username);
-		if (user != null) {
-			if (!user.isPasswordMatch(password)) {
-				user = null;
-			}
-		}
+		UserEntity user = (UserEntity) getUserRepository().authenticateWithPassword(username, password);
 		if (user == null) {
 			throw new SecurityException("Credentials were not valid");
 		}
-		user.unlockWithPassword(password);
 		return user;
 	}
 }

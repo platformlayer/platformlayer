@@ -20,7 +20,7 @@ public abstract class SecretProvider {
 			public SecretKey getItemSecret(SecretInfo secret) {
 				SecretStore secretStore = new SecretStore(secret.getEncoded());
 
-				SecretKey secretKey = secretStore.getSecretFromProject(project.id, project.getProjectSecret());
+				SecretKey secretKey = secretStore.getSecretFromProject(project.getId(), project.getProjectSecret());
 				return secretKey;
 			}
 		};

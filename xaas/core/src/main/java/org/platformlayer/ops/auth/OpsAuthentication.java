@@ -34,7 +34,7 @@ public class OpsAuthentication {
 	}
 
 	public ProjectId getProjectId() {
-		return new ProjectId(auth.getProject());
+		return new ProjectId(auth.getProject().getName());
 	}
 
 	public boolean isInRole(ProjectId project, RoleId role) {

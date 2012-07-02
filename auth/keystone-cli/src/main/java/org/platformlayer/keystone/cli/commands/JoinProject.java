@@ -6,9 +6,9 @@ import javax.crypto.SecretKey;
 
 import org.kohsuke.args4j.Argument;
 import org.platformlayer.RepositoryException;
-import org.platformlayer.auth.OpsProject;
-import org.platformlayer.auth.OpsUser;
-import org.platformlayer.auth.UserRepository;
+import org.platformlayer.auth.ProjectEntity;
+import org.platformlayer.auth.UserDatabase;
+import org.platformlayer.auth.UserEntity;
 import org.platformlayer.auth.crypto.SecretStore;
 import org.platformlayer.keystone.cli.model.ProjectName;
 import org.platformlayer.keystone.cli.model.UserName;
@@ -28,22 +28,22 @@ public class JoinProject extends KeystoneCommandRunnerBase {
 
 	@Override
 	public Object runCommand() throws RepositoryException, IOException {
-		UserRepository userRepository = getContext().getUserRepository();
+		UserDatabase userRepository = getContext().getUserRepository();
 
-		OpsUser me = getContext().login();
-		OpsProject project = userRepository.findProjectByKey(projectKey.getKey());
+		UserEntity me = getContext().loginDirect();
+		ProjectEntity project = (ProjectEntity) userRepository.findProjectByKey(projectKey.getKey());
 		if (project == null) {
 			throw new CliException("Project not found: " + projectKey.getKey());
 		}
 
 		SecretStore secretStore = new SecretStore(project.secretData);
-		SecretKey projectKey = secretStore.getSecretFromUser(me);
-		if (projectKey == null) {
+		SecretKey projectSecret = secretStore.getSecretFromUser(me);
+		if (projectSecret == null) {
 			String msg = "Cannot retrieve project secret.";
-			msg += " Is " + me.key + " a member of " + project.key + "?";
+			msg += " Is " + me.key + " a member of " + project.getName() + "?";
 			throw new CliException(msg);
 		}
-		userRepository.addUserToProject(username.getKey(), project.key, projectKey);
+		userRepository.addUserToProject(username.getKey(), project.getName(), projectSecret);
 
 		return project;
 	}

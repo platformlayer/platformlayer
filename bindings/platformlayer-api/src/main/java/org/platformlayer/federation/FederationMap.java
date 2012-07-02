@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.platformlayer.DirectPlatformLayerClient;
+import org.platformlayer.HttpPlatformLayerClient;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.TypedItemMapper;
 import org.platformlayer.TypedPlatformLayerClient;
@@ -156,7 +156,7 @@ public class FederationMap {
 		}
 
 		if (target.client == null) {
-			PlatformLayerClient client = DirectPlatformLayerClient.buildUsingConfiguration(target.configuration);
+			PlatformLayerClient client = HttpPlatformLayerClient.buildUsingConfiguration(target.configuration);
 
 			TypedPlatformLayerClient typedClient = new TypedPlatformLayerClient(client, mapper);
 			// TODO: Save client??

@@ -10,5 +10,5 @@
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.openstack.keystone.server.KeystoneAdminServer"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="keystone-webapp-admin"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.m2e.launchconfig.sourcepathProvider"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dconf=../conf.db/system.conf -Dapplication.mode=development"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dconf=../conf.db/system.conf -Dapplication.mode=development -Djavax.net.debug=ssl,handshake"/>
 </launchConfiguration>

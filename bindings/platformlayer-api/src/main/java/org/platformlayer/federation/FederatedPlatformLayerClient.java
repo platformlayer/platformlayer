@@ -664,6 +664,7 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 			config.server = service.getServer();
 			config.tenant = service.getTenant();
 			config.username = service.getUsername();
+			config.platformlayerEndpoint = service.getServer();
 
 			federationMapConfig.systems.add(config);
 		}

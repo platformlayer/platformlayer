@@ -2,7 +2,7 @@ package org.platformlayer.auth;
 
 import javax.crypto.SecretKey;
 
-import org.platformlayer.DirectPlatformLayerClient;
+import org.platformlayer.HttpPlatformLayerClient;
 import org.platformlayer.crypto.CryptoUtils;
 import org.platformlayer.http.SimpleHttpRequest;
 
@@ -24,7 +24,7 @@ public class DirectAuthenticationToken implements AuthenticationToken {
 
 	@Override
 	public String getServiceUrl(String serviceKey) {
-		if (Objects.equal(DirectPlatformLayerClient.SERVICE_PLATFORMLAYER, serviceKey)) {
+		if (Objects.equal(HttpPlatformLayerClient.SERVICE_PLATFORMLAYER, serviceKey)) {
 			return serviceUrl;
 		}
 		return null;
@@ -45,5 +45,9 @@ public class DirectAuthenticationToken implements AuthenticationToken {
 		httpRequest.setRequestHeader("X-Auth-Key", keyId);
 		httpRequest.setRequestHeader("X-Auth-Secret", CryptoUtils.toBase64(secret.getEncoded()));
 
+	}
+
+	public String getPlatformLayerServiceUrl() {
+		return serviceUrl;
 	}
 }

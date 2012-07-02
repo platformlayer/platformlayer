@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.kohsuke.args4j.Argument;
 import org.platformlayer.RepositoryException;
-import org.platformlayer.auth.UserRepository;
+import org.platformlayer.auth.UserDatabase;
 
 public class ListUsers extends KeystoneCommandRunnerBase {
 	@Argument(index = 0)
@@ -16,7 +16,7 @@ public class ListUsers extends KeystoneCommandRunnerBase {
 
 	@Override
 	public Object runCommand() throws RepositoryException {
-		UserRepository userRepository = getContext().getUserRepository();
+		UserDatabase userRepository = getContext().getUserRepository();
 
 		List<String> users = userRepository.listAllUserNames(prefix);
 		return users;

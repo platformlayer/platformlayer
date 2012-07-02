@@ -1,47 +1,33 @@
 package org.openstack.keystone.resources.admin;
 
-import javax.ws.rs.Consumes;
+import javax.inject.Inject;
 import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 
 import org.apache.log4j.Logger;
-import org.openstack.keystone.model.Access;
-import org.openstack.keystone.model.Auth;
-import org.openstack.keystone.model.UserValidation;
+import org.openstack.keystone.model.Token;
 import org.openstack.keystone.model.ValidateAccess;
 import org.openstack.keystone.model.ValidateTokenResponse;
 import org.openstack.keystone.resources.KeystoneResourceBase;
 import org.openstack.keystone.resources.Mapping;
 import org.openstack.keystone.services.AuthenticatorException;
 import org.openstack.keystone.services.TokenInfo;
-import org.openstack.keystone.services.UserInfo;
-
-import com.google.common.base.Objects;
+import org.openstack.keystone.services.TokenService;
+import org.platformlayer.auth.ProjectEntity;
+import org.platformlayer.auth.UserEntity;
 
 @Path("v2.0/tokens")
 public class TokensResource extends KeystoneResourceBase {
 	static final Logger log = Logger.getLogger(TokensResource.class);
 
-	@POST
-	@Produces({ APPLICATION_XML, APPLICATION_JSON })
-	@Consumes({ APPLICATION_XML, APPLICATION_JSON })
-	public Access authenticate(Auth request) {
-		throw new UnsupportedOperationException();
-
-		// boolean isSystem = true;
-		// TokenInfo tokenInfo = doAuthenticate(isSystem, request);
-	}
+	@Inject
+	TokenService tokenService;
 
 	@GET
 	// @HEAD support is automatic from the @GET
 	@Path("{tokenId}")
-	public ValidateTokenResponse validateToken(@HeaderParam("X-Auth-Token") String myToken,
-			@PathParam("tokenId") String checkToken, @QueryParam("belongsTo") String tenantId) {
+	public ValidateTokenResponse validateToken(@PathParam("tokenId") String checkToken) {
 		try {
 			requireSystemToken();
 		} catch (AuthenticatorException e) {
@@ -49,38 +35,49 @@ public class TokensResource extends KeystoneResourceBase {
 			throwInternalError();
 		}
 
-		TokenInfo checkTokenInfo = authentication.validateToken(checkToken);
-		if (checkTokenInfo == null) {
+		TokenInfo checkTokenInfo = tokenService.decodeToken(checkToken);
+		if (checkTokenInfo == null || checkTokenInfo.hasExpired()) {
 			throw404NotFound();
 		}
 
-		if (tenantId != null) {
-			if (!Objects.equal(tenantId, checkTokenInfo.scope)) {
-				throw404NotFound();
-			}
-		}
+		// if (project != null) {
+		// if (!Objects.equal(project, checkTokenInfo.project)) {
+		// throw404NotFound();
+		// }
+		// }
 
-		UserInfo userInfo = null;
+		UserEntity userInfo = null;
 		try {
-			userInfo = authentication.getUserInfo(checkTokenInfo.userId, checkTokenInfo.tokenSecret);
+			userInfo = userAuthenticator.getUserFromToken(checkTokenInfo.userId, checkTokenInfo.tokenSecret);
 		} catch (AuthenticatorException e) {
-			log.warn("Error while listing groups", e);
+			log.warn("Error while fetching user", e);
 			throwInternalError();
 		}
 
 		ValidateTokenResponse response = new ValidateTokenResponse();
 		response.access = new ValidateAccess();
-		response.access.user = new UserValidation();
-		response.access.user.id = userInfo.userId;
-		response.access.user.name = userInfo.username;
-		response.access.user.roles = authentication.getRoles(userInfo, checkTokenInfo.scope);
+		response.access.user = Mapping.mapToUserValidation(userInfo);
 
-		response.access.user.secret = userInfo.secret;
-
-		response.access.token = Mapping.mapToResponse(checkTokenInfo);
+		response.access.token = new Token();
+		response.access.token.expires = checkTokenInfo.expiration;
 		response.access.token.id = checkToken;
+
+		if (checkTokenInfo.project != null) {
+			ProjectEntity projectEntity = null;
+
+			try {
+				projectEntity = userAuthenticator.findProject(checkTokenInfo.project, userInfo);
+			} catch (AuthenticatorException e) {
+				log.warn("Error while fetching project", e);
+				throwInternalError();
+			}
+			if (projectEntity == null) {
+				throw404NotFound();
+			}
+
+			response.access.project = Mapping.mapToProject(projectEntity);
+		}
 
 		return response;
 	}
-
 }

@@ -4,14 +4,14 @@ import java.io.PrintStream;
 
 public class DirectAuthenticator implements Authenticator {
 
-	final AuthenticationToken authenticationToken;
+	final DirectAuthenticationToken authenticationToken;
 
-	public DirectAuthenticator(AuthenticationToken authenticationToken) {
+	public DirectAuthenticator(DirectAuthenticationToken authenticationToken) {
 		this.authenticationToken = authenticationToken;
 	}
 
 	@Override
-	public AuthenticationToken getAuthenticationToken() throws OpenstackAuthenticationException {
+	public DirectAuthenticationToken getAuthenticationToken() {
 		return authenticationToken;
 	}
 

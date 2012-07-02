@@ -43,9 +43,9 @@ public class SharedSecretTokenService implements TokenService {
 				return null;
 			}
 
-			String scope = readNullTerminatedString(bais);
-			if (scope.length() == 0) {
-				scope = null;
+			String project = readNullTerminatedString(bais);
+			if (project.length() == 0) {
+				project = null;
 			}
 
 			String expiration = readNullTerminatedString(bais);
@@ -68,7 +68,7 @@ public class SharedSecretTokenService implements TokenService {
 			long roundedTime = Long.parseLong(expiration, 16);
 			long time = (roundedTime * TIME_GRANULARITY) + TIME_OFFSET;
 
-			return new TokenInfo(flags, scope, username, new Date(time), tokenSecret);
+			return new TokenInfo(flags, project, username, new Date(time), tokenSecret);
 		} catch (Exception e) {
 			return null;
 		}
@@ -116,8 +116,8 @@ public class SharedSecretTokenService implements TokenService {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		try {
 			baos.write(tokenInfo.flags);
-			if (tokenInfo.scope != null) {
-				baos.write(Utf8.getBytes(tokenInfo.scope));
+			if (tokenInfo.project != null) {
+				baos.write(Utf8.getBytes(tokenInfo.project));
 			}
 			baos.write(0);
 			baos.write(Utf8.getBytes(Long.toHexString(roundedTime)));

@@ -9,7 +9,7 @@ import java.util.List;
 import org.kohsuke.args4j.Argument;
 import org.openstack.crypto.KeyStoreUtils;
 import org.openstack.keystone.services.ServiceAccount;
-import org.platformlayer.auth.UserRepository;
+import org.platformlayer.auth.UserDatabase;
 
 public class CreateServiceAccount extends KeystoneCommandRunnerBase {
 	@Argument(index = 0, required = true, metaVar = "keystore file")
@@ -36,7 +36,7 @@ public class CreateServiceAccount extends KeystoneCommandRunnerBase {
 
 		X509Certificate cert = (X509Certificate) certificateChain[0];
 
-		UserRepository userRepository = getContext().getUserRepository();
+		UserDatabase userRepository = getContext().getUserRepository();
 
 		ServiceAccount account = userRepository.createServiceAccount(cert);
 

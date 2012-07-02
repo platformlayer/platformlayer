@@ -9,5 +9,4 @@ import javax.xml.bind.annotation.XmlAccessorType;
 public class Token {
 	public Date expires;
 	public String id;
-	public Tenant tenant;
 }
