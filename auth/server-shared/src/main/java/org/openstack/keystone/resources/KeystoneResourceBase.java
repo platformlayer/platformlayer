@@ -15,6 +15,8 @@ import org.openstack.keystone.model.Auth;
 import org.openstack.keystone.services.AuthenticationFacade;
 import org.openstack.keystone.services.AuthenticationInfo;
 import org.openstack.keystone.services.AuthenticatorException;
+import org.openstack.keystone.services.SystemAuth;
+import org.openstack.keystone.services.SystemAuthenticator;
 import org.openstack.keystone.services.TokenInfo;
 import org.platformlayer.TimeSpan;
 
@@ -56,25 +58,16 @@ public class KeystoneResourceBase {
 		return authHeader.get(0);
 	}
 
+	@Inject
+	SystemAuthenticator systemAuthenticator;
+
 	protected void requireSystemToken() {
-		TokenInfo myTokenInfo = null;
-
-		String authHeader = getAuthHeader();
-		if (authHeader != null) {
-			myTokenInfo = authentication.validateToken(true, authHeader);
-
-			if (myTokenInfo != null && myTokenInfo.isSystem()) {
-				return;
-			}
-		}
-
 		X509Certificate[] certChain = (X509Certificate[]) request.getAttribute("javax.servlet.request.X509Certificate");
 		if (certChain != null && certChain.length != 0) {
 			X509Certificate head = certChain[0];
 
-			boolean isSystem = true;
-			AuthenticationInfo authenticated = authentication.authenticate(isSystem, certChain);
-			if (authenticated != null) {
+			SystemAuth auth = systemAuthenticator.authenticate(certChain);
+			if (auth != null) {
 				return;
 			}
 
@@ -90,7 +83,7 @@ public class KeystoneResourceBase {
 		return (list == null) || (list.isEmpty());
 	}
 
-	protected TokenInfo tryAuthenticate(boolean isSystem, Auth request) throws AuthenticatorException {
+	protected TokenInfo tryAuthenticate(Auth request) throws AuthenticatorException {
 		String username = null;
 		String password = null;
 		String scope = request.tenantName;
@@ -100,24 +93,21 @@ public class KeystoneResourceBase {
 			password = request.passwordCredentials.password;
 		}
 
-		AuthenticationInfo authenticated = authentication.authenticate(isSystem, username, password);
+		AuthenticationInfo authenticated = authentication.authenticate(username, password);
 		if (authenticated == null) {
 			log.debug("Authentication request failed for " + username);
 
 			return null;
 		}
 
-		return buildToken(isSystem, scope, authenticated.getUserId(), authenticated.getTokenSecret());
+		return buildToken(scope, authenticated.getUserId(), authenticated.getTokenSecret());
 	}
 
-	private TokenInfo buildToken(boolean isSystem, String scope, String userId, byte[] tokenSecret) {
+	private TokenInfo buildToken(String scope, String userId, byte[] tokenSecret) {
 		Date now = new Date();
 		Date expiration = TOKEN_VALIDITY.addTo(now);
 
 		byte flags = 0;
-		if (isSystem) {
-			flags |= TokenInfo.FLAG_SYSTEM;
-		}
 		TokenInfo tokenInfo = new TokenInfo(flags, scope, userId, expiration, tokenSecret);
 
 		return tokenInfo;

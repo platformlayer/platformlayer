@@ -1,5 +1,6 @@
 package org.openstack.keystone.services;
 
+
 public class UserAuthenticatorAdaptor implements UserAuthenticator {
 	final GenericAuthenticator authenticator;
 
@@ -21,4 +22,5 @@ public class UserAuthenticatorAdaptor implements UserAuthenticator {
 	public byte[] getUserSecret(String userId, byte[] tokenSecret) throws AuthenticatorException {
 		return authenticator.getUserSecret(userId, tokenSecret);
 	}
+
 }

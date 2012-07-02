@@ -44,7 +44,7 @@ public class TokensResource extends KeystoneResourceBase {
 			@PathParam("tokenId") String checkToken, @QueryParam("belongsTo") String tenantId) {
 		requireSystemToken();
 
-		TokenInfo checkTokenInfo = authentication.validateToken(false, checkToken);
+		TokenInfo checkTokenInfo = authentication.validateToken(checkToken);
 		if (checkTokenInfo == null) {
 			throw404NotFound();
 		}
@@ -57,8 +57,7 @@ public class TokensResource extends KeystoneResourceBase {
 
 		UserInfo userInfo = null;
 		try {
-			userInfo = authentication.getUserInfo(checkTokenInfo.isSystem(), checkTokenInfo.userId,
-					checkTokenInfo.tokenSecret);
+			userInfo = authentication.getUserInfo(checkTokenInfo.userId, checkTokenInfo.tokenSecret);
 		} catch (AuthenticatorException e) {
 			log.warn("Error while listing groups", e);
 			throwInternalError();

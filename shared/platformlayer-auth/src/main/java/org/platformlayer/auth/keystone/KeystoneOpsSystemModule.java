@@ -1,7 +1,5 @@
 package org.platformlayer.auth.keystone;
 
-import org.openstack.keystone.services.SystemAuthenticator;
-
 import com.google.inject.AbstractModule;
 
 public class KeystoneOpsSystemModule extends AbstractModule {
@@ -11,6 +9,6 @@ public class KeystoneOpsSystemModule extends AbstractModule {
 		KeystoneOpsUserModule userModule = new KeystoneOpsUserModule();
 		binder().install(userModule);
 
-		bind(SystemAuthenticator.class).to(KeystoneSystemAuthenticator.class).asEagerSingleton();
+		// bind(SystemAuthenticator.class).to(KeystoneSystemAuthenticator.class).asEagerSingleton();
 	}
 }

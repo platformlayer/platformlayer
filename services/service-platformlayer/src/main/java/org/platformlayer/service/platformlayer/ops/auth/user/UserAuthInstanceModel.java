@@ -38,7 +38,7 @@ public class UserAuthInstanceModel extends CommonTemplateData {
 
 	@Override
 	public String getKey() {
-		return "auth-system";
+		return "auth-user";
 	}
 
 	@Override
@@ -46,8 +46,7 @@ public class UserAuthInstanceModel extends CommonTemplateData {
 		Map<String, String> properties = super.getConfigurationProperties();
 
 		properties.put("auth.user.module", "org.platformlayer.auth.keystone.KeystoneOpsUserModule");
-
-		// sharedsecret=supersecret
+		properties.put("sharedsecret", getModel().tokenSecret.plaintext());
 
 		return properties;
 	}

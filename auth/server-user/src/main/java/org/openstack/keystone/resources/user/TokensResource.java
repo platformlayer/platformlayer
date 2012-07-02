@@ -28,10 +28,9 @@ public class TokensResource extends KeystoneResourceBase {
 	@Produces({ APPLICATION_JSON, APPLICATION_XML })
 	@Consumes({ APPLICATION_JSON, APPLICATION_XML })
 	public AuthenticateResponse authenticate(AuthenticateRequest request) {
-		boolean isSystem = false;
 		TokenInfo tokenInfo = null;
 		try {
-			tokenInfo = tryAuthenticate(isSystem, request.auth);
+			tokenInfo = tryAuthenticate(request.auth);
 		} catch (Exception e) {
 			// An exception indicates something went wrong (i.e. not just bad credentials)
 			log.warn("Error while authenticating", e);
@@ -46,7 +45,7 @@ public class TokensResource extends KeystoneResourceBase {
 
 		UserInfo userInfo = null;
 		try {
-			userInfo = authentication.getUserInfo(isSystem, tokenInfo.userId, tokenInfo.tokenSecret);
+			userInfo = authentication.getUserInfo(tokenInfo.userId, tokenInfo.tokenSecret);
 		} catch (AuthenticatorException e) {
 			// An exception indicates something went wrong (i.e. not just bad credentials)
 			log.warn("Error while getting user info", e);

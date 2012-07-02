@@ -17,4 +17,6 @@ public class SystemAuthService extends ItemBase {
 	public String dnsName;
 
 	public PlatformLayerKey database;
+
+	public Secret tokenSecret;
 }

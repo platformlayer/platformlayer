@@ -27,7 +27,7 @@ public class KeystoneOpsUserModule extends AbstractModule {
 		bind(UserRepository.class).to(JdbcUserRepository.class).asEagerSingleton();
 		bind(UserAuthenticator.class).to(KeystoneOpsAuthenticator.class).asEagerSingleton();
 
-		bind(SystemAuthenticator.class).to(KeystoneSystemAuthenticator.class).asEagerSingleton();
+		bind(SystemAuthenticator.class).to(ClientCertificateSystemAuthenticator.class).asEagerSingleton();
 
 		bind(ResultSetMappers.class).toProvider(ResultSetMappersProvider.build(OpsUser.class, OpsProject.class));
 	}

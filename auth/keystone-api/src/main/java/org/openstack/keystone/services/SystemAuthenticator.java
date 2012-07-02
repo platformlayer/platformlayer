@@ -1,5 +1,7 @@
 package org.openstack.keystone.services;
 
-public interface SystemAuthenticator extends GenericAuthenticator {
+import java.security.cert.X509Certificate;
 
+public interface SystemAuthenticator {
+	SystemAuth authenticate(X509Certificate[] certChain);
 }

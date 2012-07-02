@@ -6,6 +6,7 @@ import java.util.List;
 import javax.crypto.SecretKey;
 import javax.inject.Inject;
 
+import org.apache.log4j.Logger;
 import org.openstack.keystone.services.AuthenticationInfo;
 import org.openstack.keystone.services.AuthenticatorException;
 import org.openstack.keystone.services.GroupMembershipOracle;
@@ -18,6 +19,8 @@ import org.platformlayer.auth.UserRepository;
 import com.google.common.collect.Lists;
 
 public class KeystoneOpsAuthenticator implements UserAuthenticator {
+	private static final Logger log = Logger.getLogger(KeystoneOpsAuthenticator.class);
+
 	@Inject
 	UserRepository repository;
 
@@ -108,4 +111,5 @@ public class KeystoneOpsAuthenticator implements UserAuthenticator {
 	public GroupMembershipOracle getGroupMembership() {
 		return new SqlGroupMembershipOracle();
 	}
+
 }

@@ -45,10 +45,8 @@ public class SystemAuthInstanceModel extends CommonTemplateData {
 	protected Map<String, String> getConfigurationProperties() throws OpsException {
 		Map<String, String> properties = super.getConfigurationProperties();
 
-		// #auth.user.module=org.platformlayer.auth.keystone.KeystoneOpsUserModule
 		properties.put("auth.system.module", "org.platformlayer.auth.keystone.KeystoneOpsSystemModule");
-
-		// sharedsecret=supersecret
+		properties.put("sharedsecret", getModel().tokenSecret.plaintext());
 
 		return properties;
 	}

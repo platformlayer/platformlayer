@@ -17,7 +17,6 @@ import org.platformlayer.crypto.CryptoUtils;
 import org.platformlayer.crypto.SecureComparison;
 
 public class SharedSecretTokenService implements TokenService {
-	private final SecretKeySpec systemSecretKeySpec;
 	private final SecretKeySpec userSecretKeySpec;
 
 	// To keep the numbers smaller; we quantize time and offset it
@@ -25,13 +24,11 @@ public class SharedSecretTokenService implements TokenService {
 	static final long TIME_OFFSET = 1234567890;
 
 	public SharedSecretTokenService(String secret) {
-		// I don't think there's actually any benefit to using different keys
-		this.systemSecretKeySpec = CryptoUtils.deriveHmacSha1Key(secret);
 		this.userSecretKeySpec = CryptoUtils.deriveHmacSha1Key(secret);
 	}
 
 	@Override
-	public TokenInfo decodeToken(boolean system, String token) {
+	public TokenInfo decodeToken(String token) {
 		if (token == null) {
 			return null;
 		}
@@ -60,7 +57,7 @@ public class SharedSecretTokenService implements TokenService {
 				return null;
 			}
 
-			SecretKeySpec secretKeySpec = system ? systemSecretKeySpec : userSecretKeySpec;
+			SecretKeySpec secretKeySpec = userSecretKeySpec;
 			byte[] actualSignature = CryptoUtils.hmacSha1(secretKeySpec, buffer, 0, buffer.length
 					- CryptoUtils.HMAC_SHA1_BYTES);
 
@@ -141,7 +138,7 @@ public class SharedSecretTokenService implements TokenService {
 			throw new IllegalStateException();
 		}
 
-		SecretKeySpec secretKeySpec = tokenInfo.isSystem() ? systemSecretKeySpec : userSecretKeySpec;
+		SecretKeySpec secretKeySpec = userSecretKeySpec;
 		byte[] signed = CryptoUtils.hmacSha1(secretKeySpec, baos.toByteArray());
 		if (signed.length != CryptoUtils.HMAC_SHA1_BYTES) {
 			throw new IllegalStateException();
