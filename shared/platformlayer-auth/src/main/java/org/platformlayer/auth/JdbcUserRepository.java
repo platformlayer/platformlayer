@@ -239,7 +239,7 @@ public class JdbcUserRepository implements UserRepository {
 
 		@Query("INSERT INTO projects (key, secret, metadata, public_key, private_key) VALUES (?,?,?,?,?)")
 		int insertProject(String key, byte[] secretData, byte[] metadata, byte[] publicKey, byte[] privateKey)
-				throws SQLException;;
+				throws SQLException;
 
 		@Query("SELECT key FROM users WHERE key LIKE ?")
 		List<String> listUsers(String keyLike) throws SQLException;
@@ -248,13 +248,13 @@ public class JdbcUserRepository implements UserRepository {
 		List<String> listProjects(String keyLike) throws SQLException;
 
 		@Query("SELECT * FROM users WHERE key=?")
-		OpsUser findUserByKey(String key) throws SQLException;;
+		OpsUser findUserByKey(String key) throws SQLException;
 
 		@Query("SELECT * FROM users WHERE id=?")
-		OpsUser findUserById(int userId) throws SQLException;;
+		OpsUser findUserById(int userId) throws SQLException;
 
 		@Query("SELECT p.* FROM projects as p, user_projects as up WHERE up.user_id=? and p.id = up.project_id")
-		List<OpsProject> findProjectsByUserId(int userId) throws SQLException;;
+		List<OpsProject> findProjectsByUserId(int userId) throws SQLException;
 
 		@Query("SELECT * FROM projects WHERE key=?")
 		OpsProject findProjectByKey(String key) throws SQLException;
@@ -386,6 +386,14 @@ public class JdbcUserRepository implements UserRepository {
 	public OpsProject findProjectByKey(String key) throws RepositoryException {
 		DbHelper db = new DbHelper();
 		try {
+			return findProjectByKey(db, key);
+		} finally {
+			db.close();
+		}
+	}
+
+	OpsProject findProjectByKey(DbHelper db, String key) throws RepositoryException {
+		try {
 			OpsProject project = db.findProjectByKey(key);
 
 			return project;
@@ -440,7 +448,11 @@ public class JdbcUserRepository implements UserRepository {
 				throw new RepositoryException("Unexpected number of rows inserted");
 			}
 
-			OpsProject created = findProjectByKey(key);
+			OpsProject created = findProjectByKey(db, key);
+
+			if (created == null) {
+				throw new RepositoryException("Created project not found");
+			}
 
 			db.insertUserProject(owner.id, created.id);
 
