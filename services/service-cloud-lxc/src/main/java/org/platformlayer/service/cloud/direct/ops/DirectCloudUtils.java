@@ -19,7 +19,6 @@ import org.platformlayer.ops.pool.ResourcePool;
 import org.platformlayer.ops.pool.StaticFilesystemBackedPool;
 import org.platformlayer.service.cloud.direct.model.DirectHost;
 import org.platformlayer.service.cloud.direct.model.DirectInstance;
-import org.platformlayer.service.cloud.direct.ops.PublicPorts.PublicAddressDynamicPool;
 
 import com.google.inject.util.Providers;
 
@@ -84,7 +83,8 @@ public class DirectCloudUtils {
 				File poolPath = getPoolPath("sockets-ipv4-public");
 
 				File resourceDir = new File(poolPath, "all");
-				File assignedDir = new File(poolPath, "assigned");
+				File assignedBase = new File(poolPath, "assigned");
+				File assignedDir = new File(assignedBase, "port" + publicPort);
 
 				PoolBuilder poolBuilder = null;
 

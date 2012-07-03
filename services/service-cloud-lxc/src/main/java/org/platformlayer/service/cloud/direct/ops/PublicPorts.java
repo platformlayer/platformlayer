@@ -1,6 +1,5 @@
 package org.platformlayer.service.cloud.direct.ops;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -18,7 +17,6 @@ import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsProvider;
-import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.firewall.Transport;
 import org.platformlayer.ops.firewall.simple.ForwardPort;
 import org.platformlayer.ops.helpers.ImageFactory;
@@ -28,17 +26,13 @@ import org.platformlayer.ops.machines.InetAddressUtils;
 import org.platformlayer.ops.machines.PlatformLayerCloudMachine;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.pool.DelegatingResourcePool;
-import org.platformlayer.ops.pool.PoolBuilder;
 import org.platformlayer.ops.pool.ResourcePool;
 import org.platformlayer.ops.pool.SocketAddressPoolAssignment;
-import org.platformlayer.ops.pool.StaticFilesystemBackedPool;
 import org.platformlayer.ops.tagger.Tagger;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.direct.model.DirectInstance;
 
-import com.google.common.base.Function;
 import com.google.common.base.Objects;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.inject.Provider;
 
@@ -71,59 +65,6 @@ public class PublicPorts extends OpsTreeBase {
 
 	@Inject
 	ServiceContext service;
-
-	static class PublicAddressDynamicPool extends StaticFilesystemBackedPool {
-		private final int publicPort;
-
-		public PublicAddressDynamicPool(PoolBuilder poolBuilder, OpsTarget target, File resourceDir, File assignedDir,
-				int publicPort) {
-			super(poolBuilder, target, resourceDir, assignedDir);
-			this.publicPort = publicPort;
-		}
-
-		@Override
-		protected Iterable<String> pickRandomResource() throws OpsException {
-			return Iterables.transform(super.pickRandomResource(), new Function<String, String>() {
-				@Override
-				public String apply(String input) {
-					return input + "_" + publicPort;
-				}
-			});
-			//
-			// List<String> all = Lists.newArrayList();
-			//
-			// String textFile = target.readTextFile(resourceFile);
-			// if (textFile == null) {
-			// throw new OpsException("Resource file not found: " + resourceFile);
-			// }
-			// for (String line : textFile.split("\n")) {
-			// line = line.trim();
-			// if (line.isEmpty()) {
-			// continue;
-			// }
-			// all.add(line + "_" + publicPort);
-			// }
-			//
-			// Collections.shuffle(all);
-			// return all;
-		}
-
-		@Override
-		public Properties readProperties(String key) throws OpsException {
-			String[] tokens = key.split("_");
-			if (tokens.length != 2) {
-				throw new OpsException("Invalid key format");
-			}
-			Properties properties = super.readProperties(tokens[0]);
-			properties.put("port", tokens[1]);
-			return properties;
-		}
-
-		@Override
-		public String toString() {
-			return getClass().getSimpleName() + ":" + resourceDir + ":" + publicPort;
-		}
-	};
 
 	@Override
 	protected void addChildren() throws OpsException {
