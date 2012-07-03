@@ -58,12 +58,18 @@ public class GuiceXaasConfig extends AbstractModule {
 
 	@Override
 	protected void configure() {
-		File file = new File("configuration.properties");
+		String configFilePath = System.getProperty("conf");
+		if (configFilePath == null) {
+			configFilePath = new File(new File("."), "configuration.properties").getAbsolutePath();
+		}
+
+		File configFile = new File(configFilePath);
+
 		Properties applicationProperties;
 		try {
-			applicationProperties = PropertyUtils.loadProperties(file);
+			applicationProperties = PropertyUtils.loadProperties(configFile);
 		} catch (IOException e) {
-			throw new IllegalStateException("Error loading configuration file: " + file, e);
+			throw new IllegalStateException("Error loading configuration file: " + configFile, e);
 		}
 
 		OpsConfiguration configuration;

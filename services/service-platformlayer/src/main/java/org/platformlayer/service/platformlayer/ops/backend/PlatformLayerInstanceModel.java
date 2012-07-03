@@ -47,6 +47,8 @@ public class PlatformLayerInstanceModel extends StandardTemplateData {
 		command.addClasspathFolder(getInstallDir());
 		command.setMainClass("org.platformlayer.xaas.web.StandaloneXaasWebserver");
 
+		command.addDefine("conf", getConfigurationFile());
+
 		return command.get();
 	}
 
