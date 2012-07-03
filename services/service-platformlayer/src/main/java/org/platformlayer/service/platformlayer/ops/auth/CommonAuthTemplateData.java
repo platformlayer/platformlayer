@@ -1,4 +1,4 @@
-package org.platformlayer.service.platformlayer.ops;
+package org.platformlayer.service.platformlayer.ops.auth;
 
 import java.util.Map;
 
@@ -17,7 +17,7 @@ import org.platformlayer.service.platformlayer.model.PlatformLayerAuthDatabase;
 
 import com.google.common.collect.Maps;
 
-public abstract class CommonTemplateData extends StandardTemplateData {
+public abstract class CommonAuthTemplateData extends StandardTemplateData {
 
 	@Inject
 	PlatformLayerHelpers platformLayer;

@@ -10,9 +10,9 @@ import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.java.JavaCommandBuilder;
 import org.platformlayer.service.platformlayer.model.UserAuthService;
-import org.platformlayer.service.platformlayer.ops.CommonTemplateData;
+import org.platformlayer.service.platformlayer.ops.auth.CommonAuthTemplateData;
 
-public class UserAuthInstanceModel extends CommonTemplateData {
+public class UserAuthInstanceModel extends CommonAuthTemplateData {
 	static final Logger log = Logger.getLogger(UserAuthInstanceModel.class);
 
 	public UserAuthService getModel() {

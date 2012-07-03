@@ -12,7 +12,7 @@ import org.platformlayer.service.platformlayer.model.SystemAuthService;
 public class SystemAuthServiceController extends OpsTreeBase {
 	static final Logger log = Logger.getLogger(SystemAuthServiceController.class);
 
-	public static final int PORT = 35357;
+	public static final int PORT = 35358;
 
 	@Handler
 	public void handler() {

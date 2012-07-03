@@ -12,7 +12,7 @@ import org.platformlayer.service.platformlayer.model.UserAuthService;
 public class UserAuthServiceController extends OpsTreeBase {
 	static final Logger log = Logger.getLogger(UserAuthServiceController.class);
 
-	public static final int PORT = 5000;
+	public static final int PORT = 5001;
 
 	@Handler
 	public void handler() {

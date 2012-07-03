@@ -8,7 +8,6 @@ import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.networks.PublicEndpoint;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.platformlayer.model.PlatformLayerService;
-import org.platformlayer.service.platformlayer.ops.auth.user.UserAuthInstall;
 
 public class PlatformLayerServiceController extends OpsTreeBase {
 	static final Logger log = Logger.getLogger(PlatformLayerServiceController.class);
@@ -41,7 +40,7 @@ public class PlatformLayerServiceController extends OpsTreeBase {
 		}
 
 		{
-			UserAuthInstall install = injected(UserAuthInstall.class);
+			PlatformLayerInstall install = injected(PlatformLayerInstall.class);
 			vm.addChild(install);
 		}
 

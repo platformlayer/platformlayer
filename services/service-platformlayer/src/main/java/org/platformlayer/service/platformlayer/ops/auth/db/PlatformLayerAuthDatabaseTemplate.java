@@ -1,13 +1,13 @@
-package org.platformlayer.service.platformlayer.ops.authdb;
+package org.platformlayer.service.platformlayer.ops.auth.db;
 
 import org.apache.log4j.Logger;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.service.platformlayer.model.PlatformLayerAuthDatabase;
-import org.platformlayer.service.platformlayer.ops.CommonTemplateData;
+import org.platformlayer.service.platformlayer.ops.auth.CommonAuthTemplateData;
 
-public class PlatformLayerAuthDatabaseTemplate extends CommonTemplateData {
+public class PlatformLayerAuthDatabaseTemplate extends CommonAuthTemplateData {
 	static final Logger log = Logger.getLogger(PlatformLayerAuthDatabaseTemplate.class);
 
 	public PlatformLayerAuthDatabase getModel() {

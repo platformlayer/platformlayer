@@ -1,4 +1,4 @@
-package org.platformlayer.service.platformlayer.ops.authdb;
+package org.platformlayer.service.platformlayer.ops.auth.db;
 
 import java.io.IOException;
 
