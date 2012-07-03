@@ -119,14 +119,22 @@ public abstract class FilesystemBackedPool implements ResourcePool {
 
 	@Override
 	public String findAssigned(File owner) throws OpsException {
+		int count = 0;
+
 		for (FilesystemInfo file : target.getFilesystemInfoDir(assignedDir)) {
 			if (!file.isSymlink()) {
 				continue;
 			}
 
+			count++;
+
 			if (file.symlinkTarget.equals(owner.getAbsolutePath())) {
 				return getKey(file);
 			}
+		}
+
+		if (count == 0) {
+			target.mkdir(assignedDir);
 		}
 
 		return null;
