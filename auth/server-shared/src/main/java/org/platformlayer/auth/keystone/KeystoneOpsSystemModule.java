@@ -7,7 +7,7 @@ public class KeystoneOpsSystemModule extends AbstractModule {
 	@Override
 	protected void configure() {
 		KeystoneOpsUserModule userModule = new KeystoneOpsUserModule();
-		binder().install(userModule);
+		install(userModule);
 
 		// bind(SystemAuthenticator.class).to(KeystoneSystemAuthenticator.class).asEagerSingleton();
 	}

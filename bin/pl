@@ -132,6 +132,7 @@ if [[ "${FORMAT}" == "action" ]]; then
 	else
 		action=`${cmd[@]} ${args[@]} "${@}"`
 	fi
+	#echo "ACTION=${action}"
 	do_action ${action}
 else
 	if [[ "${USE_NAILGUN}" == "1" ]]; then
