@@ -23,20 +23,12 @@ public class UserAuthInstance extends StandardServiceInstance {
 
 		ManagedDirectory configDir = findDirectory(template.getConfigDir());
 
+		// TODO: We don't use services dir any more!
 		File servicesDir = template.getServicesDir();
 		configDir.addChild(ManagedDirectory.build(servicesDir, "0700"));
 
 		TemplatedFile file = TemplatedFile.build(template, new File(servicesDir, "platformlayer"));
 		configDir.addChild(file);
-	}
-
-	protected ManagedDirectory findDirectory(File dir) throws OpsException {
-		for (ManagedDirectory o : getChildren(ManagedDirectory.class)) {
-			if (o.filePath.equals(dir)) {
-				return o;
-			}
-		}
-		return null;
 	}
 
 }

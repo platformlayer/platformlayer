@@ -86,6 +86,11 @@ public class ChrootOpsTarget extends OpsTargetBase {
 	}
 
 	@Override
+	public byte[] readBinaryFile(File file) throws OpsException {
+		return parentTarget.readBinaryFile(mapToOutsideChroot(file));
+	}
+
+	@Override
 	public void chmod(File file, String mode) throws OpsException {
 		parentTarget.chmod(mapToOutsideChroot(file), mode);
 	}

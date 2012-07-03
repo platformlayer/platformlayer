@@ -25,6 +25,8 @@ public interface OpsTarget {
 
 	String readTextFile(File file) throws OpsException;
 
+	byte[] readBinaryFile(File file) throws OpsException;
+
 	void chmod(File file, String mode) throws OpsException;
 
 	void chown(File file, String owner, String group, boolean recursive, boolean dereferenceSymlinks)

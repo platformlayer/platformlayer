@@ -79,6 +79,15 @@ public class SshOpsTarget extends OpsTargetBase {
 
 	@Override
 	public String readTextFile(File path) throws OpsException {
+		byte[] contents = readBinaryFile(path);
+		if (contents == null) {
+			return null;
+		}
+		return Utf8.toString(contents);
+	}
+
+	@Override
+	public byte[] readBinaryFile(File path) throws OpsException {
 		byte[] contents;
 		try {
 			contents = sshConnection.sshReadFile(path.getPath());
@@ -89,10 +98,7 @@ public class SshOpsTarget extends OpsTargetBase {
 		} catch (SshException e) {
 			throw new OpsException("Error reading file", e);
 		}
-		if (contents == null) {
-			return null;
-		}
-		return Utf8.toString(contents);
+		return contents;
 	}
 
 	@Override

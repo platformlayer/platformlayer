@@ -25,14 +25,13 @@ public class CreateServiceAccount extends KeystoneCommandRunnerBase {
 	public Object runCommand() throws Exception {
 		KeyStore keystore = KeyStoreUtils.load(new File(keystoreFile), secret);
 
-		List<String> aliases = KeyStoreUtils.getAliases(keystore);
-		if (aliases.size() != 1) {
+		List<Certificate[]> certificateChains = KeyStoreUtils.getCertificateChains(keystore);
+		if (certificateChains.size() != 1) {
 			// Easyish to add support for this when we need it
 			throw new IllegalStateException("Only single-entry keystores are supported (currently)");
 		}
 
-		String alias = aliases.get(0);
-		Certificate[] certificateChain = keystore.getCertificateChain(alias);
+		Certificate[] certificateChain = certificateChains.get(0);
 
 		X509Certificate cert = (X509Certificate) certificateChain[0];
 

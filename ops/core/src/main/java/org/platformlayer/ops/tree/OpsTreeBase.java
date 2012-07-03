@@ -1,5 +1,6 @@
 package org.platformlayer.ops.tree;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,7 @@ import org.platformlayer.ops.OperationRecursor;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTree;
+import org.platformlayer.ops.filesystem.ManagedDirectory;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -126,5 +128,14 @@ public abstract class OpsTreeBase implements OpsTree, CustomRecursor {
 				scope.pop();
 			}
 		}
+	}
+
+	protected ManagedDirectory findDirectory(File dir) throws OpsException {
+		for (ManagedDirectory o : getChildren(ManagedDirectory.class)) {
+			if (o.filePath.equals(dir)) {
+				return o;
+			}
+		}
+		return null;
 	}
 }
