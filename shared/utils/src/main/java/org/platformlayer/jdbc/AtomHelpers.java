@@ -27,11 +27,6 @@ public class AtomHelpers {
 				}
 			}
 
-			if (tableName.equals("projects")) {
-				// TODO: Yuk
-				throw new UnsupportedOperationException();
-			}
-
 			{
 				String sql = "INSERT INTO " + tableName + " (key) VALUES (?)";
 				PreparedStatement ps = connection.prepareStatement(sql);

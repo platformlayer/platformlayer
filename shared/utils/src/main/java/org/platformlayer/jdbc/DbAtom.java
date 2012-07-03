@@ -27,7 +27,7 @@ public class DbAtom<T> {
 			tableName = "services";
 		}
 		if (tableName.equals("projectid")) {
-			tableName = "projects";
+			tableName = "project_codes";
 		}
 		if (tableName.equals("itemtype")) {
 			tableName = "item_types";

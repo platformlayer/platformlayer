@@ -17,14 +17,14 @@ public class JdbcRepositoryHelpers {
 
 	@Deprecated
 	// Use atoms
-	public static int getProjectKey(Connection connection, ProjectId project) throws SQLException {
-		return AtomHelpers.getKey(connection, "projects", project.getKey());
+	public static int getMetadataKeyId(Connection connection, String metadataKey) throws SQLException {
+		return AtomHelpers.getKey(connection, "metadata_keys", metadataKey);
 	}
 
 	@Deprecated
 	// Use atoms
-	public static int getMetadataKeyId(Connection connection, String metadataKey) throws SQLException {
-		return AtomHelpers.getKey(connection, "metadata_keys", metadataKey);
+	public static int getProjectKey(Connection connection, ProjectId project) throws SQLException {
+		return AtomHelpers.getKey(connection, "project_codes", project.getKey());
 	}
 
 	@Deprecated
