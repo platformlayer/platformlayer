@@ -115,7 +115,7 @@ public class OpsAuthenticationFilter extends OpenstackAuthenticationFilterBase {
 				project = new OpsProject() {
 					@Override
 					public boolean isLocked() {
-						return secret != null;
+						return secret == null;
 					}
 
 					@Override
