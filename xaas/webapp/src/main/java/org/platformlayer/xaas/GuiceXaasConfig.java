@@ -50,6 +50,7 @@ import org.platformlayer.xaas.services.ChangeQueue;
 import org.platformlayer.xaas.services.ServiceProviderDictionary;
 import org.platformlayer.xaas.web.jaxrs.JaxbContextHelper;
 
+import com.google.common.base.Splitter;
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 
@@ -149,10 +150,10 @@ public class GuiceXaasConfig extends AbstractModule {
 
 			TrustManager trustManager = null;
 
-			String trustKey = configuration.lookup("auth.system.key", null);
+			String trustKeys = configuration.lookup("auth.system.key", null);
 
-			if (trustKey != null) {
-				trustManager = new PublicKeyTrustManager(trustKey);
+			if (trustKeys != null) {
+				trustManager = new PublicKeyTrustManager(Splitter.on(',').trimResults().split(trustKeys));
 
 				hostnameVerifier = new AcceptAllHostnameVerifier();
 			}

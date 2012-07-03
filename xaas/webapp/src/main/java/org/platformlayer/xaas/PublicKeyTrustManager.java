@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.openstack.crypto.Md5Hash;
 import org.platformlayer.crypto.CryptoUtils;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 
 public class PublicKeyTrustManager implements X509TrustManager {
@@ -19,9 +20,9 @@ public class PublicKeyTrustManager implements X509TrustManager {
 
 	private final Set<String> trusted;
 
-	public PublicKeyTrustManager(String key) {
+	public PublicKeyTrustManager(Iterable<String> keys) {
 		this.trusted = Sets.newHashSet();
-		this.trusted.add(key);
+		Iterables.addAll(this.trusted, keys);
 	}
 
 	@Override
