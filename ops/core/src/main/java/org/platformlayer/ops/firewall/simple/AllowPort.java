@@ -1,8 +1,12 @@
 package org.platformlayer.ops.firewall.simple;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.platformlayer.ops.firewall.IptablesChain;
 import org.platformlayer.ops.firewall.Protocol;
+
+import com.google.common.collect.Lists;
 
 /*
  * An experimental port-opening version that just opens the iptables port.
@@ -26,7 +30,9 @@ public class AllowPort extends IptablesSimpleRuleBase {
 	}
 
 	@Override
-	protected void checkMatchingRules(SimpleIptablesRules matches, Protocol protocol) {
+	protected List<SimpleIptablesRule> checkMatchingRules(SimpleIptablesRules matches, Protocol protocol) {
+		List<SimpleIptablesRule> correct = Lists.newArrayList();
+
 		for (SimpleIptablesRule rule : matches) {
 			if (!rule.isInput()) {
 				log.warn("Found matching comment, but rule did not match: " + rule);
@@ -42,7 +48,11 @@ public class AllowPort extends IptablesSimpleRuleBase {
 				log.warn("Found matching comment, but rule did not match: " + rule);
 				continue;
 			}
+
+			correct.add(rule);
 		}
+
+		return correct;
 	}
 
 	@Override

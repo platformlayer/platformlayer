@@ -1,6 +1,7 @@
 package org.platformlayer.ops.firewall.simple;
 
 import java.net.InetSocketAddress;
+import java.util.List;
 
 import javax.inject.Provider;
 
@@ -10,6 +11,8 @@ import org.platformlayer.ops.OpsProvider;
 import org.platformlayer.ops.firewall.IptablesChain;
 import org.platformlayer.ops.firewall.Protocol;
 import org.platformlayer.ops.firewall.Transport;
+
+import com.google.common.collect.Lists;
 
 public class ForwardPort extends IptablesSimpleRuleBase {
 	static final Logger log = Logger.getLogger(ForwardPort.class);
@@ -24,7 +27,10 @@ public class ForwardPort extends IptablesSimpleRuleBase {
 	}
 
 	@Override
-	protected void checkMatchingRules(SimpleIptablesRules matches, Protocol protocol) throws OpsException {
+	protected List<SimpleIptablesRule> checkMatchingRules(SimpleIptablesRules matches, Protocol protocol)
+			throws OpsException {
+		List<SimpleIptablesRule> correct = Lists.newArrayList();
+
 		String dest = privateAddress.get() + ":" + privatePort;
 		InetSocketAddress publicSocketAddress = this.publicAddress.get();
 
@@ -57,8 +63,11 @@ public class ForwardPort extends IptablesSimpleRuleBase {
 				log.warn("Found matching comment, but rule did not match: " + rule);
 				continue;
 			}
+
+			correct.add(rule);
 		}
 
+		return correct;
 	}
 
 	@Override
