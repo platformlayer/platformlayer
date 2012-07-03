@@ -1,6 +1,5 @@
 package org.openstack.keystone.resources;
 
-import java.security.cert.X509Certificate;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -10,9 +9,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 
 import org.apache.log4j.Logger;
-import org.openstack.keystone.services.AuthenticatorException;
-import org.openstack.keystone.services.ServiceAccount;
-import org.openstack.keystone.services.SystemAuthenticator;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.auth.keystone.KeystoneUserAuthenticator;
 
@@ -32,10 +28,7 @@ public class KeystoneResourceBase {
 	HttpHeaders httpHeaders;
 
 	@Context
-	HttpServletRequest request;
-
-	@Inject
-	SystemAuthenticator systemAuthenticator;
+	protected HttpServletRequest request;
 
 	@Inject
 	protected KeystoneUserAuthenticator userAuthenticator;
@@ -50,32 +43,6 @@ public class KeystoneResourceBase {
 
 	protected void throwInternalError() {
 		throw new WebApplicationException(500);
-	}
-
-	protected String getAuthHeader() {
-		List<String> authHeader = httpHeaders.getRequestHeader(AUTH_HEADER);
-		if (authHeader == null || authHeader.isEmpty()) {
-			return null;
-		}
-		return authHeader.get(0);
-	}
-
-	protected void requireSystemToken() throws AuthenticatorException {
-		X509Certificate[] certChain = (X509Certificate[]) request.getAttribute("javax.servlet.request.X509Certificate");
-		if (certChain != null && certChain.length != 0) {
-			X509Certificate head = certChain[0];
-
-			ServiceAccount auth = systemAuthenticator.authenticate(certChain);
-			if (auth != null) {
-				return;
-			}
-
-			log.debug("Certificate authentication request failed for " + head);
-		}
-
-		throwUnauthorized();
-
-		// return myTokenInfo;
 	}
 
 	protected boolean isNullOrEmpty(List<?> list) {

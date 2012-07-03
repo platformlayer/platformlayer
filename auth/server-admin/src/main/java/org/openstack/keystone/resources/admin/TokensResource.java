@@ -1,5 +1,7 @@
 package org.openstack.keystone.resources.admin;
 
+import java.security.cert.X509Certificate;
+
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -12,6 +14,8 @@ import org.openstack.keystone.model.ValidateTokenResponse;
 import org.openstack.keystone.resources.KeystoneResourceBase;
 import org.openstack.keystone.resources.Mapping;
 import org.openstack.keystone.services.AuthenticatorException;
+import org.openstack.keystone.services.ServiceAccount;
+import org.openstack.keystone.services.SystemAuthenticator;
 import org.openstack.keystone.services.TokenInfo;
 import org.openstack.keystone.services.TokenService;
 import org.platformlayer.auth.ProjectEntity;
@@ -24,12 +28,33 @@ public class TokensResource extends KeystoneResourceBase {
 	@Inject
 	TokenService tokenService;
 
+	@Inject
+	SystemAuthenticator systemAuthenticator;
+
+	protected void requireSystemAccess() throws AuthenticatorException {
+		X509Certificate[] certChain = (X509Certificate[]) request.getAttribute("javax.servlet.request.X509Certificate");
+		if (certChain != null && certChain.length != 0) {
+			X509Certificate head = certChain[0];
+
+			ServiceAccount auth = systemAuthenticator.authenticate(certChain);
+			if (auth != null) {
+				return;
+			}
+
+			log.debug("Certificate authentication request failed for " + head);
+		}
+
+		throwUnauthorized();
+
+		// return myTokenInfo;
+	}
+
 	@GET
 	// @HEAD support is automatic from the @GET
 	@Path("{tokenId}")
 	public ValidateTokenResponse validateToken(@PathParam("tokenId") String checkToken) {
 		try {
-			requireSystemToken();
+			requireSystemAccess();
 		} catch (AuthenticatorException e) {
 			log.warn("Error while checking system token", e);
 			throwInternalError();
