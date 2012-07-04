@@ -153,6 +153,7 @@ public class Tag {
 	public static final KeyTagKey ASSIGNED_TO = new KeyTagKey("assigned_to");
 
 	public static final StringTagKey IMAGE_ID = new StringTagKey("imageid");
+	public static final StringTagKey PUBLIC_KEY_SIG = new StringTagKey("publickeysig");
 
 	public static final KeyTagKey INSTANCE_KEY = new KeyTagKey("instancekey");
 	public static final AddressTagKey NETWORK_ADDRESS = new AddressTagKey("net.address");

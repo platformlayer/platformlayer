@@ -19,6 +19,9 @@ public class PlatformLayerService extends ItemBase {
 
 	public PlatformLayerKey database;
 
+	public PlatformLayerKey systemAuth;
+	public PlatformLayerKey auth;
+
 	public String multitenantItems;
 
 	@Generate

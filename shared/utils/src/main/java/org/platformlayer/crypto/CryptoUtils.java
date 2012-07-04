@@ -11,6 +11,7 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 import java.security.SecureRandom;
 
 import javax.crypto.BadPaddingException;
@@ -451,6 +452,17 @@ public class CryptoUtils {
 			pos += arrays[i].length;
 		}
 		return dest;
+	}
+
+	public static String getSignature(PublicKey publicKey) {
+		byte[] encoded = publicKey.getEncoded();
+
+		String base64 = CryptoUtils.toBase64(encoded);
+
+		Md5Hash sig = new Md5Hash.Hasher().hash(base64);
+
+		String sigString = sig.toHex().toLowerCase();
+		return sigString;
 	}
 
 }

@@ -5,6 +5,7 @@ import java.io.File;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.ManagedDirectory;
 import org.platformlayer.ops.standardservice.StandardServiceInstance;
+import org.platformlayer.service.platformlayer.ops.ManagedKeystore;
 
 public class SystemAuthInstance extends StandardServiceInstance {
 
@@ -18,6 +19,7 @@ public class SystemAuthInstance extends StandardServiceInstance {
 
 		ManagedKeystore keystore = configDir.addChild(ManagedKeystore.class);
 		keystore.path = new File(configDir.filePath, "../keystore.jks");
+		keystore.tagWithPublicKeys = template.getModel();
 	}
 
 	@Override

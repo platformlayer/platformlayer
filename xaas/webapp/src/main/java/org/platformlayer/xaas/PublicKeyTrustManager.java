@@ -8,7 +8,6 @@ import java.util.Set;
 import javax.net.ssl.X509TrustManager;
 
 import org.apache.log4j.Logger;
-import org.openstack.crypto.Md5Hash;
 import org.platformlayer.crypto.CryptoUtils;
 
 import com.google.common.collect.Iterables;
@@ -38,13 +37,8 @@ public class PublicKeyTrustManager implements X509TrustManager {
 
 		for (X509Certificate cert : chain) {
 			PublicKey certPublicKey = cert.getPublicKey();
-			byte[] encoded = certPublicKey.getEncoded();
 
-			String base64 = CryptoUtils.toBase64(encoded);
-
-			Md5Hash sig = new Md5Hash.Hasher().hash(base64);
-
-			String sigString = sig.toHex().toLowerCase();
+			String sigString = CryptoUtils.getSignature(certPublicKey);
 
 			if (!trusted.contains(sigString)) {
 				throw new CertificateException("Certificate is not in trusted list (" + sigString + ")");

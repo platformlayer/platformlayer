@@ -1,6 +1,7 @@
 package org.platformlayer.service.platformlayer.ops.backend;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -9,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Secret;
+import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
@@ -19,8 +21,12 @@ import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.standardservice.StandardTemplateData;
 import org.platformlayer.service.platformlayer.model.PlatformLayerDatabase;
 import org.platformlayer.service.platformlayer.model.PlatformLayerService;
+import org.platformlayer.service.platformlayer.model.SystemAuthService;
+import org.platformlayer.service.platformlayer.model.UserAuthService;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class PlatformLayerInstanceModel extends StandardTemplateData {
@@ -81,6 +87,18 @@ public class PlatformLayerInstanceModel extends StandardTemplateData {
 		return database;
 	}
 
+	public SystemAuthService getSystemAuthService() throws OpsException {
+		PlatformLayerKey systemAuthKey = getModel().systemAuth;
+		SystemAuthService auth = platformLayer.getItem(systemAuthKey, SystemAuthService.class);
+		return auth;
+	}
+
+	public UserAuthService getAuthService() throws OpsException {
+		PlatformLayerKey authKey = getModel().auth;
+		UserAuthService auth = platformLayer.getItem(authKey, UserAuthService.class);
+		return auth;
+	}
+
 	public String getJdbcUrl() throws OpsException {
 		PlatformLayerKey serverKey = getDatabase().server;
 
@@ -109,6 +127,17 @@ public class PlatformLayerInstanceModel extends StandardTemplateData {
 			properties.put("multitenant.user", "__master");
 			properties.put("multitenant.password", getMasterPassword().plaintext());
 		}
+
+		List<String> systemAuthKeys = Lists.newArrayList();
+
+		SystemAuthService systemAuthService = getSystemAuthService();
+		String systemAuthUrl = "https://" + systemAuthService.dnsName + ":35358/";
+
+		systemAuthKeys.addAll(Tag.PUBLIC_KEY_SIG.find(systemAuthService));
+
+		properties.put("auth.system.key", Joiner.on(',').join(systemAuthKeys));
+
+		properties.put("auth.system.url", systemAuthUrl);
 
 		return properties;
 	}
