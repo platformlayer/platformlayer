@@ -1,98 +1,112 @@
 package org.platformlayer.service.cloud.google.ops;
 
-import javax.inject.Inject;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
-import org.openstack.client.OpenstackException;
-import org.openstack.client.common.OpenstackComputeClient;
-import org.openstack.model.compute.CreateSecurityGroupRuleRequest;
-import org.openstack.model.compute.SecurityGroup;
-import org.openstack.model.compute.SecurityGroupRule;
-import org.openstack.model.compute.Server;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.service.cloud.google.model.GoogleCloud;
-import org.platformlayer.service.cloud.google.model.OpenstackPublicEndpoint;
-import org.platformlayer.service.cloud.google.ops.openstack.CloudBehaviours;
-import org.platformlayer.service.cloud.google.ops.openstack.OpenstackCloudContext;
-import org.platformlayer.service.cloud.google.ops.openstack.OpenstackCloudHelpers;
-import org.platformlayer.service.cloud.google.ops.openstack.OpenstackComputeMachine;
+import org.platformlayer.service.cloud.google.model.GoogleCloudPublicEndpoint;
+import org.platformlayer.service.cloud.google.ops.compute.GoogleComputeClient;
+import org.platformlayer.service.cloud.google.ops.compute.GoogleComputeClientFactory;
+import org.platformlayer.service.cloud.google.ops.compute.GoogleComputeMachine;
 
+import com.google.api.services.compute.model.Firewall;
+import com.google.api.services.compute.model.Firewall.Allowed;
 import com.google.common.base.Objects;
 
 public class EnsureFirewallIngress {
-	public OpenstackPublicEndpoint model;
-
-	@Inject
-	OpenstackCloudContext cloudContext;
+	public GoogleCloudPublicEndpoint model;
 
 	// Set by handler
 	String publicAddress;
 
-	@Inject
-	OpenstackCloudHelpers openstackHelpers;
-
 	@Handler
-	public void handler(GoogleCloud cloud, OpenstackComputeMachine machine) throws OpsException, OpenstackException {
-		CloudBehaviours cloudBehaviours = new CloudBehaviours(cloud);
+	public void handler(GoogleCloud cloud, GoogleComputeMachine machine) throws OpsException {
+		GoogleComputeClient client = GoogleComputeClientFactory.getComputeClient(cloud);
 
-		OpenstackComputeClient openstackComputeClient = cloudContext.getComputeClient(cloud);
+		// Find the public address, although the Google Cloud firewall may be blocking it
+		publicAddress = machine.getBestAddress(NetworkPoint.forPublicInternet(), model.backendPort);
 
-		// Find the public address, although the OpenStack firewall may be blocking it
-		String network = null; // model.network;
-		publicAddress = machine.getBestAddress(NetworkPoint.forNetwork(network), model.backendPort);
+		String serverLink = machine.getServerSelfLink();
+		List<Firewall> rules = client.getInstanceFirewallRules(serverLink);
 
-		if (cloudBehaviours.supportsSecurityGroups()) {
-			Server server = machine.getServer();
-			SecurityGroup securityGroup = openstackHelpers.getMachineSecurityGroup(openstackComputeClient, server);
+		Firewall matchingRule = findMatchingRule(rules);
 
-			securityGroup = openstackComputeClient.root().securityGroups().securityGroup(securityGroup.getId()).show();
+		if (OpsContext.isConfigure()) {
+			if (matchingRule == null) {
+				Firewall rule = new Firewall();
+				rule.setSourceRanges(Arrays.asList("0.0.0.0/0"));
+				rule.setName(UUID.randomUUID().toString());
 
-			SecurityGroupRule matchingRule = findMatchingRule(securityGroup);
+				Allowed allowed = new Allowed();
+				allowed.setIPProtocol("tcp");
+				allowed.setPorts(Arrays.asList("" + model.publicPort));
+				rule.setAllowed(Arrays.asList(allowed));
 
-			if (OpsContext.isConfigure()) {
-				if (matchingRule == null) {
-					CreateSecurityGroupRuleRequest rule = new CreateSecurityGroupRuleRequest();
-					rule.setCidr("0.0.0.0/0");
-					rule.setIpProtocol("tcp");
-					rule.setFromPort(model.publicPort);
-					rule.setToPort(model.publicPort);
-					rule.setParentGroupId(securityGroup.getId());
-
-					openstackComputeClient.root().securityGroupRules().create(rule);
-				}
+				client.createFirewallRule(rule);
 			}
+		}
 
-			if (OpsContext.isDelete()) {
-				if (matchingRule != null) {
-					openstackComputeClient.root().securityGroupRules().securityGroupRule(matchingRule.id).delete();
-				}
+		if (OpsContext.isDelete()) {
+			if (matchingRule != null) {
+				client.deleteFirewallRule(matchingRule);
 			}
 		}
 	}
 
-	private SecurityGroupRule findMatchingRule(SecurityGroup securityGroup) {
-		for (SecurityGroupRule rule : securityGroup.getRules()) {
-			if (!Objects.equal("tcp", rule.ipProtocol)) {
-				continue;
-			}
-			if (!Objects.equal(model.publicPort, rule.fromPort)) {
-				continue;
-			}
-			if (!Objects.equal(model.publicPort, rule.toPort)) {
-				continue;
+	private Firewall findMatchingRule(List<Firewall> rules) {
+		for (Firewall rule : rules) {
+			List<Allowed> allowedList = rule.getAllowed();
+
+			boolean matchesPortAndProtocol = false;
+
+			if (allowedList != null) {
+				for (Allowed allowed : allowedList) {
+					if (!Objects.equal("tcp", allowed.getIPProtocol())) {
+						continue;
+					}
+
+					List<String> ports = allowed.getPorts();
+					if (ports != null) {
+						for (String port : ports) {
+							if (port.contains("-")) {
+								if (port.equals(model.publicPort + "-" + model.publicPort)) {
+									matchesPortAndProtocol = true;
+								}
+							} else {
+								if (port.equals(model.publicPort + "")) {
+									matchesPortAndProtocol = true;
+								}
+							}
+						}
+					}
+				}
 			}
 
-			if (rule.ipRange == null) {
+			if (!matchesPortAndProtocol)
 				continue;
+
+			boolean matchedSourceRange = false;
+
+			List<String> sourceRanges = rule.getSourceRanges();
+			if (sourceRanges == null) {
+				if (rule.getSourceTags() == null) {
+					matchedSourceRange = true;
+				}
+			} else {
+				for (String sourceRange : sourceRanges) {
+					if (Objects.equal(sourceRange, "0.0.0.0/0")) {
+						matchedSourceRange = true;
+					}
+				}
 			}
 
-			if (!Objects.equal(rule.ipRange.cidr, "0.0.0.0/0")) {
-				continue;
-			}
-
-			return rule;
+			if (matchedSourceRange)
+				return rule;
 		}
 		return null;
 	}

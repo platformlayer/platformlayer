@@ -11,15 +11,14 @@ import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsProvider;
-import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.helpers.ImageFactory;
 import org.platformlayer.ops.tagger.Tagger;
 import org.platformlayer.ops.tree.OpsTreeBase;
-import org.platformlayer.service.cloud.google.model.OpenstackInstance;
-import org.platformlayer.service.cloud.google.ops.openstack.OpenstackComputeMachine;
+import org.platformlayer.service.cloud.google.model.GoogleCloudInstance;
+import org.platformlayer.service.cloud.google.ops.compute.GoogleComputeMachine;
 
-public class OpenstackInstanceController extends OpsTreeBase {
-	static final Logger log = Logger.getLogger(OpenstackInstanceController.class);
+public class GoogleCloudInstanceController extends OpsTreeBase {
+	static final Logger log = Logger.getLogger(GoogleCloudInstanceController.class);
 
 	@Handler
 	public void handler() throws OpsException, IOException {
@@ -30,7 +29,7 @@ public class OpenstackInstanceController extends OpsTreeBase {
 
 	@Override
 	protected void addChildren() throws OpsException {
-		final OpenstackInstance model = OpsContext.get().getInstance(OpenstackInstance.class);
+		final GoogleCloudInstance model = OpsContext.get().getInstance(GoogleCloudInstance.class);
 
 		CloudInstanceMapper instance;
 		{
@@ -43,10 +42,10 @@ public class OpenstackInstanceController extends OpsTreeBase {
 			OpsProvider<TagChanges> tagChanges = new OpsProvider<TagChanges>() {
 				@Override
 				public TagChanges get() {
-					OpenstackComputeMachine machine = OpsContext.get().getInstance(OpenstackComputeMachine.class);
+					GoogleComputeMachine machine = OpsContext.get().getInstance(GoogleComputeMachine.class);
 
 					TagChanges tagChanges = new TagChanges();
-					tagChanges.addTags.add(new Tag(Tag.INSTANCE_KEY, OpsSystem.toKey(model).getUrl()));
+					tagChanges.addTags.add(Tag.INSTANCE_KEY.build(model.getKey()));
 					tagChanges.addTags.addAll(machine.buildAddressTags());
 
 					return tagChanges;

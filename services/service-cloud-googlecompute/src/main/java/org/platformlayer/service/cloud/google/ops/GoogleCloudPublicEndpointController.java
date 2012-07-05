@@ -11,17 +11,16 @@ import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsProvider;
-import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.tagger.Tagger;
 import org.platformlayer.ops.tree.OpsTreeBase;
-import org.platformlayer.service.cloud.google.model.OpenstackInstance;
-import org.platformlayer.service.cloud.google.model.OpenstackPublicEndpoint;
+import org.platformlayer.service.cloud.google.model.GoogleCloudInstance;
+import org.platformlayer.service.cloud.google.model.GoogleCloudPublicEndpoint;
 
 import com.google.common.base.Strings;
 
-public class OpenstackPublicEndpointController extends OpsTreeBase {
-	static final Logger log = Logger.getLogger(OpenstackPublicEndpointController.class);
+public class GoogleCloudPublicEndpointController extends OpsTreeBase {
+	static final Logger log = Logger.getLogger(GoogleCloudPublicEndpointController.class);
 
 	@Handler
 	public void handler() throws OpsException, IOException {
@@ -30,14 +29,11 @@ public class OpenstackPublicEndpointController extends OpsTreeBase {
 	@Inject
 	PlatformLayerHelpers client;
 
-	// @Inject
-	// ImageFactory imageFactory;
-	//
 	@Override
 	protected void addChildren() throws OpsException {
-		final OpenstackPublicEndpoint model = OpsContext.get().getInstance(OpenstackPublicEndpoint.class);
+		final GoogleCloudPublicEndpoint model = OpsContext.get().getInstance(GoogleCloudPublicEndpoint.class);
 
-		OpenstackInstance instance = client.getItem(model.instance, OpenstackInstance.class);
+		GoogleCloudInstance instance = client.getItem(model.instance, GoogleCloudInstance.class);
 
 		CloudInstanceMapper instanceMapper;
 		{
@@ -72,7 +68,7 @@ public class OpenstackPublicEndpointController extends OpsTreeBase {
 
 			Tagger tagger = injected(Tagger.class);
 
-			tagger.platformLayerKey = OpsSystem.toKey(model);
+			tagger.platformLayerKey = model.getKey();
 			tagger.tagChangesProvider = tagChanges;
 
 			instanceMapper.addChild(tagger);

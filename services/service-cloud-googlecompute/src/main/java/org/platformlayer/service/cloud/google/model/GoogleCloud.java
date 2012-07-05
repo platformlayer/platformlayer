@@ -13,10 +13,7 @@ import org.platformlayer.xaas.Controller;
 @XmlRootElement
 @Controller(GoogleCloudController.class)
 public class GoogleCloud extends MachineCloudBase {
-	public String endpoint;
-
-	public String username;
-	public Secret password;
-
-	public String tenant;
+	public Secret serviceAccountKey;
+	public String serviceAccountId;
+	public String projectId;
 }

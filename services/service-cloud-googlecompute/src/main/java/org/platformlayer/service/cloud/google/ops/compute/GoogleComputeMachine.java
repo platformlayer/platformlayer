@@ -1,12 +1,11 @@
-package org.platformlayer.service.cloud.google.ops.openstack;
+package org.platformlayer.service.cloud.google.ops.compute;
 
 import java.net.InetAddress;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
-import org.openstack.client.InstanceState;
-import org.openstack.model.compute.Addresses.Network.Ip;
-import org.openstack.model.compute.Server;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.MachineBase;
@@ -14,39 +13,34 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.service.cloud.google.model.GoogleCloud;
 
+import com.google.api.services.compute.model.Instance;
+import com.google.api.services.compute.model.Operation;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.net.InetAddresses;
 
-public class OpenstackComputeMachine extends MachineBase {
-	static final Logger log = Logger.getLogger(OpenstackComputeMachine.class);
+public class GoogleComputeMachine extends MachineBase {
+	static final Logger log = Logger.getLogger(GoogleComputeMachine.class);
 
-	final OpenstackCloudContext cloudContext;
+	final GoogleComputeClient computeClient;
 	final GoogleCloud cloud;
-	// final String openstackServerId;
-	// final String ipAddress;
-	private final Server server;
+	private final Instance instance;
 
-	public OpenstackComputeMachine(OpenstackCloudContext cloudContext, GoogleCloud cloud, Server server) {
-		this.cloudContext = cloudContext;
+	public GoogleComputeMachine(GoogleComputeClient computeClient, GoogleCloud cloud, Instance instance) {
+		this.computeClient = computeClient;
 		this.cloud = cloud;
-		this.server = server;
+		this.instance = instance;
 	}
 
 	@Override
 	public void terminate() throws OpsException {
-		cloudContext.terminateInstance(this);
+		try {
+			Operation operation = computeClient.terminateInstance(instance.getName());
+			computeClient.waitComplete(operation, 5, TimeUnit.MINUTES);
+		} catch (TimeoutException e) {
+			throw new OpsException("Timeout waiting for instance termination", e);
+		}
 	}
-
-	public String getOpenstackServerId() {
-		return server.getId();
-	}
-
-	// @Override
-	// public String getServerId() {
-	// // TODO Auto-generated method stub
-	// return null;
-	// }
 
 	@Override
 	public PlatformLayerKey getKey() {
@@ -57,20 +51,17 @@ public class OpenstackComputeMachine extends MachineBase {
 	public List<InetAddress> findAddresses(NetworkPoint src, int destinationPort) {
 		// TODO: Check private networks
 
-		OpenstackCloudHelpers helpers = new OpenstackCloudHelpers();
-
 		List<InetAddress> addresses = Lists.newArrayList();
 
 		// We assume that private networks can still reach the public internet, so these work for everyone
-		List<Ip> publicIps = helpers.findPublicIps(cloud, server);
-		for (Ip ip : publicIps) {
+		List<String> publicIps = GoogleComputeClient.findPublicIps(instance);
+		for (String ip : publicIps) {
 			// if (Objects.equal("6", ip.getVersion())) {
 			// continue;
 			// }
 
-			String addr = ip.getAddr();
-			if (!Strings.isNullOrEmpty(addr)) {
-				addresses.add(InetAddresses.forString(addr));
+			if (!Strings.isNullOrEmpty(ip)) {
+				addresses.add(InetAddresses.forString(ip));
 			}
 		}
 
@@ -110,11 +101,9 @@ public class OpenstackComputeMachine extends MachineBase {
 	public List<Tag> buildAddressTags() {
 		List<Tag> tags = Lists.newArrayList();
 
-		OpenstackCloudHelpers helpers = new OpenstackCloudHelpers();
-
-		List<Ip> publicIps = helpers.findPublicIps(cloud, server);
-		for (Ip ip : publicIps) {
-			InetAddress addr = InetAddresses.forString(ip.getAddr());
+		List<String> publicIps = GoogleComputeClient.findPublicIps(instance);
+		for (String ip : publicIps) {
+			InetAddress addr = InetAddresses.forString(ip);
 			tags.add(Tag.NETWORK_ADDRESS.build(addr));
 		}
 
@@ -125,33 +114,30 @@ public class OpenstackComputeMachine extends MachineBase {
 		return cloud;
 	}
 
-	public Server getServer() {
-		return server;
+	public Instance getInstance() {
+		return instance;
 	}
 
 	@Override
 	public boolean isTerminated() {
-		InstanceState instanceState = InstanceState.get(server);
-		log.debug("isTerminated? State=" + instanceState);
-		if (instanceState.isTerminated()) {
-			return true;
-		}
-
-		if (instanceState.isTerminating()) {
-			// TODO: Not sure if this is right
-			log.warn("isTerminated mapping isTerminating => isTerminated=true");
-			return true;
-		}
-
-		return false;
+		throw new UnsupportedOperationException();
+		//
+		// InstanceState instanceState = InstanceState.get(server);
+		// log.debug("isTerminated? State=" + instanceState);
+		// if (instanceState.isTerminated()) {
+		// return true;
+		// }
+		//
+		// if (instanceState.isTerminating()) {
+		// // TODO: Not sure if this is right
+		// log.warn("isTerminated mapping isTerminating => isTerminated=true");
+		// return true;
+		// }
+		//
+		// return false;
 	}
 
-	// @Override
-	// public String getServerId() {
-	// return "openstack:" + getOpenstackServerId();
-	// }
-
-	// public String getState() throws OpsException {
-	// return cloudContext.getState(openstackServerId);
-	// }
+	public String getServerSelfLink() {
+		return instance.getSelfLink();
+	}
 }
