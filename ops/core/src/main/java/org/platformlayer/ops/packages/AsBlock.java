@@ -24,6 +24,7 @@ public class AsBlock {
 
 	public static final AsBlock HETZNER;
 	public static final AsBlock SOFTLAYER;
+	public static final AsBlock GOOGLE_COMPUTE_ENGINE;
 
 	static final List<AsBlock> ALL = Lists.newArrayList();
 
@@ -62,6 +63,11 @@ public class AsBlock {
 			SOFTLAYER = as;
 		}
 
+		{
+			AsBlock as = addAsBlock("AS15169", Country.US);
+			as.add("173.255.112.0/20");
+			GOOGLE_COMPUTE_ENGINE = as;
+		}
 	}
 
 	public void add(String ipRange) {

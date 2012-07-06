@@ -228,7 +228,7 @@ public class InstanceBuilder extends OpsTreeBase implements CustomRecursor {
 	protected void addChildren() throws OpsException {
 		addChild(InstanceBootstrap.class);
 
-		addChild(injected(DnsResolver.class));
+		addChild(DnsResolver.class);
 
 		String hostname = dnsName;
 		if (Strings.isNullOrEmpty(hostname)) {
