@@ -41,7 +41,15 @@ public class AptSourcesConfigurationFile extends SyntheticFile {
 		protected byte[] getContentsBytes() throws OpsException {
 			if (!built) {
 				OpsTarget target = OpsContext.get().getInstance(OpsTarget.class);
-				addDefaults(target);
+
+				String etcIssue = target.readTextFile(new File("/etc/issue"));
+				if (etcIssue.startsWith("Debian")) {
+					addDefaultsDebian(target);
+				} else if (etcIssue.startsWith("Ubuntu")) {
+					addDefaultsUbuntu(target);
+				} else {
+					throw new OpsException("Unknown operating system: " + etcIssue);
+				}
 				built = true;
 			}
 			return super.getContentsBytes();
@@ -54,7 +62,7 @@ public class AptSourcesConfigurationFile extends SyntheticFile {
 
 	final List<AptSource> sources = Lists.newArrayList();
 
-	public void addDefaults(OpsTarget target) {
+	public void addDefaultsDebian(OpsTarget target) {
 		List<String> areas = Lists.newArrayList();
 		areas.add("main");
 
@@ -92,6 +100,61 @@ public class AptSourcesConfigurationFile extends SyntheticFile {
 			// Nice to have it here, even if it isn't really live for wheezy just yet
 			add(new AptSource("http://security.debian.org/", "wheezy/updates", areas));
 		}
+	}
+
+	public void addDefaultsUbuntu(OpsTarget target) {
+		List<String> areas = Lists.newArrayList();
+		areas.add("main");
+		areas.add("multiverse");
+		areas.add("universe");
+
+		AsBlock asBlock = AsBlock.find(target);
+
+		String mainDebianMirror = null;
+		if (asBlock != null) {
+			Country country = asBlock.getCountry();
+			if (Objects.equal(AsBlock.HETZNER, asBlock)) {
+				// Hmm... no wheezy mirrors yet??
+				// add(new AptSource("http://mirror.hetzner.de/debian/package", "wheezy", areas));
+				// add(new AptSource("http://mirror.hetzner.de/debian/security", "wheezy/updates", areas));
+			}
+
+			if (USE_SOFTLAYER_MIRROR && Objects.equal(AsBlock.SOFTLAYER, asBlock)) {
+				add(new AptSource("http://mirrors.service.softlayer.com/debian", "wheezy", areas));
+				add(new AptSource("http://mirrors.service.softlayer.com/debian-security", "wheezy/updates", areas));
+			}
+
+			if (Objects.equal(AsBlock.GOOGLE_COMPUTE_ENGINE, asBlock)) {
+				add(new AptSource("http://gce_ubuntu_mirror.commondatastorage.googleapis.com/precise", "precise", areas));
+				add(new AptSource("http://gce_ubuntu_mirror.commondatastorage.googleapis.com/precise",
+						"precise-security", areas));
+				add(new AptSource("http://gce_ubuntu_mirror.commondatastorage.googleapis.com/precise",
+						"precise-updates", areas));
+			}
+
+			mainDebianMirror = "http://" + country.getTld() + ".archive.ubuntu.com/ubuntu";
+		} else {
+			log.warn("Could not determine AS-Block for:" + target);
+
+			mainDebianMirror = "http://archive.ubuntu.com/ubuntu";
+		}
+
+		{
+			add(new AptSource(mainDebianMirror, "precise", areas));
+			add(new AptSource(mainDebianMirror, "precise-security", areas));
+			add(new AptSource(mainDebianMirror, "precise-updates", areas));
+
+			// deb-src http://gce_ubuntu_mirror.commondatastorage.googleapis.com/precise precise main multiverse
+			// universe
+			// deb-src http://gce_ubuntu_mirror.commondatastorage.googleapis.com/precise precise-security main
+			// multiverse universe
+			// deb-src http://gce_ubuntu_mirror.commondatastorage.googleapis.com/precise precise-updates main multiverse
+			// universe
+			// deb-src http://us.archive.ubuntu.com/ubuntu precise main multiverse universe
+			// deb-src http://us.archive.ubuntu.com/ubuntu precise-security main multiverse universe
+			// deb-src http://us.archive.ubuntu.com/ubuntu precise-updates main multiverse universe
+		}
+
 	}
 
 	private void add(AptSource source) {
