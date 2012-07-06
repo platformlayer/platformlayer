@@ -44,4 +44,19 @@ public class GoogleCloudController extends OpsTreeBase implements CloudControlle
 		// StorageConfiguration config = new StorageConfiguration(credentials);
 		// return config;
 	}
+
+	@Override
+	public InstanceBase buildInstanceTemplate(MachineCreationRequest request) {
+		GoogleCloudInstance rawMachine = new GoogleCloudInstance();
+
+		rawMachine.minimumMemoryMb = request.minimumMemoryMB;
+		rawMachine.hostname = request.hostname;
+
+		return rawMachine;
+	}
+
+	@Override
+	public PublicEndpointBase buildEndpointTemplate() {
+		return new GoogleCloudPublicEndpoint();
+	}
 }

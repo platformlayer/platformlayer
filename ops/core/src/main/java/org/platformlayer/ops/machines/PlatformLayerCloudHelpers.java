@@ -26,20 +26,12 @@ import org.platformlayer.ops.OpaqueMachine;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
+import org.platformlayer.ops.helpers.ProviderHelper;
 import org.platformlayer.ops.helpers.SshKey;
 import org.platformlayer.ops.helpers.SshKeys;
 import org.platformlayer.ops.images.ImageStore;
 import org.platformlayer.ops.images.direct.DirectImageStore;
 import org.platformlayer.ops.networks.NetworkPoint;
-import org.platformlayer.service.machines.direct.v1.DirectCloud;
-import org.platformlayer.service.machines.direct.v1.DirectInstance;
-import org.platformlayer.service.machines.direct.v1.DirectPublicEndpoint;
-import org.platformlayer.service.machines.openstack.v1.OpenstackCloud;
-import org.platformlayer.service.machines.openstack.v1.OpenstackInstance;
-import org.platformlayer.service.machines.openstack.v1.OpenstackPublicEndpoint;
-import org.platformlayer.service.machines.raw.v1.RawCloud;
-import org.platformlayer.service.machines.raw.v1.RawInstance;
-import org.platformlayer.service.machines.raw.v1.RawPublicEndpoint;
 import org.platformlayer.xaas.services.ModelClass;
 import org.platformlayer.xml.XmlHelper;
 import org.platformlayer.xml.XmlHelper.ElementInfo;
@@ -61,6 +53,9 @@ public class PlatformLayerCloudHelpers {
 
 	@Inject
 	ServiceProviderHelpers serviceProviderHelpers;
+
+	@Inject
+	ProviderHelper providers;
 
 	public Machine toMachine(InstanceBase instance) {
 		return new PlatformLayerCloudMachine(platformLayer, instance);
@@ -85,23 +80,10 @@ public class PlatformLayerCloudHelpers {
 	}
 
 	public PublicEndpointBase createPublicEndpoint(InstanceBase instance, PlatformLayerKey parent) throws OpsException {
-		PublicEndpointBase endpoint;
+		MachineCloudBase cloud = getCloud(instance.cloud);
+		CloudController cloudController = providers.toInterface(cloud);
 
-		if (instance.getClass().getSimpleName().equals(DirectInstance.class.getSimpleName())) {
-			DirectPublicEndpoint directEndpoint = new DirectPublicEndpoint();
-
-			endpoint = directEndpoint;
-		} else if (instance.getClass().getSimpleName().equals(RawInstance.class.getSimpleName())) {
-			RawPublicEndpoint rawEndpoint = new RawPublicEndpoint();
-
-			endpoint = rawEndpoint;
-		} else if (instance.getClass().getSimpleName().equals(OpenstackInstance.class.getSimpleName())) {
-			OpenstackPublicEndpoint osEndpoint = new OpenstackPublicEndpoint();
-
-			endpoint = osEndpoint;
-		} else {
-			throw new OpsException("Unhandled instance type: " + instance.getClass());
-		}
+		PublicEndpointBase endpoint = cloudController.buildEndpointTemplate();
 
 		if (parent != null) {
 			endpoint.getTags().add(Tag.buildParentTag(parent));
@@ -121,43 +103,11 @@ public class PlatformLayerCloudHelpers {
 	}
 
 	InstanceBase buildInstanceTemplate(MachineCreationRequest request, PlatformLayerKey parent) throws OpsException {
-		ItemBase cloudItem = scheduler.pickCloud(request);
+		MachineCloudBase targetCloud = scheduler.pickCloud(request);
 
-		InstanceBase machine;
+		CloudController targetCloudController = providers.toInterface(targetCloud);
 
-		// TODO: Create MachineBase as a base for LxcMachine & RawMachine; make this code generic
-
-		if (cloudItem.getClass().getSimpleName().equals(DirectCloud.class.getSimpleName())) {
-			// LxcCloud lxcCloud = (LxcCloud) cloudItem;
-			DirectInstance directMachine = new DirectInstance();
-
-			directMachine.setMinimumMemoryMb(request.minimumMemoryMB);
-			directMachine.setHostname(request.hostname);
-
-			machine = directMachine;
-		} else if (cloudItem.getClass().getSimpleName().equals(RawCloud.class.getSimpleName())) {
-			// RawCloud rawCloud = (RawCloud) cloudItem;
-
-			// if (request.recipeId == null) {
-			// buildImage = false;
-			// }
-
-			// if (isBootstraping()) {
-			// buildImage = false;
-			// }
-			RawInstance rawMachine = new RawInstance();
-
-			machine = rawMachine;
-		} else if (cloudItem.getClass().getSimpleName().equals(OpenstackCloud.class.getSimpleName())) {
-			OpenstackInstance rawMachine = new OpenstackInstance();
-
-			rawMachine.setMinimumMemoryMb(request.minimumMemoryMB);
-			rawMachine.setHostname(request.hostname);
-
-			machine = rawMachine;
-		} else {
-			throw new OpsException("Unhandled cloud type: " + cloudItem.getClass());
-		}
+		InstanceBase machine = targetCloudController.buildInstanceTemplate(request);
 
 		machine.sshPublicKey = SshKeys.serialize(request.sshPublicKey);
 
@@ -175,7 +125,7 @@ public class PlatformLayerCloudHelpers {
 		if (parent != null) {
 			machine.getTags().add(Tag.buildParentTag(parent));
 		}
-		machine.cloud = cloudItem.getKey();
+		machine.cloud = targetCloud.getKey();
 		machine.hostPolicy = request.hostPolicy;
 
 		String id = request.hostname;
