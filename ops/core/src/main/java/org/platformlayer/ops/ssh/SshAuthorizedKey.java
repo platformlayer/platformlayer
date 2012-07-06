@@ -25,7 +25,9 @@ public class SshAuthorizedKey {
 
 	@Handler
 	public void handler(OpsTarget target) throws OpsException {
-		ensureSshAuthorization(target, user, publicKey);
+		if (OpsContext.isConfigure() || OpsContext.isValidate()) {
+			ensureSshAuthorization(target, user, publicKey);
+		}
 	}
 
 	public static void ensureSshAuthorization(OpsTarget target, String user, PublicKey sshPublicKey)
