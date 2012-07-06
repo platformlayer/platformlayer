@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import javax.inject.Inject;
+
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
@@ -24,9 +26,12 @@ public class EnsureFirewallIngress {
 	// Set by handler
 	String publicAddress;
 
+	@Inject
+	GoogleComputeClientFactory googleComputeClientFactory;
+
 	@Handler
 	public void handler(GoogleCloud cloud, GoogleComputeMachine machine) throws OpsException {
-		GoogleComputeClient client = GoogleComputeClientFactory.getComputeClient(cloud);
+		GoogleComputeClient client = googleComputeClientFactory.getComputeClient(cloud);
 
 		// Find the public address, although the Google Cloud firewall may be blocking it
 		publicAddress = machine.getBestAddress(NetworkPoint.forPublicInternet(), model.backendPort);
@@ -40,12 +45,14 @@ public class EnsureFirewallIngress {
 			if (matchingRule == null) {
 				Firewall rule = new Firewall();
 				rule.setSourceRanges(Arrays.asList("0.0.0.0/0"));
-				rule.setName(UUID.randomUUID().toString());
+				rule.setName("pl-" + UUID.randomUUID().toString());
 
 				Allowed allowed = new Allowed();
 				allowed.setIPProtocol("tcp");
 				allowed.setPorts(Arrays.asList("" + model.publicPort));
 				rule.setAllowed(Arrays.asList(allowed));
+
+				rule.setNetwork(client.buildNetworkUrl("default"));
 
 				client.createFirewallRule(rule);
 			}
@@ -87,8 +94,9 @@ public class EnsureFirewallIngress {
 				}
 			}
 
-			if (!matchesPortAndProtocol)
+			if (!matchesPortAndProtocol) {
 				continue;
+			}
 
 			boolean matchedSourceRange = false;
 
@@ -105,8 +113,9 @@ public class EnsureFirewallIngress {
 				}
 			}
 
-			if (matchedSourceRange)
+			if (matchedSourceRange) {
 				return rule;
+			}
 		}
 		return null;
 	}

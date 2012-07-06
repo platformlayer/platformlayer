@@ -3,13 +3,18 @@ package org.platformlayer.service.cloud.google.ops;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
+import org.platformlayer.core.model.InstanceBase;
 import org.platformlayer.core.model.MachineCloudBase;
+import org.platformlayer.core.model.PublicEndpointBase;
 import org.platformlayer.ops.Handler;
+import org.platformlayer.ops.MachineCreationRequest;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.images.ImageStore;
 import org.platformlayer.ops.machines.CloudController;
 import org.platformlayer.ops.machines.StorageConfiguration;
 import org.platformlayer.ops.tree.OpsTreeBase;
+import org.platformlayer.service.cloud.google.model.GoogleCloudInstance;
+import org.platformlayer.service.cloud.google.model.GoogleCloudPublicEndpoint;
 
 public class GoogleCloudController extends OpsTreeBase implements CloudController {
 	static final Logger log = Logger.getLogger(GoogleCloudController.class);

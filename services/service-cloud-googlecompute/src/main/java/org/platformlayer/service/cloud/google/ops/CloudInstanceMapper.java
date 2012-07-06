@@ -1,6 +1,7 @@
 package org.platformlayer.service.cloud.google.ops;
 
 import java.io.IOException;
+import java.security.PublicKey;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -32,7 +33,6 @@ import org.platformlayer.service.cloud.google.ops.compute.GoogleComputeMachine;
 
 import com.google.api.services.compute.model.Instance;
 import com.google.api.services.compute.model.Operation;
-import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 
 public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
@@ -53,6 +53,9 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
 	@Inject
 	InstanceHelpers instanceHelpers;
 
+	@Inject
+	GoogleComputeClientFactory googleComputeClientFactory;
+
 	@Handler
 	public void doOperation() throws OpsException, IOException {
 		Tags instanceTags = instance.getTags();
@@ -61,7 +64,7 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
 		if (cloud == null) {
 			throw new OpsException("Could not find cloud");
 		}
-		GoogleComputeClient computeClient = GoogleComputeClientFactory.getComputeClient(cloud);
+		GoogleComputeClient computeClient = googleComputeClientFactory.getComputeClient(cloud);
 
 		getRecursionState().pushChildScope(cloud);
 
@@ -73,9 +76,8 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
 				PlatformLayerKey instanceKey = instance.getKey();
 				request.tags.add(Tag.buildParentTag(instanceKey));
 
-				String serverName = buildServerName();
-
-				Instance created = computeClient.createInstance(cloud, serverName, request);
+				PublicKey servicePublicKey = service.getSshKey().getKeyPair().getPublic();
+				Instance created = computeClient.createInstance(cloud, request, servicePublicKey);
 
 				{
 					Tag instanceTag = new Tag(Tag.ASSIGNED, created.getName());
@@ -113,7 +115,7 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
 				machine = new GoogleComputeMachine(computeClient, cloud, server);
 
 				SshKey sshKey = service.getSshKey();
-				target = machine.getTarget(sshKey);
+				target = machine.getTarget(GoogleComputeClient.USER_NAME, sshKey.getKeyPair());
 			}
 		}
 
@@ -169,16 +171,6 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
 		}
 	}
 
-	private String buildServerName() {
-		String serverName = "PlatformLayer ";
-		if (!Strings.isNullOrEmpty(instance.hostname)) {
-			serverName += instance.hostname;
-		} else {
-			serverName += instance.getKey().getUrl();
-		}
-		return serverName;
-	}
-
 	private MachineCreationRequest buildMachineCreationRequest() throws IOException {
 		MachineCreationRequest request = new MachineCreationRequest();
 		request.sshPublicKey = OpenSshUtils.readSshPublicKey(instance.sshPublicKey);
@@ -205,4 +197,5 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
 	@Override
 	protected void addChildren() throws OpsException {
 	}
+
 }
