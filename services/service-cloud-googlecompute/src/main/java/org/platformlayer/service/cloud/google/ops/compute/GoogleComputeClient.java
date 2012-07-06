@@ -21,6 +21,7 @@ import org.platformlayer.service.cloud.google.model.GoogleCloud;
 import org.platformlayer.service.imagefactory.v1.DiskImageRecipe;
 import org.platformlayer.service.imagefactory.v1.OperatingSystemRecipe;
 
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.compute.Compute;
 import com.google.api.services.compute.model.AccessConfig;
 import com.google.api.services.compute.model.Firewall;
@@ -271,14 +272,14 @@ public class GoogleComputeClient {
 
 			Instance created;
 
-			String stateName = null;
+			InstanceState state = null;
 			while (true) {
 				created = findInstanceByName(instanceName);
 
-				stateName = created.getStatus();
-				log.info("Instance state: " + stateName);
+				state = InstanceState.get(created);
+				log.info("Instance state: " + state);
 
-				if (stateName.equals("RUNNING")) {
+				if (state.isRunning()) {
 					break;
 				}
 
@@ -426,6 +427,11 @@ public class GoogleComputeClient {
 			log.debug("Retrieving instance by name: " + name);
 			Instance instance = compute.instances().get(projectId, name).execute();
 			return instance;
+		} catch (GoogleJsonResponseException e) {
+			if (e.getStatusCode() == 404) {
+				return null;
+			}
+			throw new OpsException("Error getting instance", e);
 		} catch (IOException e) {
 			throw new OpsException("Error getting instance", e);
 		}

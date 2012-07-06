@@ -15,7 +15,6 @@ import org.platformlayer.core.model.Tags;
 import org.platformlayer.crypto.OpenSshUtils;
 import org.platformlayer.ops.CustomRecursor;
 import org.platformlayer.ops.Handler;
-import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.MachineCreationRequest;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
@@ -92,7 +91,7 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
 			throw new OpsException("Instance not yet assigned");
 		}
 
-		Machine machine = null;
+		GoogleComputeMachine machine = null;
 		OpsTarget target = null;
 
 		if (!assignedInstanceIds.isEmpty()) {
@@ -158,6 +157,10 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
 				// log.info("Ignoring not-found error while deleting security group: " + securityGroup.getId());
 				// }
 				// }
+			}
+
+			if (machine != null) {
+				machine.refreshState();
 			}
 		}
 
