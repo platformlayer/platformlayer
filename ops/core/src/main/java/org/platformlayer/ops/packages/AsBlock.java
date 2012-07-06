@@ -4,6 +4,7 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.SshOpsTarget;
 import org.platformlayer.ops.networks.IpRange;
@@ -12,6 +13,8 @@ import com.google.common.collect.Lists;
 import com.google.common.net.InetAddresses;
 
 public class AsBlock {
+	private static final Logger log = Logger.getLogger(AsBlock.class);
+
 	final String key;
 	final Country country;
 
@@ -65,7 +68,13 @@ public class AsBlock {
 
 		{
 			AsBlock as = addAsBlock("AS15169", Country.US);
+
+			// Google advertises a large number of prefixes under this block
+			// including blocks under different countries...
+			// We probably have to rethink our maping here (each netblock should have its own country)?
+
 			as.add("173.255.112.0/20");
+			as.add("108.59.80.0/20");
 			GOOGLE_COMPUTE_ENGINE = as;
 		}
 	}
@@ -116,7 +125,13 @@ public class AsBlock {
 		SshOpsTarget sshOpsTarget = (SshOpsTarget) target;
 		InetAddress host = sshOpsTarget.getHost();
 
-		return find(host);
+		AsBlock asBlock = find(host);
+
+		if (asBlock == null) {
+			log.warn("Could not determine AS-Block for: " + host.getHostAddress() + " (" + target + ")");
+		}
+
+		return asBlock;
 	}
 
 }
