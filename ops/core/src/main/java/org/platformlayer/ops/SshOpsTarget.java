@@ -23,10 +23,13 @@ import com.google.common.net.InetAddresses;
 public class SshOpsTarget extends OpsTargetBase {
 	private final SshConnection sshConnection;
 	private final File tempDirBase;
+	private final boolean connectedAsRoot;
 
 	public SshOpsTarget(File tempDirBase, SshConnection sshConnection) {
 		this.tempDirBase = tempDirBase;
 		this.sshConnection = sshConnection;
+
+		this.connectedAsRoot = sshConnection.getUser().equals("root");
 	}
 
 	public InetAddress getHost() {
@@ -50,7 +53,7 @@ public class SshOpsTarget extends OpsTargetBase {
 		long dataLength = upload.data.getLength();
 		try {
 			log.info("Uploading file over ssh: " + upload.path);
-			sshConnection.sshCopyData(dataStream, dataLength, upload.path.getPath(), upload.mode);
+			sshConnection.sshCopyData(dataStream, dataLength, upload.path.getPath(), upload.mode, !connectedAsRoot);
 		} catch (IOException e) {
 			throw new OpsException("Error during file upload", e);
 		} catch (InterruptedException e) {
@@ -90,7 +93,7 @@ public class SshOpsTarget extends OpsTargetBase {
 	public byte[] readBinaryFile(File path) throws OpsException {
 		byte[] contents;
 		try {
-			contents = sshConnection.sshReadFile(path.getPath());
+			contents = sshConnection.sshReadFile(path.getPath(), !connectedAsRoot);
 		} catch (IOException e) {
 			throw new OpsException("Error reading file", e);
 		} catch (InterruptedException e) {
@@ -142,6 +145,15 @@ public class SshOpsTarget extends OpsTargetBase {
 	public String toString() {
 		return "SshOpsTarget [" + sshConnection.getUser() + "@" + InetAddresses.toAddrString(sshConnection.getHost())
 				+ "]";
+	}
+
+	@Override
+	protected Command maybeSudo(String command) {
+		if (!connectedAsRoot) {
+			return Command.build("sudo " + command);
+		} else {
+			return Command.build(command);
+		}
 	}
 
 }

@@ -1,12 +1,8 @@
 package org.platformlayer.ops.bootstrap;
 
-import java.io.File;
-
 import org.apache.log4j.Logger;
-import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.filesystem.SimpleFile;
 import org.platformlayer.ops.firewall.scripts.PersistIptablesScripts;
 import org.platformlayer.ops.packages.AptSourcesConfigurationFile.DefaultAptSourcesConfigurationFile;
 import org.platformlayer.ops.packages.PackageDependency;

@@ -69,7 +69,7 @@ public abstract class OpsTargetBase implements OpsTarget {
 			throw new IllegalArgumentException("path");
 		}
 
-		Command command = Command.build("chown");
+		Command command = maybeSudo("chown");
 		if (recursive) {
 			command.addLiteral("-R");
 		}
@@ -157,7 +157,7 @@ public abstract class OpsTargetBase implements OpsTarget {
 			return;
 		}
 
-		Command command = Command.build("mkdir");
+		Command command = maybeSudo("mkdir");
 		command.addLiteral("-p");
 		if (fileMode != null) {
 			command.addLiteral("-m");
@@ -214,7 +214,7 @@ public abstract class OpsTargetBase implements OpsTarget {
 	}
 
 	protected List<FilesystemInfo> doFind(File path, Integer maxDepth) throws OpsException {
-		Command command = Command.build("find");
+		Command command = maybeSudo("find");
 
 		String[] fields = new String[] { "T@", "s", "m", "u", "g", "n", "p", "l", "y", "d" };
 
@@ -296,6 +296,8 @@ public abstract class OpsTargetBase implements OpsTarget {
 
 		return filesystemInfos;
 	}
+
+	protected abstract Command maybeSudo(String command);
 
 	@Override
 	public void symlink(File targetFile, File aliasFile, boolean force) throws OpsException {

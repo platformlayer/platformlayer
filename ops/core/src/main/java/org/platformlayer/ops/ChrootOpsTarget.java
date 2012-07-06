@@ -16,12 +16,12 @@ import org.platformlayer.ops.process.ProcessExecution;
 public class ChrootOpsTarget extends OpsTargetBase {
 	final File chrootDir;
 	final File tmpDir;
-	final OpsTarget parentTarget;
+	final OpsTargetBase parentTarget;
 
 	public ChrootOpsTarget(File chrootDir, File tmpDir, OpsTarget parentTarget) {
 		this.chrootDir = chrootDir;
 		this.tmpDir = tmpDir;
-		this.parentTarget = parentTarget;
+		this.parentTarget = (OpsTargetBase) parentTarget;
 	}
 
 	@Override
@@ -109,5 +109,10 @@ public class ChrootOpsTarget extends OpsTargetBase {
 	@Override
 	public NetworkPoint getNetworkPoint() {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	protected Command maybeSudo(String command) {
+		return parentTarget.maybeSudo(command);
 	}
 }
