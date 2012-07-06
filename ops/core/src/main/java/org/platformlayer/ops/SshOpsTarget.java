@@ -24,9 +24,11 @@ public class SshOpsTarget extends OpsTargetBase {
 	private final SshConnection sshConnection;
 	private final File tempDirBase;
 	private final boolean connectedAsRoot;
+	private final MachineBase machine;
 
-	public SshOpsTarget(File tempDirBase, SshConnection sshConnection) {
+	public SshOpsTarget(File tempDirBase, MachineBase machine, SshConnection sshConnection) {
 		this.tempDirBase = tempDirBase;
+		this.machine = machine;
 		this.sshConnection = sshConnection;
 
 		this.connectedAsRoot = sshConnection.getUser().equals("root");
@@ -156,4 +158,8 @@ public class SshOpsTarget extends OpsTargetBase {
 		}
 	}
 
+	@Override
+	public boolean isMachineTerminated() {
+		return machine.isTerminated();
+	}
 }

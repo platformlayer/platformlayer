@@ -115,4 +115,9 @@ public class ChrootOpsTarget extends OpsTargetBase {
 	protected Command maybeSudo(String command) {
 		return parentTarget.maybeSudo(command);
 	}
+
+	@Override
+	public boolean isMachineTerminated() {
+		return parentTarget.isMachineTerminated();
+	}
 }
