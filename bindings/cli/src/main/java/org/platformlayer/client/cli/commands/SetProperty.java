@@ -1,16 +1,22 @@
 package org.platformlayer.client.cli.commands;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.List;
 
 import org.codehaus.jettison.json.JSONException;
 import org.kohsuke.args4j.Argument;
+import org.kohsuke.args4j.Option;
+import org.openstack.utils.NoCloseInputStream;
 import org.platformlayer.Format;
+import org.platformlayer.IoUtils;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
 import org.platformlayer.UntypedItem;
 import org.platformlayer.client.cli.model.ItemPath;
 import org.platformlayer.core.model.PlatformLayerKey;
+import org.platformlayer.crypto.CryptoUtils;
 import org.platformlayer.xml.XmlHelper;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -20,12 +26,18 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 
 public class SetProperty extends PlatformLayerCommandRunnerBase {
+	@Option(name = "-stdin", usage = "Read value from stdin")
+	public boolean stdin;
+
+	@Option(name = "-format", usage = "Format of data in stdin")
+	public String format;
+
 	@Argument(index = 0, required = true, metaVar = "path")
 	public ItemPath path;
 
 	@Argument(index = 1, required = true, metaVar = "key")
 	public String key;
-	@Argument(index = 2, required = true, metaVar = "value")
+	@Argument(index = 2, required = false, metaVar = "value")
 	public String value;
 
 	public SetProperty() {
@@ -33,8 +45,25 @@ public class SetProperty extends PlatformLayerCommandRunnerBase {
 	}
 
 	@Override
-	public Object runCommand() throws PlatformLayerClientException, JSONException {
+	public Object runCommand() throws PlatformLayerClientException, JSONException, IOException {
 		PlatformLayerClient client = getPlatformLayerClient();
+
+		if (stdin) {
+			if (value != null) {
+				throw new CliException("You cannot specify a value when using -stdin");
+			}
+
+			InputStream stream = new NoCloseInputStream(System.in);
+			byte[] data = IoUtils.readAllBinary(stream);
+
+			if (format.equals("base64")) {
+				value = CryptoUtils.toBase64(data);
+			} else {
+				throw new CliException("Data format not known: " + format);
+			}
+		} else {
+			throw new CliException("Value is required (if not using -stdin)");
+		}
 
 		PlatformLayerKey resolved = path.resolve(getContext());
 
