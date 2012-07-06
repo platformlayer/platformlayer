@@ -24,8 +24,7 @@ public class InstanceBootstrap extends OpsTreeBase {
 
 		addChild(BootstrapLocales.class);
 
-		addChild(SimpleFile.build(getClass(), new File("/etc/ssh/sshd_config")).setFileMode("0644").setOwner("root")
-				.setGroup("root").setUpdateAction(Command.build("service ssh reload")));
+		addChild(ConfigureSshd.class);
 
 		// We always install curl, because we use it to check for http proxy responsiveness
 		// TODO: Switch to netcat, to avoid using curl here - it's quite big
