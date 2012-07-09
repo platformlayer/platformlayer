@@ -175,13 +175,13 @@ public class PlatformLayerCloudHelpers {
 		return CastUtils.checkedCast(item, MachineCloudBase.class);
 	}
 
-	public List<MachineCloudBase> findClouds(Filter filter) throws OpsException {
+	public List<MachineCloudBase> findClouds() throws OpsException {
 		List<MachineCloudBase> clouds = Lists.newArrayList();
 
 		// TODO: Fix this (push down list? send base class in query?)
 		for (ModelClass<? extends MachineCloudBase> modelClass : serviceProviderHelpers
 				.getModelSubclasses(MachineCloudBase.class)) {
-			for (MachineCloudBase cloud : platformLayer.listItems(modelClass.getJavaClass(), filter)) {
+			for (MachineCloudBase cloud : platformLayer.listItems(modelClass.getJavaClass())) {
 				clouds.add(cloud);
 			}
 		}

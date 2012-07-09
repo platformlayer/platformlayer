@@ -29,7 +29,7 @@ public class SimpleMultiCloudScheduler implements MultiCloudScheduler {
 
 	@Override
 	public List<MachineCloudBase> listClouds() throws OpsException {
-		return cloudHelpers.findClouds(null);
+		return cloudHelpers.findClouds();
 	}
 
 	@Override
