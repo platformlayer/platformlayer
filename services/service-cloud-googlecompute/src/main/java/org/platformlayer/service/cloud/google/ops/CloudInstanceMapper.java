@@ -19,6 +19,7 @@ import org.platformlayer.ops.MachineCreationRequest;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
+import org.platformlayer.ops.SshOpsTarget;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.helpers.ServiceContext;
 import org.platformlayer.ops.helpers.SshKey;
@@ -115,6 +116,9 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
 
 				SshKey sshKey = service.getSshKey();
 				target = machine.getTarget(GoogleComputeClient.USER_NAME, sshKey.getKeyPair());
+
+				// We need to use sudo while we set up root access
+				((SshOpsTarget) target).setEnsureRunningAsRoot(true);
 			}
 		}
 
