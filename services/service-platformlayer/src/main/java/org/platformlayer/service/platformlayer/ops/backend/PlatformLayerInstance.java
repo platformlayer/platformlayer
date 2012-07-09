@@ -17,9 +17,28 @@ public class PlatformLayerInstance extends StandardServiceInstance {
 
 		ManagedDirectory configDir = findDirectory(template.getConfigDir());
 
-		ManagedKeystore keystore = configDir.addChild(ManagedKeystore.class);
-		keystore.path = new File(configDir.filePath, "../keystore.jks");
-		keystore.tagWithPublicKeys = template.getModel();
+		File keystoreFile = template.getKeystoreFile();
+
+		{
+			ManagedKeystore httpsKey = configDir.addChild(ManagedKeystore.class);
+			httpsKey.path = keystoreFile;
+			httpsKey.tagWithPublicKeys = template.getModel();
+			httpsKey.alias = ManagedKeystore.DEFAULT_WEBSERVER_ALIAS;
+		}
+
+		{
+			ManagedKeystore httpsKey = configDir.addChild(ManagedKeystore.class);
+			httpsKey.path = keystoreFile;
+			httpsKey.tagWithPublicKeys = template.getModel();
+			httpsKey.alias = template.getSystemCertAlias();
+		}
+
+		if (template.isMultitenant()) {
+			ManagedKeystore masterProjectKey = configDir.addChild(ManagedKeystore.class);
+			masterProjectKey.path = keystoreFile;
+
+			masterProjectKey.alias = template.getMultitenantKeyAlias();
+		}
 	}
 
 	@Override

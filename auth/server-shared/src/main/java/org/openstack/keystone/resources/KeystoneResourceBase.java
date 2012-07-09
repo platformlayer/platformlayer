@@ -1,5 +1,6 @@
 package org.openstack.keystone.resources;
 
+import java.security.cert.X509Certificate;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -47,6 +48,14 @@ public class KeystoneResourceBase {
 
 	protected boolean isNullOrEmpty(List<?> list) {
 		return (list == null) || (list.isEmpty());
+	}
+
+	protected X509Certificate[] getCertificateChain() {
+		X509Certificate[] certChain = (X509Certificate[]) request.getAttribute("javax.servlet.request.X509Certificate");
+		if (certChain == null || certChain.length == 0) {
+			return null;
+		}
+		return certChain;
 	}
 
 }

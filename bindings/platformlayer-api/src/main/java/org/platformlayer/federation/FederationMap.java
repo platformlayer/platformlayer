@@ -80,7 +80,7 @@ public class FederationMap {
 
 	private void buildTargetMap(FederationConfiguration config) {
 		for (PlatformLayerConnectionConfiguration child : config.systems) {
-			FederationKey host = FederationKey.build(child.server);
+			FederationKey host = FederationKey.build(child.authenticationEndpoint);
 			ProjectId project = new ProjectId(child.tenant);
 			FederationMapping key = new FederationMapping(host, project);
 
@@ -103,7 +103,7 @@ public class FederationMap {
 						throw new IllegalStateException();
 					}
 
-					FederationKey host = FederationKey.build(system.server);
+					FederationKey host = FederationKey.build(system.authenticationEndpoint);
 					ProjectId project = new ProjectId(system.tenant);
 					rule.targetKey = new FederationMapping(host, project);
 				}

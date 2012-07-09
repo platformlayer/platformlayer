@@ -661,7 +661,7 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 			PlatformLayerConnectionConfiguration config = new PlatformLayerConnectionConfiguration();
 			config.key = service.getKey();
 			config.secret = service.getSecret();
-			config.server = service.getServer();
+			config.authenticationEndpoint = service.getServer();
 			config.tenant = service.getTenant();
 			config.username = service.getUsername();
 			config.platformlayerEndpoint = service.getServer();

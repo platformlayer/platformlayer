@@ -1,5 +1,6 @@
 package org.openstack.keystone.resources.user;
 
+import java.security.cert.X509Certificate;
 import java.util.Date;
 
 import javax.inject.Inject;
@@ -17,6 +18,8 @@ import org.openstack.keystone.resources.KeystoneResourceBase;
 import org.openstack.keystone.services.AuthenticatorException;
 import org.openstack.keystone.services.TokenInfo;
 import org.openstack.keystone.services.TokenService;
+import org.platformlayer.auth.CertificateAuthenticationRequest;
+import org.platformlayer.auth.CertificateAuthenticationResponse;
 import org.platformlayer.auth.ProjectEntity;
 import org.platformlayer.auth.UserEntity;
 
@@ -38,69 +41,97 @@ public class TokensResource extends KeystoneResourceBase {
 			throwUnauthorized();
 		}
 
+		AuthenticateResponse response = new AuthenticateResponse();
+
 		String username = null;
-		String password = null;
-		String project = request.auth.project;
+		String projectKey = request.auth.project;
+
+		UserEntity user = null;
+		ProjectEntity project = null;
 
 		if (request.auth.passwordCredentials != null) {
 			username = request.auth.passwordCredentials.username;
-			password = request.auth.passwordCredentials.password;
-		}
+			String password = request.auth.passwordCredentials.password;
 
-		// return buildToken(project, "" + user.getId(), user.getTokenSecret());
-		// }
-		//
-		// TokenInfo tokenInfo = null;
-		// try {
-		// tokenInfo = tryAuthenticate(request.auth);
-		// } catch (Exception e) {
-		// // An exception indicates something went wrong (i.e. not just bad credentials)
-		// log.warn("Error while authenticating", e);
-		// throwInternalError();
-		// }
-		//
-		// if (tokenInfo == null) {
-		// throwUnauthorized();
-		// }
+			try {
+				user = userAuthenticator.authenticate(projectKey, username, password);
+			} catch (AuthenticatorException e) {
+				// An exception indicates something went wrong (i.e. not just bad credentials)
+				log.warn("Error while getting user info", e);
+				throwInternalError();
+			}
+		} else if (request.auth.certificateCredentials != null) {
+			username = request.auth.certificateCredentials.username;
 
-		// String project = request.auth.project;
+			X509Certificate[] certificateChain = getCertificateChain();
+			if (certificateChain == null) {
+				throwUnauthorized();
+			}
 
-		UserEntity user = null;
-		try {
-			user = userAuthenticator.authenticate(project, username, password);
-		} catch (AuthenticatorException e) {
-			// An exception indicates something went wrong (i.e. not just bad credentials)
-			log.warn("Error while getting user info", e);
-			throwInternalError();
+			byte[] challengeResponse = request.auth.certificateCredentials.challengeResponse;
+
+			CertificateAuthenticationRequest details = new CertificateAuthenticationRequest();
+			details.certificateChain = certificateChain;
+			details.username = username;
+			details.projectKey = projectKey;
+			details.challengeResponse = challengeResponse;
+
+			CertificateAuthenticationResponse result = null;
+			try {
+				result = userAuthenticator.authenticate(details);
+			} catch (AuthenticatorException e) {
+				log.warn("Error while getting authenticating by certificate", e);
+				throwInternalError();
+			}
+
+			if (result == null) {
+				throwUnauthorized();
+			}
+
+			if (challengeResponse != null) {
+				if (result.user == null || result.project == null) {
+					throwUnauthorized();
+				}
+
+				user = (UserEntity) result.user;
+				project = (ProjectEntity) result.project;
+			} else {
+				log.debug("Returning authentication challenge for user: " + username);
+
+				response.challenge = result.challenge;
+				return response;
+			}
+		} else {
+			throwUnauthorized();
 		}
 
 		if (user == null) {
-			log.debug("Authentication request failed for " + username);
-			return null;
+			log.debug("Authentication request failed.  Username=" + username);
+			throwUnauthorized();
 		}
 
-		AuthenticateResponse response = new AuthenticateResponse();
-		response.access = new Access();
-		// response.access.serviceCatalog = serviceMapper.getServices(userInfo, project);
-
-		if (project != null) {
-			ProjectEntity projectEntity = null;
-			try {
-				projectEntity = userAuthenticator.findProject(project, user);
-			} catch (AuthenticatorException e) {
-				log.warn("Error while getting project info", e);
-				throwInternalError();
+		if (projectKey != null) {
+			if (project == null) {
+				try {
+					project = userAuthenticator.findProject(projectKey, user);
+				} catch (AuthenticatorException e) {
+					log.warn("Error while getting project info", e);
+					throwInternalError();
+				}
 			}
+
 			// If we are doing a scope auth, make sure we have access
-			if (projectEntity == null) {
+			if (project == null) {
 				throwUnauthorized();
 			}
 		}
 
 		log.debug("Successful authentication for user: " + user.key);
 
-		TokenInfo token = buildToken(project, "" + user.getId(), user.getTokenSecret());
+		TokenInfo token = buildToken(projectKey, "" + user.getId(), user.getTokenSecret());
 
+		response.access = new Access();
+		// response.access.serviceCatalog = serviceMapper.getServices(userInfo, project);
 		response.access.token = new Token();
 		response.access.token.expires = token.expiration;
 		response.access.token.id = tokenService.encodeToken(token);
@@ -117,32 +148,5 @@ public class TokensResource extends KeystoneResourceBase {
 
 		return tokenInfo;
 	}
-
-	// @GET
-	// @Produces({ APPLICATION_JSON, APPLICATION_XML })
-	// public TenantsList listTenants(@HeaderParam(AUTH_HEADER) String token) {
-	// // TODO: What is this call for?
-	//
-	// TokenInfo tokenInfo = authentication.validateToken(token);
-	// if (tokenInfo == null) {
-	// throwUnauthorized();
-	// }
-	//
-	// TenantsList response = new TenantsList();
-	// response.tenant = Lists.newArrayList();
-	//
-	// String scope = tokenInfo.scope;
-	// if (scope == null) {
-	// // Unscoped token; no tenant access
-	// } else {
-	// Tenant tenant = new Tenant();
-	// tenant.id = scope;
-	// tenant.enabled = true;
-	// tenant.name = scope;
-	// response.tenant.add(tenant);
-	// }
-	//
-	// return response;
-	// }
 
 }

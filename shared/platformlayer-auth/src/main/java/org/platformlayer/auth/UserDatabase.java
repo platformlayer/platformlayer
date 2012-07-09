@@ -1,5 +1,6 @@
 package org.platformlayer.auth;
 
+import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
@@ -9,7 +10,7 @@ import org.openstack.keystone.services.ServiceAccount;
 import org.platformlayer.RepositoryException;
 
 public interface UserDatabase extends UserRepository {
-	OpsUser createUser(String userName, String password) throws RepositoryException;
+	OpsUser createUser(String userName, String password, Certificate[] certificateChain) throws RepositoryException;
 
 	OpsUser findUser(String userName) throws RepositoryException;
 

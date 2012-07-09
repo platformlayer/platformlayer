@@ -1,5 +1,8 @@
 package org.platformlayer.xaas.keystone;
 
+import java.security.PrivateKey;
+import java.security.cert.X509Certificate;
+
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
@@ -10,6 +13,8 @@ import org.openstack.keystone.auth.client.KeystoneAuthenticationToken;
 import org.openstack.keystone.service.AuthenticationTokenValidator;
 import org.openstack.keystone.service.KeystoneAuthentication;
 import org.platformlayer.RepositoryException;
+import org.platformlayer.auth.CertificateAuthenticationRequest;
+import org.platformlayer.auth.CertificateAuthenticationResponse;
 import org.platformlayer.auth.OpsProject;
 import org.platformlayer.auth.OpsUser;
 import org.platformlayer.auth.UserRepository;
@@ -62,4 +67,38 @@ public class KeystoneUserRepository implements UserRepository {
 
 		return null;
 	}
+
+	@Override
+	public CertificateAuthenticationResponse authenticateWithCertificate(CertificateAuthenticationRequest request)
+			throws RepositoryException {
+		String username = request.username;
+		String projectKey = request.projectKey;
+		PrivateKey privateKey = request.privateKey;
+		X509Certificate[] certificateChain = request.certificateChain;
+
+		if (privateKey == null || certificateChain == null) {
+			throw new IllegalArgumentException();
+		}
+
+		// TODO: Cache auth tokens??
+		KeystoneAuthenticationToken authToken;
+		try {
+			authToken = keystoneUserClient.authenticateWithCertificate(username, projectKey, certificateChain,
+					privateKey);
+		} catch (KeystoneAuthenticationException e) {
+			throw new RepositoryException("Error authenticating", e);
+		}
+
+		// TODO: Cache decoded tokens?
+		KeystoneAuthentication auth = (KeystoneAuthentication) keystoneSystemClient.validate(authToken
+				.getAuthTokenValue());
+		if (auth == null) {
+			return null;
+		}
+
+		CertificateAuthenticationResponse response = new CertificateAuthenticationResponse();
+		response.user = new KeystoneUser(auth);
+		return response;
+	}
+
 }

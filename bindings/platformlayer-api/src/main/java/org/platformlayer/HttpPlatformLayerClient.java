@@ -34,6 +34,10 @@ import org.platformlayer.xml.UnmarshalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+
 public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 	public static final String SERVICE_PLATFORMLAYER = "platformlayer";
 
@@ -69,32 +73,48 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 
 	public static HttpPlatformLayerClient buildUsingConfiguration(PlatformLayerConnectionConfiguration config) {
 		String project = config.tenant;
-		String server = config.server;
+		String server = config.authenticationEndpoint;
 		String username = config.username;
 		String secret = config.secret;
-		String platformlayerEndpoint = config.platformlayerEndpoint;
+		List<String> authTrustKeys = config.authTrustKeys;
 
-		Authenticator authenticator = new KeystoneAuthenticator(project, username, secret, server);
+		Authenticator authenticator = new KeystoneAuthenticator(project, username, secret, server, authTrustKeys);
 		ProjectId projectId = new ProjectId(project);
 
-		return build(platformlayerEndpoint, authenticator, projectId);
+		return build(config.platformlayerEndpoint, authenticator, projectId, config.platformlayerTrustKeys);
 	}
 
 	public static HttpPlatformLayerClient buildUsingProperties(Properties properties) {
 		PlatformLayerConnectionConfiguration config = new PlatformLayerConnectionConfiguration();
 		config.tenant = properties.getProperty("platformlayer.tenant");
-		config.server = properties.getProperty("platformlayer.auth");
+		config.authenticationEndpoint = properties.getProperty("platformlayer.auth.url");
 		config.username = properties.getProperty("platformlayer.username");
 		config.secret = properties.getProperty("platformlayer.password");
 		config.platformlayerEndpoint = properties.getProperty("platformlayer.url");
 
+		String trustKeys = properties.getProperty("platformlayer.ssl.keys", null);
+		if (!Strings.isNullOrEmpty(trustKeys)) {
+			config.platformlayerTrustKeys = Lists.newArrayList(Splitter.on(',').trimResults().split(trustKeys));
+		}
+
+		String authTrustKeys = properties.getProperty("platformlayer.auth.ssl.keys", null);
+		if (!Strings.isNullOrEmpty(authTrustKeys)) {
+			config.authTrustKeys = Lists.newArrayList(Splitter.on(',').trimResults().split(authTrustKeys));
+		}
+
 		return buildUsingConfiguration(config);
 	}
 
-	public static HttpPlatformLayerClient build(String platformlayerEndpoint, Authenticator authenticator,
-			ProjectId projectId) {
-		return new HttpPlatformLayerClient(new PlatformLayerHttpTransport(platformlayerEndpoint, authenticator),
-				projectId);
+	public static HttpPlatformLayerClient build(String platformlayerBaseUrl, Authenticator authenticator,
+			ProjectId projectId, List<String> trustKeys) {
+		String url = platformlayerBaseUrl;
+		if (!url.endsWith("/")) {
+			url += "/";
+		}
+
+		url += projectId.getKey() + "/";
+
+		return new HttpPlatformLayerClient(new PlatformLayerHttpTransport(url, authenticator, trustKeys), projectId);
 	}
 
 	@Override

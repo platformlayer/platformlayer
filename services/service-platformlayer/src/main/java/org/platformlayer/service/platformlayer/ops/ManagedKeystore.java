@@ -28,9 +28,13 @@ import sun.security.x509.X500Name;
 import com.google.common.collect.Lists;
 
 public class ManagedKeystore extends OpsTreeBase {
+	public static final String DEFAULT_WEBSERVER_ALIAS = "https";
+
 	public File path;
 
 	public String keystoreSecret = "notasecret";
+
+	public String alias = "selfsigned";
 
 	public ItemBase tagWithPublicKeys;
 
@@ -57,7 +61,6 @@ public class ManagedKeystore extends OpsTreeBase {
 				}
 
 				keyAliases = KeyStoreUtils.getKeyAliases(keystore);
-
 			} catch (GeneralSecurityException e) {
 				throw new OpsException("Error reading keystore", e);
 			} catch (IOException e) {
@@ -65,8 +68,7 @@ public class ManagedKeystore extends OpsTreeBase {
 			}
 		}
 
-		if (keyAliases.size() == 0) {
-			String alias = "selfsigned";
+		if (!keyAliases.contains(alias)) {
 			String keyPassword = "notasecret";
 
 			int validityDays = 365 * 10;
@@ -100,7 +102,7 @@ public class ManagedKeystore extends OpsTreeBase {
 					}
 					PublicKey certPublicKey = cert[0].getPublicKey();
 
-					String sigString = CryptoUtils.getSignature(certPublicKey);
+					String sigString = CryptoUtils.getSignatureString(certPublicKey);
 					publicKeySigs.add(sigString);
 				}
 			} catch (GeneralSecurityException e) {

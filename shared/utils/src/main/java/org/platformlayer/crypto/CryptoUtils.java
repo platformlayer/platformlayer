@@ -454,15 +454,20 @@ public class CryptoUtils {
 		return dest;
 	}
 
-	public static String getSignature(PublicKey publicKey) {
+	public static String getSignatureString(PublicKey publicKey) {
+		Md5Hash sig = getSignature(publicKey);
+
+		String sigString = sig.toHex().toLowerCase();
+		return sigString;
+	}
+
+	public static Md5Hash getSignature(PublicKey publicKey) {
 		byte[] encoded = publicKey.getEncoded();
 
 		String base64 = CryptoUtils.toBase64(encoded);
 
 		Md5Hash sig = new Md5Hash.Hasher().hash(base64);
-
-		String sigString = sig.toHex().toLowerCase();
-		return sigString;
+		return sig;
 	}
 
 }

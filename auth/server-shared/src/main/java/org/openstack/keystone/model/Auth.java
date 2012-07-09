@@ -13,6 +13,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Auth {
 	public PasswordCredentials passwordCredentials;
 
+	public CertificateCredentials certificateCredentials;
+
 	@XmlAttribute
 	public String project;
 

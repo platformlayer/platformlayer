@@ -1,4 +1,4 @@
-package org.platformlayer.xaas;
+package org.platformlayer.crypto;
 
 import java.net.Socket;
 import java.security.GeneralSecurityException;
@@ -17,7 +17,6 @@ import org.apache.log4j.Logger;
 import org.openstack.crypto.KeyStoreUtils;
 
 public class ClientCertificateKeyManager implements X509KeyManager {
-
 	@SuppressWarnings("unused")
 	private static final Logger log = Logger.getLogger(ClientCertificateKeyManager.class);
 
@@ -42,12 +41,12 @@ public class ClientCertificateKeyManager implements X509KeyManager {
 			List<String> aliases = KeyStoreUtils.getAliases(keystore);
 			if (aliases.size() == 1) {
 				return aliases.get(0);
+			} else {
+				throw new UnsupportedOperationException("Choosing between multiple keys not yet implemented");
 			}
 		} catch (KeyStoreException e) {
 			throw new IllegalArgumentException("Error choosing client certificate", e);
 		}
-
-		throw new UnsupportedOperationException();
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-package org.platformlayer.xaas;
+package org.platformlayer.crypto;
 
 import java.security.PublicKey;
 import java.security.cert.CertificateException;
@@ -7,15 +7,10 @@ import java.util.Set;
 
 import javax.net.ssl.X509TrustManager;
 
-import org.apache.log4j.Logger;
-import org.platformlayer.crypto.CryptoUtils;
-
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 
 public class PublicKeyTrustManager implements X509TrustManager {
-	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(PublicKeyTrustManager.class);
 
 	private final Set<String> trusted;
 
@@ -38,7 +33,7 @@ public class PublicKeyTrustManager implements X509TrustManager {
 		for (X509Certificate cert : chain) {
 			PublicKey certPublicKey = cert.getPublicKey();
 
-			String sigString = CryptoUtils.getSignature(certPublicKey);
+			String sigString = CryptoUtils.getSignatureString(certPublicKey);
 
 			if (!trusted.contains(sigString)) {
 				throw new CertificateException("Certificate is not in trusted list (" + sigString + ")");

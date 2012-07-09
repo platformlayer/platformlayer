@@ -4,8 +4,8 @@ import java.io.File;
 
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.ManagedDirectory;
-import org.platformlayer.ops.filesystem.TemplatedFile;
 import org.platformlayer.ops.standardservice.StandardServiceInstance;
+import org.platformlayer.service.platformlayer.ops.ManagedKeystore;
 
 public class UserAuthInstance extends StandardServiceInstance {
 
@@ -24,11 +24,16 @@ public class UserAuthInstance extends StandardServiceInstance {
 		ManagedDirectory configDir = findDirectory(template.getConfigDir());
 
 		// TODO: We don't use services dir any more!
-		File servicesDir = template.getServicesDir();
-		configDir.addChild(ManagedDirectory.build(servicesDir, "0700"));
+		// File servicesDir = template.getServicesDir();
+		// configDir.addChild(ManagedDirectory.build(servicesDir, "0700"));
 
-		TemplatedFile file = TemplatedFile.build(template, new File(servicesDir, "platformlayer"));
-		configDir.addChild(file);
+		// TemplatedFile file = TemplatedFile.build(template, new File(servicesDir, "platformlayer"));
+		// configDir.addChild(file);
+
+		ManagedKeystore keystore = configDir.addChild(ManagedKeystore.class);
+		keystore.path = new File(configDir.filePath, "../keystore.jks");
+		keystore.tagWithPublicKeys = template.getModel();
+
 	}
 
 }

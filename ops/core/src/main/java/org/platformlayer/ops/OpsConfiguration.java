@@ -39,4 +39,12 @@ public class OpsConfiguration {
 		Names.bindProperties(binder, properties);
 	}
 
+	public String get(String key) throws OpsException {
+		String value = lookup(key, null);
+		if (value == null) {
+			throw new OpsException("Required value not found: " + key);
+		}
+		return value;
+	}
+
 }

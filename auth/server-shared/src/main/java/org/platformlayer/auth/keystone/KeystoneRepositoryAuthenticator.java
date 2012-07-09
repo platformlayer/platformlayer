@@ -5,13 +5,15 @@ import javax.inject.Inject;
 import org.apache.log4j.Logger;
 import org.openstack.keystone.services.AuthenticatorException;
 import org.platformlayer.RepositoryException;
+import org.platformlayer.auth.CertificateAuthenticationRequest;
+import org.platformlayer.auth.CertificateAuthenticationResponse;
 import org.platformlayer.auth.OpsUser;
 import org.platformlayer.auth.ProjectEntity;
 import org.platformlayer.auth.UserDatabase;
 import org.platformlayer.auth.UserEntity;
 
-public class KeystoneOpsAuthenticator implements KeystoneUserAuthenticator {
-	private static final Logger log = Logger.getLogger(KeystoneOpsAuthenticator.class);
+public class KeystoneRepositoryAuthenticator implements KeystoneUserAuthenticator {
+	private static final Logger log = Logger.getLogger(KeystoneRepositoryAuthenticator.class);
 
 	@Inject
 	UserDatabase repository;
@@ -35,6 +37,16 @@ public class KeystoneOpsAuthenticator implements KeystoneUserAuthenticator {
 		// byte[] tokenSecret = user.getTokenSecret();
 		// AuthenticationInfo authentication = new AuthenticationInfo(userKey, tokenSecret);
 		// return authentication;
+	}
+
+	@Override
+	public CertificateAuthenticationResponse authenticate(CertificateAuthenticationRequest request)
+			throws AuthenticatorException {
+		try {
+			return repository.authenticateWithCertificate(request);
+		} catch (RepositoryException e) {
+			throw new AuthenticatorException("Error while authenticating user", e);
+		}
 	}
 
 	// @Override

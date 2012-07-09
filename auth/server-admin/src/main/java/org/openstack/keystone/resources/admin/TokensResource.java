@@ -32,7 +32,7 @@ public class TokensResource extends KeystoneResourceBase {
 	SystemAuthenticator systemAuthenticator;
 
 	protected void requireSystemAccess() throws AuthenticatorException {
-		X509Certificate[] certChain = (X509Certificate[]) request.getAttribute("javax.servlet.request.X509Certificate");
+		X509Certificate[] certChain = getCertificateChain();
 		if (certChain != null && certChain.length != 0) {
 			X509Certificate head = certChain[0];
 
