@@ -537,7 +537,12 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 			String subject = cert.getSubjectDN().getName();
 			byte[] publicKey = cert.getPublicKey().getEncoded();
 
-			db.insertServiceAccount(subject, publicKey);
+			ServiceAccountEntity existing = db.findServiceAccount(subject, publicKey);
+			if (existing == null) {
+				db.insertServiceAccount(subject, publicKey);
+			} else {
+				log.warn("Service account already exists; skipping creation");
+			}
 
 			return findServiceAccount(subject, publicKey);
 		} catch (SQLException e) {
