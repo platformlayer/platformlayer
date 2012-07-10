@@ -5,14 +5,18 @@ import java.util.Date;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
 import org.apache.log4j.Logger;
 import org.openstack.keystone.model.Access;
+import org.openstack.keystone.model.Auth;
 import org.openstack.keystone.model.AuthenticateRequest;
 import org.openstack.keystone.model.AuthenticateResponse;
+import org.openstack.keystone.model.CertificateCredentials;
+import org.openstack.keystone.model.PasswordCredentials;
 import org.openstack.keystone.model.Token;
 import org.openstack.keystone.resources.KeystoneResourceBase;
 import org.openstack.keystone.services.AuthenticatorException;
@@ -33,14 +37,47 @@ public class TokensResource extends KeystoneResourceBase {
 	@Inject
 	TokenService tokenService;
 
+	@GET
+	@Produces({ APPLICATION_JSON, APPLICATION_XML })
+	public AuthenticateResponse authenticateGET() {
+		String username = request.getParameter("user");
+		String password = request.getParameter("password");
+		String project = request.getParameter("project");
+
+		AuthenticateRequest request = new AuthenticateRequest();
+		request.auth = new Auth();
+		request.auth.project = project;
+
+		if (password != null) {
+			PasswordCredentials credentials = new PasswordCredentials();
+
+			credentials.username = username;
+			credentials.password = password;
+
+			request.auth.passwordCredentials = credentials;
+		} else {
+			CertificateCredentials credentials = new CertificateCredentials();
+
+			credentials.username = username;
+
+			request.auth.certificateCredentials = credentials;
+		}
+
+		return authenticate(request);
+	}
+
 	@POST
 	@Produces({ APPLICATION_JSON, APPLICATION_XML })
 	@Consumes({ APPLICATION_JSON, APPLICATION_XML })
-	public AuthenticateResponse authenticate(AuthenticateRequest request) {
+	public AuthenticateResponse authenticatePOST(AuthenticateRequest request) {
 		if (request.auth == null) {
 			throwUnauthorized();
 		}
 
+		return authenticate(request);
+	}
+
+	private AuthenticateResponse authenticate(AuthenticateRequest request) {
 		AuthenticateResponse response = new AuthenticateResponse();
 
 		String username = null;
