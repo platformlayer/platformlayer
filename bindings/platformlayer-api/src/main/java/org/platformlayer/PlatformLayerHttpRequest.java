@@ -123,7 +123,7 @@ class PlatformLayerHttpRequest implements Closeable {
 			populateHttpRequest(acceptFormat, sendDataFormat);
 
 			if (debug != null) {
-				debug.println("Request" + httpRequest);
+				debug.println("Request: " + httpRequest);
 			}
 
 			if (sendData != null) {
