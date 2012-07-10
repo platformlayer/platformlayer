@@ -96,8 +96,6 @@ public class GuiceXaasConfig extends AbstractModule {
 
 			bind(OpsContext.class).toProvider(OpsContextProvider.class);
 
-			bind(UserRepository.class).to(KeystoneUserRepository.class).asEagerSingleton();
-
 			bind(ResultSetMappers.class).toProvider(ResultSetMappersProvider.build(ItemEntity.class, TagEntity.class));
 
 			bind(DataSource.class).toProvider(new GuiceDataSourceProvider("platformlayer.jdbc.", null));
@@ -109,8 +107,10 @@ public class GuiceXaasConfig extends AbstractModule {
 			bindAuthTokenValidator(encryptionStore, configuration);
 
 			boolean isMultitenant = !Strings.isNullOrEmpty(configuration.lookup("multitenant.keys", null));
-			if (isMultitenant) {
+			if (true) { // isMultitenant) {
 				bindUserAuth(encryptionStore, configuration);
+
+				bind(UserRepository.class).to(KeystoneUserRepository.class).asEagerSingleton();
 			}
 
 			bind(ExecutorService.class).toInstance(Executors.newCachedThreadPool());
