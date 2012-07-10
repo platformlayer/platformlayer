@@ -45,8 +45,6 @@ public class KeystoneUserServer {
 			}
 		});
 
-		KeystoneUserServer server = injector.getInstance(KeystoneUserServer.class);
-
 		File keystoreFile = new File("keystore.jks");
 		String keystoreSecret = "notasecret";
 
@@ -59,6 +57,7 @@ public class KeystoneUserServer {
 					e);
 		}
 
+		KeystoneUserServer server = injector.getInstance(KeystoneUserServer.class);
 		server.start(WellKnownPorts.PORT_PLATFORMLAYER_AUTH_USER, keystore, keystoreSecret);
 	}
 
