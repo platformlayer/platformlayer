@@ -14,13 +14,6 @@
     <name>PlatformLayer :: Auth :: Parent</name>
     <packaging>pom</packaging>
 
-    <properties>
-        <junit.version>4.8.2</junit.version>
-        <jetty.version>7.4.1.v20110513</jetty.version>
-        <jersey.version>1.10</jersey.version>
-        <guice.verion>3.0</guice.verion>
-    </properties>
-
     <modules>
         <module>keystone-api</module>
         <module>keystone-cli</module>
