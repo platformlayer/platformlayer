@@ -56,12 +56,12 @@ public class SetProperty extends PlatformLayerCommandRunnerBase {
 			InputStream stream = new NoCloseInputStream(System.in);
 			byte[] data = IoUtils.readAllBinary(stream);
 
-			if (format.equals("base64")) {
+			if ("base64".equals(format)) {
 				value = CryptoUtils.toBase64(data);
 			} else {
-				throw new CliException("Data format not known: " + format);
+				value = new String(data);
 			}
-		} else {
+		} else if (value == null) {
 			throw new CliException("Value is required (if not using -stdin)");
 		}
 
