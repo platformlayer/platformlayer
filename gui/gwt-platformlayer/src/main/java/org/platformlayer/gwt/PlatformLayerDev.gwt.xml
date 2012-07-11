@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module rename-to='DataHub'>
+	<!-- Inherit the main project -->
+	<inherits name='org.platformlayer.gwt.PlatformLayer' />
+
+	<!-- Restrict options for compilation speed -->
+	<set-property name="user.agent" value="safari" />
+	<set-property name="locale" value="en" />
+</module>

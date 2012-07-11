@@ -1,0 +1,36 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+	xmlns:g='urn:import:com.google.gwt.user.client.ui'
+	 xmlns:b="urn:import:com.github.gwtbootstrap.client.ui">
+
+	<g:HTMLPanel>
+		<style>
+			.subnavbar a.btn {
+			border: 0;
+			}
+		</style>
+
+		<div class="subnavbar">
+			<div class="subnavbar-inner">
+				<div class="container">
+					<ul class="mainnav">
+						<li class="active">
+							<b:Button ui:field="homeButton" icon="HOME">Home</b:Button>
+						</li>
+
+						<li>
+							<b:Button ui:field="otherButton1" icon="HOME" enabled="false">Other 1</b:Button>
+						</li>
+
+						<li>
+							<b:Button ui:field="otherButton2" icon="HOME"  enabled="false">Other 2
+							</b:Button>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		
+		<g:FlowPanel ui:field="breadcrumbPanel" />
+	</g:HTMLPanel>
+
+</ui:UiBinder>

@@ -1,0 +1,32 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+	xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:c="urn:import:com.google.gwt.user.cellview.client">
+
+	<g:HTMLPanel>
+		<div class="row">
+			<div class="span4 offset4">
+				<form class="well form-vertical">
+					<h1>Sign In</h1>
+
+					<fieldset>
+						<input type="text" class="input-xlarge" placeholder="Username" />
+						<input type="password" class="input-xlarge" placeholder="Password" />
+
+						<div>
+							<a href="#">Forgot password?</a>
+						</div>
+
+						<label class="checkbox">
+							<input type="checkbox">Keep me signed in</input>
+						</label>
+
+						<button type="submit" class="btn">Sign in</button>
+					</fieldset>
+
+					<hr />
+
+					<a href="#">Don't have an account?</a>
+				</form>
+			</div>
+		</div>
+	</g:HTMLPanel>
+</ui:UiBinder>

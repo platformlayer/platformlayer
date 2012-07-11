@@ -1,0 +1,6 @@
+*~
+target/
+www-test/
+.settings/
+.classpath
+.project
