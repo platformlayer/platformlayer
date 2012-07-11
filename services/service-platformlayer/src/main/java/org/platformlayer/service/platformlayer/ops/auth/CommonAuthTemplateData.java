@@ -20,7 +20,7 @@ import com.google.common.collect.Maps;
 public abstract class CommonAuthTemplateData extends StandardTemplateData {
 
 	@Inject
-	PlatformLayerHelpers platformLayer;
+	protected PlatformLayerHelpers platformLayer;
 
 	@Inject
 	InstanceHelpers instanceHelpers;

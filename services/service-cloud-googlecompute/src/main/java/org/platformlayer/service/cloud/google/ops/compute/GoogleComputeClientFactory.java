@@ -4,7 +4,6 @@ import java.security.PrivateKey;
 
 import javax.inject.Inject;
 
-import org.platformlayer.crypto.CryptoUtils;
 import org.platformlayer.crypto.KeyParser;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
@@ -27,13 +26,13 @@ public class GoogleComputeClientFactory {
 	PlatformLayerHelpers platformLayerClient;
 
 	public GoogleComputeClient getComputeClient(GoogleCloud cloud) throws OpsException {
-		byte[] data = CryptoUtils.fromBase64(cloud.serviceAccountKey.plaintext());
+		KeyParser parser = new KeyParser();
 
-		KeyParser parser = new KeyParser(data);
-
-		Object parsed = parser.parse();
+		Object parsed = parser.parse(cloud.serviceAccountKey.plaintext());
 		PrivateKey privateKey;
-		if (parsed instanceof PrivateKey) {
+		if (parsed == null) {
+			throw new OpsException("Cannot parse private key");
+		} else if (parsed instanceof PrivateKey) {
 			privateKey = (PrivateKey) parsed;
 		} else {
 			throw new OpsException("Expected private key, found: " + parsed.getClass().getSimpleName());

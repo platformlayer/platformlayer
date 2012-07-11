@@ -21,4 +21,6 @@ public class UserAuthService extends ItemBase {
 
 	@Generate
 	public Secret tokenSecret;
+
+	public PlatformLayerKey sslKey;
 }

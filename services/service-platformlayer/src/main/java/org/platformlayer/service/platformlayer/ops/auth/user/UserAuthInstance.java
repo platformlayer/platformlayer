@@ -3,6 +3,7 @@ package org.platformlayer.service.platformlayer.ops.auth.user;
 import java.io.File;
 
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.crypto.ManagedSecretKey;
 import org.platformlayer.ops.filesystem.ManagedDirectory;
 import org.platformlayer.ops.standardservice.StandardServiceInstance;
 import org.platformlayer.service.platformlayer.ops.ManagedKeystore;
@@ -30,9 +31,13 @@ public class UserAuthInstance extends StandardServiceInstance {
 		// TemplatedFile file = TemplatedFile.build(template, new File(servicesDir, "platformlayer"));
 		// configDir.addChild(file);
 
+		ManagedSecretKey sslKey = template.findSslKey();
+
 		ManagedKeystore keystore = configDir.addChild(ManagedKeystore.class);
 		keystore.path = new File(configDir.filePath, "../keystore.jks");
 		keystore.tagWithPublicKeys = template.getModel();
+		keystore.alias = ManagedKeystore.DEFAULT_WEBSERVER_ALIAS;
+		keystore.key = sslKey;
 
 	}
 
