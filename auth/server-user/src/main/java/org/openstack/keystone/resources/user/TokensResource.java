@@ -73,7 +73,18 @@ public class TokensResource extends KeystoneResourceBase {
 		} catch (WebApplicationException e) {
 			authenticateResponse = new AuthenticateResponse();
 			authenticateResponse.statusCode = e.getResponse().getStatus();
+		} catch (Exception e) {
+			log.info("Reporting exception as 500", e);
+
+			authenticateResponse = new AuthenticateResponse();
+			authenticateResponse.statusCode = 500;
 		}
+
+		if (authenticateResponse == null) {
+			authenticateResponse = new AuthenticateResponse();
+			authenticateResponse.statusCode = 401;
+		}
+
 		JSONWithPadding jsonWithPadding = new JSONWithPadding(authenticateResponse, jsonCallback);
 		return jsonWithPadding;
 	}
@@ -86,7 +97,12 @@ public class TokensResource extends KeystoneResourceBase {
 			throwUnauthorized();
 		}
 
-		return authenticate(request);
+		AuthenticateResponse response = authenticate(request);
+		if (response == null) {
+			throwUnauthorized();
+		}
+
+		return response;
 	}
 
 	private AuthenticateResponse authenticate(AuthenticateRequest request) {
@@ -114,7 +130,7 @@ public class TokensResource extends KeystoneResourceBase {
 
 			X509Certificate[] certificateChain = getCertificateChain();
 			if (certificateChain == null) {
-				throwUnauthorized();
+				return null;
 			}
 
 			byte[] challengeResponse = request.auth.certificateCredentials.challengeResponse;
@@ -134,12 +150,12 @@ public class TokensResource extends KeystoneResourceBase {
 			}
 
 			if (result == null) {
-				throwUnauthorized();
+				return null;
 			}
 
 			if (challengeResponse != null) {
 				if (result.user == null || result.project == null) {
-					throwUnauthorized();
+					return null;
 				}
 
 				user = (UserEntity) result.user;
@@ -151,12 +167,12 @@ public class TokensResource extends KeystoneResourceBase {
 				return response;
 			}
 		} else {
-			throwUnauthorized();
+			return null;
 		}
 
 		if (user == null) {
 			log.debug("Authentication request failed.  Username=" + username);
-			throwUnauthorized();
+			return null;
 		}
 
 		if (projectKey != null) {
@@ -171,7 +187,7 @@ public class TokensResource extends KeystoneResourceBase {
 
 			// If we are doing a scope auth, make sure we have access
 			if (project == null) {
-				throwUnauthorized();
+				return null;
 			}
 		}
 
