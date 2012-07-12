@@ -49,4 +49,6 @@ public interface OpsTarget {
 	boolean isSameMachine(OpsTarget target);
 
 	NetworkPoint getNetworkPoint();
+
+	boolean isMachineTerminated();
 }

@@ -34,6 +34,7 @@
   <xs:complexType name="auth">
     <xs:sequence>
       <xs:element name="passwordCredentials" type="tns:passwordCredentials" minOccurs="0"/>
+      <xs:element name="certificateCredentials" type="tns:certificateCredentials" minOccurs="0"/>
       <xs:element name="token" type="tns:token" minOccurs="0"/>
       <xs:element name="serviceCatalog" type="tns:service" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="user" type="tns:userValidation" minOccurs="0"/>
@@ -45,6 +46,13 @@
     <xs:sequence>
       <xs:element name="username" type="xs:string" minOccurs="0"/>
       <xs:element name="password" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="certificateCredentials">
+    <xs:sequence>
+      <xs:element name="username" type="xs:string" minOccurs="0"/>
+      <xs:element name="challengeResponse" type="xs:base64Binary" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -142,6 +150,7 @@
   <xs:complexType name="authenticateResponse">
     <xs:sequence>
       <xs:element ref="tns:access" minOccurs="0"/>
+      <xs:element name="challenge" type="xs:base64Binary" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 

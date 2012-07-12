@@ -4,7 +4,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.platformlayer.Filter;
+import org.platformlayer.StateFilter;
 import org.platformlayer.TagFilter;
+import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
@@ -21,8 +24,11 @@ public class InstanceSupervisor {
 	PlatformLayerHelpers platformLayer;
 
 	public PersistentInstance findPersistentInstance(Tag tag) throws OpsException {
+		Filter filter = TagFilter.byTag(tag);
+		filter = Filter.and(filter, StateFilter.exclude(ManagedItemState.DELETED));
+
 		List<PersistentInstance> instances = Lists.newArrayList(platformLayer.listItems(PersistentInstance.class,
-				TagFilter.byTag(tag)));
+				filter));
 		if (instances.size() == 0) {
 			return null;
 		}
@@ -31,5 +37,4 @@ public class InstanceSupervisor {
 		}
 		return instances.get(0);
 	}
-
 }

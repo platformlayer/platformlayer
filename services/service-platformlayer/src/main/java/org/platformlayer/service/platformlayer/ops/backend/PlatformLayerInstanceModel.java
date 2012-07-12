@@ -109,41 +109,84 @@ public class PlatformLayerInstanceModel extends StandardTemplateData {
 		return jdbc;
 	}
 
+	public boolean isMultitenant() {
+		return (!Strings.isNullOrEmpty(getModel().multitenantItems));
+	}
+
+	public String getMultitenantProject() {
+		if (!isMultitenant()) {
+			throw new IllegalStateException();
+		}
+		return "__master";
+	}
+
+	public String getMultitenantKeyAlias() {
+		if (!isMultitenant()) {
+			throw new IllegalStateException();
+		}
+		return "clientcert.project.master";
+	}
+
 	@Override
 	protected Map<String, String> getConfigurationProperties() throws OpsException {
 		Map<String, String> properties = Maps.newHashMap();
 
-		properties.put("platformlayer.jdbc.driverClassName", "org.postgresql.Driver");
-
-		properties.put("platformlayer.jdbc.url", getJdbcUrl());
-		properties.put("platformlayer.jdbc.username", getDatabaseUsername());
-		properties.put("platformlayer.jdbc.password", getDatabasePassword().plaintext());
-
-		String multitenantItems = getModel().multitenantItems;
-
-		if (!Strings.isNullOrEmpty(multitenantItems)) {
-			properties.put("multitenant.keys", multitenantItems);
-			properties.put("multitenant.project", "__master");
-			properties.put("multitenant.user", "__master");
-			properties.put("multitenant.password", getMasterPassword().plaintext());
+		{
+			// Configure keystore
+			properties.put("keystore", getKeystoreFile().getAbsolutePath());
 		}
 
-		List<String> systemAuthKeys = Lists.newArrayList();
+		{
+			// Configure database
+			properties.put("platformlayer.jdbc.driverClassName", "org.postgresql.Driver");
 
-		SystemAuthService systemAuthService = getSystemAuthService();
-		String systemAuthUrl = "https://" + systemAuthService.dnsName + ":35358/";
+			properties.put("platformlayer.jdbc.url", getJdbcUrl());
+			properties.put("platformlayer.jdbc.username", getDatabaseUsername());
+			properties.put("platformlayer.jdbc.password", getDatabasePassword().plaintext());
+		}
 
-		systemAuthKeys.addAll(Tag.PUBLIC_KEY_SIG.find(systemAuthService));
+		if (isMultitenant()) {
+			properties.put("multitenant.keys", getModel().multitenantItems);
+			properties.put("multitenant.project", getMultitenantProject());
+			properties.put("multitenant.user", "master@" + getModel().dnsName);
+			// properties.put("multitenant.password", getModel().multitenantPassword.plaintext());
+			properties.put("multitenant.cert", getMultitenantKeyAlias());
+		}
 
-		properties.put("auth.system.key", Joiner.on(',').join(systemAuthKeys));
+		{
+			// Configure user auth
+			List<String> userAuthKeys = Lists.newArrayList();
 
-		properties.put("auth.system.url", systemAuthUrl);
+			UserAuthService userAuthService = getAuthService();
+			String baseUrl = "https://" + userAuthService.dnsName + ":5001/";
+
+			userAuthKeys.addAll(Tag.PUBLIC_KEY_SIG.find(userAuthService));
+
+			properties.put("auth.user.ssl.keys", Joiner.on(',').join(userAuthKeys));
+			properties.put("auth.user.url", baseUrl);
+
+			// The ssl cert is actually multitenant.cert
+		}
+
+		{
+			// Configure system auth (token validation)
+			List<String> systemAuthKeys = Lists.newArrayList();
+
+			SystemAuthService systemAuthService = getSystemAuthService();
+			String systemAuthUrl = "https://" + systemAuthService.dnsName + ":35358/";
+
+			systemAuthKeys.addAll(Tag.PUBLIC_KEY_SIG.find(systemAuthService));
+
+			properties.put("auth.system.ssl.keys", Joiner.on(',').join(systemAuthKeys));
+			properties.put("auth.system.url", systemAuthUrl);
+			properties.put("auth.system.ssl.cert", getSystemCertAlias());
+		}
 
 		return properties;
 	}
 
-	private Secret getMasterPassword() {
-		return getModel().multitenantPassword;
+	String getSystemCertAlias() {
+		return "clientcert.systemauth";
 	}
 
 	protected PlatformLayerKey getDatabaseKey() {
@@ -158,4 +201,9 @@ public class PlatformLayerInstanceModel extends StandardTemplateData {
 		PlatformLayerKey databaseKey = getDatabaseKey();
 		return "platformlayer-" + databaseKey.getItemId().getKey();
 	}
+
+	public File getKeystoreFile() {
+		return new File(getConfigDir(), "../keystore.jks");
+	}
+
 }

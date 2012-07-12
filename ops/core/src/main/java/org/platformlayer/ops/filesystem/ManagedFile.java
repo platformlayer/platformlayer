@@ -50,7 +50,13 @@ public abstract class ManagedFile extends ManagedFilesystemItem {
 			sourceMd5 = getSourceMd5(target);
 		}
 
-		Md5Hash remoteMd5 = target.getFileHash(filePath);
+		Md5Hash remoteMd5;
+		if (target.isMachineTerminated()) {
+			remoteMd5 = null;
+		} else {
+			remoteMd5 = target.getFileHash(filePath);
+		}
+
 		boolean isUpToDate = Objects.equal(sourceMd5, remoteMd5);
 
 		if (operation.isDelete()) {

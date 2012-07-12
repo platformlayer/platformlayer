@@ -40,7 +40,7 @@ public class PlatformLayerServer {
 	}
 
 	public static void main(String[] args) throws Exception {
-		System.setProperty("application.mode", "development");
+		// System.setProperty("application.mode", "development");
 
 		File base = new File(".");
 		URLClassLoader classLoader = buildClassLoader(base);

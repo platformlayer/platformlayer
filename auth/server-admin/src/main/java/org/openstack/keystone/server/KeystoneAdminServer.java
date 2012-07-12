@@ -3,7 +3,9 @@ package org.openstack.keystone.server;
 import java.io.File;
 import java.security.KeyStore;
 import java.util.EnumSet;
+import java.util.Map;
 
+import javax.inject.Inject;
 import javax.net.ssl.TrustManager;
 
 import org.eclipse.jetty.server.Connector;
@@ -14,15 +16,41 @@ import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.openstack.crypto.KeyStoreUtils;
+import org.openstack.keystone.resources.admin.TokensResource;
 import org.platformlayer.WellKnownPorts;
 
+import com.google.common.collect.Maps;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceFilter;
+import com.sun.jersey.api.core.PackagesResourceConfig;
+import com.sun.jersey.guice.JerseyServletModule;
+import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 
 public class KeystoneAdminServer {
 	private Server server;
 
+	@Inject
+	GuiceServletConfig servletConfig;
+
 	public static void main(String[] args) throws Exception {
-		KeystoneAdminServer server = new KeystoneAdminServer();
+		Injector injector = Guice.createInjector(new GuiceAuthenticationConfig(), new JerseyServletModule() {
+			@Override
+			protected void configureServlets() {
+
+				boolean isAdmin = false;
+				if (isAdmin) {
+					throw new UnsupportedOperationException();
+				} else {
+					bind(TokensResource.class);
+
+					Map<String, String> params = Maps.newHashMap();
+					params.put(PackagesResourceConfig.PROPERTY_PACKAGES,
+							"org.openstack.keystone.jaxrs;org.codehaus.jackson.jaxrs");
+					serve("/*").with(GuiceContainer.class, params);
+				}
+			}
+		});
 
 		File keystoreFile = new File("keystore.jks");
 		String keystoreSecret = "notasecret";
@@ -36,32 +64,35 @@ public class KeystoneAdminServer {
 					e);
 		}
 
+		KeystoneAdminServer server = injector.getInstance(KeystoneAdminServer.class);
 		server.start(WellKnownPorts.PORT_PLATFORMLAYER_AUTH_ADMIN, keystore, keystoreSecret);
 	}
 
 	public void start(int port, KeyStore keystore, String keystorePassword) throws Exception {
 		this.server = new Server();
 
-		CustomTrustManagerSslContextFactory sslContextFactory = new CustomTrustManagerSslContextFactory();
+		{
+			CustomTrustManagerSslContextFactory sslContextFactory = new CustomTrustManagerSslContextFactory();
 
-		sslContextFactory.setKeyStore(keystore);
-		sslContextFactory.setKeyStorePassword(keystorePassword);
+			sslContextFactory.setKeyStore(keystore);
+			sslContextFactory.setKeyStorePassword(keystorePassword);
 
-		sslContextFactory.setWantClientAuth(true);
+			sslContextFactory.setWantClientAuth(true);
 
-		TrustManager[] trustManagers = new TrustManager[] { new AcceptAllClientCertificatesTrustManager() };
+			TrustManager[] trustManagers = new TrustManager[] { new AcceptAllClientCertificatesTrustManager() };
 
-		sslContextFactory.setTrustManagers(trustManagers);
+			sslContextFactory.setTrustManagers(trustManagers);
 
-		SslSelectChannelConnector connector = new SslSelectChannelConnector(sslContextFactory);
-		connector.setPort(port);
-		server.setConnectors(new Connector[] { connector });
+			SslSelectChannelConnector connector = new SslSelectChannelConnector(sslContextFactory);
+			connector.setPort(port);
+			server.setConnectors(new Connector[] { connector });
+		}
 
 		ServletContextHandler context = new ServletContextHandler();
 		context.setContextPath("/");
 		server.setHandler(context);
 
-		context.addEventListener(new AdminServerConfig());
+		context.addEventListener(servletConfig);
 
 		// Must add DefaultServlet for embedded Jetty
 		// Failing to do this will cause 404 errors.

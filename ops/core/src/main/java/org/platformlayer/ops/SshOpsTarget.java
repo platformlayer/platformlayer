@@ -23,9 +23,12 @@ import com.google.common.net.InetAddresses;
 public class SshOpsTarget extends OpsTargetBase {
 	private final SshConnection sshConnection;
 	private final File tempDirBase;
+	private final MachineBase machine;
+	boolean ensureRunningAsRoot;
 
-	public SshOpsTarget(File tempDirBase, SshConnection sshConnection) {
+	public SshOpsTarget(File tempDirBase, MachineBase machine, SshConnection sshConnection) {
 		this.tempDirBase = tempDirBase;
+		this.machine = machine;
 		this.sshConnection = sshConnection;
 	}
 
@@ -50,7 +53,7 @@ public class SshOpsTarget extends OpsTargetBase {
 		long dataLength = upload.data.getLength();
 		try {
 			log.info("Uploading file over ssh: " + upload.path);
-			sshConnection.sshCopyData(dataStream, dataLength, upload.path.getPath(), upload.mode);
+			sshConnection.sshCopyData(dataStream, dataLength, upload.path.getPath(), upload.mode, needSudo());
 		} catch (IOException e) {
 			throw new OpsException("Error during file upload", e);
 		} catch (InterruptedException e) {
@@ -59,6 +62,16 @@ public class SshOpsTarget extends OpsTargetBase {
 		} catch (SshException e) {
 			throw new OpsException("Error during file upload", e);
 		}
+	}
+
+	private boolean needSudo() {
+		if (ensureRunningAsRoot) {
+			if (!sshConnection.getUser().equals("root")) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	@Override
@@ -90,7 +103,7 @@ public class SshOpsTarget extends OpsTargetBase {
 	public byte[] readBinaryFile(File path) throws OpsException {
 		byte[] contents;
 		try {
-			contents = sshConnection.sshReadFile(path.getPath());
+			contents = sshConnection.sshReadFile(path.getPath(), needSudo());
 		} catch (IOException e) {
 			throw new OpsException("Error reading file", e);
 		} catch (InterruptedException e) {
@@ -144,4 +157,25 @@ public class SshOpsTarget extends OpsTargetBase {
 				+ "]";
 	}
 
+	@Override
+	protected Command maybeSudo(String command) {
+		if (needSudo()) {
+			return Command.build("sudo " + command);
+		} else {
+			return Command.build(command);
+		}
+	}
+
+	@Override
+	public boolean isMachineTerminated() {
+		return machine.isTerminated();
+	}
+
+	public boolean isEnsureRunningAsRoot() {
+		return ensureRunningAsRoot;
+	}
+
+	public void setEnsureRunningAsRoot(boolean ensureRunningAsRoot) {
+		this.ensureRunningAsRoot = ensureRunningAsRoot;
+	}
 }

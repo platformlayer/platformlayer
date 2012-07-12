@@ -2,6 +2,7 @@ package org.platformlayer.auth;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.cert.X509Certificate;
 
 import javax.crypto.SecretKey;
 import javax.persistence.Column;
@@ -126,6 +127,11 @@ public class UserEntity implements OpsUser {
 	@Override
 	public int getId() {
 		return id;
+	}
+
+	public byte[] findChallenge(X509Certificate[] certificateChain) {
+		SecretStore secretStore = new SecretStore(secret);
+		return secretStore.findChallengeForCertificate(certificateChain);
 	}
 
 }

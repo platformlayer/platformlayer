@@ -2,8 +2,11 @@ package org.platformlayer.service.cloud.google.ops.compute;
 
 import java.security.PrivateKey;
 
-import org.platformlayer.crypto.CryptoUtils;
-import org.platformlayer.crypto.RsaUtils;
+import javax.inject.Inject;
+
+import org.platformlayer.crypto.KeyParser;
+import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.service.cloud.google.model.GoogleCloud;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
@@ -19,9 +22,21 @@ public class GoogleComputeClientFactory {
 
 	static final JsonFactory JSON_FACTORY = new JacksonFactory();
 
-	public static GoogleComputeClient getComputeClient(GoogleCloud cloud) {
-		PrivateKey privateKey = RsaUtils.deserializePrivateKey(CryptoUtils.fromBase64(cloud.serviceAccountKey
-				.plaintext()));
+	@Inject
+	PlatformLayerHelpers platformLayerClient;
+
+	public GoogleComputeClient getComputeClient(GoogleCloud cloud) throws OpsException {
+		KeyParser parser = new KeyParser();
+
+		Object parsed = parser.parse(cloud.serviceAccountKey.plaintext());
+		PrivateKey privateKey;
+		if (parsed == null) {
+			throw new OpsException("Cannot parse private key");
+		} else if (parsed instanceof PrivateKey) {
+			privateKey = (PrivateKey) parsed;
+		} else {
+			throw new OpsException("Expected private key, found: " + parsed.getClass().getSimpleName());
+		}
 
 		// Build service account credential.
 		GoogleCredential credential = new GoogleCredential.Builder().setTransport(HTTP_TRANSPORT)
@@ -30,6 +45,6 @@ public class GoogleComputeClientFactory {
 
 		Compute compute = new Compute(HTTP_TRANSPORT, JSON_FACTORY, credential);
 
-		return new GoogleComputeClient(compute, cloud.projectId);
+		return new GoogleComputeClient(platformLayerClient, compute, cloud.projectId);
 	}
 }

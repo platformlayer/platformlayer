@@ -185,6 +185,13 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 		return listItems(clazz, false);
 	}
 
+	public <T> List<T> listItems(Class<T> clazz, PlatformLayerKey parent) throws OpsException {
+		Filter filter = StateFilter.exclude(ManagedItemState.DELETED);
+		filter = Filter.and(filter, TagFilter.byParent(parent));
+
+		return listItems(clazz, filter);
+	}
+
 	public <T> List<T> listItems(Class<T> clazz, Filter filter) throws OpsException {
 		JaxbHelper jaxbHelper = PlatformLayerClientBase.toJaxbHelper(clazz, ManagedItemCollection.class);
 		PlatformLayerKey path = PlatformLayerClientBase.toKey(jaxbHelper, null, platformLayerClient.listServices(true));

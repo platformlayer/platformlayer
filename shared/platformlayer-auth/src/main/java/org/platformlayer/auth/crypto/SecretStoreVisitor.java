@@ -21,4 +21,7 @@ public class SecretStoreVisitor {
 
 	}
 
+	public void visitGenericAsymetricKey(byte[] publicKeySignature, byte[] data) {
+	}
+
 };

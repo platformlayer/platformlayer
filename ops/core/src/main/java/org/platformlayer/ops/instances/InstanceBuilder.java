@@ -124,8 +124,9 @@ public class InstanceBuilder extends OpsTreeBase implements CustomRecursor {
 
 		SshKey sshKey = service.getSshKey();
 		if (machine != null) {
-			if (OpsContext.isDelete() && machine.isTerminated()) {
+			if (OpsContext.isDelete()) {
 				target = null;
+				machine = null;
 			} else {
 				target = machine.getTarget(sshKey);
 			}
@@ -228,7 +229,7 @@ public class InstanceBuilder extends OpsTreeBase implements CustomRecursor {
 	protected void addChildren() throws OpsException {
 		addChild(InstanceBootstrap.class);
 
-		addChild(injected(DnsResolver.class));
+		addChild(DnsResolver.class);
 
 		String hostname = dnsName;
 		if (Strings.isNullOrEmpty(hostname)) {

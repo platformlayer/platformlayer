@@ -14,6 +14,7 @@ import org.platformlayer.core.model.ServiceInfo;
 import org.platformlayer.ids.ItemType;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.inject.ObjectInjector;
+import org.platformlayer.jdbc.simplejpa.ReflectionUtils;
 import org.platformlayer.metrics.model.MetricValues;
 import org.platformlayer.ops.crypto.Passwords;
 import org.platformlayer.ops.helpers.ServiceContext;
@@ -171,6 +172,21 @@ public abstract class ServiceProviderBase implements ServiceProvider {
 	}
 
 	@Override
+	public Object getController(Object item) throws OpsException {
+		Class<?> managedItemClass = item.getClass();
+
+		Class<?> controllerClass = getControllerClass(managedItemClass);
+
+		ensureInitialized();
+
+		Object controller = injector.getInstance(controllerClass);
+
+		bindController(controller, item);
+
+		return controller;
+	}
+
+	@Override
 	public Class<?> getControllerClass(Class<?> managedItemClass) throws OpsException {
 		Controller controller = managedItemClass.getAnnotation(Controller.class);
 		if (controller == null) {
@@ -320,6 +336,21 @@ public abstract class ServiceProviderBase implements ServiceProvider {
 							throw new IllegalStateException("Error setting field: " + field, e);
 						}
 					}
+				}
+			}
+		}
+	}
+
+	private void bindController(Object controller, Object model) {
+		Class<? extends Object> controllerClass = controller.getClass();
+		for (Field field : ReflectionUtils.getAllFields(controllerClass)) {
+			Bound boundAnnotation = field.getAnnotation(Bound.class);
+
+			if (boundAnnotation != null) {
+				try {
+					field.set(controller, model);
+				} catch (IllegalAccessException e) {
+					throw new IllegalStateException("Error setting field: " + field, e);
 				}
 			}
 		}

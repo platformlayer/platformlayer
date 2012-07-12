@@ -15,6 +15,8 @@ public class Sanitizer {
 	private final Map<Integer, Decision> typeRules = Maps.newHashMap();
 	private final Map<Integer, Decision> characterRules = Maps.newHashMap();
 
+	boolean combineBlocked;
+
 	public Sanitizer(Decision defaultDecision, char blockChar) {
 		this.defaultDecision = defaultDecision;
 		this.blockChar = blockChar;
@@ -28,18 +30,20 @@ public class Sanitizer {
 		return sanitizer;
 	}
 
-	private void allowCharacters(String s) {
+	public void allowCharacters(String s) {
 		for (int i = 0; i < s.length(); i++) {
 			int cp = s.codePointAt(i);
 			characterRules.put(cp, Decision.Allow);
 		}
 	}
 
-	private void allowAlphanumeric() {
+	public Sanitizer allowAlphanumeric() {
 		// typeRules.put((int) Character.LETTER_NUMBER, Decision.Allow);
 		typeRules.put((int) Character.DECIMAL_DIGIT_NUMBER, Decision.Allow);
 		typeRules.put((int) Character.LOWERCASE_LETTER, Decision.Allow);
 		typeRules.put((int) Character.UPPERCASE_LETTER, Decision.Allow);
+
+		return this;
 	}
 
 	public static enum Decision {
@@ -65,16 +69,40 @@ public class Sanitizer {
 				out.appendCodePoint(c);
 				break;
 
-			case Block:
-				out.append(blockChar);
+			case Block: {
+				boolean writeBlockChar = true;
+
+				if (combineBlocked) {
+					if (out.length() != 0) {
+						char lastChar = out.charAt(out.length() - 1);
+						if (lastChar == blockChar) {
+							writeBlockChar = false;
+						}
+					}
+				}
+
+				if (writeBlockChar) {
+					out.append(blockChar);
+				}
+			}
 				break;
 
 			default:
 				throw new IllegalStateException();
 			}
-
 		}
 
 		return out.toString();
 	}
+
+	public boolean isCombineBlocked() {
+		return combineBlocked;
+	}
+
+	public Sanitizer setCombineBlocked(boolean combineBlocked) {
+		this.combineBlocked = combineBlocked;
+
+		return this;
+	}
+
 }

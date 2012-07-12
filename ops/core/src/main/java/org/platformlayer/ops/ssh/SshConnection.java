@@ -52,25 +52,26 @@ public abstract class SshConnection implements Closeable {
 		return sshExecute(command, DEFAULT_SSH_EXECUTE_TIMEOUT);
 	}
 
-	public void sshCopyData(InputStream srcData, long dataLength, String remoteFile, String mode) throws IOException,
-			InterruptedException, SshException {
+	public void sshCopyData(InputStream srcData, long dataLength, String remoteFile, String mode, boolean sudo)
+			throws IOException, InterruptedException, SshException {
 		if (mode == null) {
 			throw new IllegalArgumentException("Mode must be specified");
 		}
 
-		sshCopyData0(srcData, dataLength, remoteFile, mode);
+		sshCopyData0(srcData, dataLength, remoteFile, mode, sudo);
 	}
 
-	protected abstract void sshCopyData0(InputStream fileData, long dataLength, String remoteFile, String mode)
-			throws IOException, InterruptedException, SshException;
+	protected abstract void sshCopyData0(InputStream fileData, long dataLength, String remoteFile, String mode,
+			boolean sudo) throws IOException, InterruptedException, SshException;
 
-	public byte[] sshReadFile(String remoteFilePath) throws IOException, InterruptedException, SshException {
-		byte[] retval = sshReadFile0(remoteFilePath);
+	public byte[] sshReadFile(String remoteFilePath, boolean sudo) throws IOException, InterruptedException,
+			SshException {
+		byte[] retval = sshReadFile0(remoteFilePath, sudo);
 		return retval;
 	}
 
-	protected abstract byte[] sshReadFile0(String remoteFilePath) throws IOException, InterruptedException,
-			SshException;
+	protected abstract byte[] sshReadFile0(String remoteFilePath, boolean sudo) throws IOException,
+			InterruptedException, SshException;
 
 	public abstract Socket buildTunneledSocket() throws IOException, SshException;
 

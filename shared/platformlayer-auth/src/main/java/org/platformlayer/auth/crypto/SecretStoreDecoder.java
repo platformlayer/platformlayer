@@ -10,6 +10,8 @@ import org.platformlayer.crypto.RsaUtils;
 public class SecretStoreDecoder extends SecretStoreVisitor {
 	SecretKey secretKey;
 
+	public Object result;
+
 	protected SecretKey toSecretKey(byte[] data) {
 		return AesUtils.deserializeKey(data);
 	}

@@ -8,13 +8,17 @@ import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.net.ConnectException;
 import java.net.URI;
+import java.util.List;
 
+import javax.net.ssl.TrustManager;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.TransformerException;
 
 import org.codehaus.jettison.json.JSONException;
 import org.openstack.utils.Utf8;
+import org.platformlayer.crypto.AcceptAllHostnameVerifier;
+import org.platformlayer.crypto.PublicKeyTrustManager;
 import org.platformlayer.http.SimpleHttpRequest;
 import org.platformlayer.http.SimpleHttpRequest.SimpleHttpResponse;
 import org.platformlayer.xml.JaxbHelper;
@@ -32,13 +36,19 @@ class PlatformLayerHttpRequest implements Closeable {
 
 	PrintStream debug;
 
-	public PlatformLayerHttpRequest(PlatformLayerHttpTransport client, String method, URI uri)
+	public PlatformLayerHttpRequest(PlatformLayerHttpTransport client, String method, URI uri, List<String> trustKeys)
 			throws PlatformLayerClientException {
 		this.client = client;
 		try {
 			this.httpRequest = SimpleHttpRequest.build(method, uri);
 		} catch (IOException e) {
 			throw new PlatformLayerClientException("Error building http request " + method + " " + uri, e);
+		}
+
+		if (trustKeys != null) {
+			TrustManager trustManager = new PublicKeyTrustManager(trustKeys);
+			this.httpRequest.setTrustManager(trustManager);
+			this.httpRequest.setHostnameVerifier(new AcceptAllHostnameVerifier());
 		}
 	}
 
@@ -113,7 +123,7 @@ class PlatformLayerHttpRequest implements Closeable {
 			populateHttpRequest(acceptFormat, sendDataFormat);
 
 			if (debug != null) {
-				debug.println("Request" + httpRequest);
+				debug.println("Request: " + httpRequest);
 			}
 
 			if (sendData != null) {

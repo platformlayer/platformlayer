@@ -41,7 +41,8 @@ public class MinaScpClient {
 		this(minaSshConnectionWrapper.sshClientSession);
 	}
 
-	public void get(String remoteFile, OutputStream outputStream, TimeSpan timeout) throws IOException, SshException {
+	public void get(String remoteFile, OutputStream outputStream, TimeSpan timeout, boolean sudo) throws IOException,
+			SshException {
 		String cmd;
 
 		{
@@ -53,7 +54,7 @@ public class MinaScpClient {
 				throw new IllegalArgumentException("Spaces in filenames not supported");
 			}
 
-			cmd = "scp -f " + trimmed;
+			cmd = (sudo ? "sudo " : "") + "scp -f " + trimmed;
 		}
 
 		ScpChannel channel = null;
@@ -70,7 +71,7 @@ public class MinaScpClient {
 	}
 
 	public void put(InputStream sourceData, long sourceDataLength, String remoteFileName, String remoteDirectory,
-			String mode, TimeSpan timeout) throws IOException, SshException {
+			String mode, TimeSpan timeout, boolean sudo) throws IOException, SshException {
 		String cmd;
 
 		{
@@ -82,7 +83,7 @@ public class MinaScpClient {
 				throw new IllegalArgumentException("Spaces in filenames not supported");
 			}
 
-			cmd = "scp -t -d " + remoteDirectory;
+			cmd = (sudo ? "sudo " : "") + "scp -t -d " + remoteDirectory;
 		}
 
 		ScpChannel channel = null;

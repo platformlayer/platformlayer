@@ -17,8 +17,16 @@ public class PackageRemoval {
 
 		// Only for wheezy? Squeeze has a depencency of install-info -> findutils
 		Command command = Command
-				.build("apt-get remove --yes aptitude tasksel tasksel-data man-db manpages libxapian22 libboost-iostreams1.49.0 info install-info");
+				.build("apt-get remove --yes aptitude tasksel tasksel-data man-db manpages libxapian22 libboost-iostreams1.49.0 info ");
 		target.executeCommand(command);
+
+		// Maybe:
+		// apt-get remove groff-base
+		// apt-get install netcat6
+		// apt-get remove netcat-traditional
+
+		// Warnings??
+		// apt-get remove install-info
 
 		// Squeeze:
 		// apt-get remove aptitude tasksel tasksel-data man-db manpages libxapian22 info

@@ -11,10 +11,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.cert.X509Certificate;
+import java.util.Arrays;
 
 import javax.crypto.SecretKey;
 
 import org.apache.log4j.Logger;
+import org.openstack.crypto.Md5Hash;
 import org.platformlayer.IoUtils;
 import org.platformlayer.auth.OpsProject;
 import org.platformlayer.auth.OpsUser;
@@ -25,13 +28,17 @@ import org.platformlayer.crypto.RsaUtils;
 public class SecretStore {
 	static final Logger log = Logger.getLogger(SecretStore.class);
 
+	@Deprecated
 	public static final byte ASYMETRIC_SYSTEM_KEY = 1;
+
 	public static final byte USER_KEY = 2;
 	public static final byte USER_PASSWORD = 3;
 	public static final byte TOKEN = 4;
 	public static final byte ASYMETRIC_USER_KEY = 5;
 	public static final byte PROJECT_KEY = 6;
 	public static final byte ASYMETRIC_PROJECT_KEY = 7;
+
+	public static final byte ASYMETRIC_KEY = 8;
 
 	byte[] encoded;
 
@@ -84,6 +91,13 @@ public class SecretStore {
 					int keyId = readEncoded(in);
 					byte[] data = readArray(in);
 					visitor.visitAsymetricSystemKey(keyId, data);
+					break;
+				}
+
+				case ASYMETRIC_KEY: {
+					byte[] publicKeySignature = readArray(in);
+					byte[] data = readArray(in);
+					visitor.visitGenericAsymetricKey(publicKeySignature, data);
 					break;
 				}
 
@@ -184,7 +198,7 @@ public class SecretStore {
 			writeArray(dos, encrypted);
 		}
 
-		public void writeAsymetricKey(byte[] plaintext, int backend, PublicKey publicKey) throws IOException {
+		public void writeAsymetricSystemKey(byte[] plaintext, int backend, PublicKey publicKey) throws IOException {
 			dos.writeByte(ASYMETRIC_SYSTEM_KEY);
 			byte[] encrypted = RsaUtils.encrypt(publicKey, plaintext);
 			writeEncoded(dos, backend);
@@ -195,6 +209,14 @@ public class SecretStore {
 			dos.writeByte(ASYMETRIC_USER_KEY);
 			byte[] encrypted = RsaUtils.encrypt(publicKey, plaintext);
 			writeEncoded(dos, userId);
+			writeArray(dos, encrypted);
+		}
+
+		public void writeGenericAsymetricKey(byte[] plaintext, PublicKey publicKey) throws IOException {
+			dos.writeByte(ASYMETRIC_KEY);
+			byte[] encrypted = RsaUtils.encrypt(publicKey, plaintext);
+			Md5Hash signature = CryptoUtils.getSignature(publicKey);
+			writeArray(dos, signature.toByteArray());
 			writeArray(dos, encrypted);
 		}
 
@@ -384,6 +406,33 @@ public class SecretStore {
 			throw new IllegalArgumentException("Secret data is corrupted", e);
 		}
 		return visitor.tokenSecret;
+	}
+
+	public byte[] findChallengeForCertificate(X509Certificate[] certificateChain) {
+		if (certificateChain.length == 0) {
+			throw new IllegalArgumentException();
+		}
+
+		X509Certificate certificate = certificateChain[0];
+		Md5Hash signature = CryptoUtils.getSignature(certificate.getPublicKey());
+		final byte[] signatureBytes = signature.toByteArray();
+
+		SecretStoreDecoder visitor = new SecretStoreDecoder() {
+			@Override
+			public void visitGenericAsymetricKey(byte[] publicKeySignature, byte[] data) {
+				if (Arrays.equals(publicKeySignature, signatureBytes)) {
+					result = data;
+				}
+			}
+		};
+
+		try {
+			read(encoded, visitor);
+		} catch (IOException e) {
+			throw new IllegalArgumentException("Secret data is corrupted", e);
+		}
+
+		return (byte[]) visitor.result;
 	}
 
 }

@@ -61,8 +61,6 @@ public class SimpleHttpRequest {
 	private KeyManager keyManager;
 	private TrustManager trustManager;
 
-	private HostnameVerifier hostnameVerifier;
-
 	public SimpleHttpResponse doRequest() throws IOException {
 		if (response == null) {
 			response = doRequest0();

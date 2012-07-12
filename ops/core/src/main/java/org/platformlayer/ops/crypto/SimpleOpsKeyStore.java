@@ -6,11 +6,14 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.platformlayer.crypto.RsaUtils;
 
 import com.google.common.collect.Maps;
 
 public class SimpleOpsKeyStore implements OpsKeyStore {
+	private static final Logger log = Logger.getLogger(SimpleOpsKeyStore.class);
+
 	static final File SECRETS_ROOT = new File("/var/secrets/");
 
 	static final Map<Integer, PrivateKey> privateKeys = Maps.newHashMap();
@@ -28,6 +31,8 @@ public class SimpleOpsKeyStore implements OpsKeyStore {
 		if (!dir.exists()) {
 			return;
 		}
+
+		log.warn("Using (deprecated) system keys");
 
 		for (File file : dir.listFiles(new FilenameEndsWithFilter(".pub"))) {
 			PublicKey publicKey = RsaUtils.loadPublicKey(file);

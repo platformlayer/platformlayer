@@ -33,6 +33,6 @@ public abstract class MachineBase extends Machine {
 		// TODO: Verify the server key once we've learned it
 		IServerKeyVerifier serverKeyVerifier = new AcceptAllLearningServerKeyVerifier();
 		sshConnection.setServerKeyVerifier(serverKeyVerifier);
-		return new SshOpsTarget(tempDirBase, sshConnection);
+		return new SshOpsTarget(tempDirBase, this, sshConnection);
 	}
 }

@@ -25,8 +25,6 @@ public interface ServiceProvider {
 
 	void initialize();
 
-	Object getController(Class<?> itemClass) throws OpsException;
-
 	MetricValues getMetricValues(ItemBase item, String serviceKey) throws OpsException;
 
 	Class<?> getJavaClass(ItemType itemType);
@@ -37,5 +35,13 @@ public interface ServiceProvider {
 
 	PublicKey getSshPublicKey() throws OpsException;
 
+	// Use getController(item)
+	@Deprecated
 	Class<?> getControllerClass(Class<?> javaClass) throws OpsException;
+
+	// Use getController(item)
+	@Deprecated
+	Object getController(Class<?> itemClass) throws OpsException;
+
+	Object getController(Object item) throws OpsException;
 }

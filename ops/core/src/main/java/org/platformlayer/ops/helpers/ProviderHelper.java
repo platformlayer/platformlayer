@@ -53,7 +53,7 @@ public class ProviderHelper {
 		}
 
 		public T get() throws OpsException {
-			Object controller = model.getProvider().getController(item.getClass());
+			Object controller = model.getProvider().getController(item);
 			return (T) controller;
 		}
 	}
@@ -74,7 +74,7 @@ public class ProviderHelper {
 	public <T> T toInterface(ItemBase item) throws OpsException {
 		ModelClass<? extends ItemBase> modelClass = serviceProviderDictionary.getModelClass(item.getClass());
 
-		Object controller = modelClass.getProvider().getController(item.getClass());
+		Object controller = modelClass.getProvider().getController(item);
 		return (T) controller;
 	}
 }

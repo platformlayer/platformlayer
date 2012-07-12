@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.KeyPair;
 import java.security.PublicKey;
+import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -141,23 +142,38 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 
 	@Override
 	@JdbcTransaction
-	public OpsUser createUser(String userName, String password) throws RepositoryException {
+	public OpsUser createUser(String userName, String password, Certificate[] certificateChain)
+			throws RepositoryException {
 		DbHelper db = new DbHelper();
 		try {
 			byte[] secretData;
 
-			SecretKey userSecret = AesUtils.generateKey();
+			SecretKey userSecretKey = AesUtils.generateKey();
 
 			try {
-				byte[] plaintext = AesUtils.serialize(userSecret);
-
-				byte[] tokenSecret = CryptoUtils.generateSecureRandom(plaintext.length);
+				byte[] userSecret = AesUtils.serialize(userSecretKey);
 
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 				SecretStore.Writer writer = new SecretStore.Writer(baos);
 
-				writer.writeUserPassword(plaintext, password);
-				writer.writeLockedByToken(plaintext, UserEntity.TOKEN_ID_DEFAULT, tokenSecret);
+				// For password auth
+				if (password != null) {
+					writer.writeUserPassword(userSecret, password);
+				}
+
+				// For token auth
+				{
+					byte[] tokenSecret = CryptoUtils.generateSecureRandom(userSecret.length);
+					writer.writeLockedByToken(userSecret, UserEntity.TOKEN_ID_DEFAULT, tokenSecret);
+				}
+
+				// For certificate auth
+				if (certificateChain != null) {
+					Certificate certificate = certificateChain[0];
+					PublicKey publicKey = certificate.getPublicKey();
+					writer.writeGenericAsymetricKey(userSecret, publicKey);
+				}
+
 				writer.close();
 
 				secretData = baos.toByteArray();
@@ -165,12 +181,15 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 				throw new RepositoryException("Error encrypting secrets", e);
 			}
 
-			byte[] hashedPassword = PasswordHash.doPasswordHash(password);
+			byte[] hashedPassword = null;
+			if (password != null) {
+				hashedPassword = PasswordHash.doPasswordHash(password);
+			}
 
+			// This keypair is for grants etc. The client doesn't (currently) get access to the private key
 			KeyPair userRsaKeyPair = RsaUtils.generateRsaKeyPair(RsaUtils.SMALL_KEYSIZE);
-
 			byte[] privateKeyData = RsaUtils.serialize(userRsaKeyPair.getPrivate());
-			privateKeyData = AesUtils.encrypt(userSecret, privateKeyData);
+			privateKeyData = AesUtils.encrypt(userSecretKey, privateKeyData);
 			byte[] publicKeyData = RsaUtils.serialize(userRsaKeyPair.getPublic());
 
 			db.insertUser(userName, hashedPassword, secretData, publicKeyData, privateKeyData);
@@ -385,11 +404,16 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 		public int insertServiceAccount(String subject, byte[] publicKey) throws SQLException {
 			return queries.insertServiceAccount(subject, publicKey);
 		}
+
 	}
 
 	@Override
 	@JdbcTransaction
 	public UserEntity findUser(String username) throws RepositoryException {
+		if (username == null) {
+			return null;
+		}
+
 		DbHelper db = new DbHelper();
 		try {
 			return db.findUserByKey(username);
@@ -537,7 +561,12 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 			String subject = cert.getSubjectDN().getName();
 			byte[] publicKey = cert.getPublicKey().getEncoded();
 
-			db.insertServiceAccount(subject, publicKey);
+			ServiceAccountEntity existing = db.findServiceAccount(subject, publicKey);
+			if (existing == null) {
+				db.insertServiceAccount(subject, publicKey);
+			} else {
+				log.warn("Service account already exists; skipping creation");
+			}
 
 			return findServiceAccount(subject, publicKey);
 		} catch (SQLException e) {
@@ -597,5 +626,46 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 		}
 
 		return project;
+	}
+
+	@Override
+	public CertificateAuthenticationResponse authenticateWithCertificate(CertificateAuthenticationRequest request)
+			throws RepositoryException {
+		String projectKey = request.projectKey;
+		if (projectKey == null || request.username == null) {
+			throw new IllegalArgumentException();
+		}
+
+		UserEntity user = findUser(request.username);
+
+		if (user == null) {
+			return null;
+		}
+
+		CertificateAuthenticationResponse response = new CertificateAuthenticationResponse();
+
+		// Check the certificate is (still) valid, and find the encrypted secret
+		byte[] challenge = user.findChallenge(request.certificateChain);
+		if (challenge == null) {
+			return null;
+		}
+
+		if (request.challengeResponse != null) {
+			user.unlock(AesUtils.deserializeKey(request.challengeResponse));
+
+			ProjectEntity project = findProject(user, projectKey);
+			if (project == null) {
+				return null;
+			}
+
+			response.user = user;
+			response.project = project;
+
+			return response;
+		}
+
+		// TODO: Do we need/want to encrypt/obfuscate the challenge?
+		response.challenge = challenge;
+		return response;
 	}
 }

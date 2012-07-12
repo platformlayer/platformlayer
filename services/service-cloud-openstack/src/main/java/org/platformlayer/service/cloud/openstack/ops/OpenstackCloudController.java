@@ -6,14 +6,19 @@ import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
 import org.openstack.client.OpenstackCredentials;
+import org.platformlayer.core.model.InstanceBase;
 import org.platformlayer.core.model.MachineCloudBase;
+import org.platformlayer.core.model.PublicEndpointBase;
 import org.platformlayer.ops.Handler;
+import org.platformlayer.ops.MachineCreationRequest;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.images.ImageStore;
 import org.platformlayer.ops.machines.CloudController;
 import org.platformlayer.ops.machines.StorageConfiguration;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.openstack.model.OpenstackCloud;
+import org.platformlayer.service.cloud.openstack.model.OpenstackInstance;
+import org.platformlayer.service.cloud.openstack.model.OpenstackPublicEndpoint;
 import org.platformlayer.service.cloud.openstack.ops.openstack.OpenstackCloudContext;
 
 public class OpenstackCloudController extends OpsTreeBase implements CloudController {
@@ -48,4 +53,20 @@ public class OpenstackCloudController extends OpsTreeBase implements CloudContro
 		StorageConfiguration config = new StorageConfiguration(credentials);
 		return config;
 	}
+
+	@Override
+	public InstanceBase buildInstanceTemplate(MachineCreationRequest request) {
+		OpenstackInstance rawMachine = new OpenstackInstance();
+
+		rawMachine.minimumMemoryMb = request.minimumMemoryMB;
+		rawMachine.hostname = request.hostname;
+
+		return rawMachine;
+	}
+
+	@Override
+	public PublicEndpointBase buildEndpointTemplate() {
+		return new OpenstackPublicEndpoint();
+	}
+
 }

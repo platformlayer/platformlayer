@@ -1,6 +1,7 @@
 package org.platformlayer;
 
 import org.platformlayer.core.model.ItemBase;
+import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.Tags;
 
@@ -16,8 +17,12 @@ public class TagFilter extends Filter {
 		return filter;
 	}
 
-	public static Filter byParent(ItemBase item) {
-		return byTag(Tag.buildParentTag(item.getKey()));
+	public static Filter byParent(ItemBase parent) {
+		return byParent(parent.getKey());
+	}
+
+	public static Filter byParent(PlatformLayerKey parentKey) {
+		return byTag(Tag.buildParentTag(parentKey));
 	}
 
 	public boolean matchesTags(Iterable<Tag> tags) {

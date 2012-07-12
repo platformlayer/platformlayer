@@ -1,13 +1,13 @@
 package org.platformlayer.service.cloud.google.ops.compute;
 
 import java.io.IOException;
+import java.security.PublicKey;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
-import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
 import org.openstack.client.OpenstackException;
@@ -21,6 +21,7 @@ import org.platformlayer.service.cloud.google.model.GoogleCloud;
 import org.platformlayer.service.imagefactory.v1.DiskImageRecipe;
 import org.platformlayer.service.imagefactory.v1.OperatingSystemRecipe;
 
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.compute.Compute;
 import com.google.api.services.compute.model.AccessConfig;
 import com.google.api.services.compute.model.Firewall;
@@ -45,19 +46,20 @@ public class GoogleComputeClient {
 	public static final String ZONE_US_EAST1_A = "us-east1-a";
 	public static final String ZONE_US_CENTRAL1_A = "us-central1-a";
 
+	public static final String USER_NAME = "platfomlayer";
+
 	public static final String PROJECTID_GOOGLE = "google";
 
 	final Compute compute;
 	final String projectId;
 
-	public GoogleComputeClient(Compute compute, String projectId) {
-		super();
+	final PlatformLayerHelpers platformLayerClient;
+
+	public GoogleComputeClient(PlatformLayerHelpers platformLayerClient, Compute compute, String projectId) {
+		this.platformLayerClient = platformLayerClient;
 		this.compute = compute;
 		this.projectId = projectId;
 	}
-
-	@Inject
-	PlatformLayerHelpers platformLayerClient;
 
 	public List<Firewall> getInstanceFirewallRules(String instanceUrl) throws OpsException {
 		List<Firewall> ret = Lists.newArrayList();
@@ -115,7 +117,7 @@ public class GoogleComputeClient {
 
 		// TODO: Timeout?
 		while (operation.getStatus().equals("RUNNING")) {
-			if (timeoutAt > System.currentTimeMillis()) {
+			if (timeoutAt < System.currentTimeMillis()) {
 				throw new TimeoutException("Timeout while waiting for operation to complete");
 			}
 			log.debug("Polling for operation completion: " + operation);
@@ -123,6 +125,13 @@ public class GoogleComputeClient {
 				operation = compute.operations().get(projectId, operation.getName()).execute();
 			} catch (IOException e) {
 				throw new OpsException("Error waiting for operation to complete", e);
+			}
+
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+				throw new OpsException("Interrupted while waiting for operation to complete", e);
 			}
 		}
 
@@ -133,11 +142,15 @@ public class GoogleComputeClient {
 		return Compute.DEFAULT_BASE_URL + projectId + "/networks/" + networkId;
 	}
 
+	public String buildNetworkUrl(String networkId) {
+		return buildNetworkUrl(projectId, networkId);
+	}
+
 	public static String buildZoneUrl(String projectId, String zoneId) {
 		return Compute.DEFAULT_BASE_URL + projectId + "/zones/" + zoneId;
 	}
 
-	public Instance createInstance(GoogleCloud cloud, String serverName, MachineCreationRequest request)
+	public Instance createInstance(GoogleCloud cloud, MachineCreationRequest request, PublicKey sshPublicKey)
 			throws OpsException {
 		// GoogleComputeClient computeClient = getComputeClient(cloud);
 
@@ -159,8 +172,9 @@ public class GoogleComputeClient {
 				Iterable<Image> images = listImages(PROJECTID_GOOGLE);
 
 				// TODO: We need a better solution here!!
-				Set<String> imageNames = Sets.newHashSet("ubuntu-12-04-v20120621");
 				log.warn("Hard coding image names");
+				Set<String> imageNames = Sets.newHashSet("ubuntu-12-04-v20120621");
+				// Set<String> imageNames = Sets.newHashSet("centos-6-2-v20120621");
 
 				for (Image image : images) {
 					if (imageNames.contains(image.getName())) {
@@ -174,11 +188,16 @@ public class GoogleComputeClient {
 				}
 			}
 
+			// GCE requires that the name comply with RFC1035, which I think means a valid DNS
+			// For now, just use a UUID, with a pl- prefix so it doesn't start with a number
+			// TODO: Fix this!
+			String instanceName = "pl-" + UUID.randomUUID().toString();
+
 			Operation createServerOperation;
 			{
 				Instance create = new Instance();
 
-				create.setName(serverName);
+				create.setName(instanceName);
 
 				create.setZone(buildZoneUrl(projectId, ZONE_US_CENTRAL1_A));
 
@@ -211,7 +230,7 @@ public class GoogleComputeClient {
 					Metadata.Items meta = new Metadata.Items();
 					meta.setKey("sshKeys");
 					try {
-						meta.setValue("root:" + OpenSshUtils.serialize(request.sshPublicKey));
+						meta.setValue(USER_NAME + ":" + OpenSshUtils.serialize(sshPublicKey));
 					} catch (IOException e) {
 						throw new OpsException("Error serializing ssh key", e);
 					}
@@ -240,7 +259,7 @@ public class GoogleComputeClient {
 
 				// create.setConfigDrive(cloudBehaviours.useConfigDrive());
 
-				log.info("Launching new server: " + create.getName());
+				log.info("Launching new server: " + instanceName);
 				try {
 					createServerOperation = compute.instances().insert(projectId, create).execute();
 				} catch (IOException e) {
@@ -253,14 +272,14 @@ public class GoogleComputeClient {
 
 			Instance created;
 
-			String stateName = null;
+			InstanceState state = null;
 			while (true) {
-				created = findInstanceByName(serverName);
+				created = findInstanceByName(instanceName);
 
-				stateName = created.getStatus();
-				log.info("Instance state: " + stateName);
+				state = InstanceState.get(created);
+				log.info("Instance state: " + state);
 
-				if (stateName.equals("RUNNING")) {
+				if (state.isRunning()) {
 					break;
 				}
 
@@ -320,8 +339,9 @@ public class GoogleComputeClient {
 		for (MachineType flavor : flavors) {
 			// Ignore the machine types with no ephemeral disks - they're the same price
 			// TODO: Is this right?
-			if (flavor.getEphemeralDisks().isEmpty())
+			if (flavor.getEphemeralDisks() == null || flavor.getEphemeralDisks().isEmpty()) {
 				continue;
+			}
 			int instanceMemoryMB = flavor.getMemoryMb();
 			if (request.minimumMemoryMB > instanceMemoryMB) {
 				continue;
@@ -377,13 +397,15 @@ public class GoogleComputeClient {
 		List<String> ips = Lists.newArrayList();
 
 		List<NetworkInterface> networkInterfaces = instance.getNetworkInterfaces();
-		if (networkInterfaces == null)
+		if (networkInterfaces == null) {
 			networkInterfaces = Collections.emptyList();
+		}
 
 		for (NetworkInterface networkInterface : networkInterfaces) {
 			List<AccessConfig> accessConfigList = networkInterface.getAccessConfigs();
-			if (accessConfigList == null)
+			if (accessConfigList == null) {
 				continue;
+			}
 
 			for (AccessConfig accessConfig : accessConfigList) {
 				if (!Objects.equal(accessConfig.getType(), "ONE_TO_ONE_NAT")) {
@@ -405,6 +427,11 @@ public class GoogleComputeClient {
 			log.debug("Retrieving instance by name: " + name);
 			Instance instance = compute.instances().get(projectId, name).execute();
 			return instance;
+		} catch (GoogleJsonResponseException e) {
+			if (e.getStatusCode() == 404) {
+				return null;
+			}
+			throw new OpsException("Error getting instance", e);
 		} catch (IOException e) {
 			throw new OpsException("Error getting instance", e);
 		}

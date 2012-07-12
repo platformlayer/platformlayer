@@ -45,7 +45,6 @@ import org.platformlayer.xaas.services.ServiceProvider;
 import org.platformlayer.xaas.services.ServiceProviderDictionary;
 import org.platformlayer.xml.JaxbHelper;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -134,7 +133,7 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 
 				boolean isRoot = true;
 				for (Tag tag : itemTags.get(itemId)) {
-					boolean tagIsParent = Objects.equal(Tag.PARENT, tag.getKey());
+					boolean tagIsParent = Tag.PARENT.isTag(tag);
 					if (tagIsParent) {
 						isRoot = false;
 						break;

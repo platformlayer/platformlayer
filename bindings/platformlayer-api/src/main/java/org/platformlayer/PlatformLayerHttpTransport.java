@@ -3,6 +3,7 @@ package org.platformlayer;
 import java.io.PrintStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 import org.platformlayer.auth.AuthenticationToken;
 import org.platformlayer.auth.Authenticator;
@@ -19,9 +20,12 @@ class PlatformLayerHttpTransport {
 
 	final String platformlayerEndpoint;
 
-	public PlatformLayerHttpTransport(String platformlayerEndpoint, Authenticator authClient) {
+	final List<String> trustKeys;
+
+	public PlatformLayerHttpTransport(String platformlayerEndpoint, Authenticator authClient, List<String> trustKeys) {
 		this.platformlayerEndpoint = platformlayerEndpoint;
 		this.authClient = authClient;
+		this.trustKeys = trustKeys;
 	}
 
 	private static final long SLEEP_BETWEEN_RETRIES = 200;
@@ -87,7 +91,8 @@ class PlatformLayerHttpTransport {
 			Object sendData, Format sendDataFormat) throws PlatformLayerClientException {
 		int maxRetries = 1;
 		for (int i = 1; i <= maxRetries; i++) {
-			PlatformLayerHttpRequest request = new PlatformLayerHttpRequest(this, method, buildUri(relativePath));
+			PlatformLayerHttpRequest request = new PlatformLayerHttpRequest(this, method, buildUri(relativePath),
+					trustKeys);
 			request.debug = debug;
 			try {
 				if (i == maxRetries) {

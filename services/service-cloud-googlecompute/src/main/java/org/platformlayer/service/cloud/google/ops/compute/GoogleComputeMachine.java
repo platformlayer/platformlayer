@@ -15,6 +15,7 @@ import org.platformlayer.service.cloud.google.model.GoogleCloud;
 
 import com.google.api.services.compute.model.Instance;
 import com.google.api.services.compute.model.Operation;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.net.InetAddresses;
@@ -24,12 +25,16 @@ public class GoogleComputeMachine extends MachineBase {
 
 	final GoogleComputeClient computeClient;
 	final GoogleCloud cloud;
-	private final Instance instance;
+
+	private Instance instance;
+
+	private boolean terminated;
 
 	public GoogleComputeMachine(GoogleComputeClient computeClient, GoogleCloud cloud, Instance instance) {
 		this.computeClient = computeClient;
 		this.cloud = cloud;
 		this.instance = instance;
+		Preconditions.checkNotNull(instance);
 	}
 
 	@Override
@@ -39,6 +44,19 @@ public class GoogleComputeMachine extends MachineBase {
 			computeClient.waitComplete(operation, 5, TimeUnit.MINUTES);
 		} catch (TimeoutException e) {
 			throw new OpsException("Timeout waiting for instance termination", e);
+		}
+
+		refreshState();
+	}
+
+	public void refreshState() throws OpsException {
+		Instance newState = computeClient.findInstanceByName(instance.getName());
+
+		if (newState == null) {
+			// Not found => deleted
+			terminated = true;
+		} else {
+			instance = newState;
 		}
 	}
 
@@ -114,30 +132,33 @@ public class GoogleComputeMachine extends MachineBase {
 		return cloud;
 	}
 
-	public Instance getInstance() {
-		return instance;
-	}
+	// public Instance getInstance() {
+	// return instanceState;
+	// }
 
 	@Override
 	public boolean isTerminated() {
-		throw new UnsupportedOperationException();
-		//
-		// InstanceState instanceState = InstanceState.get(server);
-		// log.debug("isTerminated? State=" + instanceState);
-		// if (instanceState.isTerminated()) {
+		if (terminated) {
+			return true;
+		}
+
+		InstanceState state = InstanceState.get(instance);
+		log.debug("isTerminated? State=" + state);
+		// if (state.isTerminated()) {
 		// return true;
 		// }
 		//
-		// if (instanceState.isTerminating()) {
+		// if (state.isTerminating()) {
 		// // TODO: Not sure if this is right
 		// log.warn("isTerminated mapping isTerminating => isTerminated=true");
 		// return true;
 		// }
-		//
-		// return false;
+
+		return false;
 	}
 
 	public String getServerSelfLink() {
 		return instance.getSelfLink();
 	}
+
 }

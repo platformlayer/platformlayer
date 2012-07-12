@@ -1,5 +1,6 @@
 package org.platformlayer.ops;
 
+import java.security.PublicKey;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
@@ -7,15 +8,18 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.openstack.crypto.CertificateAndKey;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.auth.UserRepository;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ServiceInfo;
+import org.platformlayer.crypto.CryptoUtils;
 import org.platformlayer.ids.ItemType;
 import org.platformlayer.ids.ModelKey;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.ops.auth.OpsAuthentication;
 import org.platformlayer.ops.backups.BackupContextFactory;
+import org.platformlayer.ops.crypto.EncryptionStore;
 import org.platformlayer.ops.multitenant.SimpleMultitenantConfiguration;
 import org.platformlayer.ops.ssh.ISshContext;
 import org.platformlayer.ops.tasks.JobRegistry;
@@ -63,13 +67,16 @@ public class OpsSystem {
 	@Inject
 	UserRepository userRepository;
 
-	private static OpsSystem INSTANCE;
+	@Inject
+	EncryptionStore encryptionStore;
+
+	private static OpsSystem CHECK_SINGLETON;
 
 	public OpsSystem() {
-		if (INSTANCE != null) {
+		if (CHECK_SINGLETON != null) {
 			throw new IllegalStateException();
 		}
-		INSTANCE = this;
+		CHECK_SINGLETON = this;
 	}
 
 	public ISshContext getSshContext() {
@@ -224,7 +231,7 @@ public class OpsSystem {
 	}
 
 	public static String getPlatformLayerUrlBase() {
-		return "http://127.0.0.1:8082/v0/";
+		return "https://127.0.0.1:8082/v0/";
 	}
 
 	// public static OpsSystem get() {
@@ -255,12 +262,27 @@ public class OpsSystem {
 			if (projectKey == null) {
 				multitenantConfiguration = Optional.absent();
 			} else {
-				MultitenantConfiguration config = SimpleMultitenantConfiguration.build(configuration, userRepository);
+				MultitenantConfiguration config = SimpleMultitenantConfiguration.build(configuration, encryptionStore,
+						userRepository);
 
 				multitenantConfiguration = Optional.of(config);
 			}
 		}
 
 		return multitenantConfiguration.orNull();
+	}
+
+	Optional<List<String>> trustKeys = null;
+
+	public List<String> getServerTrustKeys() throws OpsException {
+		if (trustKeys == null) {
+			CertificateAndKey certificateAndKey = encryptionStore.getCertificateAndKey("https");
+
+			PublicKey publicKey = certificateAndKey.getPublicKey();
+			List<String> trustKeys = Lists.newArrayList();
+			trustKeys.add(CryptoUtils.getSignatureString(publicKey));
+			this.trustKeys = Optional.of(trustKeys);
+		}
+		return trustKeys.orNull();
 	}
 }

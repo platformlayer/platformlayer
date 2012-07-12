@@ -28,7 +28,7 @@ public class SecretHelper {
 			for (int backend : keyStore.getBackends()) {
 				PublicKey publicKey = keyStore.findPublicKey(backend);
 				if (publicKey != null) {
-					writer.writeAsymetricKey(plaintext, backend, publicKey);
+					writer.writeAsymetricSystemKey(plaintext, backend, publicKey);
 				} else {
 					throw new IllegalStateException();
 				}

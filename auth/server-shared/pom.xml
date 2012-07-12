@@ -28,7 +28,7 @@
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-jaxrs</artifactId>
         </dependency>
-        
+
         <!-- Jetty WebServer -->
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
@@ -66,6 +66,11 @@
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-server</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-json</artifactId>
             <version>${jersey.version}</version>
         </dependency>
         <dependency>

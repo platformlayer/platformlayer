@@ -148,17 +148,17 @@ public class OpsContextBuilder {
 		return opsSystem.getJavaClass(key);
 	}
 
-	private TypedPlatformLayerClient buildClient(OpsProject project) {
+	private TypedPlatformLayerClient buildClient(OpsProject project) throws OpsException {
 		DirectAuthenticator directAuthenticator = buildDirectAuthenticator(project);
 		ProjectId projectId = new ProjectId(project.getName());
 
-		String platformlayerEndpoint = directAuthenticator.getAuthenticationToken().getPlatformLayerServiceUrl();
-
-		HttpPlatformLayerClient client = HttpPlatformLayerClient.build(platformlayerEndpoint, directAuthenticator,
-				projectId);
+		// TODO: Introduce a direct client for "loopback" (normal) calls?
+		String platformLayerUrl = OpsSystem.getPlatformLayerUrlBase();
+		List<String> trustKeys = opsSystem.getServerTrustKeys();
+		HttpPlatformLayerClient client = HttpPlatformLayerClient.build(platformLayerUrl, directAuthenticator,
+				projectId, trustKeys);
 
 		return new PlatformLayerHelpers(client, serviceProviderHelpers);
-
 	}
 
 	private DirectAuthenticator buildDirectAuthenticator(OpsProject project) {

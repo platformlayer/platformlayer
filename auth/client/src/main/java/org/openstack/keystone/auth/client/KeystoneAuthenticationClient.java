@@ -1,37 +1,28 @@
 package org.openstack.keystone.auth.client;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.security.PrivateKey;
+import java.security.cert.X509Certificate;
 import java.util.Random;
 
-import javax.xml.bind.JAXBException;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.TrustManager;
 
 import org.openstack.docs.identity.api.v2.Auth;
 import org.openstack.docs.identity.api.v2.AuthenticateRequest;
 import org.openstack.docs.identity.api.v2.AuthenticateResponse;
+import org.openstack.docs.identity.api.v2.CertificateCredentials;
 import org.openstack.docs.identity.api.v2.PasswordCredentials;
-import org.openstack.docs.identity.api.v2.TenantsList;
-import org.openstack.utils.Utf8;
-import org.platformlayer.CastUtils;
-import org.platformlayer.IoUtils;
-import org.platformlayer.WellKnownPorts;
+import org.openstack.keystone.service.RestClientException;
+import org.openstack.keystone.service.RestfulClient;
+import org.platformlayer.crypto.RsaUtils;
+import org.platformlayer.crypto.SimpleClientCertificateKeyManager;
 import org.platformlayer.http.SimpleHttpRequest;
-import org.platformlayer.http.SimpleHttpRequest.SimpleHttpResponse;
-import org.platformlayer.xml.JaxbHelper;
-import org.platformlayer.xml.UnmarshalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class KeystoneAuthenticationClient {
+public class KeystoneAuthenticationClient extends RestfulClient {
 	static final Logger log = LoggerFactory.getLogger(KeystoneAuthenticationClient.class);
-
-	final String authenticationUrl;
-
-	public static final String DEFAULT_AUTHENTICATION_URL = "http://127.0.0.1:"
-			+ WellKnownPorts.PORT_PLATFORMLAYER_AUTH_USER + "/v2.0/";
 
 	public static final Integer HTTP_500_ERROR = new Integer(500);
 
@@ -39,18 +30,13 @@ public class KeystoneAuthenticationClient {
 
 	static Random random = new Random();
 
-	PrintStream debug;
-
-	public KeystoneAuthenticationClient(String authenticationUrl) {
-		this.authenticationUrl = authenticationUrl;
+	public KeystoneAuthenticationClient(String baseUrl) {
+		this(baseUrl, null, null, null);
 	}
 
-	public KeystoneAuthenticationClient() {
-		this(DEFAULT_AUTHENTICATION_URL);
-	}
-
-	public TenantsList listTenants(KeystoneAuthenticationToken token) throws KeystoneAuthenticationException {
-		return doSimpleRequest(token, "GET", "tokens", null, TenantsList.class);
+	public KeystoneAuthenticationClient(String baseUrl, KeyManager keyManager, TrustManager trustManager,
+			HostnameVerifier hostnameVerifier) {
+		super(baseUrl, keyManager, trustManager, hostnameVerifier);
 	}
 
 	public KeystoneAuthenticationToken authenticate(String project, PasswordCredentials passwordCredentials)
@@ -62,84 +48,68 @@ public class KeystoneAuthenticationClient {
 		AuthenticateRequest request = new AuthenticateRequest();
 		request.setAuth(auth);
 
-		AuthenticateResponse response = doSimpleRequest(null, "POST", "tokens", request, AuthenticateResponse.class);
+		AuthenticateResponse response;
+		try {
+			response = doSimpleRequest("POST", "tokens", request, AuthenticateResponse.class);
+		} catch (RestClientException e) {
+			throw new KeystoneAuthenticationException("Error authenticating", e);
+		}
 		return new KeystoneAuthenticationToken(response.getAccess());
 	}
 
-	private <T> T doSimpleRequest(KeystoneAuthenticationToken token, String method, String relativeUri,
-			Object postObject, Class<T> responseClass) throws KeystoneAuthenticationException {
-		try {
-			URI uri = new URI(authenticationUrl + relativeUri);
+	public KeystoneAuthenticationToken authenticateWithCertificate(String username, String projectKey,
+			X509Certificate[] certificateChain, PrivateKey privateKey) throws KeystoneAuthenticationException {
+		if (username == null || projectKey == null) {
+			throw new IllegalArgumentException();
+		}
 
-			SimpleHttpRequest httpRequest = SimpleHttpRequest.build(method, uri);
+		CertificateCredentials certificateCredentials = new CertificateCredentials();
+		certificateCredentials.setUsername(username);
 
-			httpRequest.setRequestHeader("Accept", "application/xml");
+		Auth auth = new Auth();
+		auth.setCertificateCredentials(certificateCredentials);
+		auth.setProject(projectKey);
 
-			if (token != null) {
-				token.populateRequest(httpRequest);
+		AuthenticateRequest request = new AuthenticateRequest();
+		request.setAuth(auth);
+
+		final KeyManager keyManager = new SimpleClientCertificateKeyManager(privateKey, certificateChain);
+
+		for (int i = 0; i < 2; i++) {
+			AuthenticateResponse response;
+			try {
+				Request<AuthenticateResponse> httpRequest = new Request<AuthenticateResponse>("POST", "tokens",
+						request, AuthenticateResponse.class) {
+
+					@Override
+					protected void addHeaders(SimpleHttpRequest httpRequest) {
+						super.addHeaders(httpRequest);
+
+						httpRequest.setKeyManager(keyManager);
+					}
+				};
+
+				response = httpRequest.execute();
+			} catch (RestClientException e) {
+				throw new KeystoneAuthenticationException("Error authenticating", e);
 			}
 
-			if (debug != null) {
-				debug.println(httpRequest.toString());
-			}
-
-			if (postObject != null) {
-				httpRequest.setRequestHeader("Content-Type", "application/xml");
-				String xml = serializeXml(postObject);
-				httpRequest.getOutputStream().write(Utf8.getBytes(xml));
-
-				if (debug != null) {
-					debug.println(xml);
+			if (i == 0) {
+				if (response == null || response.getChallenge() == null) {
+					return null;
 				}
-			}
 
-			SimpleHttpResponse response = httpRequest.doRequest();
-
-			int responseCode = response.getHttpResponseCode();
-
-			if (debug != null) {
-				debug.println("Response: " + response);
-			}
-
-			switch (responseCode) {
-			case 401:
-				throw new KeystoneAuthenticationException("Platformlayer credentials were not correct");
-
-			case 200:
-			case 203: {
-				if (responseClass.equals(String.class)) {
-					return CastUtils.as(IoUtils.readAll(response.getInputStream()), responseClass);
-				} else {
-					return deserializeXml(response.getInputStream(), responseClass);
+				byte[] challenge = response.getChallenge();
+				byte[] challengeResponse = RsaUtils.decrypt(privateKey, challenge);
+				certificateCredentials.setChallengeResponse(challengeResponse);
+			} else {
+				if (response == null || response.getAccess() == null) {
+					return null;
 				}
+				return new KeystoneAuthenticationToken(response.getAccess());
 			}
-
-			default:
-				throw new KeystoneAuthenticationException("Unexpected result code: " + responseCode);
-			}
-		} catch (IOException e) {
-			throw new KeystoneAuthenticationException("Error communicating with authentication service", e);
-		} catch (URISyntaxException e) {
-			throw new KeystoneAuthenticationException("Error building authentication URI", e);
 		}
 
+		return null;
 	}
-
-	public static <T> T deserializeXml(InputStream is, Class<T> clazz) throws KeystoneAuthenticationException {
-		try {
-			return JaxbHelper.deserializeXmlObject(is, clazz, true);
-		} catch (UnmarshalException e) {
-			throw new KeystoneAuthenticationException("Error reading authentication response data", e);
-		}
-	}
-
-	public static String serializeXml(Object object) throws KeystoneAuthenticationException {
-		try {
-			boolean formatted = false;
-			return JaxbHelper.toXml(object, formatted);
-		} catch (JAXBException e) {
-			throw new KeystoneAuthenticationException("Error serializing data", e);
-		}
-	}
-
 }

@@ -64,6 +64,10 @@ public class Tag {
 		}
 
 		protected abstract T toT(String s);
+
+		public boolean isTag(Tag tag) {
+			return key.equals(tag.getKey());
+		}
 	}
 
 	@XmlTransient
@@ -80,6 +84,7 @@ public class Tag {
 		public Tag build(PlatformLayerKey t) {
 			return new Tag(key, t.getUrl());
 		}
+
 	}
 
 	@XmlTransient
