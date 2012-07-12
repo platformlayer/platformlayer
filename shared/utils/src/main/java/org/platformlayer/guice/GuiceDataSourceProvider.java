@@ -90,6 +90,9 @@ public class GuiceDataSourceProvider implements Provider<DataSource> {
 		String logSql = systemProperties.getProperty("sql.debug", "false");
 		pooledDataSource.setLogStatementsEnabled(Boolean.parseBoolean(logSql));
 
+		// Enable statement caching
+		pooledDataSource.setStatementsCacheSize(32);
+
 		log.warn("Building data source for " + jdbcUrl);
 
 		return pooledDataSource;
