@@ -1,6 +1,7 @@
 package org.platformlayer.service.platformlayer.ops.backend;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -32,11 +33,9 @@ public class PlatformLayerInstanceModel extends StandardTemplateData {
 	static final Logger log = Logger.getLogger(PlatformLayerInstanceModel.class);
 
 	@Inject
-	PlatformLayerHelpers platformLayer;
-
-	@Inject
 	DatabaseHelper databases;
 
+	@Override
 	public PlatformLayerService getModel() {
 		PlatformLayerService model = OpsContext.get().getInstance(PlatformLayerService.class);
 		return model;
@@ -203,8 +202,9 @@ public class PlatformLayerInstanceModel extends StandardTemplateData {
 		return "platformlayer-" + databaseKey.getItemId().getKey();
 	}
 
-	public File getKeystoreFile() {
-		return new File(getConfigDir(), "../keystore.jks");
+	@Override
+	protected PlatformLayerKey getSslKeyPath() {
+		return getModel().sslKey;
 	}
 
 }

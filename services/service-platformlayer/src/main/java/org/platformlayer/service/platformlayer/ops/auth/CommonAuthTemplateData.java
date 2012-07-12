@@ -11,16 +11,12 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.databases.Database;
 import org.platformlayer.ops.databases.DatabaseHelper;
 import org.platformlayer.ops.helpers.InstanceHelpers;
-import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.standardservice.StandardTemplateData;
 import org.platformlayer.service.platformlayer.model.PlatformLayerAuthDatabase;
 
 import com.google.common.collect.Maps;
 
 public abstract class CommonAuthTemplateData extends StandardTemplateData {
-
-	@Inject
-	protected PlatformLayerHelpers platformLayer;
 
 	@Inject
 	InstanceHelpers instanceHelpers;

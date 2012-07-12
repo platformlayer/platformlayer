@@ -26,4 +26,6 @@ public class PlatformLayerService extends ItemBase {
 
 	@Generate
 	public Secret multitenantPassword;
+
+	public PlatformLayerKey sslKey;
 }
