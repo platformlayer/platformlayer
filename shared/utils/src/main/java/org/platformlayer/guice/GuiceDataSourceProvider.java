@@ -7,14 +7,17 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.sql.DataSource;
 
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.log4j.Logger;
 
 import com.google.inject.Binding;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.Provider;
+import com.jolbox.bonecp.BoneCPDataSource;
 
 public class GuiceDataSourceProvider implements Provider<DataSource> {
+	private static final Logger log = Logger.getLogger(GuiceDataSourceProvider.class);
+
 	// private final String url;
 	// private final String username;
 	// private final String password;
@@ -45,19 +48,52 @@ public class GuiceDataSourceProvider implements Provider<DataSource> {
 
 	@Override
 	public DataSource get() {
-		BasicDataSource pooledDataSource = new BasicDataSource();
+		return buildDataSource(prefix, properties);
+	}
 
-		String keyPrefix = this.prefix;
+	DataSource buildDataSource(String prefix, Properties properties) {
+		// BasicDataSource pooledDataSource = new BasicDataSource();
+		//
+		// String keyPrefix = this.prefix;
+		// if (keyPrefix == null) {
+		// keyPrefix = "";
+		// }
+		//
+		// pooledDataSource.setDriverClassName(getProperty(keyPrefix + "driverClassName"));
+		// pooledDataSource.setUrl(getProperty(keyPrefix + "url"));
+		// pooledDataSource.setUsername(getProperty(keyPrefix + "username"));
+		// pooledDataSource.setPassword(getProperty(keyPrefix + "password"));
+		//
+		// return pooledDataSource;
+
+		BoneCPDataSource pooledDataSource = new BoneCPDataSource();
+
+		String keyPrefix = prefix;
 		if (keyPrefix == null) {
 			keyPrefix = "";
 		}
 
-		pooledDataSource.setDriverClassName(getProperty(keyPrefix + "driverClassName"));
-		pooledDataSource.setUrl(getProperty(keyPrefix + "url"));
+		String jdbcUrl = getProperty(keyPrefix + "url");
+
+		try {
+			Class.forName(getProperty(keyPrefix + "driverClassName"));
+		} catch (ClassNotFoundException e) {
+			log.warn("Ignoring error loading DB driver", e);
+		}
+
+		// pooledDataSource.setDriverClassName(getProperty(keyPrefix + "driverClassName"));
+		pooledDataSource.setJdbcUrl(jdbcUrl);
 		pooledDataSource.setUsername(getProperty(keyPrefix + "username"));
 		pooledDataSource.setPassword(getProperty(keyPrefix + "password"));
 
+		Properties systemProperties = System.getProperties();
+		String logSql = systemProperties.getProperty("sql.debug", "false");
+		pooledDataSource.setLogStatementsEnabled(Boolean.parseBoolean(logSql));
+
+		log.warn("Building data source for " + jdbcUrl);
+
 		return pooledDataSource;
+
 	}
 
 	private String getProperty(final String key) {

@@ -410,6 +410,10 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 	@Override
 	@JdbcTransaction
 	public UserEntity findUser(String username) throws RepositoryException {
+		if (username == null) {
+			return null;
+		}
+
 		DbHelper db = new DbHelper();
 		try {
 			return db.findUserByKey(username);

@@ -20,6 +20,10 @@ public class KeystoneRepositoryAuthenticator implements KeystoneUserAuthenticato
 
 	@Override
 	public UserEntity authenticate(String project, String username, String password) throws AuthenticatorException {
+		if (username == null || password == null) {
+			return null;
+		}
+
 		UserEntity user;
 		try {
 			user = (UserEntity) repository.authenticateWithPassword(project, username, password);
