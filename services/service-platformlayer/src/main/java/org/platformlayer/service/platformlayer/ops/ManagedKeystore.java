@@ -123,17 +123,18 @@ public class ManagedKeystore extends OpsTreeBase {
 			List<String> publicKeySigs = Lists.newArrayList();
 
 			try {
-				for (String alias : keyAliases) {
-					Certificate[] cert = keystore.getCertificateChain(alias);
-					if (cert.length == 0) {
-						log.warn("Ignoring zero length certificate chain for: " + alias);
-						continue;
-					}
+				// for (String alias : keyAliases) {
+				Certificate[] cert = keystore.getCertificateChain(alias);
+				if (cert.length == 0) {
+					log.warn("Ignoring zero length certificate chain for: " + alias);
+					// continue;
+				} else {
 					PublicKey certPublicKey = cert[0].getPublicKey();
 
 					String sigString = CryptoUtils.getSignatureString(certPublicKey);
 					publicKeySigs.add(sigString);
 				}
+				// }
 			} catch (GeneralSecurityException e) {
 				throw new OpsException("Error reading public keys", e);
 			}
