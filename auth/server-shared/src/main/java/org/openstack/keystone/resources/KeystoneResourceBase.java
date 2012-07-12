@@ -19,6 +19,7 @@ public class KeystoneResourceBase {
 	protected static final String AUTH_HEADER = "X-Auth-Token";
 	protected static final TimeSpan TOKEN_VALIDITY = new TimeSpan("1h");
 
+	public static final String JSONP = "application/javascript";
 	public static final String APPLICATION_JSON = javax.ws.rs.core.MediaType.APPLICATION_JSON;
 	public static final String APPLICATION_XML = javax.ws.rs.core.MediaType.APPLICATION_XML;
 

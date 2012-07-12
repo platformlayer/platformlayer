@@ -10,4 +10,7 @@ public class AuthenticateResponse {
 	public Access access;
 
 	public byte[] challenge;
+
+	// For JSON-P
+	public Integer statusCode;
 }

@@ -9,6 +9,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 
 import org.apache.log4j.Logger;
 import org.openstack.keystone.model.Access;
@@ -27,6 +29,8 @@ import org.platformlayer.auth.CertificateAuthenticationResponse;
 import org.platformlayer.auth.ProjectEntity;
 import org.platformlayer.auth.UserEntity;
 
+import com.sun.jersey.api.json.JSONWithPadding;
+
 @Path("/v2.0/tokens")
 public class TokensResource extends KeystoneResourceBase {
 	static final Logger log = Logger.getLogger(TokensResource.class);
@@ -38,8 +42,8 @@ public class TokensResource extends KeystoneResourceBase {
 	TokenService tokenService;
 
 	@GET
-	@Produces({ APPLICATION_JSON, APPLICATION_XML })
-	public AuthenticateResponse authenticateGET() {
+	@Produces({ JSONP })
+	public JSONWithPadding authenticateGET(@QueryParam("callback") String jsonCallback) {
 		String username = request.getParameter("user");
 		String password = request.getParameter("password");
 		String project = request.getParameter("project");
@@ -63,7 +67,15 @@ public class TokensResource extends KeystoneResourceBase {
 			request.auth.certificateCredentials = credentials;
 		}
 
-		return authenticate(request);
+		AuthenticateResponse authenticateResponse = null;
+		try {
+			authenticateResponse = authenticate(request);
+		} catch (WebApplicationException e) {
+			authenticateResponse = new AuthenticateResponse();
+			authenticateResponse.statusCode = e.getResponse().getStatus();
+		}
+		JSONWithPadding jsonWithPadding = new JSONWithPadding(authenticateResponse, jsonCallback);
+		return jsonWithPadding;
 	}
 
 	@POST
