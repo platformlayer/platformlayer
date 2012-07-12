@@ -19,6 +19,7 @@ public class CORSFilter implements Filter {
 	// TODO: Should we use this instead? http://software.dzhuvinov.com/cors-filter-installation.html
 
 	private static final String HEADER_ALLOW_ORIGIN = "Access-Control-Allow-Origin";
+	private static final String HEADER_ALLOW_HEADERS = "Access-Control-Allow-Headers";
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
@@ -27,7 +28,10 @@ public class CORSFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
 			ServletException {
-		((HttpServletResponse) response).addHeader(HEADER_ALLOW_ORIGIN, "*");
+		HttpServletResponse httpResponse = (HttpServletResponse) response;
+		httpResponse.addHeader(HEADER_ALLOW_ORIGIN, "*");
+		httpResponse.addHeader(HEADER_ALLOW_HEADERS, "Content-Type, X-Auth-Token");
+
 		chain.doFilter(request, response);
 	}
 
