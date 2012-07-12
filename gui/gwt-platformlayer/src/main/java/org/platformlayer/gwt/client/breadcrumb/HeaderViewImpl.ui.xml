@@ -1,6 +1,5 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-	xmlns:g='urn:import:com.google.gwt.user.client.ui'
-	 xmlns:b="urn:import:com.github.gwtbootstrap.client.ui">
+	xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
 	<g:HTMLPanel>
 		<style>
@@ -14,16 +13,16 @@
 				<div class="container">
 					<ul class="mainnav">
 						<li class="active">
-							<b:Button ui:field="homeButton" icon="HOME">Home</b:Button>
+							<g:Button ui:field="homeButton" >Home</g:Button>
 						</li>
 
 						<li>
-							<b:Button ui:field="otherButton1" icon="HOME" enabled="false">Other 1</b:Button>
+							<g:Button ui:field="otherButton1">Other 1</g:Button>
 						</li>
 
 						<li>
-							<b:Button ui:field="otherButton2" icon="HOME"  enabled="false">Other 2
-							</b:Button>
+							<g:Button ui:field="otherButton2">Other 2
+							</g:Button>
 						</li>
 					</ul>
 				</div>

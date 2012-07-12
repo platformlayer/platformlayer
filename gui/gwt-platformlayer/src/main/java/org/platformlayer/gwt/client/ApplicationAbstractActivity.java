@@ -1,25 +1,21 @@
 package org.platformlayer.gwt.client;
 
-import org.platformlayer.gwt.client.places.ApplicationPlace;
-
 import com.google.gwt.activity.shared.AbstractActivity;
 import com.google.gwt.place.shared.Place;
 import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
+import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 
 public abstract class ApplicationAbstractActivity extends AbstractActivity {
 
+	@Inject
 	protected PlaceController placeController;
-	protected ApplicationPlace place;
-
-	public ApplicationAbstractActivity(PlaceController placeController, ApplicationPlace place) {
-		this.placeController = placeController;
-		this.place = place;
-	}
 
 	public abstract void start(AcceptsOneWidget panel, EventBus eventBus);
+
+	public abstract void init(Place place);
 
 	@Override
 	public void start(AcceptsOneWidget panel, com.google.gwt.event.shared.EventBus eventBus) {

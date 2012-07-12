@@ -7,17 +7,20 @@ import org.platformlayer.gwt.client.places.ApplicationPlace;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.place.shared.Place;
-import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
+import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 
 public class HeaderActivity extends ApplicationAbstractActivity {
 
-	private final HeaderView headerView;
+	@Inject
+	HeaderView headerView;
 
-	public HeaderActivity(PlaceController placeController, Place place, HeaderView headerView) {
-		super(placeController, (ApplicationPlace) place);
-		this.headerView = headerView;
+	ApplicationPlace place;
+
+	@Override
+	public void init(Place place) {
+		this.place = (ApplicationPlace) place;
 	}
 
 	@Override

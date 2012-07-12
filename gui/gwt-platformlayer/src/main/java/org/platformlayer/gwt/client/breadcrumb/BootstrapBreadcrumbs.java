@@ -1,28 +1,39 @@
 package org.platformlayer.gwt.client.breadcrumb;
 
-import com.github.gwtbootstrap.client.ui.NavLink;
-import com.github.gwtbootstrap.client.ui.base.ListItem;
-import com.github.gwtbootstrap.client.ui.incubator.Breadcrumbs;
-import com.google.gwt.user.client.ui.WidgetCollection;
+import java.util.List;
 
-public class BootstrapBreadcrumbs extends Breadcrumbs {
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.ui.ComplexPanel;
 
-	@Override
-	public void add(NavLink link) {
-		WidgetCollection children = getChildren();
-		int size = children.size();
-		if (size != 0) {
-			ListItem previous = (ListItem) children.get(size - 1);
-			previous.removeStyleName("active");
+public class BootstrapBreadcrumbs extends ComplexPanel {
 
-			SpanElement span = new SpanElement();
-			span.setStyleName("divider");
-			previous.add(span);
+	public BootstrapBreadcrumbs() {
+		setElement(DOM.createElement("ul"));
+
+		setStyleName("breadcrumb");
+	}
+
+	public void setBreadcrumbs(List<Element> items) {
+		Element element = getElement();
+
+		int size = items.size();
+		for (int i = 0; i < size; i++) {
+			Element li = items.get(i);
+
+			if (i != 0) {
+				Element span = DOM.createSpan();
+				span.addClassName("divider");
+				element.appendChild(span);
+			}
+
+			if ((i + 1) == size) {
+				// Last
+				li.addClassName("active");
+			}
+
+			element.appendChild(li);
 		}
-
-		ListItem li = new ListItem(link);
-		li.addStyleName("active");
-		super.add(li);
 	}
 
 }

@@ -16,17 +16,17 @@
 
 	<properties>
 		<!-- Convenience property to set the GWT version -->
-		<gwtVersion>2.4.0</gwtVersion>
-		<!-- GWT needs at least java 1.5 -->
-		<webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
+		<version.gwt>2.5.0-rc1</version.gwt>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
 	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>com.google.gwt</groupId>
 			<artifactId>gwt-user</artifactId>
-			<version>${gwtVersion}</version>
+			<version>${version.gwt}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -63,7 +63,14 @@
 			<scope>provided</scope>
 		</dependency>
 
-
+<!-- 
+		<dependency>
+			<groupId>com.google.gwt</groupId>
+			<artifactId>gwt-elemental</artifactId>
+			<version>${version.gwt}</version>
+		</dependency>
+ -->
+ 
 		<dependency>
 			<groupId>com.github.gwtbootstrap</groupId>
 			<artifactId>gwt-bootstrap</artifactId>
@@ -106,6 +113,18 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>gwt-maven-plugin</artifactId>
 				<version>2.4.0</version>
+				<dependencies>
+					<dependency>
+						<groupId>com.google.gwt</groupId>
+						<artifactId>gwt-user</artifactId>
+						<version>${version.gwt}</version>
+					</dependency>
+					<dependency>
+						<groupId>com.google.gwt</groupId>
+						<artifactId>gwt-dev</artifactId>
+						<version>${version.gwt}</version>
+					</dependency>
+				</dependencies>
 				<executions>
 					<execution>
 						<goals>
@@ -169,7 +188,7 @@
 					<dependency>
 						<groupId>com.google.web.bindery</groupId>
 						<artifactId>requestfactory-apt</artifactId>
-						<version>${gwtVersion}</version>
+						<version>${version.gwt}</version>
 					</dependency>
 				</dependencies>
 			</plugin>

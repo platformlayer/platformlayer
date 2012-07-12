@@ -5,7 +5,7 @@ import java.util.List;
 import org.platformlayer.gwt.client.home.HomePlace;
 import org.platformlayer.gwt.client.places.ApplicationPlace;
 
-import com.github.gwtbootstrap.client.ui.NavLink;
+import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.place.shared.PlaceController;
@@ -13,6 +13,8 @@ import com.google.gwt.place.shared.PlaceHistoryMapper;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -48,18 +50,24 @@ public class HeaderViewImpl extends Composite implements HeaderView {
 	public void setBreadcrumbs(List<ApplicationPlace> breadcrumbs) {
 		BootstrapBreadcrumbs control = new BootstrapBreadcrumbs();
 
+		List<Element> items = Lists.newArrayList();
+
 		for (int i = 0; i < breadcrumbs.size(); i++) {
 			ApplicationPlace breadcrumb = breadcrumbs.get(i);
 
+			String label = breadcrumb.getLabel();
 			String targetHistoryToken = placeHistoryMapper.getToken(breadcrumb);
-			NavLink placeNavWidget = new NavLink();
-			placeNavWidget.setTargetHistoryToken(targetHistoryToken);
 
-			String text = breadcrumb.getLabel();
-			placeNavWidget.setText(text);
+			Element li = DOM.createElement("li");
+			Element a = DOM.createAnchor();
+			a.setInnerText(label);
+			a.setAttribute("href", "#" + targetHistoryToken);
 
-			control.add(placeNavWidget);
+			li.appendChild(a);
+			items.add(li);
 		}
+
+		control.setBreadcrumbs(items);
 
 		breadcrumbPanel.clear();
 		breadcrumbPanel.add(control);

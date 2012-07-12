@@ -1,7 +1,10 @@
 package org.platformlayer.gwt.client;
 
+import org.platformlayer.gwt.client.breadcrumb.HeaderActivity;
 import org.platformlayer.gwt.client.breadcrumb.HeaderActivityMapper;
 import org.platformlayer.gwt.client.breadcrumb.HeaderView;
+import org.platformlayer.gwt.client.home.HomeActivity;
+import org.platformlayer.gwt.client.login.LoginActivity;
 
 import com.google.gwt.inject.client.GinModules;
 import com.google.gwt.inject.client.Ginjector;
@@ -19,4 +22,10 @@ public interface ApplicationGinjector extends Ginjector {
 	HeaderActivityMapper getBreadcrumbActivityMapper();
 
 	HeaderView getHeaderView();
+
+	LoginActivity getLoginActivity();
+
+	HomeActivity getHomeActivity();
+
+	HeaderActivity getHeaderActivity();
 }

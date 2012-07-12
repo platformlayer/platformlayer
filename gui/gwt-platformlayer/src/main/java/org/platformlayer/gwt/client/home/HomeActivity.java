@@ -4,21 +4,22 @@ import java.util.logging.Logger;
 
 import org.platformlayer.gwt.client.ApplicationAbstractActivity;
 
-import com.google.gwt.place.shared.PlaceController;
+import com.google.gwt.place.shared.Place;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
+import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 
 public class HomeActivity extends ApplicationAbstractActivity {
 	static final Logger log = Logger.getLogger(HomeActivity.class.getName());
 
-	private final HomeView view;
+	@Inject
+	HomeView view;
 
-	final HomePlace place;
+	HomePlace place;
 
-	public HomeActivity(HomePlace place, HomeView view, PlaceController placeController) {
-		super(placeController, place);
-		this.place = place;
-		this.view = view;
+	@Override
+	public void init(Place place) {
+		this.place = (HomePlace) place;
 	}
 
 	@Override
@@ -28,4 +29,8 @@ public class HomeActivity extends ApplicationAbstractActivity {
 		panel.setWidget(view.asWidget());
 	}
 
+	@Override
+	public void onStop() {
+		super.onStop();
+	}
 }

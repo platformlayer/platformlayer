@@ -1,28 +1,16 @@
 package org.platformlayer.gwt.client;
 
-import org.platformlayer.gwt.client.home.HomeActivity;
 import org.platformlayer.gwt.client.home.HomePlace;
-import org.platformlayer.gwt.client.home.HomeView;
-import org.platformlayer.gwt.client.login.LoginActivity;
 import org.platformlayer.gwt.client.login.LoginPlace;
-import org.platformlayer.gwt.client.login.LoginView;
 
 import com.google.gwt.activity.shared.Activity;
 import com.google.gwt.activity.shared.ActivityMapper;
 import com.google.gwt.place.shared.Place;
-import com.google.gwt.place.shared.PlaceController;
 import com.google.inject.Inject;
 
 public class ContentActivityMapper implements ActivityMapper {
-
 	@Inject
-	private PlaceController placeController;
-
-	@Inject
-	private HomeView homeView;
-
-	@Inject
-	private LoginView loginView;
+	ApplicationGinjector injector;
 
 	private Boolean init = false;
 
@@ -41,13 +29,20 @@ public class ContentActivityMapper implements ActivityMapper {
 			init = true;
 		}
 
-		if (place instanceof LoginPlace) {
-			return new LoginActivity((LoginPlace) place, loginView, placeController);
-		}
+		ApplicationAbstractActivity activity = null;
+
 		if (place instanceof HomePlace) {
-			return new HomeActivity((HomePlace) place, homeView, placeController);
+			activity = injector.getHomeActivity();
+		} else if (place instanceof LoginPlace) {
+			activity = injector.getLoginActivity();
 		}
-		return null;
+
+		if (activity == null) {
+			throw new IllegalStateException();
+		}
+
+		activity.init(place);
+		return activity;
 	}
 
 	/**

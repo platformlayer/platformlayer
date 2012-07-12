@@ -7,19 +7,24 @@
 				<form class="well form-vertical">
 					<h1>Sign In</h1>
 
+					<div ui:field="alert" class="alert alert-error">
+					</div>
+
 					<fieldset>
-						<input type="text" class="input-xlarge" placeholder="Username" />
-						<input type="password" class="input-xlarge" placeholder="Password" />
+						<input type="text" class="input-xlarge" placeholder="Username"
+							ui:field="username" />
+						<input type="password" class="input-xlarge" placeholder="Password"
+							ui:field="password" />
 
 						<div>
 							<a href="#">Forgot password?</a>
 						</div>
 
 						<label class="checkbox">
-							<input type="checkbox">Keep me signed in</input>
+							<input type="checkbox" ui:field="rememberMe">Keep me signed in</input>
 						</label>
 
-						<button type="submit" class="btn">Sign in</button>
+						<button ui:field="signIn" type="submit" class="btn">Sign in</button>
 					</fieldset>
 
 					<hr />
@@ -29,4 +34,5 @@
 			</div>
 		</div>
 	</g:HTMLPanel>
+
 </ui:UiBinder>

@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module rename-to='PlatformLayer'>
+<!-- 
+	<inherits name='elemental.Elemental' />
+ -->
+
 	<!-- Inherit the core Web Toolkit stuff. -->
 	<inherits name='com.google.gwt.user.User' />
 
@@ -14,15 +18,16 @@
 	<!-- <inherits name='com.google.gwt.user.theme.chrome.Chrome'/> -->
 	<!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/> -->
 
+	<!-- GWT Bootstrap -->
 	<inherits name='com.github.gwtbootstrap.Bootstrap' />
+	<set-property name="bootstrap.responsiveDesign" value="true" />
+
 	<inherits name="com.google.common.collect.Collect" />
 
 	<!-- Other module inherits -->
 	<inherits name="com.google.gwt.inject.Inject" />
-	<inherits name="com.google.web.bindery.requestfactory.RequestFactory" />
 	<inherits name="com.google.gwt.activity.Activity" />
 	<inherits name="com.google.gwt.place.Place" />
-	<inherits name="com.google.gwt.editor.Editor" />
 
 	<!-- Specify the app entry point class. -->
 	<entry-point class='org.platformlayer.gwt.client.PlatformLayer' />
@@ -45,7 +50,5 @@
 	<set-property name="gwt.logging.simpleRemoteHandler"
 		value="DISABLED" />
 
-	<!-- GWT Bootstrap -->
-	<set-property name="bootstrap.responsiveDesign" value="true" />
 
 </module>
