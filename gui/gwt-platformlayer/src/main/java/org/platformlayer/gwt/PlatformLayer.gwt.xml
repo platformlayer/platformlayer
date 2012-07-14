@@ -19,9 +19,11 @@
 	<!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/> -->
 
 	<!-- GWT Bootstrap -->
+	<!-- 
 	<inherits name='com.github.gwtbootstrap.Bootstrap' />
 	<set-property name="bootstrap.responsiveDesign" value="true" />
-
+ -->
+ 
 	<inherits name="com.google.common.collect.Collect" />
 
 	<!-- Other module inherits -->

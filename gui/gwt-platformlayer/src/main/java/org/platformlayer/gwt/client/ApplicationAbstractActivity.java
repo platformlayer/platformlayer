@@ -13,6 +13,9 @@ public abstract class ApplicationAbstractActivity extends AbstractActivity {
 	@Inject
 	protected PlaceController placeController;
 
+	@Inject
+	protected ApplicationState app;
+
 	public abstract void start(AcceptsOneWidget panel, EventBus eventBus);
 
 	public abstract void init(Place place);

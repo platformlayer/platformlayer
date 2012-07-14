@@ -2,6 +2,8 @@ package org.platformlayer.gwt.client;
 
 import org.platformlayer.gwt.client.api.login.JsonpLoginService;
 import org.platformlayer.gwt.client.api.login.LoginService;
+import org.platformlayer.gwt.client.api.platformlayer.CorsPlatformLayerService;
+import org.platformlayer.gwt.client.api.platformlayer.PlatformLayerService;
 import org.platformlayer.gwt.client.breadcrumb.HeaderActivityMapper;
 import org.platformlayer.gwt.client.breadcrumb.HeaderView;
 import org.platformlayer.gwt.client.breadcrumb.HeaderViewImpl;
@@ -32,6 +34,7 @@ public class ApplicationGinModule extends AbstractGinModule {
 		bind(LoginView.class).to(LoginViewImpl.class).in(Singleton.class);
 
 		bind(LoginService.class).to(JsonpLoginService.class).in(Singleton.class);
+		bind(PlatformLayerService.class).to(CorsPlatformLayerService.class).in(Singleton.class);
 
 		bind(PlaceHistoryMapper.class).to(ApplicationPlaceHistoryMapper.class).in(Singleton.class);
 	}

@@ -6,6 +6,7 @@ import org.platformlayer.gwt.client.ApplicationAbstractActivity;
 import org.platformlayer.gwt.client.api.login.Access;
 import org.platformlayer.gwt.client.api.login.AuthenticateResponse;
 import org.platformlayer.gwt.client.api.login.LoginService;
+import org.platformlayer.gwt.client.api.login.StaticAuthenticationToken;
 import org.platformlayer.gwt.client.api.login.Token;
 import org.platformlayer.gwt.client.home.HomePlace;
 
@@ -47,10 +48,11 @@ public class LoginActivity extends ApplicationAbstractActivity {
 		service.login(username, password, new AsyncCallback<AuthenticateResponse>() {
 			@Override
 			public void onSuccess(AuthenticateResponse result) {
+				Access access = null;
 				String tokenId = null;
 
 				if (result != null) {
-					Access access = result.getAccess();
+					access = result.getAccess();
 					if (access != null) {
 						Token token = access.getToken();
 						if (token != null) {
@@ -63,6 +65,7 @@ public class LoginActivity extends ApplicationAbstractActivity {
 					int statusCode = result != null ? result.getStatusCode() : null;
 					view.showError(statusCode, null);
 				} else {
+					app.setAuthentication(new StaticAuthenticationToken(access));
 					placeController.goTo(HomePlace.build());
 				}
 			}
