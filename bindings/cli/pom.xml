@@ -29,11 +29,13 @@
 
 		<!-- TODO: This is an old version of Jython, but the newer versions seem 
 			not to be available in any maven repos -->
+			<!-- 
 		<dependency>
 			<groupId>org.python</groupId>
 			<artifactId>jython</artifactId>
 			<version>2.5.0</version>
 		</dependency>
+		-->
 	</dependencies>
 
 	<build>
