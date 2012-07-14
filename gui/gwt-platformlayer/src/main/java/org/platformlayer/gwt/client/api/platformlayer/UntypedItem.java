@@ -18,8 +18,9 @@ public class UntypedItem extends JavaScriptObject {
 		return JsArrayToList.wrap(getTags0());
 	}
 
+	// TODO: JSON looks like: key : { value: abc } Remove the value!
 	public final native String getKey()
-	/*-{ return this.key; }-*/;
+	/*-{ return this.key ? this.key.value : null; }-*/;
 
 	// TODO: Actually a ManagedItemState
 	public final native String getState()

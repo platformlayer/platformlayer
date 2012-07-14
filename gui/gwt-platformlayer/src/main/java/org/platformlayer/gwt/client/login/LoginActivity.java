@@ -8,7 +8,7 @@ import org.platformlayer.gwt.client.api.login.AuthenticateResponse;
 import org.platformlayer.gwt.client.api.login.LoginService;
 import org.platformlayer.gwt.client.api.login.StaticAuthenticationToken;
 import org.platformlayer.gwt.client.api.login.Token;
-import org.platformlayer.gwt.client.home.HomePlace;
+import org.platformlayer.gwt.client.projectlist.ProjectListPlace;
 
 import com.google.gwt.place.shared.Place;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -65,8 +65,8 @@ public class LoginActivity extends ApplicationAbstractActivity {
 					int statusCode = result != null ? result.getStatusCode() : null;
 					view.showError(statusCode, null);
 				} else {
-					app.setAuthentication(new StaticAuthenticationToken(access));
-					placeController.goTo(HomePlace.build());
+					app.setAuthentication(new StaticAuthenticationToken(access), access.getProjects());
+					placeController.goTo(ProjectListPlace.build());
 				}
 			}
 

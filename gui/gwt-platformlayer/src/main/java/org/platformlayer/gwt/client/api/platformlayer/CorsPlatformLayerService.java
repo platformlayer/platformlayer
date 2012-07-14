@@ -21,7 +21,9 @@ public class CorsPlatformLayerService implements PlatformLayerService {
 	static final Logger log = Logger.getLogger(CorsPlatformLayerService.class.getName());
 
 	@Override
-	public void listRoots(Authentication auth, final AsyncCallback<UntypedItemCollection> callback) {
+	public void listRoots(final OpsProject project, final AsyncCallback<UntypedItemCollection> callback) {
+		Authentication auth = project.getAuthentication();
+
 		auth.getAccess(new AsyncCallback<Access>() {
 
 			@Override
@@ -46,15 +48,14 @@ public class CorsPlatformLayerService implements PlatformLayerService {
 				if (Strings.isNullOrEmpty(tokenId)) {
 					callback.onFailure(null);
 				} else {
-					listRoots(tokenId, callback);
+					listRoots(project, tokenId, callback);
 				}
 			}
 		});
 	}
 
-	private void listRoots(String tokenId, final AsyncCallback<UntypedItemCollection> callback) {
-		String baseUrl = "https://ops.platformlayer.net:8082/v0/fathomdb.com/";
-
+	private void listRoots(OpsProject project, String tokenId, final AsyncCallback<UntypedItemCollection> callback) {
+		String baseUrl = project.getProjectBaseUrl();
 		String url = baseUrl + "roots";
 
 		log.log(Level.INFO, "Making CORS request: GET " + url);
@@ -86,17 +87,23 @@ public class CorsPlatformLayerService implements PlatformLayerService {
 					}
 
 					String json = response.getText();
+					log.log(Level.FINE, "Got response: " + json);
+
 					if (json == null) {
 						callback.onSuccess(null);
 						return;
 					}
 
+					UntypedItemCollection items;
 					try {
-						UntypedItemCollection items = JsonUtils.safeEval(json);
-						callback.onSuccess(items);
+						items = JsonUtils.safeEval(json);
 					} catch (Exception e) {
 						callback.onFailure(e);
+						return;
 					}
+
+					// TODO: Catch exceptions??
+					callback.onSuccess(items);
 				}
 
 				@Override

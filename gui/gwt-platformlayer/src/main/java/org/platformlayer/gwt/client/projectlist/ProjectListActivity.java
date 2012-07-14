@@ -1,4 +1,4 @@
-package org.platformlayer.gwt.client.home;
+package org.platformlayer.gwt.client.projectlist;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,25 +16,25 @@ import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 
-public class HomeActivity extends ApplicationAbstractActivity {
-	static final Logger log = Logger.getLogger(HomeActivity.class.getName());
+public class ProjectListActivity extends ApplicationAbstractActivity {
+	static final Logger log = Logger.getLogger(ProjectListActivity.class.getName());
 
 	@Inject
-	HomeView view;
+	ProjectListView view;
 
-	HomePlace place;
+	ProjectListPlace place;
 
 	@Inject
 	PlatformLayerService platformLayer;
 
 	@Override
 	public void init(Place place) {
-		this.place = (HomePlace) place;
+		this.place = (ProjectListPlace) place;
 	}
 
 	@Override
 	public void start(AcceptsOneWidget panel, final EventBus eventBus) {
-		OpsProject project = app.findProject("platformlayer");
+		OpsProject project = app.findProject("production");
 		if (project == null) {
 			// TODO: Async redirect??
 			placeController.goTo(LoginPlace.build());
