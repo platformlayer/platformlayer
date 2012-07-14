@@ -10,10 +10,10 @@ import javax.inject.Singleton;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ids.ProjectId;
+import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.ops.OperationType;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsSystem;
-import org.platformlayer.ops.auth.OpsAuthentication;
 import org.platformlayer.xaas.repository.JobRepository;
 
 import com.google.common.base.Objects;
@@ -38,7 +38,7 @@ public class JobRegistry {
 	@Inject
 	OpsContextBuilder opsContextBuilder;
 
-	public PlatformLayerKey enqueueOperation(OperationType operationType, OpsAuthentication auth,
+	public PlatformLayerKey enqueueOperation(OperationType operationType, ProjectAuthorization auth,
 			PlatformLayerKey targetItem) {
 		JobKey key = new JobKey(targetItem, operationType);
 

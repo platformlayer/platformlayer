@@ -22,7 +22,7 @@ public class ListServices extends PlatformLayerCommandRunnerBase {
 	public void formatRaw(Object o, PrintWriter writer) {
 		Iterable<ServiceInfo> services = (Iterable<ServiceInfo>) o;
 		for (ServiceInfo service : services) {
-			for (String publicType : service.publicTypes) {
+			for (String publicType : service.itemTypes) {
 				writer.println(publicType);
 			}
 		}

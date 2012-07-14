@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.crypto.SecretKey;
 
-import org.openstack.keystone.services.ServiceAccount;
 import org.platformlayer.RepositoryException;
 
 public interface UserDatabase extends UserRepository {
@@ -16,7 +15,7 @@ public interface UserDatabase extends UserRepository {
 
 	OpsUser findUserById(int userId) throws RepositoryException;
 
-	List<OpsProject> listProjectsByUserId(int userId) throws RepositoryException;
+	List<ProjectEntity> listProjectsByUserId(int userId) throws RepositoryException;
 
 	void addUserToProject(String username, String projectKey, SecretKey projectSecret) throws RepositoryException;
 
@@ -25,9 +24,9 @@ public interface UserDatabase extends UserRepository {
 
 	List<String> listAllUserNames(String prefix) throws RepositoryException;
 
-	OpsProject findProjectByKey(String key) throws RepositoryException;
+	ProjectEntity findProjectByKey(String key) throws RepositoryException;
 
-	OpsProject createProject(String key, OpsUser owner) throws RepositoryException;
+	ProjectEntity createProject(String key, OpsUser owner) throws RepositoryException;
 
 	List<String> listAllProjectNames(String prefix) throws RepositoryException;
 

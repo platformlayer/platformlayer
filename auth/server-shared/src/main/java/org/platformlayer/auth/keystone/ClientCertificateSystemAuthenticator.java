@@ -7,12 +7,12 @@ import java.security.cert.X509Certificate;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.openstack.keystone.services.AuthenticatorException;
-import org.openstack.keystone.services.ServiceAccount;
-import org.openstack.keystone.services.SystemAuthenticator;
 import org.openstack.utils.Hex;
 import org.platformlayer.RepositoryException;
+import org.platformlayer.auth.AuthenticatorException;
+import org.platformlayer.auth.ServiceAccount;
 import org.platformlayer.auth.UserDatabase;
+import org.platformlayer.auth.services.SystemAuthenticator;
 
 public class ClientCertificateSystemAuthenticator implements SystemAuthenticator {
 	private static final Logger log = Logger.getLogger(ClientCertificateSystemAuthenticator.class);

@@ -2,15 +2,15 @@ package org.platformlayer.auth.crypto;
 
 import javax.crypto.SecretKey;
 
-import org.platformlayer.auth.OpsProject;
+import org.platformlayer.auth.ProjectInfo;
 import org.platformlayer.core.model.SecretInfo;
-import org.platformlayer.ops.auth.OpsAuthentication;
+import org.platformlayer.model.ProjectAuthorization;
 
 public abstract class SecretProvider {
 
 	public abstract SecretKey getItemSecret(SecretInfo secret);
 
-	public static SecretProvider withProject(final OpsProject project) {
+	public static SecretProvider from(final ProjectInfo project) {
 		if (project == null) {
 			throw new IllegalArgumentException();
 		}
@@ -26,9 +26,25 @@ public abstract class SecretProvider {
 		};
 	}
 
-	public static SecretProvider withAuth(OpsAuthentication auth) {
-		return withProject(auth.getProject());
+	public static SecretProvider from(final ProjectAuthorization project) {
+		if (project == null) {
+			throw new IllegalArgumentException();
+		}
+
+		return new SecretProvider() {
+			@Override
+			public SecretKey getItemSecret(SecretInfo secret) {
+				SecretStore secretStore = new SecretStore(secret.getEncoded());
+
+				SecretKey secretKey = secretStore.getSecretFromProject(project);
+				return secretKey;
+			}
+		};
 	}
+
+	// public static SecretProvider withAuth(OpsAuthentication auth) {
+	// return withProject(auth.getProject());
+	// }
 
 	public static SecretProvider forKey(final SecretKey itemSecret) {
 		return new SecretProvider() {

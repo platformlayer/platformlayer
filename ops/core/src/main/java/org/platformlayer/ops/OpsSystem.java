@@ -10,14 +10,14 @@ import javax.inject.Singleton;
 
 import org.openstack.crypto.CertificateAndKey;
 import org.platformlayer.TimeSpan;
-import org.platformlayer.auth.UserRepository;
+import org.platformlayer.auth.AuthenticationService;
+import org.platformlayer.auth.AuthenticationTokenValidator;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ServiceInfo;
 import org.platformlayer.crypto.CryptoUtils;
 import org.platformlayer.ids.ItemType;
 import org.platformlayer.ids.ModelKey;
 import org.platformlayer.ids.ServiceType;
-import org.platformlayer.ops.auth.OpsAuthentication;
 import org.platformlayer.ops.backups.BackupContextFactory;
 import org.platformlayer.ops.crypto.EncryptionStore;
 import org.platformlayer.ops.multitenant.SimpleMultitenantConfiguration;
@@ -58,14 +58,17 @@ public class OpsSystem {
 	@Inject
 	ManagedItemRepository managedItemRepository;
 
-	@Inject
-	Provider<OpsAuthentication> authenticationProvider;
+	// @Inject
+	// Provider<OpsAuthentication> authenticationProvider;
 
 	@Inject
 	Provider<BackupContextFactory> backupContextFactory;
 
 	@Inject
-	UserRepository userRepository;
+	AuthenticationService authenticationService;
+
+	@Inject
+	AuthenticationTokenValidator authenticationTokenValidator;
 
 	@Inject
 	EncryptionStore encryptionStore;
@@ -115,11 +118,6 @@ public class OpsSystem {
 
 	public ServiceProvider getServiceProvider(ServiceType serviceType) {
 		return serviceDictionary.getServiceProvider(serviceType);
-	}
-
-	public boolean isSystemObject(ModelKey modelKey) {
-		ServiceProvider serviceProvider = getServiceProvider(modelKey.getServiceType());
-		return serviceProvider.isSystemObject(modelKey.getItemType());
 	}
 
 	// public ModelKey buildModelKey(ItemBase item) {
@@ -212,8 +210,8 @@ public class OpsSystem {
 	public ServiceType getServiceType(ItemType findItemType) throws OpsException {
 		List<String> serviceTypes = Lists.newArrayList();
 
-		for (ServiceInfo service : serviceDictionary.getAllServices(false)) {
-			for (String itemType : service.publicTypes) {
+		for (ServiceInfo service : serviceDictionary.getAllServices()) {
+			for (String itemType : service.itemTypes) {
 				if (itemType.equals(findItemType.getKey())) {
 					serviceTypes.add(service.getServiceType());
 				}
@@ -263,7 +261,7 @@ public class OpsSystem {
 				multitenantConfiguration = Optional.absent();
 			} else {
 				MultitenantConfiguration config = SimpleMultitenantConfiguration.build(configuration, encryptionStore,
-						userRepository);
+						authenticationService, authenticationTokenValidator);
 
 				multitenantConfiguration = Optional.of(config);
 			}
@@ -284,5 +282,9 @@ public class OpsSystem {
 			this.trustKeys = Optional.of(trustKeys);
 		}
 		return trustKeys.orNull();
+	}
+
+	public AuthenticationTokenValidator getTokenValidator() {
+		return authenticationTokenValidator;
 	}
 }

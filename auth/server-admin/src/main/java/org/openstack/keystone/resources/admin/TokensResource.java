@@ -6,23 +6,24 @@ import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 
 import org.apache.log4j.Logger;
-import org.openstack.keystone.model.Token;
-import org.openstack.keystone.model.ValidateAccess;
-import org.openstack.keystone.model.ValidateTokenResponse;
-import org.openstack.keystone.resources.KeystoneResourceBase;
-import org.openstack.keystone.resources.Mapping;
-import org.openstack.keystone.services.AuthenticatorException;
-import org.openstack.keystone.services.ServiceAccount;
-import org.openstack.keystone.services.SystemAuthenticator;
-import org.openstack.keystone.services.TokenInfo;
-import org.openstack.keystone.services.TokenService;
+import org.platformlayer.auth.AuthenticatorException;
 import org.platformlayer.auth.ProjectEntity;
+import org.platformlayer.auth.ServiceAccount;
 import org.platformlayer.auth.UserEntity;
+import org.platformlayer.auth.model.Token;
+import org.platformlayer.auth.model.ValidateAccess;
+import org.platformlayer.auth.model.ValidateTokenResponse;
+import org.platformlayer.auth.resources.PlatformlayerAuthResourceBase;
+import org.platformlayer.auth.resources.Mapping;
+import org.platformlayer.auth.services.SystemAuthenticator;
+import org.platformlayer.auth.services.TokenInfo;
+import org.platformlayer.auth.services.TokenService;
 
 @Path("v2.0/tokens")
-public class TokensResource extends KeystoneResourceBase {
+public class TokensResource extends PlatformlayerAuthResourceBase {
 	static final Logger log = Logger.getLogger(TokensResource.class);
 
 	@Inject
@@ -52,7 +53,8 @@ public class TokensResource extends KeystoneResourceBase {
 	@GET
 	// @HEAD support is automatic from the @GET
 	@Path("{tokenId}")
-	public ValidateTokenResponse validateToken(@PathParam("tokenId") String checkToken) {
+	public ValidateTokenResponse validateToken(@PathParam("tokenId") String checkToken,
+			@QueryParam("project") String project) {
 		try {
 			requireSystemAccess();
 		} catch (AuthenticatorException e) {
@@ -87,11 +89,13 @@ public class TokensResource extends KeystoneResourceBase {
 		response.access.token.expires = checkTokenInfo.expiration;
 		response.access.token.id = checkToken;
 
-		if (checkTokenInfo.project != null) {
+		String checkProject = project;
+
+		if (checkProject != null) {
 			ProjectEntity projectEntity = null;
 
 			try {
-				projectEntity = userAuthenticator.findProject(checkTokenInfo.project, userInfo);
+				projectEntity = userAuthenticator.findProject(checkProject, userInfo);
 			} catch (AuthenticatorException e) {
 				log.warn("Error while fetching project", e);
 				throwInternalError();

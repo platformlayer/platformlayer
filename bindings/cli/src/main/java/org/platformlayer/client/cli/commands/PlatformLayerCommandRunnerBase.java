@@ -36,7 +36,7 @@ public abstract class PlatformLayerCommandRunnerBase extends CommandRunnerBase {
 			throws PlatformLayerClientException {
 		Iterable<ServiceInfo> serviceInfo = client.listServices(true);
 		for (ServiceInfo service : serviceInfo) {
-			for (String type : service.publicTypes) {
+			for (String type : service.itemTypes) {
 				if (type.equals(itemType)) {
 					return service.serviceType;
 				}

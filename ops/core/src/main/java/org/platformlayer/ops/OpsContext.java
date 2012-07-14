@@ -14,7 +14,7 @@ import org.platformlayer.ApplicationMode;
 import org.platformlayer.CheckedCallable;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.Scope;
-import org.platformlayer.auth.OpsProject;
+import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.ops.log.JobLogger;
 import org.platformlayer.ops.model.metrics.MetricConfig;
 import org.platformlayer.ops.networks.NetworkPoint;
@@ -43,10 +43,10 @@ public class OpsContext implements Closeable {
 
 	final PlatformLayerClient platformLayerClient;
 
-	final List<OpsProject> projects;
+	final List<ProjectAuthorization> projects;
 
 	public OpsContext(OpsSystem opsSystem, JobRecord jobRecord, ServiceConfiguration serviceConfiguration,
-			PlatformLayerClient platformLayerClient, List<OpsProject> projects) {
+			PlatformLayerClient platformLayerClient, List<ProjectAuthorization> projects) {
 		super();
 		this.opsSystem = opsSystem;
 		this.jobRecord = jobRecord;
@@ -224,7 +224,7 @@ public class OpsContext implements Closeable {
 		return platformLayerClient;
 	}
 
-	public List<OpsProject> getEncryptingProjects() {
+	public List<ProjectAuthorization> getEncryptingProjects() {
 		return projects;
 	}
 

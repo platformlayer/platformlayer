@@ -20,12 +20,12 @@ import org.platformlayer.exceptions.ExceptionHelpers;
 import org.platformlayer.exceptions.HasRetryInfo;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.jobs.model.JobState;
+import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.ops.BindingScope;
 import org.platformlayer.ops.OperationType;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsSystem;
-import org.platformlayer.ops.auth.OpsAuthentication;
 import org.platformlayer.ops.backups.BackupContext;
 import org.platformlayer.ops.backups.BackupContextFactory;
 import org.platformlayer.xaas.repository.ManagedItemRepository;
@@ -52,7 +52,7 @@ public class OperationWorker implements Callable<Object> {
 		try {
 			OpsContextBuilder opsContextBuilder = opsSystem.getInjector().getInstance(OpsContextBuilder.class);
 
-			final OpsAuthentication auth = jobRecord.getAuth();
+			final ProjectAuthorization project = jobRecord.getProjectAuthorization();
 
 			final OpsContext opsContext = opsContextBuilder.buildOpsContext(jobRecord);
 
@@ -70,8 +70,7 @@ public class OperationWorker implements Callable<Object> {
 						ManagedItemRepository repository = opsSystem.getManagedItemRepository();
 						try {
 							boolean fetchTags = true;
-							item = repository.getManagedItem(targetItemKey, fetchTags,
-									SecretProvider.withProject(auth.getProject()));
+							item = repository.getManagedItem(targetItemKey, fetchTags, SecretProvider.from(project));
 						} catch (RepositoryException e) {
 							throw new OpsException("Error reading item from repository", e);
 						}
@@ -190,7 +189,7 @@ public class OperationWorker implements Callable<Object> {
 	@Override
 	public Object call() throws OpsException {
 		Scope scope = Scope.empty();
-		scope.put(OpsAuthentication.class, jobRecord.getAuth());
+		scope.put(ProjectAuthorization.class, jobRecord.getProjectAuthorization());
 		try {
 			scope.push();
 			return doOperation();

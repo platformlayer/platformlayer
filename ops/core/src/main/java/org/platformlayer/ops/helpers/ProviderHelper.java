@@ -25,7 +25,7 @@ public class ProviderHelper {
 	public List<ModelClass<?>> findModelsProviding(Class<?> serviceClass) throws OpsException {
 		List<ModelClass<?>> models = Lists.newArrayList();
 
-		for (ServiceInfo service : serviceProviderDictionary.getAllServices(true)) {
+		for (ServiceInfo service : serviceProviderDictionary.getAllServices()) {
 			ServiceType serviceType = new ServiceType(service.getServiceType());
 			ServiceProvider serviceProvider = serviceProviderDictionary.getServiceProvider(serviceType);
 			for (ModelClass<?> model : serviceProvider.getModels().all()) {

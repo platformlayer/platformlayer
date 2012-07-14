@@ -127,10 +127,10 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 
 	@Override
 	@JdbcTransaction
-	public List<OpsProject> listProjectsByUserId(int userId) throws RepositoryException {
+	public List<ProjectEntity> listProjectsByUserId(int userId) throws RepositoryException {
 		DbHelper db = new DbHelper();
 		try {
-			List<OpsProject> projects = Lists.newArrayList();
+			List<ProjectEntity> projects = Lists.newArrayList();
 			projects.addAll(db.findProjectsByUserId(userId));
 			return projects;
 		} catch (SQLException e) {
@@ -449,7 +449,7 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 
 	@Override
 	@JdbcTransaction
-	public OpsProject createProject(String key, OpsUser ownerObject) throws RepositoryException {
+	public ProjectEntity createProject(String key, OpsUser ownerObject) throws RepositoryException {
 		UserEntity owner = (UserEntity) ownerObject;
 		if (owner.id == 0 || owner.isLocked()) {
 			throw new IllegalArgumentException();
@@ -577,8 +577,7 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 	}
 
 	@Override
-	public UserEntity authenticateWithPassword(String project, String username, String password)
-			throws RepositoryException {
+	public UserEntity authenticateWithPassword(String username, String password) throws RepositoryException {
 		UserEntity user = findUser(username);
 
 		if (user == null) {
@@ -631,8 +630,7 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 	@Override
 	public CertificateAuthenticationResponse authenticateWithCertificate(CertificateAuthenticationRequest request)
 			throws RepositoryException {
-		String projectKey = request.projectKey;
-		if (projectKey == null || request.username == null) {
+		if (request.username == null) {
 			throw new IllegalArgumentException();
 		}
 
@@ -653,13 +651,7 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 		if (request.challengeResponse != null) {
 			user.unlock(AesUtils.deserializeKey(request.challengeResponse));
 
-			ProjectEntity project = findProject(user, projectKey);
-			if (project == null) {
-				return null;
-			}
-
 			response.user = user;
-			response.project = project;
 
 			return response;
 		}

@@ -24,8 +24,7 @@ public class ServiceProviderHelpers {
 	public <T extends ItemBase> List<ModelClass<? extends T>> getModelSubclasses(Class<T> parent) {
 		List<ModelClass<? extends T>> modelClasses = Lists.newArrayList();
 
-		boolean management = false;
-		for (ServiceInfo serviceInfo : serviceProviderDictionary.getAllServices(management)) {
+		for (ServiceInfo serviceInfo : serviceProviderDictionary.getAllServices()) {
 			ServiceType serviceType = new ServiceType(serviceInfo.serviceType);
 			ServiceProvider serviceProvider = serviceProviderDictionary.getServiceProvider(serviceType);
 

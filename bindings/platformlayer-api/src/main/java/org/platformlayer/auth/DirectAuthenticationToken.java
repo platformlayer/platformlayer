@@ -2,11 +2,9 @@ package org.platformlayer.auth;
 
 import javax.crypto.SecretKey;
 
-import org.platformlayer.HttpPlatformLayerClient;
 import org.platformlayer.crypto.CryptoUtils;
 import org.platformlayer.http.SimpleHttpRequest;
-
-import com.google.common.base.Objects;
+import org.platformlayer.model.AuthenticationToken;
 
 public class DirectAuthenticationToken implements AuthenticationToken {
 	public static final String PREFIX = "project:";
@@ -21,13 +19,13 @@ public class DirectAuthenticationToken implements AuthenticationToken {
 		this.secret = secret;
 	}
 
-	@Override
-	public String getServiceUrl(String serviceKey) {
-		if (Objects.equal(HttpPlatformLayerClient.SERVICE_PLATFORMLAYER, serviceKey)) {
-			return serviceUrl;
-		}
-		return null;
-	}
+	// @Override
+	// public String getServiceUrl(String serviceKey) {
+	// if (Objects.equal(HttpPlatformLayerClient.SERVICE_PLATFORMLAYER, serviceKey)) {
+	// return serviceUrl;
+	// }
+	// return null;
+	// }
 
 	public static String encodeToken(int projectId, String projectName) {
 		String token = PREFIX + projectId + ":" + projectName;

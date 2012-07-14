@@ -22,8 +22,7 @@ public class ServiceInfoFormatter extends SimpleFormatter<ServiceInfo> {
 		values.put("serviceType", o.getServiceType());
 		values.put("namespace", o.getNamespace());
 		values.put("description", o.getDescription());
-		values.put("publicTypes", o.getPublicTypes());
-		values.put("adminTypes", o.getAdminTypes());
+		values.put("allTypes", o.getItemTypes());
 
 		sink.outputRow(values);
 	}

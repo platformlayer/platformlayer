@@ -1,6 +1,6 @@
 package org.platformlayer.auth.keystone;
 
-import org.openstack.keystone.services.SystemAuthenticator;
+import org.platformlayer.auth.services.SystemAuthenticator;
 
 import com.google.inject.AbstractModule;
 

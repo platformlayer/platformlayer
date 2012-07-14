@@ -15,12 +15,13 @@ import javax.sql.DataSource;
 
 import org.openstack.crypto.CertificateAndKey;
 import org.openstack.crypto.KeyStoreUtils;
-import org.openstack.keystone.auth.client.KeystoneAuthenticationClient;
-import org.openstack.keystone.service.KeystoneTokenValidator;
 import org.openstack.utils.PropertyUtils;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.WellKnownPorts;
-import org.platformlayer.auth.UserRepository;
+import org.platformlayer.auth.AuthenticationService;
+import org.platformlayer.auth.client.PlatformlayerAuthenticationService;
+import org.platformlayer.auth.client.PlatformLayerTokenValidator;
+import org.platformlayer.auth.client.PlatformlayerAuthenticationClient;
 import org.platformlayer.crypto.AcceptAllHostnameVerifier;
 import org.platformlayer.crypto.PublicKeyTrustManager;
 import org.platformlayer.crypto.SimpleClientCertificateKeyManager;
@@ -49,7 +50,6 @@ import org.platformlayer.ops.tasks.SimpleOperationQueue;
 import org.platformlayer.ssh.mina.MinaSshContext;
 import org.platformlayer.xaas.discovery.AnnotationDiscovery;
 import org.platformlayer.xaas.discovery.JerseyAnnotationDiscovery;
-import org.platformlayer.xaas.keystone.KeystoneUserRepository;
 import org.platformlayer.xaas.ops.InProcessChangeQueue;
 import org.platformlayer.xaas.repository.JobRepository;
 import org.platformlayer.xaas.repository.ManagedItemRepository;
@@ -110,7 +110,7 @@ public class GuiceXaasConfig extends AbstractModule {
 			if (true) { // isMultitenant) {
 				bindUserAuth(encryptionStore, configuration);
 
-				bind(UserRepository.class).to(KeystoneUserRepository.class).asEagerSingleton();
+				bind(AuthenticationService.class).to(PlatformlayerAuthenticationService.class).asEagerSingleton();
 			}
 
 			bind(ExecutorService.class).toInstance(Executors.newCachedThreadPool());
@@ -161,10 +161,10 @@ public class GuiceXaasConfig extends AbstractModule {
 			hostnameVerifier = new AcceptAllHostnameVerifier();
 		}
 
-		KeystoneTokenValidator keystoneTokenValidator = new KeystoneTokenValidator(keystoneServiceUrl, keyManager,
+		PlatformLayerTokenValidator keystoneTokenValidator = new PlatformLayerTokenValidator(keystoneServiceUrl, keyManager,
 				trustManager, hostnameVerifier);
 
-		bind(KeystoneTokenValidator.class).toInstance(keystoneTokenValidator);
+		bind(PlatformLayerTokenValidator.class).toInstance(keystoneTokenValidator);
 	}
 
 	private void bindUserAuth(EncryptionStore encryptionStore, OpsConfiguration configuration) throws OpsException {
@@ -185,10 +185,10 @@ public class GuiceXaasConfig extends AbstractModule {
 			hostnameVerifier = new AcceptAllHostnameVerifier();
 		}
 
-		KeystoneAuthenticationClient authClient = new KeystoneAuthenticationClient(keystoneUserUrl, keyManager,
+		PlatformlayerAuthenticationClient authClient = new PlatformlayerAuthenticationClient(keystoneUserUrl, keyManager,
 				trustManager, hostnameVerifier);
 
-		bind(KeystoneAuthenticationClient.class).toInstance(authClient);
+		bind(PlatformlayerAuthenticationClient.class).toInstance(authClient);
 	}
 
 	private EncryptionStore bindEncryptionStore(OpsConfiguration configuration) {

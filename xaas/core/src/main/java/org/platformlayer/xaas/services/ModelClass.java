@@ -11,39 +11,27 @@ import org.platformlayer.xml.JsonHelper;
 
 public class ModelClass<T extends ItemBase> {
 	final Class<T> javaClass;
-	final boolean systemObject;
 	final ItemType itemType;
 	final ServiceProvider serviceProvider;
 
-	public ModelClass(ServiceProvider serviceProvider, Class<T> javaClass, ItemType itemType, boolean systemObject) {
-		super();
+	public ModelClass(ServiceProvider serviceProvider, Class<T> javaClass, ItemType itemType) {
 		this.serviceProvider = serviceProvider;
 		this.javaClass = javaClass;
 		this.itemType = itemType;
-		this.systemObject = systemObject;
 	}
 
 	public Class<T> getJavaClass() {
 		return javaClass;
 	}
 
-	public boolean isSystemObject() {
-		return systemObject;
-	}
-
-	public static <T extends ItemBase> ModelClass<T> privateModel(ServiceProvider serviceProvider, Class<T> clazz) {
-		return build(serviceProvider, clazz, true);
-	}
-
 	public static <T extends ItemBase> ModelClass<T> publicModel(ServiceProvider serviceProvider, Class<T> clazz) {
-		return build(serviceProvider, clazz, false);
+		return build(serviceProvider, clazz);
 	}
 
-	public static <T extends ItemBase> ModelClass<T> build(ServiceProvider serviceProvider, Class<T> clazz,
-			boolean management) {
+	public static <T extends ItemBase> ModelClass<T> build(ServiceProvider serviceProvider, Class<T> clazz) {
 		JaxbHelper jaxbHelper = JaxbHelper.get(clazz);
 		ItemType itemType = new ItemType(JaxbHelper.getXmlElementName(clazz));
-		return new ModelClass<T>(serviceProvider, clazz, itemType, management);
+		return new ModelClass<T>(serviceProvider, clazz, itemType);
 	}
 
 	public JsonHelper<?> getJsonHelper() {

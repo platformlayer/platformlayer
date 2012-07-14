@@ -4,14 +4,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.List;
 import java.util.Properties;
 
-import org.openstack.keystone.auth.client.KeystoneAuthenticator;
 import org.openstack.utils.PropertyUtils;
 import org.platformlayer.auth.Authenticator;
+import org.platformlayer.auth.client.PlatformlayerAuthenticator;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ServiceInfo;
@@ -78,7 +76,7 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 		String secret = config.secret;
 		List<String> authTrustKeys = config.authTrustKeys;
 
-		Authenticator authenticator = new KeystoneAuthenticator(project, username, secret, server, authTrustKeys);
+		Authenticator authenticator = new PlatformlayerAuthenticator(username, secret, server, authTrustKeys);
 		ProjectId projectId = new ProjectId(project);
 
 		return build(config.platformlayerEndpoint, authenticator, projectId, config.platformlayerTrustKeys);
@@ -161,7 +159,7 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 		String relativePath = buildRelativePath(key);
 
 		if (uniqueTag != null) {
-			relativePath += "?unique=" + encodeArgument(uniqueTag.getKey());
+			relativePath += "?unique=" + urlEncode(uniqueTag.getKey());
 		}
 
 		String xml = httpClient.doRequest("PUT", relativePath, String.class, Format.XML, data, dataFormat);
@@ -172,14 +170,6 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 		// item.setPlatformLayerKey(platformLayerKey);
 
 		return item;
-	}
-
-	private String encodeArgument(String s) {
-		try {
-			return URLEncoder.encode(s, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new IllegalStateException("UTF-8 not supported", e);
-		}
 	}
 
 	@Override

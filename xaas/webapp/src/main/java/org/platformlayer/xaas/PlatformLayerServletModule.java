@@ -2,12 +2,11 @@ package org.platformlayer.xaas;
 
 import java.util.Map;
 
-import org.openstack.keystone.service.AuthenticationTokenValidator;
-import org.openstack.keystone.service.KeystoneTokenValidator;
-import org.openstack.keystone.service.OpenstackAuthenticationFilterBase;
 import org.platformlayer.Scope;
 import org.platformlayer.ScopeFilter;
-import org.platformlayer.ops.auth.OpsAuthentication;
+import org.platformlayer.auth.AuthenticationTokenValidator;
+import org.platformlayer.auth.client.PlatformLayerTokenValidator;
+import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.xaas.web.CORSFilter;
 import org.platformlayer.xaas.web.resources.RootResource;
 
@@ -33,16 +32,16 @@ public class PlatformLayerServletModule extends JerseyServletModule {
 
 		bind(ScopeFilter.class).asEagerSingleton();
 		filter("/*").through(ScopeFilter.class);
-		bind(OpsAuthentication.class).toProvider(ScopeOpsAuthenticatorProvider.class);
+		bind(ProjectAuthorization.class).toProvider(ScopeProjectAuthorizationProvider.class);
 		bind(Scope.class).toProvider(ScopeProvider.class);
 
 		// if (ApplicationMode.isDevelopment()) {
 		// bind(AuthenticationTokenValidator.class).to(DevelopmentTokenValidator.class);
 		// } else {
-		bind(AuthenticationTokenValidator.class).to(KeystoneTokenValidator.class);
+		bind(AuthenticationTokenValidator.class).to(PlatformLayerTokenValidator.class);
 		// }
 
-		bind(OpenstackAuthenticationFilterBase.class).to(OpsAuthenticationFilter.class).asEagerSingleton();
+		bind(OpsAuthenticationFilter.class).asEagerSingleton();
 
 		// /* bind the REST resources */
 		// bind(ManagedItemCollectionResource.class);
@@ -57,7 +56,7 @@ public class PlatformLayerServletModule extends JerseyServletModule {
 		// bind(MessageBodyReader.class).to(JacksonJsonProvider.class);
 		// bind(MessageBodyWriter.class).to(JacksonJsonProvider.class);
 
-		filter("/v0/*").through(OpenstackAuthenticationFilterBase.class);
+		filter("/v0/*").through(OpsAuthenticationFilter.class);
 
 		Map<String, String> params = Maps.newHashMap();
 		params.put(PackagesResourceConfig.PROPERTY_PACKAGES,

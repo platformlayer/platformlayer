@@ -10,12 +10,12 @@ import org.platformlayer.ids.ServiceType;
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobLog;
 import org.platformlayer.jobs.model.JobState;
+import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.ops.OperationType;
-import org.platformlayer.ops.auth.OpsAuthentication;
 
 public class JobRecord {
 	final JobKey key;
-	final OpsAuthentication auth;
+	final ProjectAuthorization auth;
 
 	final String jobId;
 
@@ -27,12 +27,12 @@ public class JobRecord {
 	boolean isDone;
 	private final ProjectId jobProjectId;
 
-	public JobRecord(PlatformLayerKey targetItemKey, OperationType operationType, OpsAuthentication auth,
+	public JobRecord(PlatformLayerKey targetItemKey, OperationType operationType, ProjectAuthorization auth,
 			ProjectId jobProjectId) {
 		this(new JobKey(targetItemKey, operationType), targetItemKey.getServiceType(), auth, jobProjectId);
 	}
 
-	JobRecord(JobKey key, ServiceType serviceType, OpsAuthentication auth, ProjectId jobProjectId) {
+	JobRecord(JobKey key, ServiceType serviceType, ProjectAuthorization auth, ProjectId jobProjectId) {
 		this.key = key;
 		this.serviceType = serviceType;
 		this.auth = auth;
@@ -43,7 +43,7 @@ public class JobRecord {
 		this.log = new JobLog();
 	}
 
-	public JobRecord(ServiceType serviceType, OpsAuthentication auth, ProjectId jobProjectId) {
+	public JobRecord(ServiceType serviceType, ProjectAuthorization auth, ProjectId jobProjectId) {
 		this(null, serviceType, auth, jobProjectId);
 	}
 
@@ -63,7 +63,7 @@ public class JobRecord {
 		return log;
 	}
 
-	public OpsAuthentication getAuth() {
+	public ProjectAuthorization getProjectAuthorization() {
 		return auth;
 	}
 

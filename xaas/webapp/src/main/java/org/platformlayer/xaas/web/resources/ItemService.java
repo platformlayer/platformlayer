@@ -5,8 +5,8 @@ import java.util.List;
 import org.platformlayer.Filter;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
+import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.auth.OpsAuthentication;
 
 import com.google.inject.ImplementedBy;
 
@@ -18,17 +18,18 @@ public interface ItemService {
 	// RepositoryException, OpsException;
 
 	// TODO: Get Authentication by injection
-	<T extends ItemBase> T createItem(OpsAuthentication auth, T typedItem) throws OpsException;
+	<T extends ItemBase> T createItem(ProjectAuthorization auth, T typedItem) throws OpsException;
 
-	<T extends ItemBase> T putItem(OpsAuthentication auth, T typedItem, String uniqueTag) throws OpsException;
+	<T extends ItemBase> T putItem(ProjectAuthorization auth, T typedItem, String uniqueTag) throws OpsException;
 
-	<T extends ItemBase> T findItem(OpsAuthentication auth, Class<T> itemClass, String id) throws OpsException;
+	<T extends ItemBase> T findItem(ProjectAuthorization auth, Class<T> itemClass, String id) throws OpsException;
 
-	<T extends ItemBase> List<T> findAll(OpsAuthentication authentication, Class<T> itemClass) throws OpsException;
+	<T extends ItemBase> List<T> findAll(ProjectAuthorization authentication, Class<T> itemClass) throws OpsException;
 
-	<T extends ItemBase> PlatformLayerKey deleteItem(OpsAuthentication auth, PlatformLayerKey key) throws OpsException;
+	<T extends ItemBase> PlatformLayerKey deleteItem(ProjectAuthorization auth, PlatformLayerKey key)
+			throws OpsException;
 
-	List<ItemBase> findRoots(OpsAuthentication authentication) throws OpsException;
+	List<ItemBase> findRoots(ProjectAuthorization authentication) throws OpsException;
 
-	List<ItemBase> listAll(OpsAuthentication authentication, Filter filter) throws OpsException;
+	List<ItemBase> listAll(ProjectAuthorization authentication, Filter filter) throws OpsException;
 }

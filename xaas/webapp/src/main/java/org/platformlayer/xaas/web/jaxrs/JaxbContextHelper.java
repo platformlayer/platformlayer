@@ -35,8 +35,7 @@ public class JaxbContextHelper {
 			javaClasses.add(ItemBase.class);
 			javaClasses.add(ManagedItemCollection.class);
 
-			boolean management = false;
-			for (ServiceInfo serviceInfo : serviceProviderDictionary.getAllServices(management)) {
+			for (ServiceInfo serviceInfo : serviceProviderDictionary.getAllServices()) {
 				ServiceType serviceType = new ServiceType(serviceInfo.serviceType);
 				ServiceProvider serviceProvider = serviceProviderDictionary.getServiceProvider(serviceType);
 

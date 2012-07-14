@@ -19,7 +19,7 @@ import org.platformlayer.crypto.SecureComparison;
 
 @Entity
 @Table(name = "projects")
-public class ProjectEntity implements OpsProject {
+public class ProjectEntity implements ProjectInfo {
 	static final Logger log = Logger.getLogger(ProjectEntity.class);
 
 	@Id

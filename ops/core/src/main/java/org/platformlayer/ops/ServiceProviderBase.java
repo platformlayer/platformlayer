@@ -86,7 +86,7 @@ public abstract class ServiceProviderBase implements ServiceProvider {
 	}
 
 	@Override
-	public ServiceInfo getServiceInfo(boolean admin) {
+	public ServiceInfo getServiceInfo() {
 		ServiceInfo serviceInfo = new ServiceInfo();
 		serviceInfo.serviceType = getServiceType().getKey();
 		serviceInfo.description = description;
@@ -99,20 +99,10 @@ public abstract class ServiceProviderBase implements ServiceProvider {
 				serviceInfo.namespace = modelClass.getPrimaryNamespace();
 			}
 
-			if (modelClass.isSystemObject()) {
-				if (!admin) {
-					continue;
-				}
-				if (serviceInfo.adminTypes == null) {
-					serviceInfo.adminTypes = Lists.newArrayList();
-				}
-				serviceInfo.adminTypes.add(itemType.getKey());
-			} else {
-				if (serviceInfo.publicTypes == null) {
-					serviceInfo.publicTypes = Lists.newArrayList();
-				}
-				serviceInfo.publicTypes.add(itemType.getKey());
+			if (serviceInfo.itemTypes == null) {
+				serviceInfo.itemTypes = Lists.newArrayList();
 			}
+			serviceInfo.itemTypes.add(itemType.getKey());
 		}
 
 		return serviceInfo;
@@ -242,16 +232,6 @@ public abstract class ServiceProviderBase implements ServiceProvider {
 			return modelClass;
 		}
 		return null;
-	}
-
-	@Override
-	public boolean isSystemObject(ItemType itemType) {
-		ModelClass<?> modelClass = findModelClass(itemType);
-		if (modelClass == null) {
-			throw new IllegalArgumentException("Not found");
-		}
-
-		return modelClass.isSystemObject();
 	}
 
 	@Override

@@ -11,7 +11,7 @@ public interface ServiceProviderDictionary {
 
 	<T extends ItemBase> ModelClass<T> getModelClass(Class<T> itemClass);
 
-	List<ServiceInfo> getAllServices(boolean management);
+	List<ServiceInfo> getAllServices();
 
 	ServiceProvider getServiceProviderForNamespace(String namespaceURI);
 }

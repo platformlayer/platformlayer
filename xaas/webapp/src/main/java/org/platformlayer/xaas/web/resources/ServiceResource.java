@@ -74,7 +74,7 @@ public class ServiceResource extends XaasResourceBase {
 
 		OpsContextBuilder opsContextBuilder = opsContextBuilderFactory.get();
 		final OpsContext opsContext = opsContextBuilder.buildTemporaryOpsContext(serviceProvider.getServiceType(),
-				getAuthentication());
+				getProjectAuthorization());
 
 		PublicKey publicKey = OpsContext.runInContext(opsContext, new CheckedCallable<PublicKey, Exception>() {
 			@Override

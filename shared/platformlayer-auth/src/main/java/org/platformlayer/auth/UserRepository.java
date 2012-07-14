@@ -3,9 +3,9 @@ package org.platformlayer.auth;
 import org.platformlayer.RepositoryException;
 
 public interface UserRepository {
-	OpsUser authenticateWithPassword(String projectKey, String username, String password) throws RepositoryException;
+	OpsUser authenticateWithPassword(String username, String password) throws RepositoryException;
 
-	OpsProject findProject(OpsUser user, String projectKey) throws RepositoryException;
+	ProjectInfo findProject(OpsUser user, String projectKey) throws RepositoryException;
 
 	CertificateAuthenticationResponse authenticateWithCertificate(CertificateAuthenticationRequest request)
 			throws RepositoryException;
