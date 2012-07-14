@@ -19,11 +19,10 @@ import org.platformlayer.core.model.Tag;
 import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceType;
-import org.platformlayer.model.RoleId;
+import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsSystem;
-import org.platformlayer.ops.auth.OpsAuthentication;
 import org.platformlayer.ops.tasks.OpsContextBuilder;
 import org.platformlayer.xaas.repository.ManagedItemRepository;
 import org.platformlayer.xaas.services.ChangeQueue;
@@ -63,19 +62,19 @@ public class ItemServiceImpl implements ItemService {
 	// }
 
 	@Override
-	public <T extends ItemBase> List<T> findAll(OpsAuthentication authentication, Class<T> itemClass)
+	public <T extends ItemBase> List<T> findAll(ProjectAuthorization authentication, Class<T> itemClass)
 			throws OpsException {
 		ModelClass<T> modelClass = serviceProviderDirectory.getModelClass(itemClass);
 
-		if (modelClass.isSystemObject()) {
-			if (!isInRole(authentication, RoleId.ADMIN)) {
-				throw new SecurityException();
-			}
-		}
+		// if (modelClass.isSystemObject()) {
+		// if (!isInRole(authentication, RoleId.ADMIN)) {
+		// throw new SecurityException();
+		// }
+		// }
 
 		// Class<T> javaClass = modelClass.getJavaClass();
 
-		ProjectId project = authentication.getProjectId();
+		ProjectId project = getProjectId(authentication);
 
 		// ModelKey modelKey = new ModelKey(modelClass.getServiceType(), modelClass.getItemType(), project, null);
 
@@ -86,8 +85,7 @@ public class ItemServiceImpl implements ItemService {
 		boolean fetchTags = true;
 		List<T> items;
 		try {
-			items = repository.findAll(modelClass, project, fetchTags, SecretProvider.withAuth(authentication),
-					Filter.EMPTY);
+			items = repository.findAll(modelClass, project, fetchTags, getSecretProvider(authentication), Filter.EMPTY);
 		} catch (RepositoryException e) {
 			throw new OpsException("Error reading objects from database", e);
 		}
@@ -106,6 +104,10 @@ public class ItemServiceImpl implements ItemService {
 		// }
 		//
 		// return typedItems;
+	}
+
+	private SecretProvider getSecretProvider(ProjectAuthorization authz) {
+		return SecretProvider.from(authz);
 	}
 
 	// @Override
@@ -172,9 +174,9 @@ public class ItemServiceImpl implements ItemService {
 	// return item.getSerialized();
 	// }
 
-	protected boolean isInRole(OpsAuthentication auth, RoleId role) {
-		return auth.isInRole(auth.getProjectId(), role);
-	}
+	// protected boolean isInRole(ProjectAuthorization auth, RoleId role) {
+	// return auth.isInRole(auth.getProjectId(), role);
+	// }
 
 	private JsonHelper<?> getJsonHelper(PlatformLayerKey modelKey) {
 		Class<?> javaClass = opsSystem.getJavaClass(modelKey);
@@ -187,11 +189,11 @@ public class ItemServiceImpl implements ItemService {
 	}
 
 	@Override
-	public <T extends ItemBase> T createItem(final OpsAuthentication auth, final T item) throws OpsException {
+	public <T extends ItemBase> T createItem(final ProjectAuthorization auth, final T item) throws OpsException {
 		return ensureItem(auth, item, false, null);
 	}
 
-	<T extends ItemBase> T ensureItem(final OpsAuthentication auth, final T item, final boolean canExist,
+	<T extends ItemBase> T ensureItem(final ProjectAuthorization auth, final T item, final boolean canExist,
 			final String uniqueTagKey) throws OpsException {
 		final ModelClass<T> modelClass = (ModelClass<T>) serviceProviderDirectory.getModelClass(item.getClass());
 		if (modelClass == null) {
@@ -210,7 +212,7 @@ public class ItemServiceImpl implements ItemService {
 			// item.setId(id);
 		}
 
-		ProjectId project = auth.getProjectId();
+		ProjectId project = getProjectId(auth);
 
 		final PlatformLayerKey modelKey = new PlatformLayerKey(null, project, modelClass.getServiceType(),
 				modelClass.getItemType(), new ManagedItemId(id));
@@ -226,7 +228,7 @@ public class ItemServiceImpl implements ItemService {
 			public T call() throws Exception {
 				T existing;
 
-				SecretProvider secretProvider = SecretProvider.withAuth(auth);
+				SecretProvider secretProvider = SecretProvider.from(auth);
 
 				if (uniqueTagKey != null) {
 					boolean fetchTags = true;
@@ -284,7 +286,7 @@ public class ItemServiceImpl implements ItemService {
 
 				serviceProvider.beforeCreateItem(item);
 
-				ProjectId project = auth.getProjectId();
+				ProjectId project = getProjectId(auth);
 				T newItem;
 				try {
 					if (existing == null) {
@@ -310,20 +312,21 @@ public class ItemServiceImpl implements ItemService {
 	}
 
 	@Override
-	public <T extends ItemBase> T putItem(final OpsAuthentication auth, final T item, String uniqueTag)
+	public <T extends ItemBase> T putItem(final ProjectAuthorization auth, final T item, String uniqueTag)
 			throws OpsException {
 		return ensureItem(auth, item, true, uniqueTag);
 	}
 
-	protected OpsContext buildTemporaryOpsContext(ServiceType serviceType, OpsAuthentication auth) throws OpsException {
+	protected OpsContext buildTemporaryOpsContext(ServiceType serviceType, ProjectAuthorization auth)
+			throws OpsException {
 		OpsContextBuilder opsContextBuilder = injector.getInstance(OpsContextBuilder.class);
 		return opsContextBuilder.buildTemporaryOpsContext(serviceType, auth);
 	}
 
 	@Override
-	public PlatformLayerKey deleteItem(final OpsAuthentication auth, final PlatformLayerKey targetItemKey)
+	public PlatformLayerKey deleteItem(final ProjectAuthorization auth, final PlatformLayerKey targetItemKey)
 			throws OpsException {
-		SecretProvider secretProvider = SecretProvider.withAuth(auth);
+		SecretProvider secretProvider = SecretProvider.from(auth);
 
 		boolean fetchTags = true;
 		ItemBase targetItem;
@@ -364,11 +367,12 @@ public class ItemServiceImpl implements ItemService {
 	}
 
 	@Override
-	public <T extends ItemBase> T findItem(OpsAuthentication auth, Class<T> itemClass, String id) throws OpsException {
+	public <T extends ItemBase> T findItem(ProjectAuthorization auth, Class<T> itemClass, String id)
+			throws OpsException {
 		ModelClass<T> modelClass = serviceProviderDirectory.getModelClass(itemClass);
 		// Class<T> javaClass = modelClass.getJavaClass();
 
-		ProjectId project = auth.getProjectId();
+		ProjectId project = getProjectId(auth);
 
 		PlatformLayerKey modelKey = new PlatformLayerKey(null, project, modelClass.getServiceType(),
 				modelClass.getItemType(), new ManagedItemId(id));
@@ -377,7 +381,7 @@ public class ItemServiceImpl implements ItemService {
 		T managedItem;
 		try {
 			managedItem = CastUtils.checkedCast(
-					repository.getManagedItem(modelKey, fetchTags, SecretProvider.withAuth(auth)), itemClass);
+					repository.getManagedItem(modelKey, fetchTags, SecretProvider.from(auth)), itemClass);
 		} catch (RepositoryException e) {
 			throw new OpsException("Error fetching item from database", e);
 		}
@@ -386,13 +390,13 @@ public class ItemServiceImpl implements ItemService {
 	}
 
 	@Override
-	public List<ItemBase> findRoots(OpsAuthentication authentication) throws OpsException {
-		ProjectId project = authentication.getProjectId();
+	public List<ItemBase> findRoots(ProjectAuthorization authentication) throws OpsException {
+		ProjectId project = getProjectId(authentication);
 
 		boolean fetchTags = true;
 		List<ItemBase> items;
 		try {
-			items = repository.findRoots(project, fetchTags, SecretProvider.withAuth(authentication));
+			items = repository.findRoots(project, fetchTags, SecretProvider.from(authentication));
 		} catch (RepositoryException e) {
 			throw new OpsException("Error reading objects from database", e);
 		}
@@ -400,16 +404,24 @@ public class ItemServiceImpl implements ItemService {
 	}
 
 	@Override
-	public List<ItemBase> listAll(OpsAuthentication authentication, Filter filter) throws OpsException {
-		ProjectId project = authentication.getProjectId();
+	public List<ItemBase> listAll(ProjectAuthorization authentication, Filter filter) throws OpsException {
+		ProjectId project = getProjectId(authentication);
 
 		List<ItemBase> items;
 		try {
-			items = repository.listAll(project, filter, SecretProvider.withAuth(authentication));
+			items = repository.listAll(project, filter, SecretProvider.from(authentication));
 		} catch (RepositoryException e) {
 			throw new OpsException("Error reading objects from database", e);
 		}
 		return items;
+	}
+
+	private ProjectId getProjectId(ProjectAuthorization authentication) {
+		String key = authentication.getName();
+		if (key == null) {
+			throw new IllegalStateException();
+		}
+		return new ProjectId(key);
 	}
 
 	// public void deleteItem(Authentication auth, TypedManagedItem<?> item) throws RepositoryException, OpsException {

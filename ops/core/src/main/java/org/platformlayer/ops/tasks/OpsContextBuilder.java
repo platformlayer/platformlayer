@@ -11,7 +11,6 @@ import org.platformlayer.RepositoryException;
 import org.platformlayer.TypedPlatformLayerClient;
 import org.platformlayer.auth.DirectAuthenticationToken;
 import org.platformlayer.auth.DirectAuthenticator;
-import org.platformlayer.auth.OpsProject;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.federation.FederatedPlatformLayerClient;
 import org.platformlayer.federation.FederationMap;
@@ -20,12 +19,12 @@ import org.platformlayer.federation.model.FederationConfiguration;
 import org.platformlayer.ids.FederationKey;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceType;
+import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.ops.MultitenantConfiguration;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.ServiceConfiguration;
-import org.platformlayer.ops.auth.OpsAuthentication;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.machines.PlatformLayerTypedItemMapper;
 import org.platformlayer.ops.machines.ServiceProviderHelpers;
@@ -47,8 +46,8 @@ public class OpsContextBuilder {
 	@Inject
 	PlatformLayerTypedItemMapper mapper;
 
-	public ProjectId getRunAsProjectId(OpsAuthentication authentication) throws OpsException {
-		OpsProject runAsProject = authentication.getProject();
+	public ProjectId getRunAsProjectId(ProjectAuthorization project) throws OpsException {
+		ProjectAuthorization runAsProject = project; // authentication.getProject();
 
 		MultitenantConfiguration multitenant = opsSystem.getMultitenantConfiguration();
 		if (multitenant != null) {
@@ -61,16 +60,16 @@ public class OpsContextBuilder {
 
 	public OpsContext buildOpsContext(JobRecord jobRecord) throws OpsException {
 		ServiceType serviceType = jobRecord.getServiceType();
-		OpsAuthentication authentication = jobRecord.getAuth();
+		ProjectAuthorization projectAuthz = jobRecord.getProjectAuthorization();
 
-		List<OpsProject> projects = Lists.newArrayList();
+		List<ProjectAuthorization> projects = Lists.newArrayList();
 
-		OpsProject runAsProject = authentication.getProject();
+		ProjectAuthorization runAsProject = projectAuthz; // .getProject();
 		projects.add(runAsProject);
 
 		MultitenantConfiguration multitenant = opsSystem.getMultitenantConfiguration();
 		if (multitenant != null) {
-			OpsProject masterProject = multitenant.getMasterProject();
+			ProjectAuthorization masterProject = multitenant.getMasterProject();
 			if (runAsProject.getName().equals(masterProject.getName())) {
 				// We're in the master project
 				multitenant = null;
@@ -88,7 +87,7 @@ public class OpsContextBuilder {
 		FederationMap federationMap = new FederationMap(mapper, federationMapConfig);
 
 		if (multitenant != null) {
-			OpsProject localProject = authentication.getProject();
+			ProjectAuthorization localProject = projectAuthz; // .getProject();
 			TypedPlatformLayerClient localClient = buildClient(localProject);
 
 			FederationKey host = FederationKey.LOCAL;
@@ -138,7 +137,7 @@ public class OpsContextBuilder {
 		return opsContext;
 	}
 
-	public OpsContext buildTemporaryOpsContext(ServiceType serviceType, OpsAuthentication authentication)
+	public OpsContext buildTemporaryOpsContext(ServiceType serviceType, ProjectAuthorization authentication)
 			throws OpsException {
 		JobRecord jobRecord = new JobRecord(serviceType, authentication, null);
 		return buildOpsContext(jobRecord);
@@ -148,7 +147,7 @@ public class OpsContextBuilder {
 		return opsSystem.getJavaClass(key);
 	}
 
-	private TypedPlatformLayerClient buildClient(OpsProject project) throws OpsException {
+	private TypedPlatformLayerClient buildClient(ProjectAuthorization project) throws OpsException {
 		DirectAuthenticator directAuthenticator = buildDirectAuthenticator(project);
 		ProjectId projectId = new ProjectId(project.getName());
 
@@ -161,7 +160,7 @@ public class OpsContextBuilder {
 		return new PlatformLayerHelpers(client, serviceProviderHelpers);
 	}
 
-	private DirectAuthenticator buildDirectAuthenticator(OpsProject project) {
+	private DirectAuthenticator buildDirectAuthenticator(ProjectAuthorization project) {
 		String auth = DirectAuthenticationToken.encodeToken(project.getId(), project.getName());
 		SecretKey secret = project.getProjectSecret();
 

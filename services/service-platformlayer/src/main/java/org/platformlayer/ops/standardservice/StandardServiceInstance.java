@@ -12,6 +12,7 @@ import org.platformlayer.ops.filesystem.ManagedDirectory;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.supervisor.StandardService;
 import org.platformlayer.ops.tree.OpsTreeBase;
+import org.platformlayer.service.platformlayer.ops.ManagedKeystore;
 
 import com.google.common.base.Supplier;
 import com.google.inject.util.Providers;
@@ -65,6 +66,19 @@ public abstract class StandardServiceInstance extends OpsTreeBase {
 			service.key = template.getServiceKey();
 		}
 
+		if (template.shouldCreateSslKey()) {
+			ManagedDirectory configDir = findDirectory(template.getConfigDir());
+
+			File keystoreFile = template.getKeystoreFile();
+
+			{
+				ManagedKeystore httpsKey = configDir.addChild(ManagedKeystore.class);
+				httpsKey.path = keystoreFile;
+				httpsKey.tagWithPublicKeys = template.getModel();
+				httpsKey.alias = ManagedKeystore.DEFAULT_WEBSERVER_ALIAS;
+				httpsKey.key = template.findSslKey();
+			}
+		}
 	}
 
 	protected abstract StandardTemplateData getTemplate();

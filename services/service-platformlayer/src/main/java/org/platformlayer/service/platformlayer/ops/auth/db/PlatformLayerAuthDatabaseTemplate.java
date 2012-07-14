@@ -30,4 +30,9 @@ public class PlatformLayerAuthDatabaseTemplate extends CommonAuthTemplateData {
 		return getModel().getKey();
 	}
 
+	@Override
+	protected PlatformLayerKey getSslKeyPath() {
+		return null;
+	}
+
 }

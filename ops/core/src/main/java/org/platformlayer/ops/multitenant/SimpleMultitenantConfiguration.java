@@ -6,13 +6,12 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.openstack.crypto.CertificateAndKey;
 import org.platformlayer.ApplicationMode;
-import org.platformlayer.RepositoryException;
-import org.platformlayer.auth.CertificateAuthenticationRequest;
-import org.platformlayer.auth.CertificateAuthenticationResponse;
-import org.platformlayer.auth.OpsProject;
-import org.platformlayer.auth.OpsUser;
-import org.platformlayer.auth.UserRepository;
+import org.platformlayer.auth.AuthenticationService;
+import org.platformlayer.auth.AuthenticationTokenValidator;
+import org.platformlayer.auth.PlatformlayerAuthenticationException;
 import org.platformlayer.core.model.PlatformLayerKey;
+import org.platformlayer.model.AuthenticationToken;
+import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.ops.MultitenantConfiguration;
 import org.platformlayer.ops.OpsConfiguration;
 import org.platformlayer.ops.OpsException;
@@ -24,17 +23,17 @@ import com.google.common.collect.Lists;
 public class SimpleMultitenantConfiguration implements MultitenantConfiguration {
 	private static final Logger log = Logger.getLogger(SimpleMultitenantConfiguration.class);
 
-	final OpsProject masterProject;
+	final ProjectAuthorization masterProject;
 	final List<PlatformLayerKey> mappedItems;
 
-	public SimpleMultitenantConfiguration(OpsProject masterProject, List<PlatformLayerKey> mappedItems) {
+	public SimpleMultitenantConfiguration(ProjectAuthorization masterProject, List<PlatformLayerKey> mappedItems) {
 		super();
 		this.masterProject = masterProject;
 		this.mappedItems = mappedItems;
 	}
 
 	@Override
-	public OpsProject getMasterProject() {
+	public ProjectAuthorization getMasterProject() {
 		return masterProject;
 	}
 
@@ -44,7 +43,8 @@ public class SimpleMultitenantConfiguration implements MultitenantConfiguration 
 	}
 
 	public static MultitenantConfiguration build(OpsConfiguration configuration, EncryptionStore encryptionStore,
-			UserRepository userRepository) throws OpsException {
+			AuthenticationService authenticationService, AuthenticationTokenValidator authenticationTokenValidator)
+			throws OpsException {
 		String projectKey = configuration.lookup("multitenant.project", null);
 		String username = configuration.lookup("multitenant.user", null);
 		String password = configuration.lookup("multitenant.password", null);
@@ -61,23 +61,13 @@ public class SimpleMultitenantConfiguration implements MultitenantConfiguration 
 			throw new OpsException(message);
 		}
 
-		OpsUser user = null;
-		OpsProject project = null;
+		AuthenticationToken authn = null;
 
 		if (certificateAndKey != null) {
 			try {
-				CertificateAuthenticationRequest request = new CertificateAuthenticationRequest();
-				request.certificateChain = certificateAndKey.getCertificateChain();
-				request.privateKey = certificateAndKey.getPrivateKey();
-				request.username = username;
-				request.projectKey = projectKey;
-
-				CertificateAuthenticationResponse response = userRepository.authenticateWithCertificate(request);
-				if (response != null) {
-					user = response.user;
-					project = response.project;
-				}
-			} catch (RepositoryException e) {
+				authn = authenticationService.authenticateWithCertificate(username, certificateAndKey.getPrivateKey(),
+						certificateAndKey.getCertificateChain());
+			} catch (PlatformlayerAuthenticationException e) {
 				throw new OpsException(message, e);
 			}
 		} else if (password != null) {
@@ -88,27 +78,32 @@ public class SimpleMultitenantConfiguration implements MultitenantConfiguration 
 			}
 
 			try {
-				user = userRepository.authenticateWithPassword(projectKey, username, password);
-			} catch (RepositoryException e) {
+				authn = authenticationService.authenticateWithPassword(username, password);
+			} catch (PlatformlayerAuthenticationException e) {
 				throw new OpsException(message, e);
 			}
 		}
 
-		if (user == null) {
+		if (authn == null) {
 			throw new OpsException(message);
 		}
 
-		if (project == null) {
-			try {
-				project = userRepository.findProject(user, projectKey);
-			} catch (RepositoryException e) {
-				throw new OpsException(message, e);
-			}
-
-			if (project == null) {
-				throw new OpsException(message);
-			}
+		ProjectAuthorization authz = authenticationTokenValidator.validate(authn, projectKey);
+		if (authz == null) {
+			throw new OpsException(message);
 		}
+
+		// {
+		// try {
+		// project = userRepository.findProject(user, projectKey);
+		// } catch (RepositoryException e) {
+		// throw new OpsException(message, e);
+		// }
+		//
+		// if (project == null) {
+		// throw new OpsException(message);
+		// }
+		// }
 
 		List<PlatformLayerKey> mappedItems = Lists.newArrayList();
 
@@ -126,7 +121,7 @@ public class SimpleMultitenantConfiguration implements MultitenantConfiguration 
 			throw new OpsException(message);
 		}
 
-		MultitenantConfiguration config = new SimpleMultitenantConfiguration(project, mappedItems);
+		MultitenantConfiguration config = new SimpleMultitenantConfiguration(authz, mappedItems);
 
 		return config;
 	}

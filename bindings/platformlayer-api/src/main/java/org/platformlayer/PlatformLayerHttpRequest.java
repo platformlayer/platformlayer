@@ -9,6 +9,8 @@ import java.io.PrintStream;
 import java.net.ConnectException;
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.net.ssl.TrustManager;
 import javax.xml.bind.JAXBException;
@@ -213,6 +215,19 @@ class PlatformLayerHttpRequest implements Closeable {
 
 		if (debug != null) {
 			debug.println("Response: " + response);
+
+			Map<String, List<String>> headers = response.getHeaderFields();
+			for (Entry<String, List<String>> entry : headers.entrySet()) {
+				String key = entry.getKey();
+				if (key == null) {
+					// Ignore entry "key=null, value=HTTP/1.1 200 OK"
+					continue;
+				}
+
+				for (String value : entry.getValue()) {
+					debug.println(key + ": " + value);
+				}
+			}
 		}
 
 		switch (httpResponseCode) {

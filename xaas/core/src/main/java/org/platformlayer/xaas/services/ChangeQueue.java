@@ -2,8 +2,8 @@ package org.platformlayer.xaas.services;
 
 import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.core.model.PlatformLayerKey;
-import org.platformlayer.ops.auth.OpsAuthentication;
+import org.platformlayer.model.ProjectAuthorization;
 
 public interface ChangeQueue {
-	PlatformLayerKey notifyChange(OpsAuthentication auth, PlatformLayerKey itemKey, ManagedItemState newState);
+	PlatformLayerKey notifyChange(ProjectAuthorization auth, PlatformLayerKey itemKey, ManagedItemState newState);
 }

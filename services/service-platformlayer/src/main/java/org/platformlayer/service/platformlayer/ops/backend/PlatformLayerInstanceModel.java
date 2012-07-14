@@ -1,6 +1,7 @@
 package org.platformlayer.service.platformlayer.ops.backend;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +18,6 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.databases.Database;
 import org.platformlayer.ops.databases.DatabaseHelper;
 import org.platformlayer.ops.java.JavaCommandBuilder;
-import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.standardservice.StandardTemplateData;
 import org.platformlayer.service.platformlayer.model.PlatformLayerDatabase;
 import org.platformlayer.service.platformlayer.model.PlatformLayerService;
@@ -33,11 +33,9 @@ public class PlatformLayerInstanceModel extends StandardTemplateData {
 	static final Logger log = Logger.getLogger(PlatformLayerInstanceModel.class);
 
 	@Inject
-	PlatformLayerHelpers platformLayer;
-
-	@Inject
 	DatabaseHelper databases;
 
+	@Override
 	public PlatformLayerService getModel() {
 		PlatformLayerService model = OpsContext.get().getInstance(PlatformLayerService.class);
 		return model;
@@ -161,6 +159,7 @@ public class PlatformLayerInstanceModel extends StandardTemplateData {
 			String baseUrl = "https://" + userAuthService.dnsName + ":5001/";
 
 			userAuthKeys.addAll(Tag.PUBLIC_KEY_SIG.find(userAuthService));
+			Collections.sort(userAuthKeys); // Keep it stable
 
 			properties.put("auth.user.ssl.keys", Joiner.on(',').join(userAuthKeys));
 			properties.put("auth.user.url", baseUrl);
@@ -176,6 +175,7 @@ public class PlatformLayerInstanceModel extends StandardTemplateData {
 			String systemAuthUrl = "https://" + systemAuthService.dnsName + ":35358/";
 
 			systemAuthKeys.addAll(Tag.PUBLIC_KEY_SIG.find(systemAuthService));
+			Collections.sort(systemAuthKeys); // Keep it stable
 
 			properties.put("auth.system.ssl.keys", Joiner.on(',').join(systemAuthKeys));
 			properties.put("auth.system.url", systemAuthUrl);
@@ -202,8 +202,9 @@ public class PlatformLayerInstanceModel extends StandardTemplateData {
 		return "platformlayer-" + databaseKey.getItemId().getKey();
 	}
 
-	public File getKeystoreFile() {
-		return new File(getConfigDir(), "../keystore.jks");
+	@Override
+	protected PlatformLayerKey getSslKeyPath() {
+		return getModel().sslKey;
 	}
 
 }

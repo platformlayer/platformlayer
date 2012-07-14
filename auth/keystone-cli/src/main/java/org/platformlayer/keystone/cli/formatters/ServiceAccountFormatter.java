@@ -3,7 +3,7 @@ package org.platformlayer.keystone.cli.formatters;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 
-import org.openstack.keystone.services.ServiceAccount;
+import org.platformlayer.auth.ServiceAccount;
 
 import com.fathomdb.cli.formatter.SimpleFormatter;
 import com.fathomdb.cli.output.OutputSink;

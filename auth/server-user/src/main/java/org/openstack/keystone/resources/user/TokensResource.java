@@ -13,26 +13,28 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 
 import org.apache.log4j.Logger;
-import org.openstack.keystone.model.Access;
-import org.openstack.keystone.model.Auth;
-import org.openstack.keystone.model.AuthenticateRequest;
-import org.openstack.keystone.model.AuthenticateResponse;
-import org.openstack.keystone.model.CertificateCredentials;
-import org.openstack.keystone.model.PasswordCredentials;
-import org.openstack.keystone.model.Token;
-import org.openstack.keystone.resources.KeystoneResourceBase;
-import org.openstack.keystone.services.AuthenticatorException;
-import org.openstack.keystone.services.TokenInfo;
-import org.openstack.keystone.services.TokenService;
+import org.platformlayer.RepositoryException;
+import org.platformlayer.auth.AuthenticatorException;
 import org.platformlayer.auth.CertificateAuthenticationRequest;
 import org.platformlayer.auth.CertificateAuthenticationResponse;
 import org.platformlayer.auth.ProjectEntity;
 import org.platformlayer.auth.UserEntity;
+import org.platformlayer.auth.model.Access;
+import org.platformlayer.auth.model.Auth;
+import org.platformlayer.auth.model.AuthenticateRequest;
+import org.platformlayer.auth.model.AuthenticateResponse;
+import org.platformlayer.auth.model.CertificateCredentials;
+import org.platformlayer.auth.model.PasswordCredentials;
+import org.platformlayer.auth.model.Token;
+import org.platformlayer.auth.resources.PlatformlayerAuthResourceBase;
+import org.platformlayer.auth.services.TokenInfo;
+import org.platformlayer.auth.services.TokenService;
 
+import com.google.common.collect.Lists;
 import com.sun.jersey.api.json.JSONWithPadding;
 
 @Path("/v2.0/tokens")
-public class TokensResource extends KeystoneResourceBase {
+public class TokensResource extends PlatformlayerAuthResourceBase {
 	static final Logger log = Logger.getLogger(TokensResource.class);
 
 	// @Inject
@@ -46,11 +48,10 @@ public class TokensResource extends KeystoneResourceBase {
 	public JSONWithPadding authenticateGET(@QueryParam("callback") String jsonCallback) {
 		String username = request.getParameter("user");
 		String password = request.getParameter("password");
-		String project = request.getParameter("project");
+		// String project = request.getParameter("project");
 
 		AuthenticateRequest request = new AuthenticateRequest();
 		request.auth = new Auth();
-		request.auth.project = project;
 
 		if (password != null) {
 			PasswordCredentials credentials = new PasswordCredentials();
@@ -109,17 +110,15 @@ public class TokensResource extends KeystoneResourceBase {
 		AuthenticateResponse response = new AuthenticateResponse();
 
 		String username = null;
-		String projectKey = request.auth.project;
 
 		UserEntity user = null;
-		ProjectEntity project = null;
 
 		if (request.auth.passwordCredentials != null) {
 			username = request.auth.passwordCredentials.username;
 			String password = request.auth.passwordCredentials.password;
 
 			try {
-				user = userAuthenticator.authenticate(projectKey, username, password);
+				user = userAuthenticator.authenticate(username, password);
 			} catch (AuthenticatorException e) {
 				// An exception indicates something went wrong (i.e. not just bad credentials)
 				log.warn("Error while getting user info", e);
@@ -138,7 +137,7 @@ public class TokensResource extends KeystoneResourceBase {
 			CertificateAuthenticationRequest details = new CertificateAuthenticationRequest();
 			details.certificateChain = certificateChain;
 			details.username = username;
-			details.projectKey = projectKey;
+			// details.projectKey = projectKey;
 			details.challengeResponse = challengeResponse;
 
 			CertificateAuthenticationResponse result = null;
@@ -154,12 +153,11 @@ public class TokensResource extends KeystoneResourceBase {
 			}
 
 			if (challengeResponse != null) {
-				if (result.user == null || result.project == null) {
+				if (result.user == null) {
 					return null;
 				}
 
 				user = (UserEntity) result.user;
-				project = (ProjectEntity) result.project;
 			} else {
 				log.debug("Returning authentication challenge for user: " + username);
 
@@ -175,25 +173,9 @@ public class TokensResource extends KeystoneResourceBase {
 			return null;
 		}
 
-		if (projectKey != null) {
-			if (project == null) {
-				try {
-					project = userAuthenticator.findProject(projectKey, user);
-				} catch (AuthenticatorException e) {
-					log.warn("Error while getting project info", e);
-					throwInternalError();
-				}
-			}
-
-			// If we are doing a scope auth, make sure we have access
-			if (project == null) {
-				return null;
-			}
-		}
-
 		log.debug("Successful authentication for user: " + user.key);
 
-		TokenInfo token = buildToken(projectKey, "" + user.getId(), user.getTokenSecret());
+		TokenInfo token = buildToken("" + user.getId(), user.getTokenSecret());
 
 		response.access = new Access();
 		// response.access.serviceCatalog = serviceMapper.getServices(userInfo, project);
@@ -201,15 +183,25 @@ public class TokensResource extends KeystoneResourceBase {
 		response.access.token.expires = token.expiration;
 		response.access.token.id = tokenService.encodeToken(token);
 
+		response.access.projects = Lists.newArrayList();
+		try {
+			for (ProjectEntity project : userAuthenticator.listProjects(user)) {
+				response.access.projects.add(project.getName());
+			}
+		} catch (RepositoryException e) {
+			log.warn("Error while listing projects for user: " + user.key, e);
+			throwInternalError();
+		}
+
 		return response;
 	}
 
-	private TokenInfo buildToken(String project, String userId, byte[] tokenSecret) {
+	private TokenInfo buildToken(String userId, byte[] tokenSecret) {
 		Date now = new Date();
 		Date expiration = TOKEN_VALIDITY.addTo(now);
 
 		byte flags = 0;
-		TokenInfo tokenInfo = new TokenInfo(flags, project, userId, expiration, tokenSecret);
+		TokenInfo tokenInfo = new TokenInfo(flags, userId, expiration, tokenSecret);
 
 		return tokenInfo;
 	}

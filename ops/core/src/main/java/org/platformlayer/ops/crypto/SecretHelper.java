@@ -7,9 +7,9 @@ import java.security.PublicKey;
 import javax.crypto.SecretKey;
 import javax.inject.Inject;
 
-import org.platformlayer.auth.OpsProject;
 import org.platformlayer.auth.crypto.SecretStore;
 import org.platformlayer.crypto.AesUtils;
+import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.ops.OpsContext;
 
 public class SecretHelper {
@@ -34,7 +34,7 @@ public class SecretHelper {
 				}
 			}
 
-			for (OpsProject project : OpsContext.get().getEncryptingProjects()) {
+			for (ProjectAuthorization project : OpsContext.get().getEncryptingProjects()) {
 				if (project.isLocked()) {
 					throw new IllegalStateException();
 					// {
@@ -117,7 +117,7 @@ public class SecretHelper {
 
 		SecretKey secretKey = null;
 
-		for (OpsProject project : OpsContext.get().getEncryptingProjects()) {
+		for (ProjectAuthorization project : OpsContext.get().getEncryptingProjects()) {
 			secretKey = secretStore.getSecretFromProject(project);
 		}
 

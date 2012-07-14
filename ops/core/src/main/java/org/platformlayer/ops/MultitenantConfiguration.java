@@ -1,11 +1,11 @@
 package org.platformlayer.ops;
 
-import org.platformlayer.auth.OpsProject;
 import org.platformlayer.core.model.PlatformLayerKey;
+import org.platformlayer.model.ProjectAuthorization;
 
 public interface MultitenantConfiguration {
 
-	OpsProject getMasterProject();
+	ProjectAuthorization getMasterProject();
 
 	Iterable<PlatformLayerKey> getMappedItems();
 

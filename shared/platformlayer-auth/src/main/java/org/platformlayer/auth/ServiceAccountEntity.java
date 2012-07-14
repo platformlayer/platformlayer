@@ -5,7 +5,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.openstack.keystone.services.ServiceAccount;
 
 @Entity
 @Table(name = "service_accounts")

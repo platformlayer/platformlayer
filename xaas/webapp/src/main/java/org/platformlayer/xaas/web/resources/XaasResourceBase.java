@@ -21,10 +21,10 @@ import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.ids.ModelKey;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceType;
-import org.platformlayer.model.RoleId;
+import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.ops.OpsSystem;
-import org.platformlayer.ops.auth.OpsAuthentication;
 import org.platformlayer.web.ResourceBase;
+import org.platformlayer.xaas.AuthenticationCredentials;
 import org.platformlayer.xaas.repository.ManagedItemRepository;
 import org.platformlayer.xaas.repository.ServiceAuthorizationRepository;
 import org.platformlayer.xaas.services.ChangeQueue;
@@ -75,41 +75,52 @@ public class XaasResourceBase extends ResourceBase {
 	}
 
 	protected SecretProvider getSecretProvider() {
-		return SecretProvider.withAuth(getAuthentication());
+		return SecretProvider.from(getProjectAuthorization());
 	}
 
-	protected OpsAuthentication getAuthentication() {
-		OpsAuthentication opsAuth = getScopeParameter(OpsAuthentication.class, true);
-		return opsAuth;
+	// protected OpsAuthentication getOpsAuthentication() {
+	// OpsAuthentication opsAuth = getScopeParameter(OpsAuthentication.class, true);
+	// return opsAuth;
+	// }
+
+	protected AuthenticationCredentials getAuthenticationCredentials() {
+		AuthenticationCredentials auth = getScopeParameter(AuthenticationCredentials.class, true);
+		return auth;
+	}
+
+	protected ProjectAuthorization getProjectAuthorization() {
+		ProjectAuthorization project = getScopeParameter(ProjectAuthorization.class, true);
+		return project;
 	}
 
 	protected ProjectId getProject() {
-		return getAuthentication().getProjectId();
+		ProjectId project = getScopeParameter(ProjectId.class, true);
+		return project;
 	}
 
-	protected void checkLoggedInAsAdmin() {
-		checkIsInRole(RoleId.ADMIN);
-	}
+	// protected void checkLoggedInAsAdmin() {
+	// checkIsInRole(RoleId.ADMIN);
+	// }
 
-	protected void checkIsInRole(RoleId role) {
-		if (isInRole(role)) {
-			return;
-		}
+	// protected void checkIsInRole(RoleId role) {
+	// if (isInRole(role)) {
+	// return;
+	// }
+	//
+	// // TODO: Proper role hierarchy
+	// if (isInRole(RoleId.ADMIN)) {
+	// return;
+	// }
+	//
+	// throw new WebApplicationException(401);
+	// }
 
-		// TODO: Proper role hierarchy
-		if (isInRole(RoleId.ADMIN)) {
-			return;
-		}
-
-		throw new WebApplicationException(401);
-	}
-
-	protected boolean isInRole(RoleId role) {
-		OpsAuthentication auth = getAuthentication();
-
-		ProjectId project = getProject();
-		return auth.isInRole(project, role);
-	}
+	// protected boolean isInRole(RoleId role) {
+	// OpsAuthentication auth = getAuthentication();
+	//
+	// ProjectId project = getProject();
+	// return auth.isInRole(project, role);
+	// }
 
 	// protected void verifyLoggedInAs(AccountId accountId) {
 	// AccountId currentUser = getAccountId();
@@ -149,10 +160,6 @@ public class XaasResourceBase extends ResourceBase {
 			throw new WebApplicationException(404);
 		}
 
-		if (modelClass.isSystemObject()) {
-			checkLoggedInAsAdmin();
-		}
-
 		return modelClass;
 	}
 
@@ -167,10 +174,6 @@ public class XaasResourceBase extends ResourceBase {
 
 	protected Class<?> getJavaClass(ModelKey modelKey) {
 		return opsSystem.getJavaClass(modelKey);
-	}
-
-	protected boolean isSystemObject(ModelKey modelKey) {
-		return opsSystem.isSystemObject(modelKey);
 	}
 
 	protected PlatformLayerKey getPlatformLayerKey() {

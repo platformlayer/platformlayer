@@ -56,4 +56,9 @@ public class SystemAuthInstanceModel extends CommonAuthTemplateData {
 		return getModel().database;
 	}
 
+	@Override
+	protected PlatformLayerKey getSslKeyPath() {
+		return getModel().sslKey;
+	}
+
 }

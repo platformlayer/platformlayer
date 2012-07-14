@@ -10,5 +10,5 @@
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.openstack.keystone.server.KeystoneUserServer"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="keystone-webapp-user"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.m2e.launchconfig.sourcepathProvider"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dconf=../conf.db/user.conf"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dconf=../conf.db/user.conf -Dsql.debug=true"/>
 </launchConfiguration>

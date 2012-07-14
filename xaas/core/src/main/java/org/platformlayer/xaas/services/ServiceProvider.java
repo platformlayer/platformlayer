@@ -15,7 +15,7 @@ public interface ServiceProvider {
 
 	void beforeDeleteItem(ItemBase item) throws OpsException;
 
-	ServiceInfo getServiceInfo(boolean amdin);
+	ServiceInfo getServiceInfo();
 
 	Models getModels();
 
@@ -28,8 +28,6 @@ public interface ServiceProvider {
 	MetricValues getMetricValues(ItemBase item, String serviceKey) throws OpsException;
 
 	Class<?> getJavaClass(ItemType itemType);
-
-	boolean isSystemObject(ItemType itemType);
 
 	ModelClass<?> getModelClass(ItemType itemType);
 

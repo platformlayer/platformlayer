@@ -12,7 +12,6 @@ import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.ManagedItemCollection;
 import org.platformlayer.core.model.ServiceInfoCollection;
 import org.platformlayer.ids.ServiceType;
-import org.platformlayer.model.RoleId;
 import org.platformlayer.ops.OpsException;
 
 import com.google.common.collect.Lists;
@@ -39,7 +38,7 @@ public class ServicesCollectionResource extends XaasResourceBase {
 	@Produces({ XML, JSON })
 	@Path("roots")
 	public ManagedItemCollection<ItemBase> listRoots() throws OpsException {
-		List<ItemBase> roots = itemService.findRoots(getAuthentication());
+		List<ItemBase> roots = itemService.findRoots(getProjectAuthorization());
 		ManagedItemCollection<ItemBase> collection = new ManagedItemCollection<ItemBase>();
 		collection.items = roots;
 		return collection;
@@ -102,11 +101,11 @@ public class ServicesCollectionResource extends XaasResourceBase {
 	@GET
 	@Produces({ XML, JSON })
 	public ServiceInfoCollection getMetadata() {
-		boolean management = isInRole(RoleId.ADMIN);
+		// boolean management = isInRole(RoleId.ADMIN);
 
 		ServiceInfoCollection collection = new ServiceInfoCollection();
 		collection.services = Lists.newArrayList();
-		collection.services.addAll(serviceDictionary.getAllServices(management));
+		collection.services.addAll(serviceDictionary.getAllServices());
 		return collection;
 	}
 

@@ -1,145 +1,136 @@
 package org.platformlayer.xaas;
 
-import java.util.List;
+import java.io.IOException;
 
-import javax.crypto.SecretKey;
 import javax.inject.Inject;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.openstack.keystone.service.AuthenticationTokenValidator;
-import org.openstack.keystone.service.KeystoneAuthentication;
-import org.openstack.keystone.service.OpenstackAuthenticationFilterBase;
-import org.platformlayer.RepositoryException;
 import org.platformlayer.Scope;
-import org.platformlayer.auth.DirectAuthenticationToken;
-import org.platformlayer.auth.OpsProject;
-import org.platformlayer.auth.OpsUser;
-import org.platformlayer.auth.UserRepository;
-import org.platformlayer.crypto.AesUtils;
-import org.platformlayer.crypto.CryptoUtils;
-import org.platformlayer.model.Authentication;
-import org.platformlayer.ops.auth.OpsAuthentication;
-import org.platformlayer.xaas.keystone.KeystoneUser;
+import org.platformlayer.auth.AuthenticationTokenValidator;
+import org.platformlayer.auth.client.PlatformlayerAuthenticationToken;
+import org.platformlayer.model.AuthenticationToken;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
-
-public class OpsAuthenticationFilter extends OpenstackAuthenticationFilterBase {
+public class OpsAuthenticationFilter implements Filter {
 	static final Logger log = Logger.getLogger(OpsAuthenticationFilter.class);
-	private static final long MAX_TIMESTAMP_SKEW = 300L * 1000L;
+
+	// private static final long MAX_TIMESTAMP_SKEW = 300L * 1000L;
 
 	@Inject
-	public OpsAuthenticationFilter(AuthenticationTokenValidator authenticationTokenValidator) {
-		super(authenticationTokenValidator);
-	}
+	AuthenticationTokenValidator authenticationTokenValidator;
 
-	@Inject
-	UserRepository userRepository;
+	// protected void populateScope(Scope authenticatedScope, Authentication auth) throws Exception {
+	// authenticatedScope.put(Authentication.class, auth);
+	//
+	// OpsProject project;
+	// OpsUser user = null;
+	// if (auth instanceof DirectAuthentication) {
+	// project = ((DirectAuthentication) auth).getOpsProject();
+	// if (project == null) {
+	// throw new IllegalStateException();
+	// }
+	// } else {
+	// KeystoneUser keystoneUser = new KeystoneUser((KeystoneUserAuthentication) auth);
+	// user = keystoneUser;
+	//
+	// // String projectKey = auth.getProject().getName();
+	// // project = authenticationService.findProject(user, projectKey);
+	// //
+	// // if (project == null) {
+	// // log.warn("Project not found: " + projectKey);
+	// // throw new SecurityException();
+	// // }
+	// }
+	//
+	// OpsAuthentication opsAuthentication = new OpsAuthentication(auth, user, project);
+	//
+	// authenticatedScope.put(OpsAuthentication.class, opsAuthentication);
+	// }
 
-	@Override
-	protected void populateScope(Scope authenticatedScope, Authentication auth) throws Exception {
-		super.populateScope(authenticatedScope, auth);
+	protected AuthenticationCredentials findCredentials(HttpServletRequest httpRequest) throws Exception {
+		AuthenticationCredentials creds = null;
 
-		OpsProject project;
-		OpsUser user = null;
-		if (auth instanceof DirectAuthentication) {
-			project = ((DirectAuthentication) auth).getOpsProject();
-			if (project == null) {
-				throw new IllegalStateException();
-			}
-		} else {
-			KeystoneUser keystoneUser = new KeystoneUser((KeystoneAuthentication) auth);
-			user = keystoneUser;
-
-			String projectKey = auth.getProject().getName();
-			project = userRepository.findProject(user, projectKey);
-
-			if (project == null) {
-				log.warn("Project not found: " + projectKey);
-				throw new SecurityException();
-			}
+		final String authToken = httpRequest.getHeader("X-Auth-Token");
+		if (authToken != null) {
+			creds = new AuthenticationCredentials() {
+				@Override
+				public AuthenticationToken getToken() {
+					return new PlatformlayerAuthenticationToken(authToken);
+				}
+			};
 		}
 
-		OpsAuthentication opsAuthentication = new OpsAuthentication(auth, user, project);
-
-		authenticatedScope.put(OpsAuthentication.class, opsAuthentication);
-	}
-
-	@Override
-	protected Authentication attemptAuthentication(HttpServletRequest httpRequest) throws Exception {
-		Authentication authenticated = super.attemptAuthentication(httpRequest);
-
-		if (authenticated == null) {
-			// TODO: Enforce SSL
+		if (creds == null) {
+			// Direct authentication
+			// TODO: Enforce SSL?
 			String authKey = httpRequest.getHeader("X-Auth-Key");
 			String authSecret = httpRequest.getHeader("X-Auth-Secret");
 
 			if (authKey != null && authSecret != null) {
-				authenticated = attemptDirectAuthentication(httpRequest, authKey, authSecret);
+				creds = DirectAuthentication.build(authKey, authSecret);
 			}
 		}
 
-		return authenticated;
+		return creds;
 	}
 
-	private Authentication attemptDirectAuthentication(HttpServletRequest httpRequest, String authKey,
-			String secretString) throws RepositoryException {
-		// TODO: Require SSL??
+	@Override
+	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
+			throws IOException, ServletException {
+		Scope authenticatedScope = Scope.inherit();
 
-		// long t = Long.parseLong(timestampString);
-		// long delta = Math.abs(t - System.currentTimeMillis());
-		// if (delta > MAX_TIMESTAMP_SKEW) {
-		// // If the times are out of sync, that isn't a secret
-		// throw new SecurityException("Timestamp skew too large");
-		// }
+		// Fail safe
+		authenticatedScope.put(AuthenticationCredentials.class, null);
 
-		OpsProject project = null;
+		if (servletRequest instanceof HttpServletRequest) {
+			HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
+			HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
 
-		String projectPrefix = DirectAuthenticationToken.PREFIX;
+			try {
+				AuthenticationCredentials credentials = findCredentials(httpServletRequest);
 
-		if (authKey.startsWith(projectPrefix)) {
-			List<String> projectTokens = Lists.newArrayList(Splitter.on(':').limit(3).split(authKey));
-			if (projectTokens.size() == 3) {
-				final String projectKey = projectTokens.get(2);
-				final int projectId = Integer.parseInt(projectTokens.get(1));
+				// if (authenticated == null) {
+				// httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				// return;
+				// } else {
+				// populateScope(authenticatedScope, authenticated);
+				// }
 
-				final SecretKey secret;
-				try {
-					secret = AesUtils.deserializeKey(CryptoUtils.fromBase64(secretString));
-				} catch (Exception e) {
-					log.debug("Error while deserializing user provided secret", e);
-					return null;
-				}
-
-				project = new OpsProject() {
-					@Override
-					public boolean isLocked() {
-						return secret == null;
-					}
-
-					@Override
-					public SecretKey getProjectSecret() {
-						return secret;
-					}
-
-					@Override
-					public int getId() {
-						return projectId;
-					}
-
-					@Override
-					public String getName() {
-						return projectKey;
-					}
-				};
+				authenticatedScope.put(AuthenticationCredentials.class, credentials);
+			} catch (SecurityException e) {
+				httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				return;
+			} catch (Exception e) {
+				// If we're down, don't tell the user that their password is wrong
+				log.warn("Unexpected error in authentication filter", e);
+				httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				return;
 			}
 		}
 
-		if (project == null) {
-			return null;
+		authenticatedScope.push();
+		try {
+			filterChain.doFilter(servletRequest, servletResponse);
+		} finally {
+			authenticatedScope.pop();
 		}
-
-		return new DirectAuthentication(project);
 	}
+
+	@Override
+	public void destroy() {
+
+	}
+
+	@Override
+	public void init(FilterConfig filterConfig) throws ServletException {
+
+	}
+
 }

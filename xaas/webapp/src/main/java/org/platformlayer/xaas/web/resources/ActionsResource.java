@@ -33,7 +33,7 @@ public class ActionsResource extends XaasResourceBase {
 		}
 		OperationType operationType = EnumUtils.valueOfCaseInsensitive(OperationType.class, actionName);
 		PlatformLayerKey itemKey = getPlatformLayerKey();
-		PlatformLayerKey jobKey = operations.enqueueOperation(operationType, getAuthentication(), itemKey);
+		PlatformLayerKey jobKey = operations.enqueueOperation(operationType, getProjectAuthorization(), itemKey);
 
 		JobData jobData = new JobData();
 		jobData.key = jobKey;

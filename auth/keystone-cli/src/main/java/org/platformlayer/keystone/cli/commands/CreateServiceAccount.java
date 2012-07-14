@@ -4,7 +4,7 @@ import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 
 import org.kohsuke.args4j.Option;
-import org.openstack.keystone.services.ServiceAccount;
+import org.platformlayer.auth.ServiceAccount;
 import org.platformlayer.auth.UserDatabase;
 
 public class CreateServiceAccount extends KeystoneCommandRunnerBase {

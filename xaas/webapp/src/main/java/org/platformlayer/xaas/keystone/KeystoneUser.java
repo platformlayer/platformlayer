@@ -5,21 +5,21 @@ import java.security.PrivateKey;
 import javax.crypto.SecretKey;
 
 import org.apache.log4j.Logger;
-import org.openstack.keystone.service.KeystoneAuthentication;
 import org.platformlayer.auth.OpsUser;
+import org.platformlayer.auth.PlatformlayerUserAuthentication;
 import org.platformlayer.crypto.AesUtils;
 
 public class KeystoneUser implements OpsUser {
 	@SuppressWarnings("unused")
 	private static final Logger log = Logger.getLogger(KeystoneUser.class);
 
-	private final KeystoneAuthentication auth;
+	private final PlatformlayerUserAuthentication auth;
 
-	public KeystoneUser(KeystoneAuthentication auth) {
+	public KeystoneUser(PlatformlayerUserAuthentication auth) {
 		this.auth = auth;
 	}
 
-	public KeystoneAuthentication getAuth() {
+	public PlatformlayerUserAuthentication getAuth() {
 		return auth;
 	}
 

@@ -41,7 +41,7 @@ public class ManagedItemCollectionResource extends XaasResourceBase {
 	public <T extends ItemBase> ManagedItemCollection<T> listItems() throws OpsException {
 		ModelClass<T> modelClass = (ModelClass<T>) getModelClass();
 
-		List<T> listItems = itemService.findAll(getAuthentication(), modelClass.getJavaClass());
+		List<T> listItems = itemService.findAll(getProjectAuthorization(), modelClass.getJavaClass());
 		ManagedItemCollection<T> collection = new ManagedItemCollection<T>();
 		collection.items = listItems;
 
@@ -55,7 +55,7 @@ public class ManagedItemCollectionResource extends XaasResourceBase {
 		// ModelClass<T> modelClass = (ModelClass<T>) getModelClass();
 
 		// TODO: Does it matter that we're not checking the item type??
-		return itemService.createItem(getAuthentication(), item);
+		return itemService.createItem(getProjectAuthorization(), item);
 	}
 
 	@POST
@@ -65,7 +65,7 @@ public class ManagedItemCollectionResource extends XaasResourceBase {
 			XMLStreamException {
 		T typedItem = readItem(json);
 
-		return itemService.createItem(getAuthentication(), typedItem);
+		return itemService.createItem(getProjectAuthorization(), typedItem);
 	}
 
 	// private Tags deserializeTags(HttpHeaders hh) {

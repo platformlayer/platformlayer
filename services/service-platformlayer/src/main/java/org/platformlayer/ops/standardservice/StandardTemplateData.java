@@ -3,11 +3,26 @@ package org.platformlayer.ops.standardservice;
 import java.io.File;
 import java.util.Map;
 
+import javax.inject.Inject;
+
+import org.platformlayer.core.model.ItemBase;
+import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.crypto.ManagedSecretKey;
+import org.platformlayer.ops.helpers.ProviderHelper;
+import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.templates.TemplateDataSource;
 
 public abstract class StandardTemplateData implements TemplateDataSource {
+
+	@Inject
+	protected ProviderHelper providers;
+
+	@Inject
+	protected PlatformLayerHelpers platformLayer;
+
+	public abstract ItemBase getModel();
 
 	public String getServiceKey() {
 		return getKey() + "-" + getInstanceKey();
@@ -46,6 +61,25 @@ public abstract class StandardTemplateData implements TemplateDataSource {
 	}
 
 	protected abstract Map<String, String> getConfigurationProperties() throws OpsException;
+
+	protected abstract PlatformLayerKey getSslKeyPath();
+
+	public ManagedSecretKey findSslKey() throws OpsException {
+		PlatformLayerKey sslKey = getSslKeyPath();
+		if (sslKey == null) {
+			return null;
+		}
+		ItemBase sslKeyItem = (ItemBase) platformLayer.getItem(sslKey);
+		return providers.<ManagedSecretKey> toInterface(sslKeyItem);
+	}
+
+	public boolean shouldCreateSslKey() {
+		return true;
+	}
+
+	public File getKeystoreFile() {
+		return new File(getConfigDir(), "../keystore.jks");
+	}
 
 	// public String getDatabaseName() {
 	// return "main";

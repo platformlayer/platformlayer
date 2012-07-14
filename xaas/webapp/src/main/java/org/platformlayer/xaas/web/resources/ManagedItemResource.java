@@ -28,7 +28,6 @@ import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.OpsSystem;
 
 public class ManagedItemResource extends XaasResourceBase {
 	@Inject
@@ -52,7 +51,7 @@ public class ManagedItemResource extends XaasResourceBase {
 		checkItemKey(item);
 
 		// TODO: Does it matter that we're not checking the item type??
-		return itemService.putItem(getAuthentication(), item, uniqueTag);
+		return itemService.putItem(getProjectAuthorization(), item, uniqueTag);
 	}
 
 	@PUT
@@ -64,7 +63,7 @@ public class ManagedItemResource extends XaasResourceBase {
 
 		checkItemKey(item);
 
-		return itemService.putItem(getAuthentication(), item, uniqueTag);
+		return itemService.putItem(getProjectAuthorization(), item, uniqueTag);
 	}
 
 	private void checkItemKey(ItemBase item) throws OpsException {
@@ -99,7 +98,7 @@ public class ManagedItemResource extends XaasResourceBase {
 	public JobData deleteItem() throws RepositoryException, OpsException {
 		PlatformLayerKey key = getPlatformLayerKey();
 
-		PlatformLayerKey jobKey = itemService.deleteItem(getAuthentication(), key);
+		PlatformLayerKey jobKey = itemService.deleteItem(getProjectAuthorization(), key);
 
 		JobData jobData = new JobData();
 		jobData.key = jobKey;
@@ -116,7 +115,7 @@ public class ManagedItemResource extends XaasResourceBase {
 
 		Tag parentTag = Tag.buildParentTag(item.getKey());
 		Filter filter = TagFilter.byTag(parentTag);
-		List<ItemBase> roots = itemService.listAll(getAuthentication(), filter);
+		List<ItemBase> roots = itemService.listAll(getProjectAuthorization(), filter);
 		ManagedItemCollection<ItemBase> collection = new ManagedItemCollection<ItemBase>();
 		collection.items = roots;
 		return collection;

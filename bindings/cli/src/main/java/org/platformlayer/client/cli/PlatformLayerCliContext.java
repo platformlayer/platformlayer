@@ -77,7 +77,7 @@ public class PlatformLayerCliContext extends CliContextBase {
 		Iterable<ServiceInfo> allServices = getAllServiceInfos();
 		Multimap<String, ServiceInfo> items = HashMultimap.create();
 		for (ServiceInfo service : allServices) {
-			for (String itemType : service.getPublicTypes()) {
+			for (String itemType : service.getItemTypes()) {
 				items.put(itemType, service);
 			}
 		}

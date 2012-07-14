@@ -19,11 +19,12 @@ import javax.crypto.SecretKey;
 import org.apache.log4j.Logger;
 import org.openstack.crypto.Md5Hash;
 import org.platformlayer.IoUtils;
-import org.platformlayer.auth.OpsProject;
 import org.platformlayer.auth.OpsUser;
+import org.platformlayer.auth.ProjectInfo;
 import org.platformlayer.crypto.AesUtils;
 import org.platformlayer.crypto.CryptoUtils;
 import org.platformlayer.crypto.RsaUtils;
+import org.platformlayer.model.ProjectAuthorization;
 
 public class SecretStore {
 	static final Logger log = Logger.getLogger(SecretStore.class);
@@ -334,10 +335,15 @@ public class SecretStore {
 		return visitor.getSecretKey();
 	}
 
-	public SecretKey getSecretFromProject(final OpsProject project) {
-		final int projectId = project.getId();
-		final SecretKey projectSecret = project.getProjectSecret();
+	public SecretKey getSecretFromProject(final ProjectInfo project) {
+		return getSecretFromProject(project.getId(), project.getProjectSecret());
+	}
 
+	public SecretKey getSecretFromProject(final ProjectAuthorization project) {
+		return getSecretFromProject(project.getId(), project.getProjectSecret());
+	}
+
+	public SecretKey getSecretFromProject(final int projectId, final SecretKey projectSecret) {
 		SecretStoreDecoder visitor = new SecretStoreDecoder() {
 			@Override
 			public void visitProjectKey(int itemProjectId, byte[] itemSecret) {

@@ -12,8 +12,7 @@ public class ServiceInfo {
 	public String serviceType;
 	public String namespace;
 	public String description;
-	public List<String> publicTypes;
-	public List<String> adminTypes;
+	public List<String> itemTypes;
 
 	public String getServiceType() {
 		return serviceType;
@@ -27,18 +26,14 @@ public class ServiceInfo {
 		return description;
 	}
 
-	public List<String> getPublicTypes() {
-		return publicTypes;
-	}
-
-	public List<String> getAdminTypes() {
-		return adminTypes;
+	public List<String> getItemTypes() {
+		return itemTypes;
 	}
 
 	@Override
 	public String toString() {
 		return "ServiceInfo [serviceType=" + serviceType + ", namespace=" + namespace + ", description=" + description
-				+ ", publicTypes=" + publicTypes + ", adminTypes=" + adminTypes + "]";
+				+ ", allTypes=" + itemTypes + "]";
 	}
 
 	// @Override

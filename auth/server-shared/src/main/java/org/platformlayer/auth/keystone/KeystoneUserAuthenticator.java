@@ -1,6 +1,9 @@
 package org.platformlayer.auth.keystone;
 
-import org.openstack.keystone.services.AuthenticatorException;
+import java.util.List;
+
+import org.platformlayer.RepositoryException;
+import org.platformlayer.auth.AuthenticatorException;
 import org.platformlayer.auth.CertificateAuthenticationRequest;
 import org.platformlayer.auth.CertificateAuthenticationResponse;
 import org.platformlayer.auth.OpsUser;
@@ -8,7 +11,7 @@ import org.platformlayer.auth.ProjectEntity;
 import org.platformlayer.auth.UserEntity;
 
 public interface KeystoneUserAuthenticator {
-	UserEntity authenticate(String project, String username, String password) throws AuthenticatorException;
+	UserEntity authenticate(String username, String password) throws AuthenticatorException;
 
 	ProjectEntity findProject(String projectKey, OpsUser user) throws AuthenticatorException;
 
@@ -16,4 +19,6 @@ public interface KeystoneUserAuthenticator {
 
 	CertificateAuthenticationResponse authenticate(CertificateAuthenticationRequest request)
 			throws AuthenticatorException;
+
+	List<ProjectEntity> listProjects(UserEntity user) throws RepositoryException;
 }

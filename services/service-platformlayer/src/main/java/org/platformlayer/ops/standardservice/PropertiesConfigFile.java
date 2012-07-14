@@ -22,7 +22,8 @@ public class PropertiesConfigFile extends SyntheticFile {
 			Properties properties = new Properties();
 			properties.putAll(propertiesMap);
 
-			return Utf8.getBytes(PropertyUtils.serialize(properties));
+			String v = PropertyUtils.serialize(properties);
+			return Utf8.getBytes(v);
 		} catch (IOException e) {
 			throw new OpsException("Error serializing properties", e);
 		}

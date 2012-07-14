@@ -18,6 +18,10 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.openstack.crypto.KeyStoreUtils;
 import org.openstack.keystone.resources.admin.TokensResource;
 import org.platformlayer.WellKnownPorts;
+import org.platformlayer.auth.server.AcceptAllClientCertificatesTrustManager;
+import org.platformlayer.auth.server.CustomTrustManagerSslContextFactory;
+import org.platformlayer.auth.server.GuiceAuthenticationConfig;
+import org.platformlayer.auth.server.GuiceServletConfig;
 
 import com.google.common.collect.Maps;
 import com.google.inject.Guice;

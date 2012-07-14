@@ -27,7 +27,8 @@ public class MetricsResource extends XaasResourceBase {
 
 		OpsContextBuilder opsContextBuilder = objectInjector.getInstance(OpsContextBuilder.class);
 
-		final OpsContext opsContext = opsContextBuilder.buildTemporaryOpsContext(getServiceType(), getAuthentication());
+		final OpsContext opsContext = opsContextBuilder.buildTemporaryOpsContext(getServiceType(),
+				getProjectAuthorization());
 
 		return OpsContext.runInContext(opsContext, new CheckedCallable<MetricInfoCollection, Exception>() {
 			@Override
@@ -55,7 +56,8 @@ public class MetricsResource extends XaasResourceBase {
 
 		OpsContextBuilder opsContextBuilder = objectInjector.getInstance(OpsContextBuilder.class);
 
-		final OpsContext opsContext = opsContextBuilder.buildTemporaryOpsContext(getServiceType(), getAuthentication());
+		final OpsContext opsContext = opsContextBuilder.buildTemporaryOpsContext(getServiceType(),
+				getProjectAuthorization());
 
 		return OpsContext.runInContext(opsContext, new CheckedCallable<MetricValues, Exception>() {
 			@Override

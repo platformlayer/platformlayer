@@ -18,8 +18,7 @@ import com.google.inject.Injector;
 public abstract class ServiceProviderDirectoryBase implements ServiceProviderDictionary {
 	final Map<ServiceType, ServiceProvider> serviceProviders = Maps.newHashMap();
 	final Map<String, ServiceProvider> serviceProvidersByNamespace = Maps.newHashMap();
-	final List<ServiceInfo> allServicesManagement = Lists.newArrayList();
-	final List<ServiceInfo> allServicesPublic = Lists.newArrayList();
+	final List<ServiceInfo> allServices = Lists.newArrayList();
 	final Map<Class<?>, ModelClass> javaClassToModelClass = Maps.newHashMap();
 
 	final Injector injector;
@@ -39,8 +38,8 @@ public abstract class ServiceProviderDirectoryBase implements ServiceProviderDic
 	}
 
 	@Override
-	public List<ServiceInfo> getAllServices(boolean management) {
-		return Collections.unmodifiableList(management ? allServicesManagement : allServicesPublic);
+	public List<ServiceInfo> getAllServices() {
+		return Collections.unmodifiableList(allServices);
 	}
 
 	public void addService(ServiceProvider serviceProvider) {
@@ -64,11 +63,8 @@ public abstract class ServiceProviderDirectoryBase implements ServiceProviderDic
 			javaClassToModelClass.put(modelClass.getJavaClass(), modelClass);
 		}
 
-		ServiceInfo publicServiceInfo = serviceProvider.getServiceInfo(false);
-		allServicesPublic.add(publicServiceInfo);
-
-		ServiceInfo managementServiceInfo = serviceProvider.getServiceInfo(true);
-		allServicesManagement.add(managementServiceInfo);
+		ServiceInfo serviceInfo = serviceProvider.getServiceInfo();
+		allServices.add(serviceInfo);
 	}
 
 	@Override

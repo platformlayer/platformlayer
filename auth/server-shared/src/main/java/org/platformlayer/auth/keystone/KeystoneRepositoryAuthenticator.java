@@ -1,10 +1,12 @@
 package org.platformlayer.auth.keystone;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.openstack.keystone.services.AuthenticatorException;
 import org.platformlayer.RepositoryException;
+import org.platformlayer.auth.AuthenticatorException;
 import org.platformlayer.auth.CertificateAuthenticationRequest;
 import org.platformlayer.auth.CertificateAuthenticationResponse;
 import org.platformlayer.auth.OpsUser;
@@ -19,14 +21,14 @@ public class KeystoneRepositoryAuthenticator implements KeystoneUserAuthenticato
 	UserDatabase repository;
 
 	@Override
-	public UserEntity authenticate(String project, String username, String password) throws AuthenticatorException {
+	public UserEntity authenticate(String username, String password) throws AuthenticatorException {
 		if (username == null || password == null) {
 			return null;
 		}
 
 		UserEntity user;
 		try {
-			user = (UserEntity) repository.authenticateWithPassword(project, username, password);
+			user = (UserEntity) repository.authenticateWithPassword(username, password);
 		} catch (RepositoryException e) {
 			throw new AuthenticatorException("Error while authenticating user", e);
 		}
@@ -117,7 +119,7 @@ public class KeystoneRepositoryAuthenticator implements KeystoneUserAuthenticato
 	public ProjectEntity findProject(String projectKey, final OpsUser user) throws AuthenticatorException {
 		ProjectEntity project;
 		try {
-			project = (ProjectEntity) repository.findProjectByKey(projectKey);
+			project = repository.findProjectByKey(projectKey);
 		} catch (RepositoryException e) {
 			throw new AuthenticatorException("Error while fetching project", e);
 		}
@@ -171,5 +173,10 @@ public class KeystoneRepositoryAuthenticator implements KeystoneUserAuthenticato
 		}
 
 		return user;
+	}
+
+	@Override
+	public List<ProjectEntity> listProjects(UserEntity user) throws RepositoryException {
+		return repository.listProjectsByUserId(user.getId());
 	}
 }
