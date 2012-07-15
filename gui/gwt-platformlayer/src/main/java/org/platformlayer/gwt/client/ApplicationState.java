@@ -7,6 +7,7 @@ import javax.inject.Singleton;
 
 import org.platformlayer.gwt.client.api.login.Authentication;
 import org.platformlayer.gwt.client.api.platformlayer.OpsProject;
+import org.platformlayer.gwt.client.stores.JobStore;
 
 import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.view.client.ListDataProvider;
@@ -15,6 +16,9 @@ import com.google.gwt.view.client.ListDataProvider;
 public class ApplicationState {
 	@Inject
 	PlaceController placeController;
+
+	@Inject
+	JobStore jobStore;
 
 	private Authentication authentication;
 
@@ -66,5 +70,9 @@ public class ApplicationState {
 
 	public List<OpsProject> getProjects() {
 		return projectsProvider.getList();
+	}
+
+	public JobStore getJobStore() {
+		return jobStore;
 	}
 }

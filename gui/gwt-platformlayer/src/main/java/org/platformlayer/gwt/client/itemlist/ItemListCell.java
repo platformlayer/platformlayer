@@ -11,7 +11,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiRenderer;
-import com.google.gwt.user.client.Window;
 
 public class ItemListCell extends AbstractCell<UntypedItem> {
 	interface CellUiRenderer extends UiRenderer {
@@ -21,9 +20,11 @@ public class ItemListCell extends AbstractCell<UntypedItem> {
 	}
 
 	private static CellUiRenderer renderer = GWT.create(CellUiRenderer.class);
+	private final ItemListViewImpl view;
 
-	public ItemListCell() {
+	public ItemListCell(ItemListViewImpl view) {
 		super("click");
+		this.view = view;
 	}
 
 	@Override
@@ -40,6 +41,6 @@ public class ItemListCell extends AbstractCell<UntypedItem> {
 
 	@UiHandler("labelSpan")
 	void onLabelSpanClick(ClickEvent event, Element parent, UntypedItem value) {
-		Window.alert(value.getKey() + " was pressed!");
+		view.onItemClick(value);
 	}
 }

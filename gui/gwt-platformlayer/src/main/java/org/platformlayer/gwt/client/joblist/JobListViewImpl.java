@@ -1,9 +1,10 @@
-package org.platformlayer.gwt.client.itemlist;
+package org.platformlayer.gwt.client.joblist;
 
 import javax.inject.Inject;
 
 import org.platformlayer.gwt.client.ApplicationState;
-import org.platformlayer.gwt.client.api.platformlayer.UntypedItem;
+import org.platformlayer.gwt.client.api.platformlayer.Job;
+import org.platformlayer.gwt.client.job.JobPlace;
 import org.platformlayer.gwt.client.view.AbstractApplicationPage;
 
 import com.google.gwt.core.client.GWT;
@@ -13,19 +14,19 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.user.client.ui.HTMLPanel;
 
-public class ItemListViewImpl extends AbstractApplicationPage implements ItemListView {
-	interface ViewUiBinder extends UiBinder<HTMLPanel, ItemListViewImpl> {
+public class JobListViewImpl extends AbstractApplicationPage implements JobListView {
+	interface ViewUiBinder extends UiBinder<HTMLPanel, JobListViewImpl> {
 	}
 
 	@Inject
 	ApplicationState app;
 
 	@UiField
-	CellList<UntypedItem> itemList;
+	CellList<Job> jobList;
 
 	@UiFactory
-	CellList<UntypedItem> makeItemList() {
-		CellList<UntypedItem> table = new CellList<UntypedItem>(new ItemListCell(this));
+	CellList<Job> makeJobList() {
+		CellList<Job> table = new CellList<Job>(new JobListCell(this));
 
 		// final SingleSelectionModel<OpsProject> selectionModel = new SingleSelectionModel<Product>();
 		// table.setSelectionModel(selectionModel);
@@ -48,23 +49,24 @@ public class ItemListViewImpl extends AbstractApplicationPage implements ItemLis
 
 	private static ViewUiBinder viewUiBinder = GWT.create(ViewUiBinder.class);
 
-	private ItemListActivity activity;
+	private JobListActivity activity;
 
-	public ItemListViewImpl() {
+	public JobListViewImpl() {
 		initWidget(viewUiBinder.createAndBindUi(this));
 	}
 
 	@Override
-	public void start(ItemListActivity activity) {
+	public void start(JobListActivity activity) {
 		this.activity = activity;
 	}
 
 	@Override
-	public CellList<UntypedItem> getItemList() {
-		return itemList;
+	public CellList<Job> getJobList() {
+		return jobList;
 	}
 
-	public void onItemClick(UntypedItem value) {
-		activity.goTo(value);
+	public void onJobClick(Job value) {
+		JobPlace newPlace = activity.getPlace().getJobPlace(value.getKey());
+		activity.goTo(newPlace);
 	}
 }

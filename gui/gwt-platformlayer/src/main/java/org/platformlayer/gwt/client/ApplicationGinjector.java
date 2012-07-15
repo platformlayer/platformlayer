@@ -4,13 +4,18 @@ import org.platformlayer.gwt.client.breadcrumb.HeaderActivity;
 import org.platformlayer.gwt.client.breadcrumb.HeaderActivityMapper;
 import org.platformlayer.gwt.client.breadcrumb.HeaderView;
 import org.platformlayer.gwt.client.home.HomeActivity;
+import org.platformlayer.gwt.client.item.ItemActivity;
 import org.platformlayer.gwt.client.itemlist.ItemListActivity;
+import org.platformlayer.gwt.client.job.JobActivity;
+import org.platformlayer.gwt.client.joblist.JobListActivity;
 import org.platformlayer.gwt.client.login.LoginActivity;
+import org.platformlayer.gwt.client.project.ProjectActivity;
 import org.platformlayer.gwt.client.projectlist.ProjectListActivity;
 
 import com.google.gwt.inject.client.GinModules;
 import com.google.gwt.inject.client.Ginjector;
 import com.google.gwt.place.shared.PlaceController;
+import com.google.gwt.place.shared.PlaceHistoryMapper;
 import com.google.web.bindery.event.shared.EventBus;
 
 @GinModules(ApplicationGinModule.class)
@@ -34,4 +39,14 @@ public interface ApplicationGinjector extends Ginjector {
 	ProjectListActivity getProjectListActivity();
 
 	ItemListActivity getItemListActivity();
+
+	JobListActivity getJobListActivity();
+
+	ProjectActivity getProjectActivity();
+
+	JobActivity getJobActivity();
+
+	PlaceHistoryMapper getPlaceHistoryMapper();
+
+	ItemActivity getItemActivity();
 }

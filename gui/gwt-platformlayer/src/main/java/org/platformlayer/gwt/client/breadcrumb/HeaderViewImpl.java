@@ -75,6 +75,6 @@ public class HeaderViewImpl extends Composite implements HeaderView {
 
 	@UiHandler("homeButton")
 	public void homeButtonClicked(ClickEvent e) {
-		placeController.goTo(HomePlace.build());
+		placeController.goTo(HomePlace.INSTANCE);
 	}
 }

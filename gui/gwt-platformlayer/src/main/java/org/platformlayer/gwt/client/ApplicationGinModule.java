@@ -36,6 +36,6 @@ public class ApplicationGinModule extends AbstractGinModule {
 		bind(LoginService.class).to(JsonpLoginService.class).in(Singleton.class);
 		bind(PlatformLayerService.class).to(CorsPlatformLayerService.class).in(Singleton.class);
 
-		bind(PlaceHistoryMapper.class).to(ApplicationPlaceHistoryMapper.class).in(Singleton.class);
+		bind(PlaceHistoryMapper.class).toProvider(ApplicationPlaceHistoryMapper.Factory.class).in(Singleton.class);
 	}
 }

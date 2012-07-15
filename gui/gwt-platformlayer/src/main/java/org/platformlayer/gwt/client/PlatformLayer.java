@@ -8,6 +8,7 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.place.shared.Place;
 import com.google.gwt.place.shared.PlaceHistoryHandler;
+import com.google.gwt.place.shared.PlaceHistoryMapper;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 
@@ -38,8 +39,7 @@ public class PlatformLayer implements EntryPoint {
 			activityManager.setDisplay(headerWidget);
 		}
 
-		// Start PlaceHistoryHandler with our PlaceHistoryMapper
-		ApplicationPlaceHistoryMapper historyMapper = GWT.create(ApplicationPlaceHistoryMapper.class);
+		PlaceHistoryMapper historyMapper = injector.getPlaceHistoryMapper();
 		PlaceHistoryHandler historyHandler = new PlaceHistoryHandler(historyMapper);
 
 		rootPanel.add(headerWidget);

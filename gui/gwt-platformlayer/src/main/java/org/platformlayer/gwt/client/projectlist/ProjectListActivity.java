@@ -8,7 +8,6 @@ import org.platformlayer.gwt.client.api.platformlayer.OpsProject;
 import org.platformlayer.gwt.client.api.platformlayer.PlatformLayerService;
 import org.platformlayer.gwt.client.api.platformlayer.UntypedItem;
 import org.platformlayer.gwt.client.api.platformlayer.UntypedItemCollection;
-import org.platformlayer.gwt.client.itemlist.ItemListPlace;
 import org.platformlayer.gwt.client.login.LoginPlace;
 
 import com.google.gwt.place.shared.Place;
@@ -38,7 +37,7 @@ public class ProjectListActivity extends ApplicationAbstractActivity {
 		OpsProject project = app.findProject("production");
 		if (project == null) {
 			// TODO: Async redirect??
-			placeController.goTo(LoginPlace.build());
+			placeController.goTo(LoginPlace.INSTANCE);
 			return;
 		}
 
@@ -68,7 +67,7 @@ public class ProjectListActivity extends ApplicationAbstractActivity {
 	}
 
 	public void goToProject(OpsProject project) {
-		Place newPlace = ItemListPlace.build(project.getProjectName(), null);
+		Place newPlace = ProjectListPlace.INSTANCE.getProjectPlace(project.getProjectName());
 		placeController.goTo(newPlace);
 	}
 }

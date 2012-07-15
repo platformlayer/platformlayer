@@ -8,6 +8,7 @@ import org.platformlayer.gwt.client.api.platformlayer.OpsProject;
 import org.platformlayer.gwt.client.api.platformlayer.PlatformLayerService;
 import org.platformlayer.gwt.client.api.platformlayer.UntypedItem;
 import org.platformlayer.gwt.client.api.platformlayer.UntypedItemCollection;
+import org.platformlayer.gwt.client.item.ItemPlace;
 
 import com.google.gwt.place.shared.Place;
 import com.google.gwt.user.cellview.client.CellList;
@@ -39,7 +40,7 @@ public class ItemListActivity extends ApplicationAbstractActivity {
 
 		panel.setWidget(view.asWidget());
 
-		String parentKey = place.getParentKey();
+		// String basePath = place.getBasePath();
 		String projectKey = place.getProjectKey();
 
 		OpsProject project = app.findProject(projectKey);
@@ -63,5 +64,10 @@ public class ItemListActivity extends ApplicationAbstractActivity {
 	@Override
 	public void onStop() {
 		super.onStop();
+	}
+
+	public void goTo(UntypedItem value) {
+		ItemPlace itemPlace = place.getItem(value.getKey());
+		goTo(itemPlace);
 	}
 }

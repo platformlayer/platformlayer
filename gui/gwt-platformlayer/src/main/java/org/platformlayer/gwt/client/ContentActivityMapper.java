@@ -1,8 +1,12 @@
 package org.platformlayer.gwt.client;
 
 import org.platformlayer.gwt.client.home.HomePlace;
+import org.platformlayer.gwt.client.item.ItemPlace;
 import org.platformlayer.gwt.client.itemlist.ItemListPlace;
+import org.platformlayer.gwt.client.job.JobPlace;
+import org.platformlayer.gwt.client.joblist.JobListPlace;
 import org.platformlayer.gwt.client.login.LoginPlace;
+import org.platformlayer.gwt.client.project.ProjectPlace;
 import org.platformlayer.gwt.client.projectlist.ProjectListPlace;
 
 import com.google.gwt.activity.shared.Activity;
@@ -39,8 +43,16 @@ public class ContentActivityMapper implements ActivityMapper {
 			activity = injector.getProjectListActivity();
 		} else if (place instanceof ItemListPlace) {
 			activity = injector.getItemListActivity();
+		} else if (place instanceof JobListPlace) {
+			activity = injector.getJobListActivity();
+		} else if (place instanceof ProjectPlace) {
+			activity = injector.getProjectActivity();
+		} else if (place instanceof JobPlace) {
+			activity = injector.getJobActivity();
 		} else if (place instanceof LoginPlace) {
 			activity = injector.getLoginActivity();
+		} else if (place instanceof ItemPlace) {
+			activity = injector.getItemActivity();
 		}
 
 		if (activity == null) {

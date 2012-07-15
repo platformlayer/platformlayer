@@ -34,6 +34,7 @@ public class HeaderActivity extends ApplicationAbstractActivity {
 	}
 
 	private void collectBreadcrumbs(ApplicationPlace place, List<ApplicationPlace> dest) {
+		// TODO: Better to add non-recursively and then reverse??
 		if (place == null) {
 			return;
 		}

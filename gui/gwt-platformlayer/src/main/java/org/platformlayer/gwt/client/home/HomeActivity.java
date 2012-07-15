@@ -37,7 +37,7 @@ public class HomeActivity extends ApplicationAbstractActivity {
 		OpsProject project = app.findProject("platformlayer");
 		if (project == null) {
 			// TODO: Async redirect??
-			placeController.goTo(LoginPlace.build());
+			placeController.goTo(LoginPlace.INSTANCE);
 			return;
 		}
 

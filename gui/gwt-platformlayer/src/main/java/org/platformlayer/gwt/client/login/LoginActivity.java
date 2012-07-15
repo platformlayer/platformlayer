@@ -66,7 +66,7 @@ public class LoginActivity extends ApplicationAbstractActivity {
 					view.showError(statusCode, null);
 				} else {
 					app.setAuthentication(new StaticAuthenticationToken(access), access.getProjects());
-					placeController.goTo(ProjectListPlace.build());
+					placeController.goTo(ProjectListPlace.INSTANCE);
 				}
 			}
 
