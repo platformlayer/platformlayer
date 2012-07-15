@@ -18,13 +18,13 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 
 public class LoginViewImpl extends AbstractApplicationPage implements LoginView {
 
-	interface LoginViewImplBinder extends UiBinder<HTMLPanel, LoginViewImpl> {
+	interface ViewUiBinder extends UiBinder<HTMLPanel, LoginViewImpl> {
 	}
 
-	private static LoginViewImplBinder dashboardViewUiBinder = GWT.create(LoginViewImplBinder.class);
+	private static ViewUiBinder viewUiBinder = GWT.create(ViewUiBinder.class);
 
 	public LoginViewImpl() {
-		initWidget(dashboardViewUiBinder.createAndBindUi(this));
+		initWidget(viewUiBinder.createAndBindUi(this));
 	}
 
 	@UiField

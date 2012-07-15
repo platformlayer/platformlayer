@@ -4,6 +4,7 @@ import org.platformlayer.gwt.client.breadcrumb.HeaderActivity;
 import org.platformlayer.gwt.client.breadcrumb.HeaderActivityMapper;
 import org.platformlayer.gwt.client.breadcrumb.HeaderView;
 import org.platformlayer.gwt.client.home.HomeActivity;
+import org.platformlayer.gwt.client.itemlist.ItemListActivity;
 import org.platformlayer.gwt.client.login.LoginActivity;
 import org.platformlayer.gwt.client.projectlist.ProjectListActivity;
 
@@ -31,4 +32,6 @@ public interface ApplicationGinjector extends Ginjector {
 	HeaderActivity getHeaderActivity();
 
 	ProjectListActivity getProjectListActivity();
+
+	ItemListActivity getItemListActivity();
 }

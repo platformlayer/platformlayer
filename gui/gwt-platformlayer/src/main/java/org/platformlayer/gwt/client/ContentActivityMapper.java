@@ -1,6 +1,7 @@
 package org.platformlayer.gwt.client;
 
 import org.platformlayer.gwt.client.home.HomePlace;
+import org.platformlayer.gwt.client.itemlist.ItemListPlace;
 import org.platformlayer.gwt.client.login.LoginPlace;
 import org.platformlayer.gwt.client.projectlist.ProjectListPlace;
 
@@ -36,6 +37,8 @@ public class ContentActivityMapper implements ActivityMapper {
 			activity = injector.getHomeActivity();
 		} else if (place instanceof ProjectListPlace) {
 			activity = injector.getProjectListActivity();
+		} else if (place instanceof ItemListPlace) {
+			activity = injector.getItemListActivity();
 		} else if (place instanceof LoginPlace) {
 			activity = injector.getLoginActivity();
 		}

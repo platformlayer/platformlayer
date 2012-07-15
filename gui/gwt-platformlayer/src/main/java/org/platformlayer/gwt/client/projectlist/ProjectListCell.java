@@ -11,7 +11,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiRenderer;
-import com.google.gwt.user.client.Window;
 
 public class ProjectListCell extends AbstractCell<OpsProject> {
 	interface CellUiRenderer extends UiRenderer {
@@ -22,8 +21,11 @@ public class ProjectListCell extends AbstractCell<OpsProject> {
 
 	private static CellUiRenderer renderer = GWT.create(CellUiRenderer.class);
 
-	public ProjectListCell() {
+	private final ProjectListViewImpl projectListViewImpl;
+
+	public ProjectListCell(ProjectListViewImpl projectListViewImpl) {
 		super("click");
+		this.projectListViewImpl = projectListViewImpl;
 	}
 
 	@Override
@@ -40,6 +42,6 @@ public class ProjectListCell extends AbstractCell<OpsProject> {
 
 	@UiHandler("labelSpan")
 	void onLabelSpanClick(ClickEvent event, Element parent, OpsProject project) {
-		Window.alert(project.getProjectName() + " was pressed!");
+		projectListViewImpl.goToProject(project);
 	}
 }

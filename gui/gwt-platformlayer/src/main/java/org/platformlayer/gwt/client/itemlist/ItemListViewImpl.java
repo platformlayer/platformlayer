@@ -1,9 +1,9 @@
-package org.platformlayer.gwt.client.projectlist;
+package org.platformlayer.gwt.client.itemlist;
 
 import javax.inject.Inject;
 
 import org.platformlayer.gwt.client.ApplicationState;
-import org.platformlayer.gwt.client.api.platformlayer.OpsProject;
+import org.platformlayer.gwt.client.api.platformlayer.UntypedItem;
 import org.platformlayer.gwt.client.view.AbstractApplicationPage;
 
 import com.google.gwt.core.client.GWT;
@@ -13,21 +13,19 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.user.client.ui.HTMLPanel;
 
-public class ProjectListViewImpl extends AbstractApplicationPage implements ProjectListView {
-	interface ViewUiBinder extends UiBinder<HTMLPanel, ProjectListViewImpl> {
+public class ItemListViewImpl extends AbstractApplicationPage implements ItemListView {
+	interface ViewUiBinder extends UiBinder<HTMLPanel, ItemListViewImpl> {
 	}
 
 	@Inject
 	ApplicationState app;
 
 	@UiField
-	CellList<OpsProject> projectList;
-
-	private ProjectListActivity activity;
+	CellList<UntypedItem> itemList;
 
 	@UiFactory
-	CellList<OpsProject> makeProjectList() {
-		CellList<OpsProject> table = new CellList<OpsProject>(new ProjectListCell(this));
+	CellList<UntypedItem> makeItemList() {
+		CellList<UntypedItem> table = new CellList<UntypedItem>(new ItemListCell());
 
 		// final SingleSelectionModel<OpsProject> selectionModel = new SingleSelectionModel<Product>();
 		// table.setSelectionModel(selectionModel);
@@ -50,18 +48,16 @@ public class ProjectListViewImpl extends AbstractApplicationPage implements Proj
 
 	private static ViewUiBinder viewUiBinder = GWT.create(ViewUiBinder.class);
 
-	public ProjectListViewImpl() {
+	public ItemListViewImpl() {
 		initWidget(viewUiBinder.createAndBindUi(this));
 	}
 
 	@Override
-	public void start(ProjectListActivity activity) {
-		this.activity = activity;
-
-		addDataDisplay(projectList, app.getProjectsProvider());
+	public void start(ItemListActivity activity) {
 	}
 
-	public void goToProject(OpsProject project) {
-		activity.goToProject(project);
+	@Override
+	public CellList<UntypedItem> getItemList() {
+		return itemList;
 	}
 }

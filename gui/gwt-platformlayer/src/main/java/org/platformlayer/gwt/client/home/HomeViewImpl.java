@@ -9,13 +9,13 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
 
 public class HomeViewImpl extends AbstractApplicationPage implements HomeView {
-	interface HomeViewUiBinder extends UiBinder<HTMLPanel, HomeViewImpl> {
+	interface ViewUiBinder extends UiBinder<HTMLPanel, HomeViewImpl> {
 	}
 
-	private static HomeViewUiBinder dashboardViewUiBinder = GWT.create(HomeViewUiBinder.class);
+	private static ViewUiBinder viewUiBinder = GWT.create(ViewUiBinder.class);
 
 	public HomeViewImpl() {
-		initWidget(dashboardViewUiBinder.createAndBindUi(this));
+		initWidget(viewUiBinder.createAndBindUi(this));
 	}
 
 	@Inject
