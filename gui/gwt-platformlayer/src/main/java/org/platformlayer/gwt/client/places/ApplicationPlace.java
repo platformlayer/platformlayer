@@ -27,7 +27,7 @@ public abstract class ApplicationPlace extends Place {
 
 	public abstract ApplicationPlace getChild(String pathToken);
 
-	protected ProjectPlace getProject() {
+	public ProjectPlace getProject() {
 		if (parent == null)
 			return null;
 		return parent.getProject();

@@ -65,4 +65,9 @@ public class HomeActivity extends ApplicationAbstractActivity {
 	public void onStop() {
 		super.onStop();
 	}
+
+	@Override
+	public HomePlace getPlace() {
+		return place;
+	}
 }

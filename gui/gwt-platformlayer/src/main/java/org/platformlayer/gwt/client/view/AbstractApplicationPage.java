@@ -1,5 +1,7 @@
 package org.platformlayer.gwt.client.view;
 
+import java.util.List;
+
 import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
@@ -15,6 +17,10 @@ public abstract class AbstractApplicationPage extends Composite implements Appli
 		if (!provider.getDataDisplays().contains(list)) {
 			provider.addDataDisplay(list);
 		}
+	}
+
+	protected static <T> void addDataDisplay(CellList<T> list, List<T> values) {
+		addDataDisplay(list, new ListDataProvider<T>(values));
 	}
 
 }

@@ -60,7 +60,6 @@ public class LoginViewImpl extends AbstractApplicationPage implements LoginView 
 		// });
 
 		DOM.setEventListener(signIn.<com.google.gwt.user.client.Element> cast(), new EventListener() {
-
 			@Override
 			public void onBrowserEvent(Event event) {
 				boolean rememberMeChecked = "1".equals(rememberMe.getValue());

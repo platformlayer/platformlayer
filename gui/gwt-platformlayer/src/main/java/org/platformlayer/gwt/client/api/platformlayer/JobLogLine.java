@@ -7,10 +7,11 @@ public class JobLogLine extends JavaScriptObject {
 	}
 
 	public final native String getMessage()
-	/*-{ return this.messge; }-*/;
+	/*-{ return this.message; }-*/;
 
-	public final native long getTimestamp()
-	/*-{ return this.timestamp; }-*/;
+	// Long is not allowed in JSON / JSNI
+	// public final native long getTimestamp()
+	// /*-{ return this.timestamp; }-*/;
 
 	public final native int getLevel()
 	/*-{ return this.level; }-*/;

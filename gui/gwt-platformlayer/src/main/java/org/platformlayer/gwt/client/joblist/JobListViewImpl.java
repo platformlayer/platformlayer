@@ -66,7 +66,7 @@ public class JobListViewImpl extends AbstractApplicationPage implements JobListV
 	}
 
 	public void onJobClick(Job value) {
-		JobPlace newPlace = activity.getPlace().getJobPlace(value.getKey());
+		JobPlace newPlace = activity.getPlace().getJobPlace(value.getJobId());
 		activity.goTo(newPlace);
 	}
 }

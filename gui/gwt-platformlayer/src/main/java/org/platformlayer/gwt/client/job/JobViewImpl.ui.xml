@@ -10,6 +10,8 @@
 
 				<span ui:field="labelSpan">
 				</span>
+				
+				<c:CellList ui:field="jobLogList" />
 			</div>
 		</div>
 	</g:HTMLPanel>

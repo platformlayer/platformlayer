@@ -70,4 +70,9 @@ public class ItemListActivity extends ApplicationAbstractActivity {
 		ItemPlace itemPlace = place.getItem(value.getKey());
 		goTo(itemPlace);
 	}
+
+	@Override
+	public ItemListPlace getPlace() {
+		return place;
+	}
 }

@@ -70,4 +70,9 @@ public class ProjectListActivity extends ApplicationAbstractActivity {
 		Place newPlace = ProjectListPlace.INSTANCE.getProjectPlace(project.getProjectName());
 		placeController.goTo(newPlace);
 	}
+
+	@Override
+	public ProjectListPlace getPlace() {
+		return place;
+	}
 }

@@ -32,7 +32,7 @@ public class JobListPlace extends ApplicationPlace {
 		return getJobPlace(pathToken);
 	}
 
-	public JobPlace getJobPlace(String key) {
-		return new JobPlace(this, key);
+	public JobPlace getJobPlace(String jobId) {
+		return new JobPlace(this, jobId);
 	}
 }

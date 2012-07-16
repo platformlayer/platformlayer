@@ -7,7 +7,7 @@ public class Job extends JavaScriptObject {
 	}
 
 	// TODO: JSON looks like: key : { value: abc } Remove the value!
-	public final native String getKey()
+	public final native String getKey0()
 	/*-{ return this.key ? this.key.value : null; }-*/;
 
 	// TODO: JSON looks like: key : { value: abc } Remove the value!
@@ -19,5 +19,15 @@ public class Job extends JavaScriptObject {
 
 	public final native String getState()
 	/*-{ return this.state; }-*/;
+
+	public final String getJobId() {
+		String key = getKey0();
+		assert key != null;
+
+		int lastSlash = key.lastIndexOf('/');
+		assert lastSlash != -1;
+
+		return key.substring(lastSlash + 1);
+	}
 
 }

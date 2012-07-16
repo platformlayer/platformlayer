@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module rename-to='PlatformLayer'>
-<!-- 
-	<inherits name='elemental.Elemental' />
- -->
+	<!-- <inherits name='elemental.Elemental' /> -->
 
 	<!-- Inherit the core Web Toolkit stuff. -->
 	<inherits name='com.google.gwt.user.User' />
@@ -19,11 +17,9 @@
 	<!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/> -->
 
 	<!-- GWT Bootstrap -->
-	<!-- 
-	<inherits name='com.github.gwtbootstrap.Bootstrap' />
-	<set-property name="bootstrap.responsiveDesign" value="true" />
- -->
- 
+	<!-- <inherits name='com.github.gwtbootstrap.Bootstrap' /> <set-property 
+		name="bootstrap.responsiveDesign" value="true" /> -->
+
 	<inherits name="com.google.common.collect.Collect" />
 
 	<!-- Other module inherits -->
@@ -52,5 +48,6 @@
 	<set-property name="gwt.logging.simpleRemoteHandler"
 		value="DISABLED" />
 
-
+	<!-- Services -->
+	<inherits name="org.platformlayer.service.dns.GwtService" />
 </module>

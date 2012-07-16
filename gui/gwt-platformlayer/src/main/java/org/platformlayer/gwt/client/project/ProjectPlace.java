@@ -39,7 +39,7 @@ public class ProjectPlace extends ApplicationPlace {
 	}
 
 	@Override
-	protected ProjectPlace getProject() {
+	public ProjectPlace getProject() {
 		return this;
 	}
 

@@ -35,7 +35,7 @@ public class JobListCell extends AbstractCell<Job> {
 
 	@Override
 	public void render(Context context, Job value, SafeHtmlBuilder builder) {
-		String label = value.getKey();
+		String label = value.getJobId();
 		String state = value.getState();
 		renderer.render(builder, label, state);
 	}

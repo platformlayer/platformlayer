@@ -1,5 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-	xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:c="urn:import:com.google.gwt.user.cellview.client">
+	xmlns:g='urn:import:com.google.gwt.user.client.ui'
+	xmlns:c="urn:import:com.google.gwt.user.cellview.client">
 
 	<g:HTMLPanel>
 		<div class="row">
@@ -10,6 +11,8 @@
 
 				<span ui:field="labelSpan">
 				</span>
+				
+				<g:Button ui:field="editButton">Edit</g:Button>
 			</div>
 		</div>
 	</g:HTMLPanel>

@@ -43,6 +43,7 @@ public class JobActivity extends ApplicationAbstractActivity {
 		super.onStop();
 	}
 
+	@Override
 	public JobPlace getPlace() {
 		return place;
 	}

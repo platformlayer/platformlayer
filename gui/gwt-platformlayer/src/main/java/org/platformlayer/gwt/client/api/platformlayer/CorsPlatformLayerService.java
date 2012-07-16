@@ -29,4 +29,43 @@ public class CorsPlatformLayerService implements PlatformLayerService {
 		CorsRequest<Job> request = new CorsRequest<Job>(project, url, json);
 		request.execute(callback);
 	}
+
+	@Override
+	public void getJobLog(OpsProject project, String jobId, AsyncCallback<JobLog> callback) {
+		String url = project.getProjectBaseUrl() + "jobs/" + jobId + "/log";
+		CorsRequest<JobLog> request = new CorsRequest<JobLog>(project, url, null);
+		request.execute(callback);
+	}
+
+	@Override
+	public void getItem(OpsProject project, String key, AsyncCallback<UntypedItem> callback) {
+		if (key.startsWith("platform://")) {
+			key = key.substring("platform://".length());
+		} else {
+			throw new IllegalArgumentException();
+		}
+
+		String[] tokens = key.split("/");
+		if (tokens.length != 5) {
+			throw new IllegalArgumentException();
+		}
+
+		String host = tokens[0];
+		if (!host.isEmpty()) {
+			throw new IllegalArgumentException();
+		}
+
+		String projectKey = tokens[1];
+		if (!project.getProjectName().equals(projectKey)) {
+			throw new IllegalArgumentException();
+		}
+
+		String service = tokens[2];
+		String itemType = tokens[3];
+		String itemKey = tokens[4];
+
+		String url = project.getProjectBaseUrl() + service + "/" + itemType + "/" + itemKey;
+		CorsRequest<UntypedItem> request = new CorsRequest<UntypedItem>(project, url, null);
+		request.execute(callback);
+	}
 }

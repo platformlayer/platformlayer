@@ -1,5 +1,8 @@
 package org.platformlayer.gwt.client;
 
+import org.platformlayer.gwt.client.api.platformlayer.OpsProject;
+import org.platformlayer.gwt.client.places.ApplicationPlace;
+
 import com.google.gwt.activity.shared.AbstractActivity;
 import com.google.gwt.place.shared.Place;
 import com.google.gwt.place.shared.PlaceController;
@@ -50,4 +53,12 @@ public abstract class ApplicationAbstractActivity extends AbstractActivity {
 		return moduleUrl;
 	}
 
+	public OpsProject getProject() {
+		ApplicationPlace place = getPlace();
+		OpsProject project = app.findProject(place);
+		assert project != null;
+		return project;
+	}
+
+	protected abstract ApplicationPlace getPlace();
 }

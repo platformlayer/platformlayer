@@ -45,4 +45,9 @@ public class HeaderActivity extends ApplicationAbstractActivity {
 		dest.add(place);
 	}
 
+	@Override
+	protected ApplicationPlace getPlace() {
+		return place;
+	}
+
 }

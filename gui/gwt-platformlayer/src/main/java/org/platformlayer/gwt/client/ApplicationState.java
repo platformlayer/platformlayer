@@ -7,6 +7,8 @@ import javax.inject.Singleton;
 
 import org.platformlayer.gwt.client.api.login.Authentication;
 import org.platformlayer.gwt.client.api.platformlayer.OpsProject;
+import org.platformlayer.gwt.client.places.ApplicationPlace;
+import org.platformlayer.gwt.client.project.ProjectPlace;
 import org.platformlayer.gwt.client.stores.JobStore;
 
 import com.google.gwt.place.shared.PlaceController;
@@ -74,5 +76,14 @@ public class ApplicationState {
 
 	public JobStore getJobStore() {
 		return jobStore;
+	}
+
+	public OpsProject findProject(ApplicationPlace place) {
+		ProjectPlace project = place.getProject();
+		if (project == null) {
+			return null;
+		}
+
+		return findProject(project.getProjectKey());
 	}
 }

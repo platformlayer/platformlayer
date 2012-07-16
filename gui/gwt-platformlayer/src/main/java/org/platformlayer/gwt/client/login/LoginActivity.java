@@ -76,4 +76,9 @@ public class LoginActivity extends ApplicationAbstractActivity {
 			}
 		});
 	}
+
+	@Override
+	public LoginPlace getPlace() {
+		return place;
+	}
 }

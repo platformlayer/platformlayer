@@ -27,6 +27,8 @@ public class ItemListViewImpl extends AbstractApplicationPage implements ItemLis
 	CellList<UntypedItem> makeItemList() {
 		CellList<UntypedItem> table = new CellList<UntypedItem>(new ItemListCell(this));
 
+		table.setPageSize(1000);
+
 		// final SingleSelectionModel<OpsProject> selectionModel = new SingleSelectionModel<Product>();
 		// table.setSelectionModel(selectionModel);
 		// selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {

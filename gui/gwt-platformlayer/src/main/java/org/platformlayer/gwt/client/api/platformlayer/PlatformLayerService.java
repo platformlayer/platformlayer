@@ -8,4 +8,8 @@ public interface PlatformLayerService {
 	void listJobs(OpsProject project, AsyncCallback<JobCollection> callback);
 
 	void doAction(OpsProject project, String targetItem, Action action, AsyncCallback<Job> callback);
+
+	void getJobLog(OpsProject project, String jobId, AsyncCallback<JobLog> callback);
+
+	void getItem(OpsProject project, String key, AsyncCallback<UntypedItem> callback);
 }
