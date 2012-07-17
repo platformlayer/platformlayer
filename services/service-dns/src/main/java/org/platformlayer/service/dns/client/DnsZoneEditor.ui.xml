@@ -1,0 +1,11 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+	xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:dt='urn:import:org.platformlayer.ui.web.client.widgets'
+	xmlns:e='urn:import:com.google.gwt.editor.ui.client'>
+
+	<g:HTMLPanel>
+		<div>
+			DNS Name:
+			<g:TextBox ui:field="dnsName" />
+		</div>
+	</g:HTMLPanel>
+</ui:UiBinder>

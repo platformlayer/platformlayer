@@ -8,7 +8,7 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <version.gwt>2.4.0</version.gwt>
+		<version.gwt>2.5.0-rc1</version.gwt>
 
         <guice.verion>3.0</guice.verion>
 
@@ -30,7 +30,6 @@
         <!-- Don't let your Mac use a crazy non-standard encoding -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
     </properties>
 
     <modules>
@@ -155,6 +154,11 @@
             <dependency>
                 <groupId>org.platformlayer</groupId>
                 <artifactId>service-postgresql</artifactId>
+                <version>${version.project}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>service-dns-service</artifactId>
                 <version>${version.project}</version>
             </dependency>
 
