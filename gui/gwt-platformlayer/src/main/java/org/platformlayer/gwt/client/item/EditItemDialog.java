@@ -9,6 +9,7 @@ import org.platformlayer.service.dns.client.model.DnsZone;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Event;
@@ -73,8 +74,9 @@ public class EditItemDialog extends Composite {
 		// TODO: Cleanup or convert to generator??
 		// TODO: is Event.getTypeInt inlined?
 		if (event.getTypeInt() == Event.getTypeInt("click")) {
-			Element target = Element.as(event.getEventTarget());
-			if (target != null) {
+			EventTarget eventTarget = event.getEventTarget();
+			if (Element.is(eventTarget)) {
+				Element target = eventTarget.cast();
 				if (target == closeButton) {
 					onCloseButtonClick();
 					event.preventDefault();
