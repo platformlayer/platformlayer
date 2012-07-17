@@ -9,7 +9,7 @@
 	</parent>
 
 	<artifactId>platformlayer-services-parent</artifactId>
-	<name>PlatformLayer :: XaaS :: Parent</name>
+	<name>PlatformLayer :: XaaS :: Services :: Parent</name>
 	<packaging>pom</packaging>
 
 	<modules>
