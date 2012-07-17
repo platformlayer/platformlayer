@@ -2,7 +2,7 @@
 	xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:c="urn:import:com.google.gwt.user.cellview.client">
 
 	<g:HTMLPanel>
-		<div class="modal hide" id="myModal">
+		<div class="modal" id="myModal">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal">×</button>
 				<h3>Item</h3>

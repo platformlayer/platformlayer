@@ -54,6 +54,7 @@ public class EditItemDialog extends Composite {
 
 		PopupPanel panel = new PopupPanel();
 		panel.add(this);
+
 		panel.center();
 	}
 

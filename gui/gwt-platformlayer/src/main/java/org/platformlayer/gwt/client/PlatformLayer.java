@@ -1,5 +1,6 @@
 package org.platformlayer.gwt.client;
 
+import org.platformlayer.gwt.client.bootstrap.Bootstrap;
 import org.platformlayer.gwt.client.breadcrumb.HeaderActivityMapper;
 import org.platformlayer.gwt.client.login.LoginPlace;
 
@@ -23,6 +24,8 @@ public class PlatformLayer implements EntryPoint {
 	@Override
 	public void onModuleLoad() {
 		RootPanel rootPanel = RootPanel.get("mainContainer");
+
+		Bootstrap.ensureInjected();
 
 		RootPanel headerContainer = RootPanel.get("headerContainer");
 		headerContainer.add(injector.getHeaderView());

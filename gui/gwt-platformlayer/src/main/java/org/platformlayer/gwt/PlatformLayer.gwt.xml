@@ -11,7 +11,7 @@
 
 
 	<!-- Load GWT Theme before loading other stylesheets... -->
-	<inherits name='com.google.gwt.user.theme.clean.Clean' />
+	<!-- <inherits name='com.google.gwt.user.theme.clean.Clean' /> -->
 	<!-- <inherits name='com.google.gwt.user.theme.standard.Standard'/> -->
 	<!-- <inherits name='com.google.gwt.user.theme.chrome.Chrome'/> -->
 	<!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/> -->
@@ -33,6 +33,8 @@
 	<!-- Specify the paths for translatable code -->
 	<source path='client' />
 	<source path='shared' />
+
+	<public path='public' />
 
 	<inherits name="com.google.gwt.logging.Logging" />
 	<set-property name="gwt.logging.logLevel" value="FINEST" />
