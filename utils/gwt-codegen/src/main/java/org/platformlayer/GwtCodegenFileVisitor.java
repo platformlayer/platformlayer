@@ -12,197 +12,296 @@ import org.platformlayer.model.ClassModel;
 import org.platformlayer.model.FieldModel;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 
 public class GwtCodegenFileVisitor extends FileVisitor {
-    private final ClassInspection classInspection;
-    private final TemplateEngine template;
-    private List<String> gwtBasePathComponents;
+	private final ClassInspection classInspection;
+	private final TemplateEngine template;
+	private List<String> gwtBasePathComponents;
+	private final CodegenStyle style;
 
-    public GwtCodegenFileVisitor(File srcDir, File outDir, Log log, ClassInspection classInspection, TemplateEngine template) {
-        super(srcDir, outDir, log);
-        this.classInspection = classInspection;
-        this.template = template;
-    }
+	public GwtCodegenFileVisitor(File srcDir, File outDir, Log log, ClassInspection classInspection,
+			TemplateEngine template, CodegenStyle style) {
+		super(srcDir, outDir, log);
+		this.classInspection = classInspection;
+		this.template = template;
+		this.style = style;
+	}
 
-    @Override
-    public void visitDirectory(File dir) throws MojoExecutionException {
-        for (File gwtFile : dir.listFiles(new ExtensionFileFilter(".gwt.xml"))) {
-            gwtBasePathComponents = getPathComponents();
-        }
+	@Override
+	public void visitDirectory(File dir) throws MojoExecutionException {
+		for (File gwtFile : dir.listFiles(new ExtensionFileFilter(".gwt.xml"))) {
+			gwtBasePathComponents = getPathComponents();
+		}
 
-        super.visitDirectory(dir);
-    }
+		super.visitDirectory(dir);
+	}
 
-    @Override
-    public void visitFile(File file) throws MojoExecutionException {
-        String fileName = file.getName();
-        if (!fileName.endsWith(".class")) {
-            return;
-        }
+	@Override
+	public void visitFile(File file) throws MojoExecutionException {
+		String fileName = file.getName();
+		if (!fileName.endsWith(".class")) {
+			return;
+		}
 
-        String simpleClassName = fileName.substring(0, fileName.length() - 6);
-        String fullClassName = Joiner.on(".").join(getPathComponents()) + "." + simpleClassName;
+		String simpleClassName = fileName.substring(0, fileName.length() - 6);
+		String fullClassName = Joiner.on(".").join(getPathComponents()) + "." + simpleClassName;
 
-        try {
-            log.info("Processing " + fullClassName);
-            Class<?> clazz = classInspection.loadClass(fullClassName);
+		try {
+			log.info("Processing " + fullClassName);
+			Class<?> clazz = classInspection.loadClass(fullClassName);
 
-            if (classInspection.findAnnotation(clazz, "org.platformlayer.codegen.GwtModel") == null) {
-                log.info("No GWTModel annotation; skipping");
-                return;
-            }
+			if (classInspection.findAnnotation(clazz, "org.platformlayer.codegen.GwtModel") == null) {
+				log.info("No GWTModel annotation; skipping");
+				return;
+			}
 
-            processClass(clazz);
-            // getLog().info(" => " + converted);
-        } catch (ClassNotFoundException e) {
-            log.warn("Error loading class: " + fullClassName, e);
-        } catch (NoClassDefFoundError e) {
-            log.warn("Error loading class: " + fullClassName, e);
-        }
-    }
+			switch (style) {
+			case Jso:
+				processClassJso(clazz);
+				break;
+			case RequestFactory:
+				processClassRequestFactory(clazz);
+				break;
+			default:
+				throw new UnsupportedOperationException();
+			}
+			// getLog().info(" => " + converted);
+		} catch (ClassNotFoundException e) {
+			log.warn("Error loading class: " + fullClassName, e);
+		} catch (NoClassDefFoundError e) {
+			log.warn("Error loading class: " + fullClassName, e);
+		}
+	}
 
-    private void runTemplate(String templateName, Map<String, Object> model, File outputFile) throws MojoExecutionException {
-        Utils.mkdirs(outputFile.getParentFile());
-        String result = template.runTemplateToString(getClass().getPackage().getName().replace(".", "/") + "/" + templateName, model);
-        Utils.writeAll(outputFile, result);
-    }
+	private void runTemplate(String templateName, Map<String, Object> model, File outputFile)
+			throws MojoExecutionException {
+		Utils.mkdirs(outputFile.getParentFile());
+		String result = template.runTemplateToString(getClass().getPackage().getName().replace(".", "/") + "/"
+				+ templateName, model);
 
-    private void processClass(Class<?> clazz) throws MojoExecutionException {
-        Map<String, Object> model = new HashMap<String, Object>();
+		String existing = Utils.readAll(outputFile);
 
-        ClassModel classModel = new ClassModel();
-        classModel.className = clazz.getSimpleName();
-        classModel.proxyClassName = classModel.className + "Proxy";
-        classModel.serviceClassName = classModel.className + "GwtService";
-        classModel.editorClassName = classModel.className + "Editor";
+		if (result.equals(existing)) {
+			log.info("File unchanged; will not write: " + outputFile);
+			return;
+		}
 
-        for (Field field : clazz.getFields()) {
-            FieldModel fieldModel = new FieldModel();
-            Class<?> type = field.getType();
+		log.info("Writing file " + outputFile);
+		Utils.writeAll(outputFile, result);
+	}
 
-            if (!isNativeType(type)) {
-                continue;
-            }
+	private void processClassRequestFactory(Class<?> clazz) throws MojoExecutionException {
+		Map<String, Object> model = new HashMap<String, Object>();
 
-            Class<?> accessorType = type;
-            if (accessorType.isPrimitive()) {
-                accessorType = Utils.getBoxedType(accessorType);
-            }
-            String fieldName = field.getName();
-            String beanName = Utils.capitalize(fieldName);
+		ClassModel classModel = new ClassModel();
+		classModel.className = clazz.getSimpleName();
+		classModel.proxyClassName = classModel.className + "Proxy";
+		classModel.serviceClassName = classModel.className + "GwtService";
+		classModel.editorClassName = classModel.className + "Editor";
 
-            fieldModel.type = type.getName();
-            fieldModel.accessorType = accessorType.getName();
-            fieldModel.beanName = beanName;
-            fieldModel.name = fieldName;
+		for (Field field : clazz.getFields()) {
+			FieldModel fieldModel = new FieldModel();
+			Class<?> type = field.getType();
 
-            classModel.fields.add(fieldModel);
-        }
+			if (!isNativeType(type)) {
+				continue;
+			}
 
-        model.put("className", classModel.className);
-        model.put("proxyClassName", classModel.proxyClassName);
-        model.put("serviceClassName", classModel.serviceClassName);
-        model.put("editorClassName", classModel.editorClassName);
-        model.put("fields", classModel.fields);
+			Class<?> accessorType = type;
+			if (accessorType.isPrimitive()) {
+				accessorType = Utils.getBoxedType(accessorType);
+			}
+			String fieldName = field.getName();
+			String beanName = Utils.capitalize(fieldName);
 
-        if (gwtBasePathComponents == null) {
-            throw new MojoExecutionException("Did not find .gwt.xml file above " + clazz);
-        }
+			fieldModel.type = type.getName();
+			fieldModel.accessorType = accessorType.getName();
+			fieldModel.beanName = beanName;
+			fieldModel.name = fieldName;
 
-        File gwtOutDir = new File(outDir, Joiner.on("/").join(gwtBasePathComponents));
-        Utils.mkdirs(gwtOutDir);
+			classModel.fields.add(fieldModel);
+		}
 
-        String gwtPackage = Joiner.on(".").join(gwtBasePathComponents);
-        model.put("gwtPackage", gwtPackage);
+		model.put("className", classModel.className);
+		model.put("proxyClassName", classModel.proxyClassName);
+		model.put("serviceClassName", classModel.serviceClassName);
+		model.put("editorClassName", classModel.editorClassName);
+		model.put("fields", classModel.fields);
 
-        String modelPackage = Joiner.on(".").join(getPathComponents());
-        model.put("modelPackage", modelPackage);
+		if (gwtBasePathComponents == null) {
+			throw new MojoExecutionException("Did not find .gwt.xml file above " + clazz);
+		}
 
-        String editorPackage = gwtPackage + ".client";
-        model.put("editorPackage", editorPackage);
+		File gwtOutDir = new File(outDir, Joiner.on("/").join(gwtBasePathComponents));
+		Utils.mkdirs(gwtOutDir);
 
-        runTemplate("GwtProxy.ftl", model, new File(new File(gwtOutDir, "shared"), classModel.proxyClassName + ".java"));
-        runTemplate("GwtRequestFactory.ftl", model, new File(new File(gwtOutDir, "shared"), classModel.className + "RequestFactory.java"));
-        runTemplate("GwtService.ftl", model, new File(new File(gwtOutDir, "server"), classModel.serviceClassName + ".java"));
-    }
+		String gwtPackage = Joiner.on(".").join(gwtBasePathComponents);
+		model.put("gwtPackage", gwtPackage);
 
-    private boolean isNativeType(Class<?> type) {
-        if (type.isPrimitive())
-            return true;
-        if (type == String.class)
-            return true;
+		String modelPackage = Joiner.on(".").join(getPathComponents());
+		model.put("modelPackage", modelPackage);
 
-        if (type == Boolean.class)
-            return true;
-        if (type == Byte.class)
-            return true;
-        if (type == Character.class)
-            return true;
-        if (type == Short.class)
-            return true;
-        if (type == Integer.class)
-            return true;
-        if (type == Long.class)
-            return true;
-        if (type == Float.class)
-            return true;
-        if (type == Double.class)
-            return true;
+		String editorPackage = gwtPackage + ".client";
+		model.put("editorPackage", editorPackage);
 
-        return false;
-    }
+		runTemplate("requestfactory/GwtProxy.ftl", model, new File(new File(gwtOutDir, "shared"),
+				classModel.proxyClassName + ".java"));
+		runTemplate("requestfactory/GwtRequestFactory.ftl", model, new File(new File(gwtOutDir, "shared"),
+				classModel.className + "RequestFactory.java"));
+		runTemplate("requestfactory/GwtService.ftl", model, new File(new File(gwtOutDir, "server"),
+				classModel.serviceClassName + ".java"));
+	}
 
-    // private void convertClasses(String baseNamespace, String relativePath, File srcDir, File outputDir) throws MojoExecutionException {
-    // if (!srcDir.exists())
-    // return;
-    //
-    // for (File gwtFile : srcDir.listFiles(new FileFilter() {
-    // };() {
-    //
-    // public boolean accept(File arg0, String arg1) {
-    // // TODO Auto-generated method stub
-    // return false;
-    // }
-    // })
-    // for (File file : srcDir.listFiles()) {
-    // String fileName = file.getName();
-    // if (file.isDirectory()) {
-    // String childPath = relativePath;
-    // childPath += fileName + ".";
-    // convertClasses(baseNamespace, childPath, file, new File(outputDir, fileName));
-    // } else {
-    // if (!fileName.endsWith(".class")) {
-    // continue;
-    // }
-    // String className = relativePath;
-    // String simpleClassName = fileName.substring(0, fileName.length() - 6);
-    // className += simpleClassName;
-    //
-    // try {
-    // getLog().info("Processing " + className);
-    // Class<?> clazz = classLoader.loadClass(className);
-    // if (clazz.isInterface()) {
-    // getLog().info("Ignoring interface");
-    // continue;
-    // }
-    //
-    // if (findAnnotation(clazz, "org.platformlayer.codegen.GwtModel") == null) {
-    // getLog().info("No GWTModel annotation; skipping");
-    // continue;
-    // }
-    //
-    // processClass(baseNamespace, clazz, outputDir);
-    // // getLog().info(" => " + converted);
-    // } catch (ClassNotFoundException e) {
-    // throw new MojoExecutionException("Error loading class: " + className, e);
-    // } catch (NoClassDefFoundError e) {
-    // throw new MojoExecutionException("Error loading class: " + className, e);
-    // }
-    // }
-    // }
-    //
-    // }
-    //
-    // }
+	private void processClassJso(Class<?> clazz) throws MojoExecutionException {
+		Map<String, Object> model = new HashMap<String, Object>();
+
+		// ClassModel classModel = new ClassModel();
+		// classModel.className = clazz.getSimpleName();
+		// classModel.proxyClassName = classModel.className + "Proxy";
+		// classModel.serviceClassName = classModel.className + "GwtService";
+		// classModel.editorClassName = classModel.className + "Editor";
+
+		List<FieldModel> fields = Lists.newArrayList();
+		List<String> warnings = Lists.newArrayList();
+
+		String jsoClassName = clazz.getSimpleName();
+
+		for (Field field : clazz.getFields()) {
+			FieldModel fieldModel = new FieldModel();
+			Class<?> type = field.getType();
+
+			String fieldName = field.getName();
+
+			if (type == Long.class || type.equals(long.class)) {
+				warnings.add("JSNI cannot map 'long " + fieldName + "'");
+				continue;
+			}
+
+			if (!isNativeType(type)) {
+				warnings.add("JSNI cannot map '" + type.getSimpleName() + " " + fieldName + "'");
+				continue;
+			}
+
+			Class<?> accessorType = type;
+			if (accessorType.isPrimitive()) {
+				accessorType = Utils.getBoxedType(accessorType);
+			}
+			String beanName = Utils.capitalize(fieldName);
+
+			fieldModel.type = type.getName();
+			fieldModel.accessorType = accessorType.getName();
+			fieldModel.beanName = beanName;
+			fieldModel.name = fieldName;
+
+			fields.add(fieldModel);
+		}
+
+		// model.put("className", classModel.className);
+		model.put("jsoClassName", jsoClassName);
+		// model.put("serviceClassName", classModel.serviceClassName);
+		// model.put("editorClassName", classModel.editorClassName);
+		model.put("fields", fields);
+
+		if (gwtBasePathComponents == null) {
+			throw new MojoExecutionException("Did not find .gwt.xml file above " + clazz);
+		}
+
+		File gwtOutDir = new File(outDir, Joiner.on("/").join(gwtBasePathComponents));
+		Utils.mkdirs(gwtOutDir);
+
+		String gwtPackage = Joiner.on(".").join(gwtBasePathComponents);
+		model.put("gwtPackage", gwtPackage);
+
+		model.put("warnings", warnings);
+
+		// String modelPackage = Joiner.on(".").join(getPathComponents());
+		// model.put("modelPackage", modelPackage);
+		//
+		// String editorPackage = gwtPackage + ".client";
+		// model.put("editorPackage", editorPackage);
+
+		runTemplate("jso/JsoObject.ftl", model, new File(gwtOutDir, "client/model/" + jsoClassName + ".java"));
+	}
+
+	private boolean isNativeType(Class<?> type) {
+		if (type.isPrimitive())
+			return true;
+		if (type == String.class)
+			return true;
+
+		if (type == Boolean.class)
+			return true;
+		if (type == Byte.class)
+			return true;
+		if (type == Character.class)
+			return true;
+		if (type == Short.class)
+			return true;
+		if (type == Integer.class)
+			return true;
+		if (type == Long.class)
+			return true;
+		if (type == Float.class)
+			return true;
+		if (type == Double.class)
+			return true;
+
+		return false;
+	}
+
+	// private void convertClasses(String baseNamespace, String relativePath, File srcDir, File outputDir) throws
+	// MojoExecutionException {
+	// if (!srcDir.exists())
+	// return;
+	//
+	// for (File gwtFile : srcDir.listFiles(new FileFilter() {
+	// };() {
+	//
+	// public boolean accept(File arg0, String arg1) {
+	// // TODO Auto-generated method stub
+	// return false;
+	// }
+	// })
+	// for (File file : srcDir.listFiles()) {
+	// String fileName = file.getName();
+	// if (file.isDirectory()) {
+	// String childPath = relativePath;
+	// childPath += fileName + ".";
+	// convertClasses(baseNamespace, childPath, file, new File(outputDir, fileName));
+	// } else {
+	// if (!fileName.endsWith(".class")) {
+	// continue;
+	// }
+	// String className = relativePath;
+	// String simpleClassName = fileName.substring(0, fileName.length() - 6);
+	// className += simpleClassName;
+	//
+	// try {
+	// getLog().info("Processing " + className);
+	// Class<?> clazz = classLoader.loadClass(className);
+	// if (clazz.isInterface()) {
+	// getLog().info("Ignoring interface");
+	// continue;
+	// }
+	//
+	// if (findAnnotation(clazz, "org.platformlayer.codegen.GwtModel") == null) {
+	// getLog().info("No GWTModel annotation; skipping");
+	// continue;
+	// }
+	//
+	// processClass(baseNamespace, clazz, outputDir);
+	// // getLog().info(" => " + converted);
+	// } catch (ClassNotFoundException e) {
+	// throw new MojoExecutionException("Error loading class: " + className, e);
+	// } catch (NoClassDefFoundError e) {
+	// throw new MojoExecutionException("Error loading class: " + className, e);
+	// }
+	// }
+	// }
+	//
+	// }
+	//
+	// }
 
 }

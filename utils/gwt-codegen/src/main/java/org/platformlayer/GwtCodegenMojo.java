@@ -21,128 +21,137 @@ import org.apache.maven.project.MavenProject;
  * @requiresDependencyResolution
  */
 public class GwtCodegenMojo extends AbstractMojo {
-    /**
-     * Location of the file.
-     * 
-     * @parameter expression="${project.build.directory}"
-     * @required
-     */
-    private File outputDirectory;
+	/**
+	 * Location of the file.
+	 * 
+	 * @parameter expression="${project.build.directory}"
+	 * @required
+	 */
+	private File outputDirectory;
 
-    /**
-     * @parameter expression="${project.runtimeClasspathElements}"
-     * @readonly
-     */
-    private List<String> runtimeClasspathElements;
+	/**
+	 * @parameter expression="${project.runtimeClasspathElements}"
+	 * @readonly
+	 */
+	private List<String> runtimeClasspathElements;
 
-    /**
-     * @parameter expression="${project}"
-     * @required
-     * @readonly
-     */
-    private MavenProject project;
+	/**
+	 * @parameter expression="${project}"
+	 * @required
+	 * @readonly
+	 */
+	private MavenProject project;
 
-    private TemplateEngine template;
+	/**
+	 * @parameter
+	 * @required
+	 */
+	private CodegenStyle style;
 
-    public void execute() throws MojoExecutionException {
-        // File f = outputDirectory;
+	private TemplateEngine template;
 
-        // File generateDir = new File(outputDirectory, "generated-sources/gwt");
+	public void execute() throws MojoExecutionException {
+		// File f = outputDirectory;
 
-        // Hack!
-        File projectDir = outputDirectory.getParentFile();
-        File codegenDir = new File(projectDir, "src/codegen/java");
+		// File generateDir = new File(outputDirectory, "generated-sources/gwt");
 
-        ClassLoader classLoader = buildClassloader();
-        ClassInspection classInspection = new ClassInspection(classLoader);
-        template = new TemplateEngine(getClass().getClassLoader(), getLog());
+		File projectDir = outputDirectory.getParentFile();
+		// Because we process the compiled output, and generate source code, we need to check out output into version
+		// control...
+		File codegenDir = new File(projectDir, "src/main/codegen");
+		// File codegenDir = new File(projectDir, "target/generated-sources");
 
-        // getLog().info("Adding source: " + codegenDir.getAbsolutePath());
-        // this.project.addCompileSourceRoot(codegenDir.getAbsolutePath());
+		ClassLoader classLoader = buildClassloader();
+		ClassInspection classInspection = new ClassInspection(classLoader);
+		template = new TemplateEngine(getClass().getClassLoader(), getLog());
 
-        File targetClasses = new File(outputDirectory, "classes");
+		// getLog().info("Adding source: " + codegenDir.getAbsolutePath());
+		// this.project.addCompileSourceRoot(codegenDir.getAbsolutePath());
 
-        GwtCodegenFileVisitor visitor = new GwtCodegenFileVisitor(targetClasses, codegenDir, getLog(), classInspection, template);
+		File targetClasses = new File(outputDirectory, "classes");
 
-        visitor.start();
+		GwtCodegenFileVisitor visitor = new GwtCodegenFileVisitor(targetClasses, codegenDir, getLog(), classInspection,
+				template, style);
 
-        // if (!f.exists()) {
-        // f.mkdirs();
-        // }
-        //
-        // File touch = new File(f, "touch.txt");
-        //
-        // FileWriter w = null;
-        // try {
-        // w = new FileWriter(touch);
-        //
-        // w.write("touch.txt");
-        // } catch (IOException e) {
-        // throw new MojoExecutionException("Error creating file " + touch, e);
-        // } finally {
-        // if (w != null) {
-        // try {
-        // w.close();
-        // } catch (IOException e) {
-        // // ignore
-        // }
-        // }
-        // }
-    }
+		visitor.start();
 
-    private URLClassLoader buildClassloader() throws MojoExecutionException {
-        List<URL> urlList = new ArrayList<URL>();
-        URL[] urls;
-        try {
-            File targetClasses = new File(outputDirectory, "classes");
-            urlList.add(targetClasses.toURL());
+		// if (!f.exists()) {
+		// f.mkdirs();
+		// }
+		//
+		// File touch = new File(f, "touch.txt");
+		//
+		// FileWriter w = null;
+		// try {
+		// w = new FileWriter(touch);
+		//
+		// w.write("touch.txt");
+		// } catch (IOException e) {
+		// throw new MojoExecutionException("Error creating file " + touch, e);
+		// } finally {
+		// if (w != null) {
+		// try {
+		// w.close();
+		// } catch (IOException e) {
+		// // ignore
+		// }
+		// }
+		// }
+	}
 
-            for (String element : runtimeClasspathElements) {
-                getLog().info("Adding " + element);
+	private URLClassLoader buildClassloader() throws MojoExecutionException {
+		List<URL> urlList = new ArrayList<URL>();
+		URL[] urls;
+		try {
+			File targetClasses = new File(outputDirectory, "classes");
+			urlList.add(targetClasses.toURL());
 
-                try {
-                    urlList.add(new File(element).toURI().toURL());
-                } catch (MalformedURLException e) {
-                    throw new MojoExecutionException("Unable to access project dependency: " + element, e);
-                }
-            }
+			for (String element : runtimeClasspathElements) {
+				getLog().info("Adding " + element);
 
-            urls = (URL[]) urlList.toArray(new URL[urlList.size()]);
-        } catch (MalformedURLException e) {
-            throw new MojoExecutionException("Error building URLs", e);
-        }
+				try {
+					urlList.add(new File(element).toURI().toURL());
+				} catch (MalformedURLException e) {
+					throw new MojoExecutionException("Unable to access project dependency: " + element, e);
+				}
+			}
 
-        return new URLClassLoader(urls);
-    }
+			urls = urlList.toArray(new URL[urlList.size()]);
+		} catch (MalformedURLException e) {
+			throw new MojoExecutionException("Error building URLs", e);
+		}
 
-    // private String processClassOld(Class<?> clazz) {
-    // StringBuilder sb = new StringBuilder();
-    //
-    // String className = clazz.getSimpleName();
-    //
-    // for (Field field : clazz.getFields()) {
-    // Class<?> type = field.getType();
-    // String typeName = type.getName();
-    //
-    // String fieldName = field.getName();
-    // String beanName = capitalize(fieldName);
-    //
-    // sb.append("\n");
-    // sb.append(typeName + " get" + beanName + "();\n");
-    // sb.append("void set" + beanName + "(" + typeName + " value);\n");
-    //
-    // sb.append("static final Accessor<" + className + ", " + typeName + "> " + beanName);
-    // sb.append("= new Accessor<" + className + ", " + typeName + ">() {\n");
-    // sb.append("@Override public " + typeName + " get(" + className + " o) {\n");
-    // sb.append("return o.get" + beanName + "();\n");
-    // sb.append("}\n");
-    // sb.append("@Override public void set(" + className + " o, " + typeName + " value) {\n");
-    // sb.append("o.set" + beanName + "(value);\n");
-    // sb.append("}\n");
-    // sb.append("};\n");
-    // }
-    //
-    // return sb.toString();
-    // }
+		return new URLClassLoader(urls);
+	}
+
+	// private String processClassOld(Class<?> clazz) {
+	// StringBuilder sb = new StringBuilder();
+	//
+	// String className = clazz.getSimpleName();
+	//
+	// for (Field field : clazz.getFields()) {
+	// Class<?> type = field.getType();
+	// String typeName = type.getName();
+	//
+	// String fieldName = field.getName();
+	// String beanName = capitalize(fieldName);
+	//
+	// sb.append("\n");
+	// sb.append(typeName + " get" + beanName + "();\n");
+	// sb.append("void set" + beanName + "(" + typeName + " value);\n");
+	//
+	// sb.append("static final Accessor<" + className + ", " + typeName + "> " + beanName);
+	// sb.append("= new Accessor<" + className + ", " + typeName + ">() {\n");
+	// sb.append("@Override public " + typeName + " get(" + className + " o) {\n");
+	// sb.append("return o.get" + beanName + "();\n");
+	// sb.append("}\n");
+	// sb.append("@Override public void set(" + className + " o, " + typeName + " value) {\n");
+	// sb.append("o.set" + beanName + "(value);\n");
+	// sb.append("}\n");
+	// sb.append("};\n");
+	// }
+	//
+	// return sb.toString();
+	// }
 
 }
