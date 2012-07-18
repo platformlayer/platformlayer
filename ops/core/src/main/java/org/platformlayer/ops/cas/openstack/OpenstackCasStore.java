@@ -98,4 +98,9 @@ public class OpenstackCasStore implements CasStore {
 		return credentials;
 	}
 
+	@Override
+	public ByteString findTag(String tag) throws Exception {
+		return null;
+	}
+
 }

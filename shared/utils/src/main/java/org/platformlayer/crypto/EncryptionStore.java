@@ -1,4 +1,4 @@
-package org.platformlayer.ops.crypto;
+package org.platformlayer.crypto;
 
 import org.openstack.crypto.CertificateAndKey;
 import org.platformlayer.ops.OpsException;

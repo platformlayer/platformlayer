@@ -119,4 +119,9 @@ public class FilesystemCasStore implements CasStore {
 			log.info("Skipping copy as already in destination path: " + fileOnTarget);
 		}
 	}
+
+	@Override
+	public ByteString findTag(String tag) throws Exception {
+		return null;
+	}
 }

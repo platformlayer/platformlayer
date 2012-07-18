@@ -8,7 +8,7 @@ public class PlatformLayerInstall extends StandardServiceInstall {
 	@Override
 	protected Md5Hash getMd5Hash() {
 		// platformlayer-xaas-webapp-1.0-SNAPSHOT-bin.tar.gz
-		Md5Hash hash = new Md5Hash("0b89621dac1004fee55edf0866329e10");
+		Md5Hash hash = new Md5Hash("b6f9d3a17403a85a397f40fc47701b5b");
 		return hash;
 	}
 

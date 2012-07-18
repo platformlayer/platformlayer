@@ -55,11 +55,41 @@ public class CasStoreList {
 		return null;
 	}
 
+	private ByteString tryResolve(CasStore casStore, String specifier) {
+		try {
+			ByteString hash = casStore.findTag(specifier);
+			if (hash != null) {
+				return hash;
+			}
+		} catch (Exception e) {
+			log.warn("Error while resolving specifier in " + casStore, e);
+		}
+		return null;
+	}
+
 	public void addPrimary(CasStore primary) {
 		primaryList.add(primary);
 	}
 
 	public void add(CasStore secondary) {
 		secondaryList.add(secondary);
+	}
+
+	public ByteString resolve(String specifier) {
+		for (CasStore casStore : primaryList) {
+			ByteString found = tryResolve(casStore, specifier);
+			if (found != null) {
+				return found;
+			}
+		}
+
+		for (CasStore casStore : secondaryList) {
+			ByteString found = tryResolve(casStore, specifier);
+			if (found != null) {
+				return found;
+			}
+		}
+
+		return null;
 	}
 }

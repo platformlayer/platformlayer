@@ -17,8 +17,8 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openstack.crypto.CertificateAndKey;
 import org.openstack.crypto.KeyStoreUtils;
+import org.platformlayer.crypto.EncryptionStore;
 import org.platformlayer.guice.JdbcGuiceModule;
-import org.platformlayer.ops.crypto.EncryptionStore;
 import org.platformlayer.ops.log.PerJobAppender;
 import org.platformlayer.xaas.GuiceServletConfig;
 import org.platformlayer.xaas.GuiceXaasConfig;
@@ -61,21 +61,21 @@ class StandaloneXaasWebserver {
 
 		this.server = new Server();
 
-		CertificateAndKey certificateAndKey = encryptionStore.getCertificateAndKey("https");
-
 		{
 			SslContextFactory sslContextFactory = new SslContextFactory(SslContextFactory.DEFAULT_KEYSTORE_PATH);
 
-			String secret = KeyStoreUtils.DEFAULT_KEYSTORE_SECRET;
-			KeyStore keystore = KeyStoreUtils.createEmpty(secret);
+			{
+				CertificateAndKey certificateAndKey = encryptionStore.getCertificateAndKey("https");
+				String secret = KeyStoreUtils.DEFAULT_KEYSTORE_SECRET;
+				KeyStore keystore = KeyStoreUtils.createEmpty(secret);
 
-			String alias = "https";
+				String alias = "https";
 
-			KeyStoreUtils.put(keystore, alias, certificateAndKey, secret);
-
-			sslContextFactory.setKeyStore(keystore);
-			sslContextFactory.setKeyStorePassword(secret);
-			sslContextFactory.setCertAlias(alias);
+				KeyStoreUtils.put(keystore, alias, certificateAndKey, secret);
+				sslContextFactory.setKeyStore(keystore);
+				sslContextFactory.setKeyStorePassword(secret);
+				sslContextFactory.setCertAlias(alias);
+			}
 
 			SslSelectChannelConnector connector = new SslSelectChannelConnector(sslContextFactory);
 			connector.setPort(PORT);

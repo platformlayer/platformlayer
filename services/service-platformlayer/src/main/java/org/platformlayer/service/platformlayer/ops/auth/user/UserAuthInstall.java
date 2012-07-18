@@ -8,7 +8,7 @@ public class UserAuthInstall extends StandardServiceInstall {
 	@Override
 	protected Md5Hash getMd5Hash() {
 		// keystone-webapp-user-1.0-SNAPSHOT-bin.tar.gz
-		Md5Hash hash = new Md5Hash("335e141cef0ab40dc36d903fa4f6d3fd");
+		Md5Hash hash = new Md5Hash("ad289ff3bcde3b2e983acdeff0917dc9");
 		return hash;
 	}
 

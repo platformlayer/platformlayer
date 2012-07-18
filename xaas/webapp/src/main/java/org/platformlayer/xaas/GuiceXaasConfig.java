@@ -2,8 +2,6 @@ package org.platformlayer.xaas;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.security.KeyStore;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -19,10 +17,12 @@ import org.openstack.utils.PropertyUtils;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.WellKnownPorts;
 import org.platformlayer.auth.AuthenticationService;
-import org.platformlayer.auth.client.PlatformlayerAuthenticationService;
 import org.platformlayer.auth.client.PlatformLayerTokenValidator;
 import org.platformlayer.auth.client.PlatformlayerAuthenticationClient;
+import org.platformlayer.auth.client.PlatformlayerAuthenticationService;
 import org.platformlayer.crypto.AcceptAllHostnameVerifier;
+import org.platformlayer.crypto.EncryptionStore;
+import org.platformlayer.crypto.KeyStoreEncryptionStore;
 import org.platformlayer.crypto.PublicKeyTrustManager;
 import org.platformlayer.crypto.SimpleClientCertificateKeyManager;
 import org.platformlayer.guice.GuiceDataSourceProvider;
@@ -39,8 +39,6 @@ import org.platformlayer.ops.OpsConfiguration;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsSystem;
-import org.platformlayer.ops.crypto.EncryptionStore;
-import org.platformlayer.ops.crypto.KeyStoreEncryptionStore;
 import org.platformlayer.ops.crypto.OpsKeyStore;
 import org.platformlayer.ops.crypto.SimpleOpsKeyStore;
 import org.platformlayer.ops.guice.OpsContextProvider;
@@ -161,8 +159,8 @@ public class GuiceXaasConfig extends AbstractModule {
 			hostnameVerifier = new AcceptAllHostnameVerifier();
 		}
 
-		PlatformLayerTokenValidator keystoneTokenValidator = new PlatformLayerTokenValidator(keystoneServiceUrl, keyManager,
-				trustManager, hostnameVerifier);
+		PlatformLayerTokenValidator keystoneTokenValidator = new PlatformLayerTokenValidator(keystoneServiceUrl,
+				keyManager, trustManager, hostnameVerifier);
 
 		bind(PlatformLayerTokenValidator.class).toInstance(keystoneTokenValidator);
 	}
@@ -185,8 +183,8 @@ public class GuiceXaasConfig extends AbstractModule {
 			hostnameVerifier = new AcceptAllHostnameVerifier();
 		}
 
-		PlatformlayerAuthenticationClient authClient = new PlatformlayerAuthenticationClient(keystoneUserUrl, keyManager,
-				trustManager, hostnameVerifier);
+		PlatformlayerAuthenticationClient authClient = new PlatformlayerAuthenticationClient(keystoneUserUrl,
+				keyManager, trustManager, hostnameVerifier);
 
 		bind(PlatformlayerAuthenticationClient.class).toInstance(authClient);
 	}
@@ -196,19 +194,8 @@ public class GuiceXaasConfig extends AbstractModule {
 		String secret = configuration.lookup("keystore.password", KeyStoreUtils.DEFAULT_KEYSTORE_SECRET);
 
 		File keystoreFile = new File(keystorePath);
-		if (!keystoreFile.exists()) {
-			throw new IllegalStateException("Keystore not found: " + keystoreFile.getAbsolutePath());
-		}
 
-		KeyStore keyStore;
-		try {
-			keyStore = KeyStoreUtils.load(keystoreFile, secret);
-		} catch (GeneralSecurityException e) {
-			throw new IllegalStateException("Error loading keystore", e);
-		} catch (IOException e) {
-			throw new IllegalStateException("Error loading keystore", e);
-		}
-		EncryptionStore encryptionStore = new KeyStoreEncryptionStore(keyStore);
+		EncryptionStore encryptionStore = KeyStoreEncryptionStore.build(keystoreFile, secret);
 		bind(EncryptionStore.class).toInstance(encryptionStore);
 
 		return encryptionStore;

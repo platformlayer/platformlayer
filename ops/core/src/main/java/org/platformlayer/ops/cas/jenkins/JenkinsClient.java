@@ -13,6 +13,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 import org.openstack.utils.Io;
 import org.platformlayer.IoUtils;
+import org.platformlayer.PlatformLayerClientBase;
 import org.platformlayer.xml.XmlHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -93,8 +94,8 @@ public class JenkinsClient {
 	}
 
 	class FingerprintInfo extends JenkinsInfo {
-		public FingerprintInfo(Document dom) {
-			super(dom);
+		public FingerprintInfo(Element element) {
+			super(element);
 		}
 
 		public BuildId getOriginalBuild() {
@@ -110,6 +111,9 @@ public class JenkinsClient {
 			return getChildElementContents(getRoot(), "fileName");
 		}
 
+		public String getHash() {
+			return getChildElementContents(getRoot(), "hash");
+		}
 	}
 
 	class BuildInfo extends JenkinsInfo {
@@ -145,6 +149,27 @@ public class JenkinsClient {
 		public List<ArtifactInfo> getArtifacts() {
 			List<ArtifactInfo> artifacts = Lists.newArrayList();
 
+			for (Element element : findElements("artifact")) {
+				artifacts.add(new ArtifactInfo(element));
+			}
+			return artifacts;
+		}
+
+		/**
+		 * Note that fingerprints are only returned if you ask for them!
+		 */
+		public List<FingerprintInfo> getFingerprints() {
+			List<FingerprintInfo> fingerprints = Lists.newArrayList();
+
+			for (Element element : findElements("fingerprint")) {
+				fingerprints.add(new FingerprintInfo(element));
+
+			}
+			return fingerprints;
+		}
+
+		private List<Element> findElements(String elementName) {
+			List<Element> elements = Lists.newArrayList();
 			NodeList childNodes = getRoot().getChildNodes();
 			for (int i = 0; i < childNodes.getLength(); i++) {
 				Node childNode = childNodes.item(i);
@@ -153,17 +178,25 @@ public class JenkinsClient {
 				}
 
 				String nodeName = childNode.getNodeName();
-				if (nodeName.equals("artifact")) {
-					artifacts.add(new ArtifactInfo((Element) childNode));
+				if (nodeName.equals(elementName)) {
+					elements.add((Element) childNode);
 				}
 			}
-			return artifacts;
+			return elements;
 		}
 
 		URI getBaseUrl() {
 			return baseUrl;
 		}
 
+		public ArtifactInfo findArtifactByFileName(String fileName) {
+			for (ArtifactInfo artifact : getArtifacts()) {
+				if (artifact.getFileName().equals(fileName)) {
+					return artifact;
+				}
+			}
+			return null;
+		}
 	}
 
 	class BuildId {
@@ -191,7 +224,7 @@ public class JenkinsClient {
 		try {
 			String xml = get(apiXmlUrl);
 			Document dom = parse(xml);
-			return new FingerprintInfo(dom);
+			return new FingerprintInfo(dom.getDocumentElement());
 		} catch (JenkinsException e) {
 			if (404 == e.getHttpStatusCode()) {
 				log.debug("Jenkins returned 404 for " + apiXmlUrl);
@@ -201,20 +234,38 @@ public class JenkinsClient {
 		}
 	}
 
-	public BuildInfo findBuildInfo(BuildId build) throws JenkinsException {
-		String relativeUrl = "job/" + build.getJobKey() + "/" + build.getNumber() + "/";
-
+	private BuildInfo findBuildInfo(String relativeUrl, String treeFilter) throws JenkinsException {
 		URI buildBaseUrl = baseUrl.resolve(relativeUrl);
-		URI apiXmlUrl = buildBaseUrl.resolve("api/xml");
+		String apiPath = "api/xml";
+		if (treeFilter != null) {
+			apiPath += "?tree=" + PlatformLayerClientBase.urlEncode(treeFilter);
+		}
+		URI apiXmlUrl = buildBaseUrl.resolve(apiPath);
 		String xml = get(apiXmlUrl);
 		Document dom = parse(xml);
 
 		return new BuildInfo(dom, buildBaseUrl);
 	}
 
+	public BuildInfo findBuildInfo(BuildId build) throws JenkinsException {
+		String relativeUrl = "job/" + build.getJobKey() + "/" + build.getNumber() + "/";
+
+		return findBuildInfo(relativeUrl, null);
+	}
+
+	public BuildInfo findPromotedBuild(String jobKey, String promotionKey, String treeFilter) throws JenkinsException {
+		String relativeUrl = "job/" + jobKey + "/" + promotionKey + "/";
+
+		return findBuildInfo(relativeUrl, treeFilter);
+	}
+
 	@Override
 	public String toString() {
 		return "JenkinsClient [baseUrl=" + baseUrl + "]";
+	}
+
+	public URI getBaseUrl() {
+		return baseUrl;
 	}
 
 }

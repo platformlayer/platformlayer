@@ -1,5 +1,7 @@
-package org.platformlayer.ops.crypto;
+package org.platformlayer.crypto;
 
+import java.io.File;
+import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 
@@ -11,7 +13,7 @@ import org.platformlayer.ops.OpsException;
 public class KeyStoreEncryptionStore implements EncryptionStore {
 	private static final Logger log = Logger.getLogger(KeyStoreEncryptionStore.class);
 
-	private static final String DEFAULT_PASSWORD = "notasecret";
+	private static final String DEFAULT_PASSWORD = KeyStoreUtils.DEFAULT_KEYSTORE_SECRET;
 
 	final KeyStore keyStore;
 
@@ -39,5 +41,22 @@ public class KeyStoreEncryptionStore implements EncryptionStore {
 		}
 
 		return certificateAndKey;
+	}
+
+	public static KeyStoreEncryptionStore build(File keystoreFile, String keystoreSecret) {
+		if (!keystoreFile.exists()) {
+			throw new IllegalStateException("Keystore not found: " + keystoreFile.getAbsolutePath());
+		}
+
+		KeyStore keyStore;
+		try {
+			keyStore = KeyStoreUtils.load(keystoreFile, keystoreSecret);
+		} catch (GeneralSecurityException e) {
+			throw new IllegalStateException("Error loading keystore", e);
+		} catch (IOException e) {
+			throw new IllegalStateException("Error loading keystore", e);
+		}
+
+		return new KeyStoreEncryptionStore(keyStore);
 	}
 }

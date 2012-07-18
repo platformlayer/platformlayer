@@ -3,6 +3,7 @@ package org.platformlayer.xaas.web.resources;
 import java.util.HashMap;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -84,7 +85,10 @@ public class XaasResourceBase extends ResourceBase {
 	// }
 
 	protected AuthenticationCredentials getAuthenticationCredentials() {
-		AuthenticationCredentials auth = getScopeParameter(AuthenticationCredentials.class, true);
+		AuthenticationCredentials auth = getScopeParameter(AuthenticationCredentials.class, false);
+		if (auth == null) {
+			throw new WebApplicationException(HttpServletResponse.SC_FORBIDDEN);
+		}
 		return auth;
 	}
 

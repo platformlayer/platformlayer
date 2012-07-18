@@ -1,6 +1,5 @@
 package org.openstack.keystone.server;
 
-import java.io.File;
 import java.security.KeyStore;
 import java.util.EnumSet;
 import java.util.Map;
@@ -15,6 +14,7 @@ import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.openstack.crypto.CertificateAndKey;
 import org.openstack.crypto.KeyStoreUtils;
 import org.openstack.keystone.resources.admin.TokensResource;
 import org.platformlayer.WellKnownPorts;
@@ -22,6 +22,7 @@ import org.platformlayer.auth.server.AcceptAllClientCertificatesTrustManager;
 import org.platformlayer.auth.server.CustomTrustManagerSslContextFactory;
 import org.platformlayer.auth.server.GuiceAuthenticationConfig;
 import org.platformlayer.auth.server.GuiceServletConfig;
+import org.platformlayer.crypto.EncryptionStore;
 
 import com.google.common.collect.Maps;
 import com.google.inject.Guice;
@@ -37,50 +38,46 @@ public class KeystoneAdminServer {
 	@Inject
 	GuiceServletConfig servletConfig;
 
+	@Inject
+	EncryptionStore encryptionStore;
+
 	public static void main(String[] args) throws Exception {
 		Injector injector = Guice.createInjector(new GuiceAuthenticationConfig(), new JerseyServletModule() {
 			@Override
 			protected void configureServlets() {
+				bind(TokensResource.class);
 
-				boolean isAdmin = false;
-				if (isAdmin) {
-					throw new UnsupportedOperationException();
-				} else {
-					bind(TokensResource.class);
-
-					Map<String, String> params = Maps.newHashMap();
-					params.put(PackagesResourceConfig.PROPERTY_PACKAGES,
-							"org.openstack.keystone.jaxrs;org.codehaus.jackson.jaxrs");
-					serve("/*").with(GuiceContainer.class, params);
-				}
+				Map<String, String> params = Maps.newHashMap();
+				params.put(PackagesResourceConfig.PROPERTY_PACKAGES,
+						"org.openstack.keystone.jaxrs;org.codehaus.jackson.jaxrs");
+				serve("/*").with(GuiceContainer.class, params);
 			}
 		});
 
-		File keystoreFile = new File("keystore.jks");
-		String keystoreSecret = "notasecret";
-
-		KeyStore keystore;
-
-		try {
-			keystore = KeyStoreUtils.load(keystoreFile, keystoreSecret);
-		} catch (Exception e) {
-			throw new IllegalArgumentException("Error loading SSL certificate from: " + keystoreFile.getAbsolutePath(),
-					e);
-		}
-
 		KeystoneAdminServer server = injector.getInstance(KeystoneAdminServer.class);
-		server.start(WellKnownPorts.PORT_PLATFORMLAYER_AUTH_ADMIN, keystore, keystoreSecret);
+		server.start(WellKnownPorts.PORT_PLATFORMLAYER_AUTH_ADMIN);
 	}
 
-	public void start(int port, KeyStore keystore, String keystorePassword) throws Exception {
+	public void start(int port) throws Exception {
 		this.server = new Server();
 
 		{
 			CustomTrustManagerSslContextFactory sslContextFactory = new CustomTrustManagerSslContextFactory();
 
-			sslContextFactory.setKeyStore(keystore);
-			sslContextFactory.setKeyStorePassword(keystorePassword);
+			{
+				CertificateAndKey certificateAndKey = encryptionStore.getCertificateAndKey("https");
 
+				String secret = KeyStoreUtils.DEFAULT_KEYSTORE_SECRET;
+				KeyStore keystore = KeyStoreUtils.createEmpty(secret);
+
+				String alias = "https";
+
+				KeyStoreUtils.put(keystore, alias, certificateAndKey, secret);
+
+				sslContextFactory.setKeyStore(keystore);
+				sslContextFactory.setKeyStorePassword(secret);
+				sslContextFactory.setCertAlias(alias);
+			}
 			sslContextFactory.setWantClientAuth(true);
 
 			TrustManager[] trustManagers = new TrustManager[] { new AcceptAllClientCertificatesTrustManager() };

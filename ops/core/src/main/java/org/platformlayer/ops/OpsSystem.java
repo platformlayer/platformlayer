@@ -1,6 +1,7 @@
 package org.platformlayer.ops;
 
 import java.security.PublicKey;
+import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
@@ -15,11 +16,11 @@ import org.platformlayer.auth.AuthenticationTokenValidator;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ServiceInfo;
 import org.platformlayer.crypto.CryptoUtils;
+import org.platformlayer.crypto.EncryptionStore;
 import org.platformlayer.ids.ItemType;
 import org.platformlayer.ids.ModelKey;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.ops.backups.BackupContextFactory;
-import org.platformlayer.ops.crypto.EncryptionStore;
 import org.platformlayer.ops.multitenant.SimpleMultitenantConfiguration;
 import org.platformlayer.ops.ssh.ISshContext;
 import org.platformlayer.ops.tasks.JobRegistry;
@@ -276,9 +277,11 @@ public class OpsSystem {
 		if (trustKeys == null) {
 			CertificateAndKey certificateAndKey = encryptionStore.getCertificateAndKey("https");
 
-			PublicKey publicKey = certificateAndKey.getPublicKey();
 			List<String> trustKeys = Lists.newArrayList();
-			trustKeys.add(CryptoUtils.getSignatureString(publicKey));
+			for (X509Certificate certificate : certificateAndKey.getCertificateChain()) {
+				PublicKey publicKey = certificate.getPublicKey();
+				trustKeys.add(CryptoUtils.getSignatureString(publicKey));
+			}
 			this.trustKeys = Optional.of(trustKeys);
 		}
 		return trustKeys.orNull();

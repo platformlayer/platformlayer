@@ -4,11 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.openstack.crypto.KeyStoreUtils;
 import org.openstack.utils.PropertyUtils;
 import org.platformlayer.auth.services.CacheSystem;
 import org.platformlayer.auth.services.TokenService;
 import org.platformlayer.auth.services.crypto.SharedSecretTokenService;
 import org.platformlayer.auth.services.memory.SimpleCacheSystem;
+import org.platformlayer.crypto.EncryptionStore;
+import org.platformlayer.crypto.KeyStoreEncryptionStore;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;
@@ -40,6 +43,8 @@ public class GuiceAuthenticationConfig extends AbstractModule {
 
 		Names.bindProperties(binder(), config);
 
+		bindEncryptionStore(config);
+
 		bindAuthenticationModules(config);
 
 		TokenService tokenService = new SharedSecretTokenService(secret);
@@ -48,7 +53,18 @@ public class GuiceAuthenticationConfig extends AbstractModule {
 		int cacheSize = 1000;
 		CacheSystem simpleCacheSystem = new SimpleCacheSystem(cacheSize);
 		bind(CacheSystem.class).toInstance(simpleCacheSystem);
+	}
 
+	private EncryptionStore bindEncryptionStore(Properties configuration) {
+		String keystorePath = configuration.getProperty("keystore", "keystore.jks");
+		String secret = configuration.getProperty("keystore.password", KeyStoreUtils.DEFAULT_KEYSTORE_SECRET);
+
+		File keystoreFile = new File(keystorePath);
+
+		EncryptionStore encryptionStore = KeyStoreEncryptionStore.build(keystoreFile, secret);
+		bind(EncryptionStore.class).toInstance(encryptionStore);
+
+		return encryptionStore;
 	}
 
 	private void bindAuthenticationModules(Properties config) {

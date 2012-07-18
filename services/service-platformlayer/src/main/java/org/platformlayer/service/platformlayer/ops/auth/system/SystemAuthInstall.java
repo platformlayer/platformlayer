@@ -8,7 +8,7 @@ public class SystemAuthInstall extends StandardServiceInstall {
 	@Override
 	protected Md5Hash getMd5Hash() {
 		// keystone-webapp-admin-1.0-SNAPSHOT-bin.tar.gz
-		Md5Hash hash = new Md5Hash("3deee94060c8f5a155d45061afac6c61");
+		Md5Hash hash = new Md5Hash("076f063fde2a8abdeafcb9fcf5b615a7");
 		return hash;
 	}
 

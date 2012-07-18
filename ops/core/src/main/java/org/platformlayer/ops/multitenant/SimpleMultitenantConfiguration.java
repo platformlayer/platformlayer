@@ -10,12 +10,12 @@ import org.platformlayer.auth.AuthenticationService;
 import org.platformlayer.auth.AuthenticationTokenValidator;
 import org.platformlayer.auth.PlatformlayerAuthenticationException;
 import org.platformlayer.core.model.PlatformLayerKey;
+import org.platformlayer.crypto.EncryptionStore;
 import org.platformlayer.model.AuthenticationToken;
 import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.ops.MultitenantConfiguration;
 import org.platformlayer.ops.OpsConfiguration;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.crypto.EncryptionStore;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;

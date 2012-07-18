@@ -2,7 +2,6 @@ package org.platformlayer.service.httpfrontend.ops;
 
 import java.io.File;
 
-import org.openstack.crypto.Md5Hash;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.DownloadFileByHash;
@@ -29,14 +28,11 @@ public class HttpServerInstall extends OpsTreeBase {
 		addChild(ManagedDirectory.build(installDir, "0755"));
 
 		{
-			// TODO: Auto-update this?? Add JenkinsLatest?
-			Md5Hash hash = new Md5Hash("65f87ef69f13fa35d29184e5fb570689");
-
 			File archiveFile = new File(installDir, "httpfrontend-server.tar.gz");
 
 			// TODO: Cache?
 			DownloadFileByHash download = addChild(DownloadFileByHash.class);
-			download.hash = hash;
+			download.specifier = "http-proxy:promote-production:proxy-0.1-SNAPSHOT-bin.tar.gz";
 			download.filePath = archiveFile;
 
 			ExpandArchive unzip = addChild(ExpandArchive.class);

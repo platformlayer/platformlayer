@@ -2,7 +2,6 @@ package org.platformlayer.service.dns.ops;
 
 import java.io.File;
 
-import org.openstack.crypto.Md5Hash;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.DownloadFileByHash;
@@ -29,14 +28,11 @@ public class DnsServerInstall extends OpsTreeBase {
 		addChild(ManagedDirectory.build(installDir, "0755"));
 
 		{
-			// TODO: Auto-update this?? Add JenkinsLatest?
-			Md5Hash hash = new Md5Hash("961054ea59f730d87fca8a70cb34be47");
-
 			File archiveFile = new File(installDir, "dns-server.tar.gz");
 
 			// TODO: Cache?
 			DownloadFileByHash download = addChild(DownloadFileByHash.class);
-			download.hash = hash;
+			download.specifier = "http-proxy:promote-production:proxy-0.1-SNAPSHOT-bin.tar.gz";
 			download.filePath = archiveFile;
 
 			ExpandArchive unzip = addChild(ExpandArchive.class);
