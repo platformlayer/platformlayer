@@ -8,11 +8,17 @@ import java.util.Iterator;
 
 import org.openstack.utils.SimpleIterator;
 
+import com.google.common.base.Strings;
+
 public abstract class IpRange {
 	protected final InetAddress address;
 	protected final int netmaskLength;
 
 	public static IpRange parse(String cidr) {
+		if (Strings.isNullOrEmpty(cidr)) {
+			return null;
+		}
+
 		int slashPosition = cidr.indexOf('/');
 		int maskLength = -1;
 		String addressString;
