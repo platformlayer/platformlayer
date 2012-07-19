@@ -21,6 +21,7 @@ import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.SshOpsTarget;
 import org.platformlayer.ops.ssh.SshPortForward;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.net.InetAddresses;
@@ -44,7 +45,8 @@ public class TunneledDatabaseTarget extends DatabaseTarget {
 		this.password = password;
 	}
 
-	public SqlResults execute(String sql, String maskedSql) throws SQLException, OpsException {
+	private static SqlResults execute(SshOpsTarget target, String username, Secret password, String databaseName,
+			String sql, String maskedSql) throws SQLException, OpsException {
 		int port = POSTGRES_PORT;
 
 		InetAddress address = InetAddresses.forString("127.0.0.1");
@@ -64,7 +66,7 @@ public class TunneledDatabaseTarget extends DatabaseTarget {
 		ResultSet rs = null;
 
 		try {
-			forwardLocalPort = ((SshOpsTarget) target).forwardLocalPort(remoteSocketAddress);
+			forwardLocalPort = target.forwardLocalPort(remoteSocketAddress);
 
 			InetSocketAddress localSocketAddress = forwardLocalPort.getLocalSocketAddress();
 
@@ -75,7 +77,7 @@ public class TunneledDatabaseTarget extends DatabaseTarget {
 					+ localSocketAddress.getPort() + "/" + databaseName;
 
 			Properties props = new Properties();
-			props.setProperty("user", "postgres");
+			props.setProperty("user", username);
 			props.setProperty("password", password.plaintext());
 
 			conn = DriverManager.getConnection(jdbcUrl, props);
@@ -110,9 +112,44 @@ public class TunneledDatabaseTarget extends DatabaseTarget {
 
 	}
 
+	public SqlResults execute(String sql, String maskedSql) throws SQLException, OpsException {
+		return execute((SshOpsTarget) target, username, password, databaseName, sql, maskedSql);
+	}
+
 	@Override
 	public SqlResults execute(String sql) throws SQLException, OpsException {
 		return execute(sql, sql);
+	}
+
+	@Override
+	public boolean createDatabase(String databaseName) throws OpsException {
+		try {
+			String sql = "CREATE DATABASE " + databaseName;
+			String maskedSql = sql;
+
+			// No point trying to connect to the database we're trying to create!
+			String runInDatabase = "postgres";
+
+			execute((SshOpsTarget) target, username, password, runInDatabase, sql, maskedSql);
+
+			return true;
+		} catch (SQLException e) {
+			String sqlState = e.getSQLState();
+			// if (execution.getExitCode() == 1 && execution.getStdErr().contains("already exists")) {
+			// log.info("Database already exists");
+			// return;
+			// }
+
+			if (Objects.equal(sqlState, "XX000")) {
+				log.info("Database already exists");
+				return false;
+			}
+			if (Objects.equal(sqlState, "42P04")) {
+				log.info("Database already exists");
+				return false;
+			}
+			throw new OpsException("Error creating database", e);
+		}
 	}
 
 }

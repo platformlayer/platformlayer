@@ -10,4 +10,6 @@ public abstract class DatabaseTarget {
 	private static final Logger log = Logger.getLogger(DatabaseTarget.class);
 
 	public abstract SqlResults execute(String sql) throws SQLException, OpsException;
+
+	public abstract boolean createDatabase(String databaseName) throws OpsException;
 }
