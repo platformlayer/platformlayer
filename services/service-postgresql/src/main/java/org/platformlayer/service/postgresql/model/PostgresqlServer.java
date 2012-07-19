@@ -4,6 +4,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.platformlayer.core.model.Generate;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.Secret;
 import org.platformlayer.service.postgresql.ops.PostgresqlServerController;
@@ -15,5 +16,6 @@ import org.platformlayer.xaas.Controller;
 public class PostgresqlServer extends ItemBase {
 	public String dnsName;
 
+	@Generate
 	public Secret rootPassword;
 }

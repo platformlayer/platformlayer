@@ -1,10 +1,11 @@
 package org.platformlayer.ops.databases;
 
+import org.platformlayer.InetAddressChooser;
 import org.platformlayer.core.model.Secret;
 import org.platformlayer.ops.OpsException;
 
 public interface Database {
-	String getJdbcUrl(Object db, String database) throws OpsException;
+	String getJdbcUrl(Object db, String database, InetAddressChooser chooser) throws OpsException;
 
 	Secret getRootPassword(Object db);
 
