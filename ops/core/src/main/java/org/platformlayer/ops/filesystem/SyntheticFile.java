@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.log4j.Logger;
+import org.openstack.crypto.Md5Hash;
 import org.platformlayer.IoUtils;
 import org.platformlayer.crypto.CryptoUtils;
-import org.openstack.crypto.Md5Hash;
 import org.platformlayer.ops.FileUpload;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
@@ -38,7 +38,8 @@ public abstract class SyntheticFile extends ManagedFile {
 	// }
 
 	protected InputStream openSourceStream() throws OpsException {
-		InputStream input = new ByteArrayInputStream(getContentsBytes());
+		byte[] contentsBytes = getContentsBytes();
+		InputStream input = new ByteArrayInputStream(contentsBytes);
 		return input;
 	}
 

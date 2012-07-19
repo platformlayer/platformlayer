@@ -2,48 +2,80 @@ package org.platformlayer.ops.filesystem;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.inject.Inject;
 
 import org.openstack.crypto.ByteString;
 import org.openstack.crypto.Md5Hash;
+import org.platformlayer.TimeSpan;
 import org.platformlayer.cas.CasStoreList;
 import org.platformlayer.cas.CasStoreObject;
+import org.platformlayer.ops.Command;
+import org.platformlayer.ops.CommandEnvironment;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.cas.CasStoreHelper;
 import org.platformlayer.ops.cas.OpsCasTarget;
+import org.platformlayer.ops.helpers.CurlRequest;
+import org.platformlayer.ops.proxy.HttpProxyHelper;
+import org.platformlayer.ops.proxy.HttpProxyHelper.Usage;
 
 public class DownloadFileByHash extends ManagedFile {
 	public Md5Hash hash;
 
 	public String specifier;
 
+	public URI url;
+
 	@Inject
 	CasStoreHelper casStore;
+
+	@Inject
+	HttpProxyHelper httpProxies;
 
 	Md5Hash resolved;
 
 	public String getHumanName() {
-		if (hash == null) {
-			return specifier;
+		StringBuilder sb = new StringBuilder();
+
+		if (specifier != null) {
+			sb.append("specifier=" + specifier);
 		}
-		return hash.toHex();
+
+		if (hash != null) {
+			sb.append("hash=" + hash.toHex());
+		}
+
+		if (url != null) {
+			sb.append("url=" + url);
+		}
+
+		if (sb.length() == 0) {
+			sb.append("[NO FIELDS SET??]");
+		}
+
+		return sb.toString();
 	}
 
 	public Md5Hash getResolved(OpsTarget target) throws OpsException {
 		if (resolved == null) {
 			if (hash == null) {
-				CasStoreList casStores = casStore.getCasStores(target);
-				resolved = (Md5Hash) casStores.resolve(specifier);
-				if (resolved == null) {
-					throw new OpsException("Unable to resolve artifact: " + getHumanName());
+				if (specifier != null) {
+					CasStoreList casStores = casStore.getCasStores(target);
+					resolved = (Md5Hash) casStores.resolve(specifier);
+
 				}
-				return resolved;
 			} else {
 				resolved = hash;
 			}
 		}
+
+		if (resolved == null) {
+			throw new OpsException("Unable to resolve artifact: " + getHumanName());
+		}
+
 		return resolved;
 	}
 
@@ -61,14 +93,33 @@ public class DownloadFileByHash extends ManagedFile {
 			throw new OpsException("Error while resolving artifact:" + getHumanName(), e);
 		}
 
-		if (casObject == null) {
-			throw new OpsException("Unable to find artifact: " + getHumanName());
-		}
+		if (url != null && casObject == null) {
+			target.mkdir(remoteFilePath.getParentFile());
 
-		try {
-			casObject.copyTo(new OpsCasTarget(target), remoteFilePath);
-		} catch (Exception e) {
-			throw new OpsException("Error copying file to remote CAS", e);
+			CurlRequest curlRequest = new CurlRequest(url);
+			curlRequest.bareRequest = true;
+
+			CommandEnvironment commandEnvironment = httpProxies.getHttpProxyEnvironment(target, Usage.General, url);
+
+			Command curlCommand = curlRequest.toCommand();
+			curlCommand.addLiteral(">");
+			curlCommand.addFile(remoteFilePath);
+			curlCommand.setEnvironment(commandEnvironment);
+			curlCommand.setTimeout(TimeSpan.FIVE_MINUTES);
+
+			// TODO: Can we cache into CAS instead??
+			log.info("Not found in CAS system; downloading directly: " + url);
+			target.executeCommand(curlCommand);
+		} else {
+			if (casObject == null) {
+				throw new OpsException("Unable to find artifact: " + getHumanName());
+			}
+
+			try {
+				casObject.copyTo(new OpsCasTarget(target), remoteFilePath);
+			} catch (Exception e) {
+				throw new OpsException("Error copying file to remote CAS", e);
+			}
 		}
 	}
 
@@ -81,5 +132,13 @@ public class DownloadFileByHash extends ManagedFile {
 		}
 
 		return resolved;
+	}
+
+	public void setUrl(String url) {
+		try {
+			this.url = new URI(url);
+		} catch (URISyntaxException e) {
+			throw new IllegalArgumentException("Error parsing URI", e);
+		}
 	}
 }
