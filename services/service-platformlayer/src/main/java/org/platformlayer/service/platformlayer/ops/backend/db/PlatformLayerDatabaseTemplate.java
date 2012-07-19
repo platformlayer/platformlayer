@@ -3,6 +3,7 @@ package org.platformlayer.service.platformlayer.ops.backend.db;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
+import org.platformlayer.InetAddressChooser;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Secret;
@@ -50,7 +51,7 @@ public class PlatformLayerDatabaseTemplate {
 		ItemBase serverItem = (ItemBase) platformLayer.getItem(serverKey);
 		Database server = databases.toDatabase(serverItem);
 
-		String jdbc = server.getJdbcUrl(serverItem, getDatabaseName());
+		String jdbc = server.getJdbcUrl(serverItem, getDatabaseName(), InetAddressChooser.preferIpv6());
 		return jdbc;
 	}
 

@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
+import org.platformlayer.InetAddressChooser;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Secret;
@@ -103,7 +104,7 @@ public class PlatformLayerInstanceModel extends StandardTemplateData {
 		ItemBase serverItem = (ItemBase) platformLayer.getItem(serverKey);
 		Database server = databases.toDatabase(serverItem);
 
-		String jdbc = server.getJdbcUrl(serverItem, getDatabaseName());
+		String jdbc = server.getJdbcUrl(serverItem, getDatabaseName(), InetAddressChooser.preferIpv6());
 		return jdbc;
 	}
 

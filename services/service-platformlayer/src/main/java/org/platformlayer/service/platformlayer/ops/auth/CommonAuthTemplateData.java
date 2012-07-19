@@ -4,6 +4,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.platformlayer.InetAddressChooser;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Secret;
@@ -64,7 +65,7 @@ public abstract class CommonAuthTemplateData extends StandardTemplateData {
 		ItemBase serverItem = (ItemBase) platformLayer.getItem(serverKey);
 		Database server = databases.toDatabase(serverItem);
 
-		String jdbc = server.getJdbcUrl(serverItem, getAuthDatabaseName());
+		String jdbc = server.getJdbcUrl(serverItem, getAuthDatabaseName(), InetAddressChooser.preferIpv6());
 		return jdbc;
 	}
 

@@ -3,9 +3,9 @@ package org.platformlayer.service.platformlayer.ops.backend;
 import java.io.File;
 
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.crypto.ManagedKeystore;
 import org.platformlayer.ops.filesystem.ManagedDirectory;
 import org.platformlayer.ops.standardservice.StandardServiceInstance;
-import org.platformlayer.service.platformlayer.ops.ManagedKeystore;
 
 public class PlatformLayerInstance extends StandardServiceInstance {
 
