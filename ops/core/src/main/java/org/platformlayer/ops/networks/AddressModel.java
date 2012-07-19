@@ -29,6 +29,10 @@ public class AddressModel {
 		return address;
 	}
 
+	public InetAddress getInetAddress() {
+		return InetAddresses.forString(getAddress());
+	}
+
 	public String getGateway() {
 		return gateway;
 	}
@@ -84,8 +88,7 @@ public class AddressModel {
 	}
 
 	public Tag toTag() {
-		InetAddress address = InetAddresses.forString(getAddress());
-		return Tag.NETWORK_ADDRESS.build(address);
+		return Tag.NETWORK_ADDRESS.build(getInetAddress());
 	}
 
 }
