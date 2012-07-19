@@ -2,6 +2,7 @@ package org.platformlayer.ops;
 
 import java.io.File;
 import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -241,6 +242,8 @@ public class Command {
 			command = escapeQuoted(arg.toString());
 		} else if (arg instanceof Inet4Address) {
 			command = escapeQuoted(((Inet4Address) arg).getHostAddress());
+		} else if (arg instanceof Inet6Address) {
+			command = escapeQuoted(((Inet6Address) arg).getHostAddress());
 		} else {
 			throw new IllegalArgumentException("Don't know how to handle argument of type " + arg.getClass());
 		}
