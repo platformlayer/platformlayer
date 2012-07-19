@@ -2,11 +2,12 @@ package org.platformlayer.ops.pool;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.platformlayer.ops.networks.AddressModel;
+
+import com.google.common.net.InetAddresses;
 
 public class SocketAddressPoolAssignment extends PoolAssignment<InetSocketAddress> {
 	private static final Logger log = Logger.getLogger(SocketAddressPoolAssignment.class);
@@ -24,8 +25,8 @@ public class SocketAddressPoolAssignment extends PoolAssignment<InetSocketAddres
 		} else {
 			InetAddress address;
 			try {
-				address = InetAddress.getByName(addressString);
-			} catch (UnknownHostException e) {
+				address = InetAddresses.forString(addressString);
+			} catch (IllegalArgumentException e) {
 				throw new IllegalStateException("Error mapping address: " + addressString);
 			}
 			return new InetSocketAddress(address, port);
