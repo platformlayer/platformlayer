@@ -5,7 +5,7 @@ import java.io.File;
 import org.openstack.crypto.Md5Hash;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.filesystem.DownloadFile;
+import org.platformlayer.ops.filesystem.DownloadFileByHash;
 import org.platformlayer.ops.filesystem.ExpandArchive;
 import org.platformlayer.ops.java.JavaVirtualMachine;
 import org.platformlayer.ops.packages.PackageDependency;
@@ -41,7 +41,7 @@ public class SolrInstall extends OpsTreeBase {
 			File zipFile = new File(basePath, "apache-solr-3.6.0.tgz");
 			File extractPath = new File(basePath, "apache-solr-3.6.0");
 
-			DownloadFile download = injected(DownloadFile.class);
+			DownloadFileByHash download = injected(DownloadFileByHash.class);
 			download.setUrl(apacheMirror + file);
 			download.hash = hash;
 			download.filePath = zipFile;
