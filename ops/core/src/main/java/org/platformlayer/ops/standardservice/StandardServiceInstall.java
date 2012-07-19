@@ -4,7 +4,6 @@ import java.io.File;
 
 import javax.inject.Inject;
 
-import org.openstack.crypto.Md5Hash;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.DownloadFileByHash;
@@ -37,29 +36,37 @@ public abstract class StandardServiceInstall extends OpsTreeBase {
 		addChild(PosixUser.build(user, false, group));
 
 		File installDir = template.getInstallDir();
-		File basePath = installDir;
 
 		{
-			// TODO: Auto-update this?? Add JenkinsLatest?
-			Md5Hash hash = getMd5Hash();
+			DownloadFileByHash download = buildDownload();
+			if (download != null) {
+				addChild(download);
+			}
 
-			File zipFile = new File(basePath, template.getKey() + ".tar.gz");
-
-			// TODO: Cache?
-			DownloadFileByHash download = addChild(DownloadFileByHash.class);
-			download.hash = hash;
-			download.filePath = zipFile;
-
-			// TODO: Only unzip if newly downloaded
-			ExpandArchive unzip = addChild(ExpandArchive.class);
-			unzip.archiveFile = zipFile;
-			unzip.extractPath = installDir;
+			if (download != null && template.shouldExpand()) {
+				// TODO: Only unzip if newly downloaded
+				ExpandArchive unzip = addChild(ExpandArchive.class);
+				unzip.archiveFile = download.filePath;
+				unzip.extractPath = installDir;
+			}
 		}
 
 		addChild(JavaVirtualMachine.buildJre7());
 	}
 
-	protected abstract Md5Hash getMd5Hash();
+	protected DownloadFileByHash buildDownload() {
+		StandardTemplateData template = getTemplate();
+
+		// TODO: Auto-update this?? Add JenkinsLatest?
+
+		File zipFile = template.getDistFile();
+
+		// TODO: CAS / Cache?
+		DownloadFileByHash download = injected(DownloadFileByHash.class);
+		download.filePath = zipFile;
+
+		return download;
+	}
 
 	protected abstract StandardTemplateData getTemplate();
 }

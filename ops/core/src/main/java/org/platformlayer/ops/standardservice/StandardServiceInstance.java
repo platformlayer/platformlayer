@@ -8,11 +8,11 @@ import javax.inject.Inject;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.crypto.ManagedKeystore;
 import org.platformlayer.ops.filesystem.ManagedDirectory;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.supervisor.StandardService;
 import org.platformlayer.ops.tree.OpsTreeBase;
-import org.platformlayer.service.platformlayer.ops.ManagedKeystore;
 
 import com.google.common.base.Supplier;
 import com.google.inject.util.Providers;
@@ -41,21 +41,7 @@ public abstract class StandardServiceInstance extends OpsTreeBase {
 		addChild(ManagedDirectory.build(instanceDir, "0700").setOwner(user).setGroup(group));
 		addChild(ManagedDirectory.build(template.getConfigDir(), "0700").setOwner(user).setGroup(group));
 
-		{
-			PropertiesConfigFile conf = addChild(PropertiesConfigFile.class);
-			conf.filePath = template.getConfigurationFile();
-			conf.propertiesSupplier = new Supplier<Map<String, String>>() {
-
-				@Override
-				public Map<String, String> get() {
-					try {
-						return template.getConfigurationProperties();
-					} catch (OpsException e) {
-						throw new IllegalStateException("Error building configuration", e);
-					}
-				}
-			};
-		}
+		addConfigurationFile(template);
 
 		{
 			StandardService service = addChild(StandardService.class);
@@ -79,6 +65,22 @@ public abstract class StandardServiceInstance extends OpsTreeBase {
 				httpsKey.key = template.findSslKey();
 			}
 		}
+	}
+
+	protected void addConfigurationFile(final StandardTemplateData template) throws OpsException {
+		PropertiesConfigFile conf = addChild(PropertiesConfigFile.class);
+		conf.filePath = template.getConfigurationFile();
+		conf.propertiesSupplier = new Supplier<Map<String, String>>() {
+
+			@Override
+			public Map<String, String> get() {
+				try {
+					return template.getConfigurationProperties();
+				} catch (OpsException e) {
+					throw new IllegalStateException("Error building configuration", e);
+				}
+			}
+		};
 	}
 
 	protected abstract StandardTemplateData getTemplate();

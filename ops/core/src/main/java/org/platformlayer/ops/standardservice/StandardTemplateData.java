@@ -81,6 +81,15 @@ public abstract class StandardTemplateData implements TemplateDataSource {
 		return new File(getConfigDir(), "../keystore.jks");
 	}
 
+	public File getDistFile() {
+		return new File(getInstallDir(), getKey() + ".tar.gz");
+	}
+
+	public boolean shouldExpand() {
+		String distFilename = getDistFile().getName();
+		return distFilename.endsWith(".tar.gz") || distFilename.endsWith(".zip");
+	}
+
 	// public String getDatabaseName() {
 	// return "main";
 	// }
