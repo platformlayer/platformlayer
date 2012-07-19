@@ -1,4 +1,4 @@
-package org.platformlayer.service.platformlayer.ops;
+package org.platformlayer.ops.crypto;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,7 +26,6 @@ import org.platformlayer.ops.FileUpload;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
-import org.platformlayer.ops.crypto.ManagedSecretKey;
 import org.platformlayer.ops.firewall.Sanitizer;
 import org.platformlayer.ops.firewall.Sanitizer.Decision;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
