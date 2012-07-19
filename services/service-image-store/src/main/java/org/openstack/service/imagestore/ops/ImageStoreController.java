@@ -46,16 +46,23 @@ public class ImageStoreController extends OpsTreeBase {
 		Tag tag;
 
 		boolean useGlance = isFlavorGlance(model);
+
+		String host = model.dnsName;
+		if (host.contains(":")) {
+			// IPV6
+			host = "[" + host + "]";
+		}
+
 		if (useGlance) {
 			if (Strings.isEmpty(model.dnsName)) {
 				throw new IllegalArgumentException("dnsName must be specified");
 			}
 
 			addChildrenGlance(model);
-			tag = new Tag("endpoint", "glance://" + model.dnsName);
+			tag = new Tag("endpoint", "glance://" + host);
 		} else {
 			addDirectStore(model);
-			tag = new Tag("endpoint", "ssh://imagestore@" + model.dnsName);
+			tag = new Tag("endpoint", "ssh://imagestore@" + host);
 		}
 
 		addChild(ItemTagger.build(tag));
