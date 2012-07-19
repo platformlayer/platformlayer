@@ -49,7 +49,7 @@ public class DatabaseConnection extends OpsTreeBase implements CustomRecursor {
 	public void doRecurseOperation() throws OpsException {
 		ItemBase server = platformLayer.getItem(key);
 
-		Database database = providers.toInterface(server);
+		Database database = providers.toInterface(server, Database.class);
 
 		String username = this.username;
 		if (username == null) {

@@ -81,7 +81,7 @@ public class PlatformLayerCloudHelpers {
 
 	public PublicEndpointBase createPublicEndpoint(InstanceBase instance, PlatformLayerKey parent) throws OpsException {
 		MachineCloudBase cloud = getCloud(instance.cloud);
-		CloudController cloudController = providers.toInterface(cloud);
+		CloudController cloudController = providers.toInterface(cloud, CloudController.class);
 
 		PublicEndpointBase endpoint = cloudController.buildEndpointTemplate();
 
@@ -105,7 +105,7 @@ public class PlatformLayerCloudHelpers {
 	InstanceBase buildInstanceTemplate(MachineCreationRequest request, PlatformLayerKey parent) throws OpsException {
 		MachineCloudBase targetCloud = scheduler.pickCloud(request);
 
-		CloudController targetCloudController = providers.toInterface(targetCloud);
+		CloudController targetCloudController = providers.toInterface(targetCloud, CloudController.class);
 
 		InstanceBase machine = targetCloudController.buildInstanceTemplate(request);
 

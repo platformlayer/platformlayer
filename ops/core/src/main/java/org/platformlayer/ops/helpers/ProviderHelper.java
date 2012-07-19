@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.platformlayer.CastUtils;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.ServiceInfo;
 import org.platformlayer.ids.ServiceType;
@@ -71,10 +72,10 @@ public class ProviderHelper {
 		return providers;
 	}
 
-	public <T> T toInterface(ItemBase item) throws OpsException {
+	public <T> T toInterface(ItemBase item, Class<T> interfaceClass) throws OpsException {
 		ModelClass<? extends ItemBase> modelClass = serviceProviderDictionary.getModelClass(item.getClass());
 
 		Object controller = modelClass.getProvider().getController(item);
-		return (T) controller;
+		return CastUtils.checkedCast(controller, interfaceClass);
 	}
 }

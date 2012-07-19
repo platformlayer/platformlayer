@@ -70,7 +70,7 @@ public abstract class StandardTemplateData implements TemplateDataSource {
 			return null;
 		}
 		ItemBase sslKeyItem = (ItemBase) platformLayer.getItem(sslKey);
-		return providers.<ManagedSecretKey> toInterface(sslKeyItem);
+		return providers.toInterface(sslKeyItem, ManagedSecretKey.class);
 	}
 
 	public boolean shouldCreateSslKey() {

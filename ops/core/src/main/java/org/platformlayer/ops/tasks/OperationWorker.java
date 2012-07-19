@@ -102,7 +102,7 @@ public class OperationWorker implements Callable<Object> {
 							throw new IllegalStateException();
 						}
 
-						Object controller = serviceProvider.getController(item.getClass());
+						Object controller = serviceProvider.getController(item);
 
 						scopeItems.add(item);
 						scopeItems.add(operationType);

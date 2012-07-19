@@ -40,7 +40,7 @@ public class MetricFetcher {
 
 	public MetricValues fetch(ServiceProviderBase serviceProviderBase, ItemBase managedItem, String metricKey)
 			throws OpsException {
-		Object controller = serviceProviderBase.getController(managedItem.getClass());
+		Object controller = serviceProviderBase.getController(managedItem);
 
 		MetricConfig metricConfig = ops.getMetricInfo(controller);
 

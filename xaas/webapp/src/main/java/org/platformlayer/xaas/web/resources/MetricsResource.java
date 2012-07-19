@@ -35,7 +35,7 @@ public class MetricsResource extends XaasResourceBase {
 			public MetricInfoCollection call() throws Exception {
 				BindingScope bindingScope = BindingScope.push(managedItem, managedItem);
 				try {
-					Object controller = serviceProvider.getController(managedItem.getClass());
+					Object controller = serviceProvider.getController(managedItem);
 					MetricConfig metricConfig = opsContext.getMetricInfo(controller);
 
 					return MetricCollector.toMetricInfo(metricConfig);

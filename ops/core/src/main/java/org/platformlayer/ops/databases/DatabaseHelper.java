@@ -40,7 +40,7 @@ public class DatabaseHelper {
 	// }
 
 	public Database toDatabase(ItemBase item) throws OpsException {
-		return providerHelper.toInterface(item);
+		return providerHelper.toInterface(item, Database.class);
 	}
 
 }
