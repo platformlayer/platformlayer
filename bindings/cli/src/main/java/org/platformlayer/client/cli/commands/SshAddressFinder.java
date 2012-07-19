@@ -27,11 +27,24 @@ public class SshAddressFinder {
 	public void visit(UntypedItem untypedItem) throws PlatformLayerClientException {
 		ElementInfo rootElementInfo = untypedItem.getRootElementInfo();
 
+		boolean consider = true;
+
+		switch (untypedItem.getState()) {
+		case DELETED:
+		case DELETE_REQUESTED:
+			consider = false;
+			break;
+		}
+
 		Set<String> instanceTypes = Sets.newHashSet();
 		instanceTypes.add("directInstance");
 		instanceTypes.add("googleCloudInstance");
 
-		if (instanceTypes.contains(rootElementInfo.elementName)) {
+		if (!instanceTypes.contains(rootElementInfo.elementName)) {
+			consider = false;
+		}
+
+		if (consider) {
 			Tags itemTags = untypedItem.getTags();
 
 			for (InetAddress address : Tag.NETWORK_ADDRESS.find(itemTags)) {
