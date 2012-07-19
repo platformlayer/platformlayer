@@ -11,12 +11,5 @@ iface ${interface.internalName} ${interface.primaryAddress.protocol} static
 	<#if interface.dns??>
 	dns-nameservers ${interface.dns}
 	</#if>
-	<#list interface.extraAddresses as extraAddress>
-	# There seems to be a bug where you can't use the normal aliases e.g. eth0:0
-	# || true: another bug when adding addresses under LXC (964882 ?) 
-	up ip -6 addr add ${extraAddress.cidr} dev ${interface.internalName} || true
-	up ip -6 route add 2000::/3 via ${extraAddress.gateway} || true
-	up IFACE=${interface.internalName} MODE=start ADDRFAM=inet6 run-parts /etc/network/if-up.d/  || true
-	</#list>
 </#list>
 

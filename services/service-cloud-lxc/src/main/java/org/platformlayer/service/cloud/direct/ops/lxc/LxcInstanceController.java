@@ -11,6 +11,7 @@ import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.crypto.OpenSshUtils;
+import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
@@ -23,12 +24,15 @@ import org.platformlayer.ops.helpers.SshKeys;
 import org.platformlayer.ops.images.ImageFormat;
 import org.platformlayer.ops.networks.AddressModel;
 import org.platformlayer.ops.pool.NetworkAddressPoolAssignment;
+import org.platformlayer.ops.supervisor.ManagedSupervisorInstance;
 import org.platformlayer.ops.tagger.Tagger;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.direct.model.DirectInstance;
 import org.platformlayer.service.cloud.direct.ops.CloudInstanceMapper;
 import org.platformlayer.service.cloud.direct.ops.DirectCloudUtils;
+import org.platformlayer.service.cloud.direct.ops.DirectHostController;
 import org.platformlayer.service.cloud.direct.ops.DownloadImage;
+import org.platformlayer.service.cloud.direct.ops.InstanceScript;
 import org.platformlayer.service.cloud.direct.ops.cloud.CloudMap;
 
 public class LxcInstanceController extends OpsTreeBase {
@@ -127,13 +131,28 @@ public class LxcInstanceController extends OpsTreeBase {
 			instance.addChild(bootstrap);
 		}
 
+		InstanceScript script;
 		{
-			ManagedLxcInstance kvmInstance = injected(ManagedLxcInstance.class);
+			script = instance.addChild(InstanceScript.class);
+			script.filePath = new File(DirectHostController.LXC_INSTANCE_DIR, id);
 
-			kvmInstance.id = id;
-			kvmInstance.base = getInstanceDir();
+			String key = "lxc-" + id;
+			script.key = key;
 
-			instance.addChild(kvmInstance);
+			script.addresses.add(address4);
+			script.addresses.add(address6);
+
+			// TODO: What if this isn't eth0??
+			script.primaryInterface = "eth0";
+
+			Command command = Command.build("lxc-start");
+			command.addLiteral("--name").addQuoted(id);
+			script.launchInstanceCommand = command;
+		}
+
+		{
+			ManagedSupervisorInstance supervisorInstance = instance.addChild(ManagedSupervisorInstance.class);
+			script.configure(supervisorInstance);
 		}
 
 		{

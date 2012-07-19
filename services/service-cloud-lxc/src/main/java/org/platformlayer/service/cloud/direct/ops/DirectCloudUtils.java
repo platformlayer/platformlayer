@@ -91,7 +91,7 @@ public class DirectCloudUtils {
 				DirectHost host = OpsContext.get().getInstance(DirectHost.class);
 				String ipv4Public = host.ipv4Public;
 				if (ipv4Public != null) {
-					// We don't skip here, .sat the moment.
+					// We don't skip here, at the moment.
 					// We may just need a comma separated list in future...
 					int skipCount = 0;
 					poolBuilder = new NetworkPoolBuilder(ipv4Public, skipCount);

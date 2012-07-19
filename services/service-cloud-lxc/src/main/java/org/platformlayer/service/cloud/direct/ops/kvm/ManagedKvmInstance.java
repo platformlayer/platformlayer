@@ -12,14 +12,16 @@ import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.TemplatedFile;
+import org.platformlayer.ops.networks.AddressModel;
 import org.platformlayer.ops.supervisor.ManagedSupervisorInstance;
-import org.platformlayer.ops.supervisor.SupervisorProcessConfig;
 import org.platformlayer.ops.templates.TemplateDataSource;
 import org.platformlayer.ops.tree.OpsTreeBase;
+import org.platformlayer.service.cloud.direct.ops.DirectHostController;
+import org.platformlayer.service.cloud.direct.ops.InstanceScript;
 import org.platformlayer.service.cloud.direct.ops.kvm.monitor.KvmConfig.KvmDrive;
 import org.platformlayer.service.cloud.direct.ops.kvm.monitor.KvmConfig.KvmNic;
 
-import com.google.inject.util.Providers;
+import com.google.common.collect.Lists;
 
 public class ManagedKvmInstance extends OpsTreeBase {
 	public String id;
@@ -34,6 +36,7 @@ public class ManagedKvmInstance extends OpsTreeBase {
 	public Provider<List<KvmDrive>> drives;
 	public Provider<InetSocketAddress> monitor;
 	public Provider<InetSocketAddress> vnc;
+	public List<Provider<AddressModel>> addresses = Lists.newArrayList();
 
 	File getRootPath() {
 		return base;
@@ -61,7 +64,27 @@ public class ManagedKvmInstance extends OpsTreeBase {
 	@Override
 	protected void addChildren() throws OpsException {
 		addChild(TemplatedFile.build(buildDeviceConfigModel(), getDeviceConfigPath()));
-		addChild(buildSupervisorInstance());
+
+		InstanceScript script;
+		{
+			script = addChild(InstanceScript.class);
+			script.filePath = new File(DirectHostController.KVM_INSTANCE_DIR, id);
+
+			String key = "kvm-" + id;
+			script.key = key;
+
+			script.addresses.addAll(addresses);
+
+			// TODO: What if this isn't eth0??
+			script.primaryInterface = "eth0";
+
+			script.launchInstanceCommand = buildKvmCommand();
+		}
+
+		{
+			ManagedSupervisorInstance supervisorInstance = addChild(ManagedSupervisorInstance.class);
+			script.configure(supervisorInstance);
+		}
 	}
 
 	private TemplateDataSource buildDeviceConfigModel() {
@@ -76,9 +99,7 @@ public class ManagedKvmInstance extends OpsTreeBase {
 		};
 	}
 
-	private ManagedSupervisorInstance buildSupervisorInstance() {
-		String key = "kvm-" + id;
-
+	private Command buildKvmCommand() {
 		Command command = Command.build("/usr/bin/kvm");
 
 		if (this.vnc != null) {
@@ -109,12 +130,6 @@ public class ManagedKvmInstance extends OpsTreeBase {
 			command.addLiteral("-enable-kvm");
 		}
 
-		SupervisorProcessConfig sup = new SupervisorProcessConfig(key);
-		Map<String, String> properties = sup.getProperties();
-		properties.put("command", command.buildCommandString());
-
-		ManagedSupervisorInstance instance = injected(ManagedSupervisorInstance.class);
-		instance.config = Providers.of(sup);
-		return instance;
+		return command;
 	}
 }

@@ -91,6 +91,13 @@ public class LxcBootstrap {
 		FileUpload.upload(getTarget(), file, runTemplate("etc.network.interfaces"));
 	}
 
+	void setupIpv6Script() throws OpsException {
+		File file = new File(getRoot(), "etc/network/if-up.d/ipv6");
+		OpsTarget target = getTarget();
+		FileUpload.upload(target, file, runTemplate("ipv6"));
+		target.chmod(file, "755");
+	}
+
 	void setupLxcConfig() throws OpsException {
 		File file = getConfigFile();
 		FileUpload.upload(getTarget(), file, runTemplate("lxc.config"));
@@ -156,6 +163,7 @@ public class LxcBootstrap {
 			setupResolveConf();
 			setupInittab();
 			setupInterfaces();
+			setupIpv6Script();
 			setupHostname();
 
 			// if (startOnBoot) {

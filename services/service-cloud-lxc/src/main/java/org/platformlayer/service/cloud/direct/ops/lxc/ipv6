@@ -1,0 +1,53 @@
+#!/bin/bash
+# Configure IPV6; we have problems with lxc doing it in /etc/network/interfaces
+
+set -e
+
+# Only run from ifup.
+if [ "$MODE" != start ]; then
+        echo "Not run from ifup; exiting"
+        exit 0
+fi
+
+echo "In ipv6 script.  IFACE=$IFACE MODE=$MODE ADDRFAM=$ADDRFAM"
+
+<#list interfaces as interface>
+if [[ "$IFACE" == "${interface.internalName}" || "$IFACE" == "--all" ]]; then
+	if [[ "$ADDRFAM" == "inet" || "$ADDRFAM" == "meta" ]]; then
+		echo "Current IPV6 addresses:"
+		ip -6 addr
+		
+		
+		<#list interface.extraAddresses as extraAddress>
+		echo "Configuring IPV6 ${extraAddress.cidr}:"
+		ip -6 addr add ${extraAddress.cidr} dev ${interface.internalName}  || echo "Failed to set IPV6 address ${extraAddress.cidr}"
+		</#list>
+	
+		<#list interface.extraAddresses as extraAddress>
+		echo "Configuring IPV6 default route:"
+		ip -6 route add 2000::/3 via ${extraAddress.gateway} || echo "Failed to set gateway ${extraAddress.gateway}"
+		</#list>
+		
+		
+		echo "Adding IPV4 default route"
+		ip route add 0.0.0.0/0 via ${interface.primaryAddress.gateway} || echo "Failed to add IPV4 route"
+		
+		echo "Current IPV6 routing table"
+		ip -6 route
+		echo "Current IPV4 routing table"
+		ip route
+		
+		echo "Current IPV4 addresses:"
+		ip addr
+		echo "Current IPV6 addresses:"
+		ip -6 addr
+		
+		if [[ "$ADDRFAM" == "inet" ]]; then
+			IFACE=$IFACE MODE=start ADDRFAM=inet6 run-parts /etc/network/if-up.d/  || echo "Error running if-up.d for inet6"
+		fi
+	
+	fi
+fi
+</#list>
+
+exit 0

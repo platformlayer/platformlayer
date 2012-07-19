@@ -1,5 +1,6 @@
 package org.platformlayer.service.cloud.direct.ops;
 
+import java.io.File;
 import java.io.IOException;
 
 import javax.inject.Inject;
@@ -9,6 +10,7 @@ import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.dns.DnsResolver;
+import org.platformlayer.ops.filesystem.ManagedDirectory;
 import org.platformlayer.ops.helpers.ServiceContext;
 import org.platformlayer.ops.machines.PlatformLayerCloudContext;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
@@ -22,6 +24,9 @@ import org.platformlayer.service.cloud.direct.ops.kvm.host.KvmHost;
 
 public class DirectHostController extends OpsTreeBase {
 	static final Logger log = Logger.getLogger(DirectHostController.class);
+
+	public static final File LXC_INSTANCE_DIR = new File("/var/instances/lxc");
+	public static final File KVM_INSTANCE_DIR = new File("/var/instances/kvm");
 
 	@Inject
 	PlatformLayerHelpers platformLayer;
@@ -89,6 +94,9 @@ public class DirectHostController extends OpsTreeBase {
 
 		// TODO: Do we want to differentiate between an LXC host and a KVM host?
 		host.addChild(PackageDependency.build("lxc"));
+
+		host.addChild(ManagedDirectory.build(LXC_INSTANCE_DIR, "0755"));
+		host.addChild(ManagedDirectory.build(KVM_INSTANCE_DIR, "0755"));
 
 		// Useful for moving images around
 		host.addChild(PackageDependency.build("bzip2"));

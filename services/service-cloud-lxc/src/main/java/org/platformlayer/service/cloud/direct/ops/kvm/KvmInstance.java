@@ -164,7 +164,7 @@ public class KvmInstance extends OpsTreeBase {
 		}
 
 		{
-			ManagedKvmInstance kvmInstance = injected(ManagedKvmInstance.class);
+			ManagedKvmInstance kvmInstance = addChild(ManagedKvmInstance.class);
 
 			kvmInstance.id = id;
 			kvmInstance.memoryMb = Math.max(256, minimumMemoryMB);
@@ -175,7 +175,8 @@ public class KvmInstance extends OpsTreeBase {
 			kvmInstance.nics = buildVnics();
 			kvmInstance.drives = buildDrives();
 
-			instance.addChild(kvmInstance);
+			kvmInstance.addresses.add(address4);
+			kvmInstance.addresses.add(address6);
 		}
 
 		{
