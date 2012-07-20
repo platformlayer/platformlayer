@@ -11,6 +11,7 @@ import org.platformlayer.gwt.client.places.ApplicationPlace;
 import org.platformlayer.gwt.client.project.ProjectPlace;
 import org.platformlayer.gwt.client.stores.JobStore;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.view.client.ListDataProvider;
 
@@ -54,15 +55,23 @@ public class ApplicationState {
 
 	private String getPlatformLayerBaseUrl() {
 		// TODO: Get from GWT?? Get from auth??
-		return "https://dev.platformlayer.net:8082/v0/";
+		String url;
+
+		if (GWT.isProdMode()) {
+			url = "https://ops.platformlayer.net:8082/api/v0/";
+		} else {
+			url = "https://dev.platformlayer.net:8082/api/v0/";
+		}
+		assert url.endsWith("/");
+		return url;
 	}
 
 	public String getAuthBaseUrl() {
-		String base = getPlatformLayerBaseUrl();
-		if (base.equals("https://dev.platformlayer.net:8082/v0/")) {
+		if (GWT.isProdMode()) {
+			return "https://auth.platformlayer.net:5001/v2.0/";
+		} else {
 			return "https://dev.platformlayer.net:5001/v2.0/";
 		}
-		return "https://auth.platformlayer.net:5001/v2.0/";
 	}
 
 	public ListDataProvider<OpsProject> getProjectsProvider() {
