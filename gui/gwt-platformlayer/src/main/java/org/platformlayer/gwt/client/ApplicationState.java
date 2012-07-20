@@ -58,6 +58,7 @@ public class ApplicationState {
 		String url;
 
 		if (GWT.isProdMode()) {
+			// TODO: Derive from current path?
 			url = "https://ops.platformlayer.net:8082/api/v0/";
 		} else {
 			url = "https://dev.platformlayer.net:8082/api/v0/";

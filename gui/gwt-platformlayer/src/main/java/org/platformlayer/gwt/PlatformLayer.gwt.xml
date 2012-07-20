@@ -9,6 +9,7 @@
 	<!-- otherwise eclipse complains (Google plugin bug?) -->
 	<inherits name='com.google.gwt.junit.JUnit' />
 
+	<inherits name='com.fathomdb.gwt.utils.GwtUtils' />
 
 	<!-- Load GWT Theme before loading other stylesheets... -->
 	<!-- <inherits name='com.google.gwt.user.theme.clean.Clean' /> -->

@@ -8,23 +8,31 @@ import com.google.gwt.dom.client.LinkElement;
 import com.google.gwt.dom.client.ScriptElement;
 
 public class Bootstrap {
-	BootstrapResources resources = GWT.create(BootstrapResources.class);
+	static final BootstrapResources resources = GWT.create(BootstrapResources.class);
 
 	static boolean injected = false;
 
 	public static void ensureInjected() {
 		if (!injected) {
-			// BootstrapResources resources = GWT.create(BootstrapResources.class);
+			boolean useLessFiles = false;
 
-			String base = GWT.getModuleBaseURL();
+			if (!GWT.isProdMode()) {
+				// useLessFiles = true;
+			}
 
-			HeadElement head = getHead();
+			if (!useLessFiles) {
+				resources.bootstrapCss().ensureInjected();
+			} else {
+				String base = GWT.getModuleBaseURL();
 
-			LinkElement link = createLinkElement(base + "bootstrap/less/bootstrap.less");
-			head.appendChild(link);
+				HeadElement head = getHead();
 
-			ScriptElement script = createScriptElement(base + "less/less-1.3.0.min.js");
-			head.appendChild(script);
+				LinkElement link = createLinkElement(base + "bootstrap/less/bootstrap.less");
+				head.appendChild(link);
+
+				ScriptElement script = createScriptElement(base + "less/less-1.3.0.min.js");
+				head.appendChild(script);
+			}
 
 			injected = true;
 		}
