@@ -57,13 +57,13 @@ public class PlatformlayerAuthenticationClient extends RestfulClient {
 			throw new PlatformlayerAuthenticationException("Error authenticating", e);
 		}
 
-		if (log.isDebugEnabled()) {
-			if (response.getAccess().getProjects() != null) {
-				for (String project : response.getAccess().getProjects()) {
-					log.debug("Can access: " + project);
-				}
-			}
-		}
+		// if (log.isDebugEnabled()) {
+		// if (response.getAccess().getProjects() != null) {
+		// for (String project : response.getAccess().getProjects()) {
+		// log.debug("Can access: " + project);
+		// }
+		// }
+		// }
 
 		return new PlatformlayerAuthenticationToken(response.getAccess());
 	}
