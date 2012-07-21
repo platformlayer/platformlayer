@@ -12,30 +12,38 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestBuilder.Method;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class CorsRequest<T extends JavaScriptObject> {
+public class CorsRequest {
 	static final Logger log = Logger.getLogger(CorsRequest.class.getName());
 
 	final OpsProject project;
+
+	final Method method;
 	final String url;
 
 	final String postData;
 
-	public CorsRequest(OpsProject project, String url, String postData) {
+	private CorsRequest(OpsProject project, String url, Method method, String postData) {
 		super();
 		this.url = url;
 		this.project = project;
+		this.method = method;
 		this.postData = postData;
 	}
 
-	public CorsRequest(OpsProject project, String url) {
-		this(project, url, null);
+	public static CorsRequest get(OpsProject project, String url) {
+		return new CorsRequest(project, url, RequestBuilder.GET, null);
 	}
 
-	public void execute(final AsyncCallback<T> callback) {
+	public static CorsRequest post(OpsProject project, String url, String postData) {
+		return new CorsRequest(project, url, RequestBuilder.POST, postData);
+	}
+
+	public <T extends JavaScriptObject> void execute(final AsyncCallback<T> callback) {
 		Authentication auth = project.getAuthentication();
 
 		auth.getAccess(new AsyncCallback<Access>() {
@@ -64,10 +72,11 @@ public class CorsRequest<T extends JavaScriptObject> {
 		});
 	}
 
-	private void execute(OpsProject project, String tokenId, final AsyncCallback<T> callback) {
+	private <T extends JavaScriptObject> void execute(OpsProject project, String tokenId,
+			final AsyncCallback<T> callback) {
 		log.log(Level.INFO, "Making CORS request: GET " + url);
 
-		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, url);
+		RequestBuilder builder = new RequestBuilder(method, url);
 		builder.setHeader("X-Auth-Token", tokenId);
 		builder.setHeader("Accept", "application/json");
 

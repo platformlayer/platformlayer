@@ -1,6 +1,8 @@
 package org.platformlayer.gwt.client;
 
+import org.platformlayer.gwt.client.api.platformlayer.Job;
 import org.platformlayer.gwt.client.api.platformlayer.OpsProject;
+import org.platformlayer.gwt.client.job.JobPlace;
 import org.platformlayer.gwt.client.places.ApplicationPlace;
 
 import com.google.gwt.activity.shared.AbstractActivity;
@@ -22,6 +24,8 @@ public abstract class ApplicationAbstractActivity extends AbstractActivity {
 	public abstract void start(AcceptsOneWidget panel, EventBus eventBus);
 
 	public abstract void init(Place place);
+
+	protected abstract ApplicationPlace getPlace();
 
 	@Override
 	public void start(AcceptsOneWidget panel, com.google.gwt.event.shared.EventBus eventBus) {
@@ -60,5 +64,7 @@ public abstract class ApplicationAbstractActivity extends AbstractActivity {
 		return project;
 	}
 
-	protected abstract ApplicationPlace getPlace();
+	public JobPlace getJobPlace(Job job) {
+		return new JobPlace(getPlace().getProject().getJobListPlace(), job.getJobId());
+	}
 }

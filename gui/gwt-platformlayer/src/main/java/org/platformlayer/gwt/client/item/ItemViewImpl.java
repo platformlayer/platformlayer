@@ -3,8 +3,11 @@ package org.platformlayer.gwt.client.item;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.platformlayer.gwt.client.api.platformlayer.Job;
 import org.platformlayer.gwt.client.api.platformlayer.UntypedItem;
+import org.platformlayer.gwt.client.job.JobPlace;
 import org.platformlayer.gwt.client.view.AbstractApplicationPage;
+import org.platformlayer.gwt.client.widgets.AlertContainer;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.SpanElement;
@@ -38,7 +41,16 @@ public class ItemViewImpl extends AbstractApplicationPage implements ItemView {
 	@UiField
 	Button editButton;
 
+	@UiField
+	Button configureButton;
+
+	@UiField
+	Button validateButton;
+
 	UntypedItem untypedModel;
+
+	@UiField
+	AlertContainer alerts;
 
 	@Override
 	public void start(ItemActivity activity) {
@@ -73,10 +85,33 @@ public class ItemViewImpl extends AbstractApplicationPage implements ItemView {
 
 	@UiHandler("editButton")
 	public void onEditButtonClick(ClickEvent e) {
-		if (untypedModel == null)
+		if (untypedModel == null) {
 			return;
+		}
 
 		EditItemDialog dialog = new EditItemDialog();
 		dialog.start(untypedModel);
+	}
+
+	@UiHandler("validateButton")
+	public void onValidateButtonClick(ClickEvent e) {
+		activity.doAction("validate");
+	}
+
+	@UiHandler("configureButton")
+	public void onConfigureButtonClick(ClickEvent e) {
+		activity.doAction("configure");
+	}
+
+	@Override
+	public void showJobStartResult(Job job, Throwable e) {
+		if (job != null) {
+			// Success
+			JobPlace place = activity.getJobPlace(job);
+			alerts.addSuccess("Started job", place);
+		} else {
+			// Failure
+			alerts.addError("Unable to start job", e);
+		}
 	}
 }

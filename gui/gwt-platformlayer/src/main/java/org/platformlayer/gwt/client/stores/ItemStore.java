@@ -5,6 +5,8 @@ import java.util.logging.Logger;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.platformlayer.gwt.client.api.platformlayer.Action;
+import org.platformlayer.gwt.client.api.platformlayer.Job;
 import org.platformlayer.gwt.client.api.platformlayer.OpsProject;
 import org.platformlayer.gwt.client.api.platformlayer.PlatformLayerService;
 import org.platformlayer.gwt.client.api.platformlayer.UntypedItem;
@@ -32,4 +34,7 @@ public class ItemStore {
 		});
 	}
 
+	public void doAction(OpsProject project, String itemPath, Action action, final AsyncCallback<Job> callback) {
+		platformLayer.doAction(project, itemPath, action, callback);
+	}
 }

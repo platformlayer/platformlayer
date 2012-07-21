@@ -1,19 +1,24 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-	xmlns:g='urn:import:com.google.gwt.user.client.ui'
-	xmlns:c="urn:import:com.google.gwt.user.cellview.client">
+    xmlns:g='urn:import:com.google.gwt.user.client.ui'
+     xmlns:c="urn:import:com.google.gwt.user.cellview.client"
+     xmlns:pl="urn:import:org.platformlayer.gwt.client.widgets">
 
-	<g:HTMLPanel>
-		<div class="row">
-			<div class="span4 offset4">
-				<div class="hero-unit">
-					<h1>Item</h1>
-				</div>
+    <g:HTMLPanel>
+        <div class="row">
+            <div class="span4 offset4">
+                <div class="hero-unit">
+                    <h1>Item</h1>
+                </div>
 
-				<span ui:field="labelSpan">
-				</span>
-				
-				<g:Button ui:field="editButton">Edit</g:Button>
-			</div>
-		</div>
-	</g:HTMLPanel>
+                <pl:AlertContainer ui:field="alerts" />
+                
+                <span ui:field="labelSpan">
+                </span>
+
+                <g:Button ui:field="validateButton">Validate</g:Button>
+                <g:Button ui:field="configureButton">Configure</g:Button>
+                <g:Button ui:field="editButton">Edit</g:Button>
+            </div>
+        </div>
+    </g:HTMLPanel>
 </ui:UiBinder>

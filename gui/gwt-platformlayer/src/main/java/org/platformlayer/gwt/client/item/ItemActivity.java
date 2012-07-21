@@ -3,9 +3,12 @@ package org.platformlayer.gwt.client.item;
 import java.util.logging.Logger;
 
 import org.platformlayer.gwt.client.ApplicationAbstractActivity;
+import org.platformlayer.gwt.client.api.platformlayer.Action;
+import org.platformlayer.gwt.client.api.platformlayer.Job;
 import org.platformlayer.gwt.client.api.platformlayer.UntypedItem;
 import org.platformlayer.gwt.client.stores.ItemStore;
 
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.place.shared.Place;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
@@ -40,6 +43,7 @@ public class ItemActivity extends ApplicationAbstractActivity {
 		super.onStop();
 	}
 
+	@Override
 	public ItemPlace getPlace() {
 		return place;
 	}
@@ -50,6 +54,23 @@ public class ItemActivity extends ApplicationAbstractActivity {
 
 	public void getItem(AsyncCallback<UntypedItem> callback) {
 		itemStore.getItem(getProject(), place.getItemPath(), callback);
+	}
+
+	public void doAction(String actionKey) {
+		Action action = JavaScriptObject.createObject().cast();
+		action.setName(actionKey);
+		AsyncCallback<Job> callback = new AsyncCallback<Job>() {
+			@Override
+			public void onSuccess(Job result) {
+				view.showJobStartResult(result, null);
+			}
+
+			@Override
+			public void onFailure(Throwable caught) {
+				view.showJobStartResult(null, caught);
+			}
+		};
+		itemStore.doAction(getProject(), place.getItemPath(), action, callback);
 	}
 
 }
