@@ -5,25 +5,9 @@
 
 <web-app>
 
-	<servlet>
-		<servlet-name>requestFactoryServlet</servlet-name>
-		<servlet-class>com.google.web.bindery.requestfactory.server.RequestFactoryServlet</servlet-class>
-		<init-param>
-			<param-name>symbolMapsDirectory</param-name>
-			<!-- You'll need to compile with -extras and move the symbolMaps directory 
-				to this location if you want stack trace deobfuscation to work -->
-			<param-value>WEB-INF/classes/symbolMaps/</param-value>
-		</init-param>
-	</servlet>
-
-	<servlet-mapping>
-		<servlet-name>requestFactoryServlet</servlet-name>
-		<url-pattern>/gwtRequest</url-pattern>
-	</servlet-mapping>
-
-	<!-- Default page to serve -->
-	<welcome-file-list>
-		<welcome-file>PlatformLayer.html</welcome-file>
-	</welcome-file-list>
+    <!-- Default page to serve -->
+    <welcome-file-list>
+        <welcome-file>PlatformLayer.html</welcome-file>
+    </welcome-file-list>
 
 </web-app>
