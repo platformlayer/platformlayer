@@ -1,8 +1,11 @@
 package org.platformlayer.xaas.web;
 
+import java.io.File;
 import java.security.KeyStore;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.inject.Inject;
 
@@ -10,11 +13,13 @@ import org.apache.log4j.Logger;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.DispatcherType;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.eclipse.jetty.webapp.WebAppContext;
 import org.openstack.crypto.CertificateAndKey;
 import org.openstack.crypto.KeyStoreUtils;
 import org.platformlayer.crypto.EncryptionStore;
@@ -25,6 +30,7 @@ import org.platformlayer.xaas.GuiceXaasConfig;
 import org.platformlayer.xaas.PlatformLayerServletModule;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
@@ -43,6 +49,8 @@ class StandaloneXaasWebserver {
 	@Inject
 	Injector injector;
 
+	final Map<String, File> wars = Maps.newHashMap();
+
 	public static void main(String[] args) throws Exception {
 		List<Module> modules = Lists.newArrayList();
 		// modules.add(new GuiceOpsConfig());
@@ -53,6 +61,13 @@ class StandaloneXaasWebserver {
 		Injector injector = Guice.createInjector(modules);
 
 		StandaloneXaasWebserver server = injector.getInstance(StandaloneXaasWebserver.class);
+
+		// Temporary hack
+		if (args.length != 0) {
+			File rootWar = new File(args[0]);
+			server.wars.put("/", rootWar);
+		}
+
 		server.start();
 	}
 
@@ -82,20 +97,34 @@ class StandaloneXaasWebserver {
 			server.setConnectors(new Connector[] { connector });
 		}
 
-		ServletContextHandler context = new ServletContextHandler();
-		context.setContextPath("/");
-		server.setHandler(context);
+		ContextHandlerCollection contexts = new ContextHandlerCollection();
 
-		context.addEventListener(new GuiceServletConfig(injector));
+		{
+			ServletContextHandler context = new ServletContextHandler(contexts, "/api");
+			// context.setContextPath("/");
+			context.addEventListener(new GuiceServletConfig(injector));
 
-		// Must add DefaultServlet for embedded Jetty
-		// Failing to do this will cause 404 errors.
-		context.addServlet(DefaultServlet.class, "/");
+			// Must add DefaultServlet for embedded Jetty
+			// Failing to do this will cause 404 errors.
+			context.addServlet(DefaultServlet.class, "/");
 
-		FilterHolder filterHolder = new FilterHolder(GuiceFilter.class);
-		context.addFilter(filterHolder, "*", EnumSet.of(DispatcherType.REQUEST));
+			FilterHolder filterHolder = new FilterHolder(GuiceFilter.class);
+			context.addFilter(filterHolder, "*", EnumSet.of(DispatcherType.REQUEST));
 
-		context.setClassLoader(Thread.currentThread().getContextClassLoader());
+			context.setClassLoader(Thread.currentThread().getContextClassLoader());
+		}
+
+		for (Entry<String, File> entry : wars.entrySet()) {
+			String contextPath = entry.getKey();
+			File war = entry.getValue();
+
+			WebAppContext context = new WebAppContext();
+			context.setWar(war.getAbsolutePath());
+			context.setContextPath(contextPath);
+			contexts.addHandler(context);
+		}
+
+		server.setHandler(contexts);
 
 		server.start();
 	}

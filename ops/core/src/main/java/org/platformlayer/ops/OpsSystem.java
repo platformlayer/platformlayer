@@ -230,7 +230,7 @@ public class OpsSystem {
 	}
 
 	public static String getPlatformLayerUrlBase() {
-		return "https://127.0.0.1:8082/v0/";
+		return "https://127.0.0.1:8082/api/v0/";
 	}
 
 	// public static OpsSystem get() {
