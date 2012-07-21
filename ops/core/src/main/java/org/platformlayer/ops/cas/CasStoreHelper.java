@@ -63,7 +63,7 @@ public class CasStoreHelper {
 		casStores.addPrimary(filesystemCasStore);
 
 		// TODO: Don't hard-code
-		casStores.add(buildJenkins("http://192.168.128.1:8080/"));
+		casStores.add(buildJenkins("http://192.168.131.14:8080/"));
 		// casStores.add(buildJenkins("http://192.168.192.36:8080/"));
 
 		for (OpenstackCredentials credentials : openstackClouds.findOpenstackClouds()) {
