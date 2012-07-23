@@ -23,6 +23,8 @@ public class JobData {
 
 	public JobState state;
 
+	public JobLog log;
+
 	public void setState(JobState state) {
 		this.state = state;
 	}

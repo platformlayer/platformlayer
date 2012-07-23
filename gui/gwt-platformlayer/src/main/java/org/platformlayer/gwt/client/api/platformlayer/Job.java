@@ -20,6 +20,9 @@ public class Job extends JavaScriptObject {
 	public final native String getState()
 	/*-{ return this.state; }-*/;
 
+	public final native JobLog getLog()
+	/*-{ return this.log; }-*/;
+
 	public final String getJobId() {
 		String key = getKey0();
 		assert key != null;
@@ -28,6 +31,24 @@ public class Job extends JavaScriptObject {
 		assert lastSlash != -1;
 
 		return key.substring(lastSlash + 1);
+	}
+
+	public final boolean isRunning() {
+		String state = getState();
+
+		// TODO: Use enum??
+
+		if ("RUNNING".equals(state)) {
+			return true;
+		}
+		if ("SUCCESS".equals(state)) {
+			return false;
+		}
+		if ("FAILED".equals(state)) {
+			return false;
+		}
+
+		throw new IllegalStateException();
 	}
 
 }

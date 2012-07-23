@@ -30,9 +30,20 @@ public class CorsPlatformLayerService implements PlatformLayerService {
 	}
 
 	@Override
-	public void getJobLog(OpsProject project, String jobId, AsyncCallback<JobLog> callback) {
-		String url = project.getProjectBaseUrl() + "jobs/" + jobId + "/log";
-		CorsRequest.get(project, url).execute(callback);
+	public void getJob(OpsProject project, String jobId, String tree, int skipLogLines, AsyncCallback<Job> callback) {
+		String url = project.getProjectBaseUrl() + "jobs/" + jobId;
+
+		CorsRequest request = CorsRequest.get(project, url);
+
+		if (tree != null) {
+			request.add("tree", tree);
+		}
+
+		if (skipLogLines != 0) {
+			request.add("log.skip", skipLogLines);
+		}
+
+		request.execute(callback);
 	}
 
 	@Override

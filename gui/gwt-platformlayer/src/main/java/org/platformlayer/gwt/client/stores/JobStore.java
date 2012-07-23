@@ -8,7 +8,6 @@ import javax.inject.Singleton;
 
 import org.platformlayer.gwt.client.api.platformlayer.Job;
 import org.platformlayer.gwt.client.api.platformlayer.JobCollection;
-import org.platformlayer.gwt.client.api.platformlayer.JobLog;
 import org.platformlayer.gwt.client.api.platformlayer.OpsProject;
 import org.platformlayer.gwt.client.api.platformlayer.PlatformLayerService;
 
@@ -23,12 +22,6 @@ public class JobStore {
 
 	@Inject
 	PlatformLayerService platformLayer;
-
-	public Job getJobState(String jobId) {
-		// TODO: Fetch on demand, move to async?
-		Job job = jobs.get(jobId);
-		return job;
-	}
 
 	public void listJobs(OpsProject project, final AsyncCallback<JobCollection> callback) {
 		platformLayer.listJobs(project, new AsyncCallback<JobCollection>() {
@@ -49,17 +42,13 @@ public class JobStore {
 		});
 	}
 
-	public void getJobLog(OpsProject project, String jobId, final AsyncCallback<JobLog> callback) {
-		platformLayer.getJobLog(project, jobId, new AsyncCallback<JobLog>() {
-			@Override
-			public void onSuccess(JobLog result) {
-				callback.onSuccess(result);
-			}
+	public void getJob(OpsProject project, String jobId, String tree, int skipLogLines,
+			final AsyncCallback<Job> callback) {
+		// TODO: Update state cache??
+		platformLayer.getJob(project, jobId, tree, skipLogLines, callback);
+	}
 
-			@Override
-			public void onFailure(Throwable caught) {
-				callback.onFailure(caught);
-			}
-		});
+	public Job checkCache(String jobId) {
+		return jobs.get(jobId);
 	}
 }

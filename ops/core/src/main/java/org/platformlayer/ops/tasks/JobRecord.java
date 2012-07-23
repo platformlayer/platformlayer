@@ -93,6 +93,8 @@ public class JobRecord {
 			jobData.targetId = key.getTargetItemKey();
 		}
 
+		jobData.log = this.log;
+
 		return jobData;
 	}
 

@@ -13,15 +13,26 @@ import org.platformlayer.gwt.client.stores.JobStore;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.place.shared.PlaceController;
+import com.google.gwt.place.shared.PlaceHistoryMapper;
 import com.google.gwt.view.client.ListDataProvider;
 
 @Singleton
 public class ApplicationState {
+	private static ApplicationState INSTANCE;
+
 	@Inject
 	PlaceController placeController;
 
 	@Inject
 	JobStore jobStore;
+
+	@Inject
+	PlaceHistoryMapper placeHistoryMapper;
+
+	public ApplicationState() {
+		assert INSTANCE == null;
+		INSTANCE = this;
+	}
 
 	private Authentication authentication;
 
@@ -95,5 +106,13 @@ public class ApplicationState {
 		}
 
 		return findProject(project.getProjectKey());
+	}
+
+	public String getToken(ApplicationPlace place) {
+		return placeHistoryMapper.getToken(place);
+	}
+
+	public static ApplicationState get() {
+		return INSTANCE;
 	}
 }

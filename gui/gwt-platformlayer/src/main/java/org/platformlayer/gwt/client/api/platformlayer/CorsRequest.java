@@ -15,6 +15,7 @@ import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestBuilder.Method;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.Response;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class CorsRequest {
@@ -23,7 +24,7 @@ public class CorsRequest {
 	final OpsProject project;
 
 	final Method method;
-	final String url;
+	String url;
 
 	final String postData;
 
@@ -137,5 +138,19 @@ public class CorsRequest {
 		} catch (Exception e) {
 			callback.onFailure(e);
 		}
+	}
+
+	public void add(String key, String value) {
+		if (url.indexOf('?') != -1) {
+			url += '&';
+		} else {
+			url += '?';
+		}
+
+		url += URL.encodeQueryString(key) + "=" + URL.encodeQueryString(value);
+	}
+
+	public void add(String key, int value) {
+		add(key, String.valueOf(value));
 	}
 }

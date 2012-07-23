@@ -1,18 +1,18 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-	xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:c="urn:import:com.google.gwt.user.cellview.client">
+    xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:c="urn:import:com.google.gwt.user.cellview.client"
+    xmlns:pl="urn:import:org.platformlayer.gwt.client.widgets">
 
-	<g:HTMLPanel>
-		<div class="row">
-			<div class="span4 offset4">
-				<div class="hero-unit">
-					<h1>Job</h1>
-				</div>
+    <g:HTMLPanel>
+        <div class="row">
+            <div class="span12">
+                <span ui:field="labelSpan">
+                </span>
 
-				<span ui:field="labelSpan">
-				</span>
-				
-				<c:CellList ui:field="jobLogList" />
-			</div>
-		</div>
-	</g:HTMLPanel>
+                <pre>
+                    <pl:Repeater ui:field="jobLogList" />
+                </pre>
+
+            </div>
+        </div>
+    </g:HTMLPanel>
 </ui:UiBinder>

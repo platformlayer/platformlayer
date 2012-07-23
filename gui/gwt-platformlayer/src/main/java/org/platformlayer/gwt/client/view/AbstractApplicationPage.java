@@ -2,6 +2,8 @@ package org.platformlayer.gwt.client.view;
 
 import java.util.List;
 
+import org.platformlayer.gwt.client.widgets.Repeater;
+
 import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
@@ -21,6 +23,10 @@ public abstract class AbstractApplicationPage extends Composite implements Appli
 
 	protected static <T> void addDataDisplay(CellList<T> list, List<T> values) {
 		addDataDisplay(list, new ListDataProvider<T>(values));
+	}
+
+	protected static <T> void addDataDisplay(Repeater<T> repeater, Iterable<T> items) {
+		repeater.replaceAllChildren(items);
 	}
 
 }

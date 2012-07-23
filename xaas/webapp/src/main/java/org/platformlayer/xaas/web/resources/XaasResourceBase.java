@@ -12,6 +12,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.apache.log4j.Logger;
 import org.codehaus.jettison.mapped.Configuration;
+import org.eclipse.jetty.server.Response;
 import org.platformlayer.CastUtils;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.auth.crypto.SecretProvider;
@@ -64,12 +65,16 @@ public class XaasResourceBase extends ResourceBase {
 		return getManagedItem(true);
 	}
 
+	protected void raiseNotFound() {
+		throw new WebApplicationException(Response.SC_NOT_FOUND);
+	}
+
 	protected ItemBase getManagedItem(boolean fetchTags) throws RepositoryException {
 		PlatformLayerKey modelKey = getPlatformLayerKey();
 
 		ItemBase managedItem = repository.getManagedItem(modelKey, fetchTags, getSecretProvider());
 		if (managedItem == null) {
-			throw new WebApplicationException(404);
+			raiseNotFound();
 		}
 
 		return managedItem;
@@ -156,12 +161,12 @@ public class XaasResourceBase extends ResourceBase {
 		ServiceProvider serviceProvider = getServiceProvider();
 		if (serviceProvider == null) {
 			log.warn("Unknown service");
-			throw new WebApplicationException(404);
+			raiseNotFound();
 		}
 		ModelClass<?> modelClass = serviceProvider.getModels().find(getItemType());
 		if (modelClass == null) {
 			log.warn("Unknown itemtype: " + getItemType());
-			throw new WebApplicationException(404);
+			raiseNotFound();
 		}
 
 		return modelClass;
@@ -201,6 +206,12 @@ public class XaasResourceBase extends ResourceBase {
 		Configuration configuration = JsonHelper.buildConfiguration(xmlNamespaceToJsonPrefix);
 
 		XMLStreamReader xmlStreamReader = JsonHelper.buildStreamReader(json, configuration);
+
+		// if (log.isDebugEnabled()) {
+		// String xml = XmlHelper.toXml(xmlStreamReader);
+		// log.debug("XML = " + xml);
+		// xmlStreamReader = XmlHelper.buildXmlStreamReader(xml);
+		// }
 
 		Object item = XmlHelper.unmarshal(jaxbContext, xmlStreamReader);
 

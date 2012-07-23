@@ -9,7 +9,7 @@ public interface PlatformLayerService {
 
 	void doAction(OpsProject project, String targetItem, Action action, AsyncCallback<Job> callback);
 
-	void getJobLog(OpsProject project, String jobId, AsyncCallback<JobLog> callback);
+	void getJob(OpsProject project, String jobId, String tree, int skipLogLines, AsyncCallback<Job> callback);
 
 	void getItem(OpsProject project, String key, AsyncCallback<UntypedItem> callback);
 }
