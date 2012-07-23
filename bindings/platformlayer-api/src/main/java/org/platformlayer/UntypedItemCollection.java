@@ -32,7 +32,7 @@ public class UntypedItemCollection implements Iterable<UntypedItem> {
 				if (child instanceof Element) {
 					Element childElement = (Element) child;
 					// String namespaceURI = childElement.getNamespaceURI();
-					String nodeName = childElement.getNodeName();
+					String nodeName = childElement.getLocalName();
 					if (nodeName.equals("item")) {
 						UntypedItem untypedItem = new UntypedItem(childElement);
 
