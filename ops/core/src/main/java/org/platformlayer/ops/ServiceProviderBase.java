@@ -327,6 +327,7 @@ public abstract class ServiceProviderBase implements ServiceProvider {
 			Bound boundAnnotation = field.getAnnotation(Bound.class);
 
 			if (boundAnnotation != null) {
+				field.setAccessible(true);
 				try {
 					field.set(controller, model);
 				} catch (IllegalAccessException e) {
