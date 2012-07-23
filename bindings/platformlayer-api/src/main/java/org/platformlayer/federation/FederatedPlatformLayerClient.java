@@ -14,9 +14,11 @@ import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientBase;
 import org.platformlayer.PlatformLayerClientException;
 import org.platformlayer.PlatformLayerClientNotFoundException;
+import org.platformlayer.PlatformLayerEndpointInfo;
 import org.platformlayer.TypedItemMapper;
 import org.platformlayer.TypedPlatformLayerClient;
 import org.platformlayer.UntypedItem;
+import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ServiceInfo;
@@ -412,7 +414,7 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
-	public JobData doAction(PlatformLayerKey key, String action) throws PlatformLayerClientException {
+	public JobData doAction(PlatformLayerKey key, Action action) throws PlatformLayerClientException {
 		MappedPlatformLayerKey mapped = mapToChild(key);
 		JobData result = mapped.child.client.doAction(mapped.key, action);
 		return mapped.child.setHost(result);

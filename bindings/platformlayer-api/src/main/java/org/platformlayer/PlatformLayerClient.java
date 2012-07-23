@@ -2,6 +2,7 @@ package org.platformlayer;
 
 import java.util.Collection;
 
+import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ServiceInfo;
 import org.platformlayer.core.model.Tag;
@@ -15,7 +16,7 @@ import org.platformlayer.metrics.model.MetricValues;
 
 public interface PlatformLayerClient {
 	// Actions
-	public JobData doAction(PlatformLayerKey key, String action) throws PlatformLayerClientException;
+	public JobData doAction(PlatformLayerKey key, Action action) throws PlatformLayerClientException;
 
 	// Item CRUD
 	// public <T> Iterable<T> listItems(Class<T> clazz) throws PlatformLayerClientException;

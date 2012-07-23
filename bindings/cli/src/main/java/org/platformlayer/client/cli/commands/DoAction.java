@@ -5,8 +5,9 @@ import java.io.PrintWriter;
 import org.kohsuke.args4j.Argument;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
-import org.platformlayer.client.cli.model.ConfigureAction;
+import org.platformlayer.client.cli.model.CliAction;
 import org.platformlayer.client.cli.model.ItemPath;
+import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.jobs.model.JobData;
 
@@ -15,7 +16,7 @@ public class DoAction extends PlatformLayerCommandRunnerBase {
 	public ItemPath path;
 
 	@Argument(index = 1)
-	public ConfigureAction action;
+	public CliAction action;
 
 	public DoAction() {
 		super("do", "action");
@@ -27,7 +28,9 @@ public class DoAction extends PlatformLayerCommandRunnerBase {
 
 		PlatformLayerKey key = path.resolve(getContext());
 
-		JobData ret = client.doAction(key, action.getKey());
+		Action actionCommand = new Action(action.getKey());
+
+		JobData ret = client.doAction(key, actionCommand);
 		return ret;
 	}
 

@@ -2,7 +2,7 @@ package org.platformlayer.client.cli;
 
 import org.kohsuke.args4j.CmdLineParser;
 import org.platformlayer.client.cli.commands.PlatformLayerCommandRegistry;
-import org.platformlayer.client.cli.model.ConfigureAction;
+import org.platformlayer.client.cli.model.CliAction;
 import org.platformlayer.client.cli.model.ItemPath;
 
 import com.fathomdb.cli.CliBase;
@@ -33,7 +33,7 @@ public class PlatformLayerCli extends CliBase {
 	}
 
 	static {
-		CmdLineParser.registerHandler(ConfigureAction.class, StringWrapperOptionHandler.class);
+		CmdLineParser.registerHandler(CliAction.class, StringWrapperOptionHandler.class);
 		CmdLineParser.registerHandler(ItemPath.class, StringWrapperOptionHandler.class);
 
 		init(new PlatformLayerCliHandler());

@@ -22,6 +22,7 @@ import org.platformlayer.PlatformLayerClientBase;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.TypedItemMapper;
 import org.platformlayer.TypedPlatformLayerClient;
+import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.EndpointInfo;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.ManagedItemState;
@@ -151,15 +152,15 @@ public class PlatformLayerTestContext {
 		return client.deleteItem(key);
 	}
 
-	public <T extends ItemBase> JobData doAction(T item, String actionName) throws OpsException, IOException {
+	public <T extends ItemBase> JobData doAction(T item, Action action) throws OpsException, IOException {
 		TypedPlatformLayerClient client = getTypedClient();
 
 		PlatformLayerKey key = item.getKey();
-		return client.doAction(key, actionName);
+		return client.doAction(key, action);
 	}
 
 	public <T extends ItemBase> JobData doConfigure(T item) throws OpsException, IOException {
-		return doAction(item, "configure");
+		return doAction(item, new Action("configure"));
 	}
 
 	public <T extends ItemBase> T waitForHealthy(T item) throws OpsException, IOException {
