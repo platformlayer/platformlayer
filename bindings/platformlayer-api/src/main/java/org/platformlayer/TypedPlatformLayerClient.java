@@ -325,4 +325,8 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 		platformLayerClient.ensureLoggedIn();
 	}
 
+	public PlatformLayerEndpointInfo getEndpointInfo(PlatformLayerKey item) {
+		return platformLayerClient.getEndpointInfo(item);
+	}
+
 }

@@ -8,6 +8,7 @@ import java.util.List;
 import org.platformlayer.auth.Authenticator;
 import org.platformlayer.auth.PlatformlayerAuthenticationException;
 import org.platformlayer.exceptions.OpenstackClientConnectionException;
+import org.platformlayer.ids.ProjectId;
 import org.platformlayer.model.AuthenticationToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,14 +41,9 @@ class PlatformLayerHttpTransport {
 		}
 	}
 
-	protected <T> T doSimpleRequest(String relativePath, Class<T> retvalClass, Format format)
-			throws PlatformLayerClientException {
-		return doRequest("GET", relativePath, retvalClass, format, null, null);
-	}
-
-	private String getPlatformLayerEndpoint() throws PlatformLayerClientException {
-		return platformlayerEndpoint;
-	}
+	// private String getPlatformLayerEndpoint() throws PlatformLayerClientException {
+	// return platformlayerEndpoint;
+	// }
 
 	// String url = getAuthenticationToken().getServiceUrl(DirectPlatformLayerClient.SERVICE_PLATFORMLAYER);
 	// if (url == null) {
@@ -61,7 +57,7 @@ class PlatformLayerHttpTransport {
 			relativePath = relativePath.substring(1);
 		}
 
-		String urlString = getPlatformLayerEndpoint();
+		String urlString = platformlayerEndpoint;
 		if (!urlString.endsWith("/")) {
 			urlString += "/";
 		}
@@ -135,5 +131,9 @@ class PlatformLayerHttpTransport {
 	public void setDebug(PrintStream debug) {
 		this.authClient.setDebug(debug);
 		this.debug = debug;
+	}
+
+	public PlatformLayerEndpointInfo getEndpointInfo(ProjectId projectId) {
+		return new PlatformLayerEndpointInfo(authClient, platformlayerEndpoint, projectId, trustKeys);
 	}
 }

@@ -15,8 +15,8 @@ import org.apache.log4j.Logger;
 import org.platformlayer.auth.AuthenticationTokenValidator;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.inject.ObjectInjector;
+import org.platformlayer.model.AuthenticationCredentials;
 import org.platformlayer.model.ProjectAuthorization;
-import org.platformlayer.xaas.AuthenticationCredentials;
 
 import com.google.common.base.Objects;
 

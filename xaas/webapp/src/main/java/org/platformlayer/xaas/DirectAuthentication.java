@@ -9,6 +9,7 @@ import org.platformlayer.auth.DirectAuthenticationToken;
 import org.platformlayer.crypto.AesUtils;
 import org.platformlayer.crypto.CryptoUtils;
 import org.platformlayer.model.Authentication;
+import org.platformlayer.model.AuthenticationCredentials;
 import org.platformlayer.model.AuthenticationToken;
 import org.platformlayer.model.ProjectAuthorization;
 

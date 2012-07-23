@@ -84,4 +84,6 @@ public interface PlatformLayerClient {
 
 	public ProjectId getProject();
 
+	public PlatformLayerEndpointInfo getEndpointInfo(PlatformLayerKey item);
+
 }

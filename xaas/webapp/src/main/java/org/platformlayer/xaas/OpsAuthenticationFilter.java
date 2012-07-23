@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 import org.platformlayer.Scope;
 import org.platformlayer.auth.AuthenticationTokenValidator;
 import org.platformlayer.auth.client.PlatformlayerAuthenticationToken;
+import org.platformlayer.model.AuthenticationCredentials;
 import org.platformlayer.model.AuthenticationToken;
 
 public class OpsAuthenticationFilter implements Filter {

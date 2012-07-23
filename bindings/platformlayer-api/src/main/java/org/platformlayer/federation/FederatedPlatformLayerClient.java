@@ -703,4 +703,12 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 		return defaultProject; // federationMap.getLocalClient().getProject();
 	}
 
+	@Override
+	public PlatformLayerEndpointInfo getEndpointInfo(PlatformLayerKey plk) {
+		MappedPlatformLayerKey mapped = mapToChild(plk);
+
+		return mapped.child.client.getEndpointInfo(mapped.key);
+
+	}
+
 }
