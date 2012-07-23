@@ -357,4 +357,8 @@ public class TimeSpan implements Comparable<TimeSpan> {
 		return copy;
 	}
 
+	public static TimeSpan parse(String s) {
+		return new TimeSpan(s);
+	}
+
 }

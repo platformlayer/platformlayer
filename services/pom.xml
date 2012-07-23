@@ -47,6 +47,7 @@
         <module>service-httpfrontend</module>
         <module>service-certificates</module>
         <module>service-gerrit</module>
+        <module>service-schedule</module>
     </modules>
     <build>
         <resources>
