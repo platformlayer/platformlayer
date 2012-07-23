@@ -419,7 +419,7 @@ public class JaxbHelper {
 		XmlSchema annotation = primaryClass.getPackage().getAnnotation(javax.xml.bind.annotation.XmlSchema.class);
 		String namespace = null;
 		if (annotation != null) {
-			namespace = annotation.namespace();
+			namespace = XmlHelper.getXmlNamespace(annotation);
 		}
 		if (namespace == null) {
 			log.warn("No namespace for " + primaryClass);

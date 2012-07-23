@@ -6,7 +6,9 @@ import javax.inject.Inject;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
+import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.ItemBase;
+import org.platformlayer.core.model.JobSchedule;
 import org.platformlayer.core.model.ManagedItemCollection;
 import org.platformlayer.core.model.ServiceInfo;
 import org.platformlayer.core.model.Tag;
@@ -34,6 +36,8 @@ public class JaxbContextHelper {
 			javaClasses.add(Tag.class);
 			javaClasses.add(ItemBase.class);
 			javaClasses.add(ManagedItemCollection.class);
+			javaClasses.add(Action.class);
+			javaClasses.add(JobSchedule.class);
 
 			for (ServiceInfo serviceInfo : serviceProviderDictionary.getAllServices()) {
 				ServiceType serviceType = new ServiceType(serviceInfo.serviceType);
