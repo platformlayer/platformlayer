@@ -59,7 +59,7 @@ public class JobViewImpl extends AbstractApplicationPage implements JobView {
 
 	@UiFactory
 	Repeater<JobLogLine> makeJobLogList() {
-		Repeater<JobLogLine> table = new Repeater<JobLogLine>(new JobLogListCell(this));
+		Repeater<JobLogLine> table = new Repeater<JobLogLine>(new TemplatedJobLogListCell(this));
 
 		// final SingleSelectionModel<OpsProject> selectionModel = new SingleSelectionModel<Product>();
 		// table.setSelectionModel(selectionModel);
