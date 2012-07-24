@@ -17,7 +17,7 @@ public class Job extends JavaScriptObject {
 	public final native Action getAction()
 	/*-{ return this.action; }-*/;
 
-	public final native String getState()
+	public final native String getState0()
 	/*-{ return this.state; }-*/;
 
 	public final native JobLog getLog()
@@ -33,22 +33,12 @@ public class Job extends JavaScriptObject {
 		return key.substring(lastSlash + 1);
 	}
 
-	public final boolean isRunning() {
-		String state = getState();
-
-		// TODO: Use enum??
-
-		if ("RUNNING".equals(state)) {
-			return true;
+	public final JobState getState() {
+		String state = getState0();
+		if (state == null) {
+			return null;
 		}
-		if ("SUCCESS".equals(state)) {
-			return false;
-		}
-		if ("FAILED".equals(state)) {
-			return false;
-		}
-
-		throw new IllegalStateException();
+		return JobState.valueOf(state);
 	}
 
 }

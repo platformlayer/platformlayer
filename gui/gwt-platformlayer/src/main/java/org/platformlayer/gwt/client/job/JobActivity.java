@@ -104,7 +104,7 @@ public class JobActivity extends ApplicationAbstractActivity {
 					haveLogLineCount += lines.size();
 
 					if (timer != null) {
-						if (result.isRunning()) {
+						if (!result.getState().isComplete()) {
 							timer.schedule(POLL_INTERVAL);
 						}
 					}

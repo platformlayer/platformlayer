@@ -1,25 +1,20 @@
 package org.platformlayer.gwt.client.joblist;
 
+import org.platformlayer.gwt.client.AppTemplates;
 import org.platformlayer.gwt.client.api.platformlayer.Job;
+import org.platformlayer.gwt.client.api.platformlayer.JobState;
 
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.safehtml.client.SafeHtmlTemplates;
+import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.uibinder.client.UiRenderer;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 
 public class JobListCell extends AbstractCell<Job> {
-	interface CellUiRenderer extends UiRenderer {
-		void render(SafeHtmlBuilder sb, String label, String state);
-
-		void onBrowserEvent(JobListCell cell, NativeEvent event, Element parent, Job value);
-	}
-
-	private static CellUiRenderer renderer = GWT.create(CellUiRenderer.class);
 	private final JobListViewImpl view;
 
 	public JobListCell(JobListViewImpl view) {
@@ -27,21 +22,46 @@ public class JobListCell extends AbstractCell<Job> {
 		this.view = view;
 	}
 
+	public static interface CellTemplates extends SafeHtmlTemplates {
+		public static final CellTemplates INSTANCE = GWT.create(CellTemplates.class);
+
+		@Template("<span class=\"{0}\">{1} {2}</span>")
+		SafeHtml line(String rowClass, SafeHtml icon, String text);
+	}
+
 	@Override
 	public void onBrowserEvent(Context context, Element parent, Job value, NativeEvent event,
 			ValueUpdater<Job> valueUpdater) {
-		renderer.onBrowserEvent(this, event, parent, value);
+		if (NativeEvents.isClick(event)) {
+			view.onJobClick(value);
+		}
 	}
 
 	@Override
 	public void render(Context context, Job value, SafeHtmlBuilder builder) {
-		String label = value.getJobId();
-		String state = value.getState();
-		renderer.render(builder, label, state);
-	}
+		String label = value.getAction().getName() + " on " + value.getTargetId();
+		SafeHtml iconHtml = SafeHtmlUtils.EMPTY_SAFE_HTML;
+		JobState state = value.getState();
 
-	@UiHandler("labelSpan")
-	void onLabelSpanClick(ClickEvent event, Element parent, Job value) {
-		view.onJobClick(value);
+		switch (state) {
+		case RUNNING:
+			iconHtml = AppTemplates.INSTANCE.icon("icon-play");
+			break;
+
+		case FAILED:
+			iconHtml = AppTemplates.INSTANCE.icon("icon-exclamation-sign");
+			break;
+
+		case SUCCESS:
+			iconHtml = AppTemplates.INSTANCE.icon("icon-ok");
+			break;
+
+		default:
+			assert false;
+			break;
+		}
+
+		String rowClass = "";
+		builder.append(CellTemplates.INSTANCE.line(rowClass, iconHtml, label));
 	}
 }
