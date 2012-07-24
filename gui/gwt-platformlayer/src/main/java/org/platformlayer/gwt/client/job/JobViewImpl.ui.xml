@@ -8,6 +8,9 @@
                 <span ui:field="labelSpan">
                 </span>
 
+                <span ui:field="timestampsSpan">
+                </span>
+
                 <pre class="jobLog">
                     <pl:Repeater ui:field="jobLogList" />
                 </pre>

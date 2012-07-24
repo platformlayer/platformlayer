@@ -1,5 +1,7 @@
 package org.platformlayer.gwt.client.api.platformlayer;
 
+import java.util.Date;
+
 import com.google.gwt.core.client.JavaScriptObject;
 
 public class Job extends JavaScriptObject {
@@ -23,6 +25,12 @@ public class Job extends JavaScriptObject {
 	public final native JobLog getLog()
 	/*-{ return this.log; }-*/;
 
+	public final native double getStartedAt0()
+	/*-{ return this.startedAt || 0; }-*/;
+
+	public final native double getEndedAt0()
+	/*-{ return this.endedAt || 0 }-*/;
+
 	public final String getJobId() {
 		String key = getKey0();
 		assert key != null;
@@ -39,6 +47,22 @@ public class Job extends JavaScriptObject {
 			return null;
 		}
 		return JobState.valueOf(state);
+	}
+
+	public final Date getStartedAt() {
+		double v = getStartedAt0();
+		if (v == 0) {
+			return null;
+		}
+		return new Date((long) v);
+	}
+
+	public final Date getEndedAt() {
+		double v = getEndedAt0();
+		if (v == 0) {
+			return null;
+		}
+		return new Date((long) v);
 	}
 
 }

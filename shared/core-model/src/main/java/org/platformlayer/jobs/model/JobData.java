@@ -1,5 +1,7 @@
 package org.platformlayer.jobs.model;
 
+import java.util.Date;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -24,6 +26,9 @@ public class JobData {
 	public JobState state;
 
 	public JobLog log;
+
+	public Date startedAt;
+	public Date endedAt;
 
 	public void setState(JobState state) {
 		this.state = state;

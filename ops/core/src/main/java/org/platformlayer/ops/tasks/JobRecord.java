@@ -1,5 +1,6 @@
 package org.platformlayer.ops.tasks;
 
+import java.util.Date;
 import java.util.UUID;
 
 import org.platformlayer.core.model.Action;
@@ -24,8 +25,12 @@ public class JobRecord {
 
 	JobState state;
 
-	boolean isDone;
 	private final ProjectId jobProjectId;
+
+	private Date startedAt;
+	private Date endedAt;
+
+	boolean isDone;
 
 	public JobRecord(PlatformLayerKey targetItemKey, OperationType operationType, ProjectAuthorization auth,
 			ProjectId jobProjectId) {
@@ -81,6 +86,9 @@ public class JobRecord {
 
 		jobData.key = getJobKey();
 
+		jobData.startedAt = this.startedAt;
+		jobData.endedAt = this.endedAt;
+
 		OperationType operationType = getOperationType();
 		if (operationType != null) {
 			// TODO: We'll need to store the action when there's more than just an operationType
@@ -103,6 +111,20 @@ public class JobRecord {
 	public void setState(JobState state, boolean isDone) {
 		this.state = state;
 		this.isDone = isDone;
+
+		Date now = new Date();
+		switch (state) {
+		case RUNNING:
+			this.startedAt = now;
+			this.endedAt = null;
+			break;
+
+		case FAILED:
+		case SUCCESS:
+			this.endedAt = now;
+			break;
+
+		}
 	}
 
 	public JobState getState() {
