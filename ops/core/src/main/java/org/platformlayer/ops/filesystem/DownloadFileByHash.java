@@ -65,7 +65,6 @@ public class DownloadFileByHash extends ManagedFile {
 				if (specifier != null) {
 					CasStoreList casStores = casStore.getCasStores(target);
 					resolved = (Md5Hash) casStores.resolve(specifier);
-
 				}
 			} else {
 				resolved = hash;

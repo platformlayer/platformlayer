@@ -58,5 +58,4 @@ public class PlatformLayerHelpers extends TypedPlatformLayerClient {
 		}
 		return item;
 	}
-
 }
