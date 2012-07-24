@@ -51,10 +51,10 @@ public class JobsResource extends XaasResourceBase {
 			raiseNotFound();
 		}
 
-		JobData jobData = record.getJobData();
+		JobData jobData = record.getJobData(fetchLog);
 
 		if (!fetchLog) {
-			jobData.log = null;
+			assert jobData.log == null;
 		}
 
 		if (jobData.log != null && logSkip != 0) {
@@ -78,7 +78,8 @@ public class JobsResource extends XaasResourceBase {
 		JobDataList jobs = new JobDataList();
 		jobs.jobs = Lists.newArrayList();
 		for (JobRecord record : jobList) {
-			jobs.jobs.add(record.getJobData());
+			JobData jobData = record.getJobData(false);
+			jobs.jobs.add(jobData);
 		}
 		return jobs;
 	}

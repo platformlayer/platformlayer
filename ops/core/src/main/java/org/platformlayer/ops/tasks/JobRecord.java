@@ -75,7 +75,7 @@ public class JobRecord {
 		return serviceType;
 	}
 
-	public JobData getJobData() {
+	public JobData getJobData(boolean getLog) {
 		JobData jobData = new JobData();
 		jobData.state = state;
 
@@ -93,7 +93,9 @@ public class JobRecord {
 			jobData.targetId = key.getTargetItemKey();
 		}
 
-		jobData.log = this.log;
+		if (getLog) {
+			jobData.log = this.log;
+		}
 
 		return jobData;
 	}

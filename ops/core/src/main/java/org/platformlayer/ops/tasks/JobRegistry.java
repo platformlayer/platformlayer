@@ -78,7 +78,7 @@ public class JobRegistry {
 	}
 
 	void recordJobEnd(JobRecord record) throws OpsException {
-		PlatformLayerKey key = record.getJobData().key;
+		PlatformLayerKey key = record.getJobKey();
 
 		synchronized (activeJobs) {
 			activeJobs.remove(key);
@@ -92,7 +92,7 @@ public class JobRegistry {
 		}
 
 		try {
-			repository.recordJob(key, record.getTargetItemKey(), record.getJobData().state, record.getLog());
+			repository.recordJob(key, record.getTargetItemKey(), record.getState(), record.getLog());
 		} catch (RepositoryException e) {
 			throw new OpsException("Error writing job to repository", e);
 		}
@@ -119,7 +119,7 @@ public class JobRegistry {
 		if (jobRecord == null) {
 			synchronized (recentJobs) {
 				for (JobRecord recentJob : recentJobs) {
-					if (recentJob.getJobData().key.equals(jobKey)) {
+					if (recentJob.getJobKey().equals(jobKey)) {
 						jobRecord = recentJob;
 						break;
 					}
