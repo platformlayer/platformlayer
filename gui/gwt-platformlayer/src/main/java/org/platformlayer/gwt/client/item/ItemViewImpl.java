@@ -1,13 +1,14 @@
 package org.platformlayer.gwt.client.item;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.platformlayer.gwt.client.api.platformlayer.Job;
+import org.platformlayer.gwt.client.api.platformlayer.Tag;
 import org.platformlayer.gwt.client.api.platformlayer.UntypedItem;
 import org.platformlayer.gwt.client.job.JobPlace;
 import org.platformlayer.gwt.client.view.AbstractApplicationPage;
 import org.platformlayer.gwt.client.widgets.AlertContainer;
+import org.platformlayer.gwt.client.widgets.Repeater;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.SpanElement;
@@ -15,9 +16,9 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HTMLPanel;
 
@@ -47,50 +48,49 @@ public class ItemViewImpl extends AbstractApplicationPage implements ItemView {
 	@UiField
 	Button validateButton;
 
-	UntypedItem untypedModel;
+	@UiField
+	Repeater<Tag> tagsList;
 
 	@UiField
 	AlertContainer alerts;
+
+	UntypedItem model;
+
+	@UiFactory
+	public Repeater<Tag> buildTagsList() {
+		Repeater<Tag> tagsList = new Repeater<Tag>(new TagCell());
+		return tagsList;
+	}
 
 	@Override
 	public void start(ItemActivity activity) {
 		this.activity = activity;
 
-		untypedModel = null;
-		updateModelUi();
+		setModel(null);
 
 		SafeHtml html = SafeHtmlUtils.fromString(activity.getItemPath());
 		labelSpan.setInnerSafeHtml(html);
-
-		activity.getItem(new AsyncCallback<UntypedItem>() {
-
-			@Override
-			public void onSuccess(UntypedItem result) {
-				untypedModel = result;
-				updateModelUi();
-			}
-
-			@Override
-			public void onFailure(Throwable caught) {
-				log.log(Level.SEVERE, "Error retrieving item", caught);
-			}
-		});
 	}
 
-	protected void updateModelUi() {
-		boolean haveModel = untypedModel != null;
+	@Override
+	public void setModel(UntypedItem model) {
+		this.model = model;
+
+		boolean haveModel = model != null;
 
 		editButton.setEnabled(haveModel);
+
+		addDataDisplay(tagsList, model.getTags());
 	}
 
 	@UiHandler("editButton")
 	public void onEditButtonClick(ClickEvent e) {
-		if (untypedModel == null) {
+		if (model == null) {
 			return;
 		}
 
 		EditItemDialog dialog = new EditItemDialog();
-		dialog.start(untypedModel);
+		dialog.start(model);
 	}
 
 	@UiHandler("validateButton")

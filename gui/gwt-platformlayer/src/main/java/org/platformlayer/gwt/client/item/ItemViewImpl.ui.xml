@@ -15,6 +15,8 @@
                 <span ui:field="labelSpan">
                 </span>
 
+                <pl:Repeater ui:field="tagsList" />
+
                 <g:Button ui:field="validateButton">Validate</g:Button>
                 <g:Button ui:field="configureButton">Configure</g:Button>
                 <g:Button ui:field="editButton">Edit</g:Button>

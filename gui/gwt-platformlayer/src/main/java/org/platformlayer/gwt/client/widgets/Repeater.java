@@ -30,6 +30,10 @@ public class Repeater<T> extends FlowPanel {
 	}
 
 	public void appendChildren(Iterable<T> items) {
+		if (items == null) {
+			return;
+		}
+
 		// No idea if this is faster than e.g. building up one at a time!
 		SafeHtmlBuilder html = new SafeHtmlBuilder();
 		int i = count;

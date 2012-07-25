@@ -1,5 +1,6 @@
 package org.platformlayer.gwt.client.item;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.platformlayer.gwt.client.ApplicationAbstractActivity;
@@ -36,6 +37,20 @@ public class ItemActivity extends ApplicationAbstractActivity {
 		view.start(this);
 
 		panel.setWidget(view.asWidget());
+
+		getItem(new AsyncCallback<UntypedItem>() {
+
+			@Override
+			public void onSuccess(UntypedItem result) {
+				view.setModel(result);
+			}
+
+			@Override
+			public void onFailure(Throwable caught) {
+				log.log(Level.SEVERE, "Error retrieving item", caught);
+			}
+		});
+
 	}
 
 	@Override

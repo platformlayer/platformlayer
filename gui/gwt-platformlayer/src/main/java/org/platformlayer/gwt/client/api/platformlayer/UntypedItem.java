@@ -12,7 +12,7 @@ public class UntypedItem extends JavaScriptObject {
 	}
 
 	public final native JsArray<Tag> getTags0()
-	/*-{ return this.tags; }-*/;
+	/*-{ return this.tags ? this.tags.tags : null; }-*/;
 
 	public final List<Tag> getTags() {
 		return JsArrayToList.wrap(getTags0());
