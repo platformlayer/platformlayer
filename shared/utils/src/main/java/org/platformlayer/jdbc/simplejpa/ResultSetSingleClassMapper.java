@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.Id;
 import javax.persistence.IdClass;
 
 import com.google.common.collect.Lists;
@@ -16,11 +15,10 @@ import com.google.common.collect.Maps;
 public class ResultSetSingleClassMapper {
 	final Class<?> targetClass;
 	final String tableName;
-	final Map<String, Field> fields = Maps.newHashMap();
 	Map<Integer, Field> columnToFieldMap;
 	KeyMapper keyMapper;
-	final List<Field> idFields = Lists.newArrayList();
 	final DatabaseNameMapping nameMapping;
+	final FieldMap fieldMap;
 
 	public ResultSetSingleClassMapper(DatabaseNameMapping nameMapping, Class<?> targetClass) {
 		super();
@@ -28,18 +26,7 @@ public class ResultSetSingleClassMapper {
 		this.targetClass = targetClass;
 		this.tableName = nameMapping.getTableName(targetClass);
 
-		discoverFields();
-	}
-
-	void discoverFields() {
-		for (Field field : targetClass.getFields()) {
-			String columnName = nameMapping.getColumnName(field);
-			fields.put(columnName, field);
-			Id idAnnotation = field.getAnnotation(Id.class);
-			if (idAnnotation != null) {
-				idFields.add(field);
-			}
-		}
+		this.fieldMap = FieldMap.build(nameMapping, targetClass);
 	}
 
 	Object getKey(ResultSet rs) throws SQLException {
@@ -51,6 +38,7 @@ public class ResultSetSingleClassMapper {
 			KeyMapper keyMapper = null;
 
 			List<Integer> columnNumbers = Lists.newArrayList();
+			List<Field> idFields = fieldMap.getIdFields();
 			for (Field idField : idFields) {
 				Integer columnNumber = findColumn(rs, idField);
 				if (columnNumber == null) {
@@ -98,7 +86,7 @@ public class ResultSetSingleClassMapper {
 					continue;
 				}
 				String columnName = rsmd.getColumnName(i + 1);
-				Field field = fields.get(columnName);
+				Field field = fieldMap.getFieldForColumn(columnName);
 				if (field == null) {
 					continue;
 				}

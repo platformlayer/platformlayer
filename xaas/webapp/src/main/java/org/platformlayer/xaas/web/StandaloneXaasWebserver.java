@@ -25,6 +25,7 @@ import org.openstack.crypto.KeyStoreUtils;
 import org.platformlayer.crypto.EncryptionStore;
 import org.platformlayer.guice.JdbcGuiceModule;
 import org.platformlayer.ops.log.PerJobAppender;
+import org.platformlayer.ops.schedule.Scheduler;
 import org.platformlayer.xaas.GuiceServletConfig;
 import org.platformlayer.xaas.GuiceXaasConfig;
 import org.platformlayer.xaas.PlatformLayerServletModule;
@@ -47,31 +48,43 @@ class StandaloneXaasWebserver {
 	EncryptionStore encryptionStore;
 
 	@Inject
+	Scheduler scheduler;
+
+	@Inject
 	Injector injector;
 
 	final Map<String, File> wars = Maps.newHashMap();
 
-	public static void main(String[] args) throws Exception {
-		List<Module> modules = Lists.newArrayList();
-		// modules.add(new GuiceOpsConfig());
-		modules.add(new GuiceXaasConfig());
-		modules.add(new JdbcGuiceModule());
-		modules.add(new PlatformLayerServletModule());
+	public static void main(String[] args) {
+		try {
+			List<Module> modules = Lists.newArrayList();
+			// modules.add(new GuiceOpsConfig());
+			modules.add(new GuiceXaasConfig());
+			modules.add(new JdbcGuiceModule());
+			modules.add(new PlatformLayerServletModule());
 
-		Injector injector = Guice.createInjector(modules);
+			Injector injector = Guice.createInjector(modules);
 
-		StandaloneXaasWebserver server = injector.getInstance(StandaloneXaasWebserver.class);
+			StandaloneXaasWebserver server = injector.getInstance(StandaloneXaasWebserver.class);
 
-		// Temporary hack
-		if (args.length != 0) {
-			File rootWar = new File(args[0]);
-			server.wars.put("/", rootWar);
+			// Temporary hack
+			if (args.length != 0) {
+				File rootWar = new File(args[0]);
+				server.wars.put("/", rootWar);
+			}
+
+			if (!server.start()) {
+				log.error("Failed to start webserver");
+				System.exit(1);
+			}
+		} catch (Throwable e) {
+			log.error("Error in initialization", e);
+			System.exit(1);
 		}
 
-		server.start();
 	}
 
-	public void start() throws Exception {
+	public boolean start() throws Exception {
 		PerJobAppender.attachToRootLogger();
 
 		this.server = new Server();
@@ -126,7 +139,16 @@ class StandaloneXaasWebserver {
 
 		server.setHandler(contexts);
 
+		server.addLifeCycleListener(new CloseOnFailLifecycleListener());
+
 		server.start();
+
+		if (!server.isStarted()) {
+			return false;
+		}
+
+		scheduler.start();
+		return true;
 	}
 
 	public void stop() throws Exception {

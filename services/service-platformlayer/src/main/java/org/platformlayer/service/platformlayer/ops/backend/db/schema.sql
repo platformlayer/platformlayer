@@ -33,4 +33,3 @@ grant all on item_tags_id_seq to platformlayer_ops;
 create table job_logs (service int, model int, account int, item text, jobstate int, data text);
 create index job_logs_index on job_logs (account, service, model, item);
 grant all on job_logs to platformlayer_ops;
-

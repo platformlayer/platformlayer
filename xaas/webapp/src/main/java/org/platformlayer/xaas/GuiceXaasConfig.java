@@ -42,6 +42,7 @@ import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.crypto.OpsKeyStore;
 import org.platformlayer.ops.crypto.SimpleOpsKeyStore;
 import org.platformlayer.ops.guice.OpsContextProvider;
+import org.platformlayer.ops.schedule.jdbc.SchedulerRecordEntity;
 import org.platformlayer.ops.ssh.ISshContext;
 import org.platformlayer.ops.tasks.OperationQueue;
 import org.platformlayer.ops.tasks.SimpleOperationQueue;
@@ -94,7 +95,9 @@ public class GuiceXaasConfig extends AbstractModule {
 
 			bind(OpsContext.class).toProvider(OpsContextProvider.class);
 
-			bind(ResultSetMappers.class).toProvider(ResultSetMappersProvider.build(ItemEntity.class, TagEntity.class));
+			// TODO: Split off scheduler
+			bind(ResultSetMappers.class).toProvider(
+					ResultSetMappersProvider.build(ItemEntity.class, TagEntity.class, SchedulerRecordEntity.class));
 
 			bind(DataSource.class).toProvider(new GuiceDataSourceProvider("platformlayer.jdbc.", null));
 

@@ -14,6 +14,7 @@ import java.util.Map;
 
 import javax.inject.Provider;
 
+import org.apache.log4j.Logger;
 import org.platformlayer.jdbc.JdbcUtils;
 import org.platformlayer.jdbc.simplejpa.JoinedQueryResult;
 import org.platformlayer.jdbc.simplejpa.JoinedQueryResult.ObjectList;
@@ -24,6 +25,8 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 public class JdbcProxyInvocationHandler implements InvocationHandler {
+	private static final Logger log = Logger.getLogger(JdbcProxyInvocationHandler.class);
+
 	private final Class<?> interfaceType;
 	private final Connection connection;
 	private final Provider<ResultSetMappers> resultSetMappersProvider;
@@ -46,21 +49,20 @@ public class JdbcProxyInvocationHandler implements InvocationHandler {
 
 	@Override
 	public Object invoke(Object proxy, Method m, Object[] args) throws Throwable {
-		Query query = m.getAnnotation(Query.class);
-		if (query != null) {
-			return invokeQuery(query, m, args);
-		}
-		throw new UnsupportedOperationException();
+		return invokeQuery(m, args);
 	}
 
-	private Object invokeQuery(Query query, Method m, Object[] args) throws SQLException {
-		String sql = query.value();
+	private Object invokeQuery(Method m, Object[] args) throws SQLException {
+		QueryDescriptor queryDescriptor = QueryDescriptor.getQueryDescriptor(m);
+
+		String sql = queryDescriptor.getSql();
+
 		PreparedStatement ps = null;
 		try {
+			log.debug("Executing SQL: " + sql);
+
 			ps = connection.prepareStatement(sql);
-			for (int i = 0; i < args.length; i++) {
-				ps.setObject(i + 1, args[i]);
-			}
+			queryDescriptor.setParameters(ps, args);
 
 			boolean isResultSet = ps.execute();
 			if (isResultSet) {

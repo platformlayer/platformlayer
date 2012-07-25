@@ -164,10 +164,7 @@ public class OpsContextBuilder {
 		String auth = DirectAuthenticationToken.encodeToken(project.getId(), project.getName());
 		SecretKey secret = project.getProjectSecret();
 
-		String platformLayerUrl = OpsSystem.getPlatformLayerUrlBase();
-		platformLayerUrl += project.getName();
-
-		DirectAuthenticationToken token = new DirectAuthenticationToken(platformLayerUrl, auth, secret);
+		DirectAuthenticationToken token = new DirectAuthenticationToken(auth, secret);
 		DirectAuthenticator directAuthenticator = new DirectAuthenticator(token);
 		return directAuthenticator;
 	}

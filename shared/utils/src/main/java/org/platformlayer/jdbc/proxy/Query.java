@@ -8,5 +8,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Query {
+	public static final String AUTOMATIC_INSERT = "__auto_insert__";
+	public static final String AUTOMATIC_UPDATE = "__auto_update__";
+
 	public String value();
 }

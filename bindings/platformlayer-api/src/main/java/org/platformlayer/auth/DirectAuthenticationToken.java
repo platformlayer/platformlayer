@@ -9,12 +9,10 @@ import org.platformlayer.model.AuthenticationToken;
 public class DirectAuthenticationToken implements AuthenticationToken {
 	public static final String PREFIX = "project:";
 
-	private final String serviceUrl;
 	private final String token;
 	private final SecretKey secret;
 
-	public DirectAuthenticationToken(String serviceUrl, String token, SecretKey secret) {
-		this.serviceUrl = serviceUrl;
+	public DirectAuthenticationToken(String token, SecretKey secret) {
 		this.token = token;
 		this.secret = secret;
 	}
@@ -38,7 +36,12 @@ public class DirectAuthenticationToken implements AuthenticationToken {
 		httpRequest.setRequestHeader("X-Auth-Secret", CryptoUtils.toBase64(secret.getEncoded()));
 	}
 
-	public String getPlatformLayerServiceUrl() {
-		return serviceUrl;
+	public String getToken() {
+		return token;
 	}
+
+	public SecretKey getSecret() {
+		return secret;
+	}
+
 }
