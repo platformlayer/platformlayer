@@ -229,11 +229,7 @@ public class GoogleComputeClient {
 				if (request.sshPublicKey != null) {
 					Metadata.Items meta = new Metadata.Items();
 					meta.setKey("sshKeys");
-					try {
-						meta.setValue(USER_NAME + ":" + OpenSshUtils.serialize(sshPublicKey));
-					} catch (IOException e) {
-						throw new OpsException("Error serializing ssh key", e);
-					}
+					meta.setValue(USER_NAME + ":" + OpenSshUtils.serialize(sshPublicKey));
 
 					metadata.getItems().add(meta);
 				}

@@ -167,24 +167,28 @@ public class OpenSshUtils {
 		}
 	}
 
-	static byte[] encodePublicKey(RSAPublicKey key) throws IOException {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		KeyOutputStream out = new KeyOutputStream(baos);
+	static byte[] encodePublicKey(RSAPublicKey key) {
 		try {
-			out.writeString(KEYTYPE_RSA);
-			out.writeBigInteger(key.getPublicExponent());
-			out.writeBigInteger(key.getModulus());
-		} finally {
-			out.close();
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			KeyOutputStream out = new KeyOutputStream(baos);
+			try {
+				out.writeString(KEYTYPE_RSA);
+				out.writeBigInteger(key.getPublicExponent());
+				out.writeBigInteger(key.getModulus());
+			} finally {
+				out.close();
+			}
+			return baos.toByteArray();
+		} catch (IOException e) {
+			throw new IllegalArgumentException("Invalid public key (error while serializing)", e);
 		}
-		return baos.toByteArray();
 	}
 
-	public static String serialize(PublicKey sshPublicKey) throws IOException {
+	public static String serialize(PublicKey sshPublicKey) {
 		return serialize(sshPublicKey, null);
 	}
 
-	public static String serialize(PublicKey sshPublicKey, String description) throws IOException {
+	public static String serialize(PublicKey sshPublicKey, String description) {
 		if (sshPublicKey == null) {
 			return null;
 		}

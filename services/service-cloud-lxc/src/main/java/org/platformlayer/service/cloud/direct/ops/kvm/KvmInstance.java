@@ -1,7 +1,6 @@
 package org.platformlayer.service.cloud.direct.ops.kvm;
 
 import java.io.File;
-import java.io.IOException;
 import java.security.PublicKey;
 import java.util.Arrays;
 import java.util.List;
@@ -143,11 +142,7 @@ public class KvmInstance extends OpsTreeBase {
 					model.put("interfaces", interfaces);
 
 					List<String> authorizedKeys = Lists.newArrayList();
-					try {
-						authorizedKeys.add(OpenSshUtils.serialize(sshPublicKey));
-					} catch (IOException e) {
-						throw new OpsException("Error serializing ssh key", e);
-					}
+					authorizedKeys.add(OpenSshUtils.serialize(sshPublicKey));
 					model.put("authorizedKeys", authorizedKeys);
 				}
 			};

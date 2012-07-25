@@ -10,6 +10,7 @@ import org.platformlayer.ApplicationMode;
 import org.platformlayer.IoUtils;
 import org.platformlayer.KeyPairUtils;
 import org.platformlayer.RepositoryException;
+import org.platformlayer.crypto.OpenSshUtils;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceMetadataKey;
 import org.platformlayer.ids.ServiceType;
@@ -121,6 +122,9 @@ public class ServiceConfiguration {
 					throw new OpsException("Error serializing SSH key", e);
 				}
 			}
+
+			String sshPublicKey = OpenSshUtils.serialize(keyPair.getPublic());
+			log.info("SSH public key for " + serviceType + ":" + project + " is " + sshPublicKey);
 		}
 	}
 

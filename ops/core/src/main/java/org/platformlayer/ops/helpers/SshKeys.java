@@ -1,6 +1,5 @@
 package org.platformlayer.ops.helpers;
 
-import java.io.IOException;
 import java.security.KeyPair;
 import java.security.PublicKey;
 
@@ -44,10 +43,6 @@ public class SshKeys {
 	}
 
 	public static String serialize(PublicKey sshPublicKey) throws OpsException {
-		try {
-			return OpenSshUtils.serialize(sshPublicKey);
-		} catch (IOException e) {
-			throw new OpsException("Error serializing ssh public key", e);
-		}
+		return OpenSshUtils.serialize(sshPublicKey);
 	}
 }
