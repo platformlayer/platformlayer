@@ -1,17 +1,28 @@
 package org.platformlayer.service.jetty.ops;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
+import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
-import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.metrics.collectd.CollectdCollector;
+import org.platformlayer.ops.networks.HasPorts;
+import org.platformlayer.ops.networks.PublicEndpoint;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.jetty.model.JettyService;
 
-public class JettyServiceController extends OpsTreeBase {
+import com.google.common.collect.Lists;
+
+public class JettyServiceController extends OpsTreeBase implements HasPorts {
 	static final Logger log = Logger.getLogger(JettyServiceController.class);
+
+	public static final int PORT = 8080;
+
+	@Bound
+	JettyService model;
 
 	@Handler
 	public void doOperation() {
@@ -19,18 +30,47 @@ public class JettyServiceController extends OpsTreeBase {
 
 	@Override
 	protected void addChildren() throws OpsException {
-		JettyService model = OpsContext.get().getInstance(JettyService.class);
+		String dnsName = model.dnsName;
 
-		InstanceBuilder instance = InstanceBuilder.build(model.dnsName,
-				DiskImageRecipeBuilder.buildDiskImageRecipe(this));
-		// TODO: Make configurable
-		instance.minimumMemoryMb = 2048;
-		addChild(instance);
+		List<Integer> ports = getPorts();
 
-		instance.addChild(injected(JettyInstall.class));
+		InstanceBuilder vm;
+		{
+			vm = InstanceBuilder.build(dnsName, DiskImageRecipeBuilder.buildDiskImageRecipe(this));
+			vm.publicPorts.addAll(ports);
+			// vm.hostPolicy.configureCluster(template.getPlacementKey());
 
-		instance.addChild(injected(JettyInstance.class));
+			// TODO: This needs to be configurable (?)
+			vm.minimumMemoryMb = 2048;
 
-		instance.addChild(CollectdCollector.build());
+			addChild(vm);
+		}
+
+		vm.addChild(JettyInstall.class);
+
+		vm.addChild(JettyInstance.class);
+
+		for (int port : ports) {
+			PublicEndpoint endpoint = injected(PublicEndpoint.class);
+			// endpoint.network = null;
+			endpoint.publicPort = port;
+			endpoint.backendPort = port;
+			endpoint.dnsName = dnsName;
+
+			endpoint.tagItem = model.getKey();
+			endpoint.parentItem = model.getKey();
+
+			vm.addChild(endpoint);
+		}
+
+		vm.addChild(CollectdCollector.build());
 	}
+
+	@Override
+	public List<Integer> getPorts() {
+		List<Integer> ports = Lists.newArrayList();
+		ports.add(JettyServiceController.PORT);
+		return ports;
+	}
+
 }

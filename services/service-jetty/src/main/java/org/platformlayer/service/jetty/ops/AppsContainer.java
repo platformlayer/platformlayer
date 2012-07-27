@@ -12,12 +12,10 @@ public class AppsContainer extends OpsTreeBase {
 
 	@Handler
 	public void handler() {
-
 	}
 
 	@Override
 	protected void addChildren() throws OpsException {
-
 	}
 
 }
