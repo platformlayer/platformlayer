@@ -84,7 +84,7 @@ public abstract class ManagedFilesystemItem extends OpsTreeBase {
 
 		if (fileMode != null) {
 			if (fsInfo != null && fsInfo.isSymlink()) {
-				throw new IllegalArgumentException("File mode is meaningless on symlink");
+				throw new IllegalArgumentException("File mode is meaningless on symlink (filePath=" + filePath + ")");
 			}
 
 			if (fsInfo == null || !fsInfo.matchesMode(fileMode)) {
