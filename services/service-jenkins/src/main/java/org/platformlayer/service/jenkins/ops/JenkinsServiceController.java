@@ -6,7 +6,6 @@ import org.apache.log4j.Logger;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.backups.BackupDirectory;
 import org.platformlayer.ops.filesystem.SimpleFile;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
@@ -75,10 +74,9 @@ public class JenkinsServiceController extends OpsTreeBase {
 		// TODO: We need to add the ssh key(s) of any git repos we're going to be using over ssh
 
 		// su -c "ssh-keygen -q -f /var/lib/jenkins/.ssh/id_rsa -N ''" jenkins
-		
-		// scp root@[2001:470:8157:2::f]:/var/lib/jenkins/.ssh/id_rsa.pub .
-		// cat id_rsa.pub | ssh -p29418 gerritssh.private.platformlayer.net gerrit create-account --ssh-key - --full-name Jenkins jenkins
 
+		// scp root@[2001:470:8157:2::f]:/var/lib/jenkins/.ssh/id_rsa.pub .
+		// cat id_rsa.pub | ssh -p29418 <gerritip> gerrit create-account --ssh-key - --full-name Jenkins jenkins
 
 		{
 			PublicEndpoint endpoint = injected(PublicEndpoint.class);
