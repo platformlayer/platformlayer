@@ -48,6 +48,7 @@
         <module>service-certificates</module>
         <module>service-gerrit</module>
         <module>service-schedule</module>
+        <module>service-app</module>
     </modules>
     <build>
         <resources>
