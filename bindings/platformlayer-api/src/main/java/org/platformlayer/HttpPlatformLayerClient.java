@@ -372,10 +372,10 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 
 	@Override
 	public JobLog getJobLog(String jobId) throws PlatformLayerClientException {
-		String relativePath = "jobs/" + jobId + "/log";
-		JobLog log = doRequest("GET", relativePath, JobLog.class, Format.XML, null, null);
+		String relativePath = "jobs/" + jobId + "?tree=log";
+		JobData jobData = doRequest("GET", relativePath, JobData.class, Format.XML, null, null);
 
-		return log;
+		return jobData.log;
 	}
 
 	@Override

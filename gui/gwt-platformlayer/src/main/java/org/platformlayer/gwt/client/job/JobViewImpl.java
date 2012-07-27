@@ -64,7 +64,7 @@ public class JobViewImpl extends AbstractApplicationPage implements JobView {
 
 			{
 				Date startedAt = job.getStartedAt();
-				Date endedAt = job.getStartedAt();
+				Date endedAt = job.getEndedAt();
 
 				SafeHtmlBuilder html = new SafeHtmlBuilder();
 				Date t;
