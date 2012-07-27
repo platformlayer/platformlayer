@@ -91,7 +91,7 @@ public class RestfulClient {
 				int responseCode = response.getHttpResponseCode();
 				switch (responseCode) {
 				case 401:
-					throw new RestClientException("Authentication failure");
+					throw new RestClientException("Authentication failure (401)");
 
 				case 200:
 				case 203: {
