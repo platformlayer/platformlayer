@@ -266,14 +266,16 @@ public class AptPackageManager {
 			} catch (ProcessExecutionException e) {
 				if (attempt == 0) {
 					ProcessExecution execution = e.getExecution();
-					String stdErr = execution.getStdErr();
-					// Stderr=E: dpkg was interrupted, you must manually run 'dpkg --configure -a' to correct the
-					// problem.
-					if (stdErr.contains("dpkg --configure -a")) {
-						log.warn("Detected that dpkg --configure -a is needed");
-						doDpkgConfigure(target);
-						log.warn("Retrying apt command");
-						continue;
+					if (execution != null) {
+						String stdErr = execution.getStdErr();
+						// Stderr=E: dpkg was interrupted, you must manually run 'dpkg --configure -a' to correct the
+						// problem.
+						if (stdErr.contains("dpkg --configure -a")) {
+							log.warn("Detected that dpkg --configure -a is needed");
+							doDpkgConfigure(target);
+							log.warn("Retrying apt command");
+							continue;
+						}
 					}
 				}
 				throw new OpsException("Error executing apt command", e);
