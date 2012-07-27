@@ -260,24 +260,41 @@ public class SchedulerImpl implements Scheduler {
 		return runnable;
 	}
 
-	private JobScheduleCalculator parseSchedule(JobSchedule schedule) {
+	private JobScheduleCalculator parseSchedule(JobSchedule schedule, boolean tolerant) {
 		TimeSpan interval = null;
 		Date base = null;
 
 		if (schedule == null) {
-			throw new IllegalArgumentException("Schedule is required");
-		}
+			if (tolerant) {
+				log.warn("Expected schedule; was null");
+			} else {
+				throw new IllegalArgumentException("Schedule is required");
+			}
+		} else {
+			if (!Strings.isNullOrEmpty(schedule.interval)) {
+				try {
+					interval = TimeSpan.parse(schedule.interval);
+				} catch (IllegalArgumentException e) {
+					if (tolerant) {
+						log.warn("Ignoring error parsing interval: " + schedule.interval, e);
+					} else {
+						throw new IllegalArgumentException("Invalid interval: " + schedule.interval, e);
+					}
+				}
+			}
 
-		if (!Strings.isNullOrEmpty(schedule.interval)) {
-			interval = TimeSpan.parse(schedule.interval);
-		}
-
-		if (schedule.base != null) {
-			base = schedule.base;
+			if (schedule.base != null) {
+				base = schedule.base;
+			}
 		}
 
 		if (interval == null) {
-			throw new IllegalArgumentException("Interval is required");
+			if (tolerant) {
+				log.warn("Interval not provided; assuming default");
+				interval = TimeSpan.ONE_HOUR;
+			} else {
+				throw new IllegalArgumentException("Interval is required");
+			}
 		}
 
 		JobScheduleCalculator scheduleCalculator = new SimpleJobScheduleCalculator(interval, base);
@@ -291,8 +308,8 @@ public class SchedulerImpl implements Scheduler {
 
 		try {
 			for (SchedulerRecord record : repository.findAll()) {
-				// TODO: Tolerate individual failures?
-				scheduleRecord(record);
+				// TODO: Tolerate exceptions?
+				scheduleRecord(record, true);
 			}
 		} catch (RepositoryException e) {
 			throw new OpsException("Error initializing scheduled tasks", e);
@@ -305,18 +322,19 @@ public class SchedulerImpl implements Scheduler {
 	public void putJob(SchedulerRecord record) throws OpsException {
 		ensureStarted();
 
+		scheduleRecord(record, false);
+
 		try {
 			repository.put(record);
 		} catch (RepositoryException e) {
 			throw new OpsException("Error persisting record", e);
 		}
-
-		scheduleRecord(record);
 	}
 
-	private void scheduleRecord(SchedulerRecord record) {
+	private void scheduleRecord(SchedulerRecord record, boolean tolerant) {
 		String key = record.key;
-		JobScheduleCalculator schedule = parseSchedule(record.schedule);
+
+		JobScheduleCalculator schedule = parseSchedule(record.schedule, tolerant);
 
 		// TODO: More lightweight synchronization?
 		synchronized (tasks) {

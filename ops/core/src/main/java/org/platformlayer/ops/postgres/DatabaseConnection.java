@@ -35,7 +35,7 @@ public class DatabaseConnection extends OpsTreeBase implements CustomRecursor {
 	@Inject
 	ProviderHelper providers;
 
-	public static DatabaseConnection build(PlatformLayerKey key) {
+	public static DatabaseConnection build(PlatformLayerKey key) throws OpsException {
 		DatabaseConnection db = injected(DatabaseConnection.class);
 		db.key = key;
 		return db;
