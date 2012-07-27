@@ -43,6 +43,8 @@ public abstract class StandardServiceInstance extends OpsTreeBase {
 
 		addConfigurationFile(template);
 
+		addExtraFiles();
+
 		{
 			StandardService service = addChild(StandardService.class);
 			Command command = template.getCommand();
@@ -65,6 +67,13 @@ public abstract class StandardServiceInstance extends OpsTreeBase {
 				httpsKey.key = template.findSslKey();
 			}
 		}
+	}
+
+	/**
+	 * Used for things that need to be configured before the service
+	 */
+	protected void addExtraFiles() throws OpsException {
+
 	}
 
 	protected void addConfigurationFile(final StandardTemplateData template) throws OpsException {
