@@ -5,12 +5,14 @@ import java.io.File;
 import org.apache.log4j.Logger;
 import org.openstack.crypto.ByteString;
 import org.openstack.crypto.Md5Hash;
+import org.platformlayer.cas.CasLocation;
 import org.platformlayer.cas.CasStore;
 import org.platformlayer.cas.CasStoreObject;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
+import org.platformlayer.ops.cas.OpsCasLocation;
 import org.platformlayer.ops.cas.OpsCasObjectBase;
 import org.platformlayer.ops.cas.OpsCasTarget;
 import org.platformlayer.ops.filesystem.FilesystemInfo;
@@ -44,15 +46,15 @@ public class FilesystemCasStore implements CasStore {
 	}
 
 	@Override
-	public FilesystemCasObject findArtifact(ByteString hash) throws Exception {
+	public FilesystemCasObject findArtifact(ByteString hash) throws OpsException {
 		File file = checkDirectory(PATH_SEEDS, hash, 0);
 		if (file != null) {
-			return new FilesystemCasObject(hash, this, file);
+			return new FilesystemCasObject(this, hash, file);
 		}
 
 		file = checkDirectory(PATH_CACHE, hash, 2);
 		if (file != null) {
-			return new FilesystemCasObject(hash, this, file);
+			return new FilesystemCasObject(this, hash, file);
 		}
 
 		return null;
@@ -77,7 +79,7 @@ public class FilesystemCasStore implements CasStore {
 		return null;
 	}
 
-	public FilesystemCasObject copyToCache(CasStoreObject src) throws OpsException {
+	public FilesystemCasObject copyToStaging(CasStoreObject src) throws OpsException {
 		ByteString hash = src.getHash();
 		File cachePath = new File(PATH_CACHE, toRelativePath(hash, 2));
 		host.mkdir(cachePath.getParentFile());
@@ -88,26 +90,38 @@ public class FilesystemCasStore implements CasStore {
 		// TODO: Fix, revert to copyTo, make copyTo0 protected
 		((OpsCasObjectBase) src).copyTo0(host, cachePath);
 
-		return new FilesystemCasObject(hash, this, cachePath);
+		return new FilesystemCasObject(this, hash, cachePath);
 	}
 
-	public NetworkPoint getLocation() {
+	public CasLocation getLocation() {
+		return new OpsCasLocation(getNetworkPoint());
+	}
+
+	public NetworkPoint getNetworkPoint() {
 		return this.host.getNetworkPoint();
 	}
 
-	void copyTo(FilesystemCasObject src, OpsTarget target, File targetFilePath) throws OpsException {
+	void copyTo(FilesystemCasObject src, OpsTarget target, File targetFilePath, boolean cacheOnTarget)
+			throws OpsException {
 		File fileOnTarget;
 
 		if (!host.isSameMachine(target)) {
-			// Copy to host cache
-			File cachePath = new File(PATH_CACHE, toRelativePath(src.getHash(), 2));
+			File downloadTo;
 
-			target.mkdir(cachePath.getParentFile());
+			if (cacheOnTarget) {
+				// Copy to host cache
+				File cachePath = new File(PATH_CACHE, toRelativePath(src.getHash(), 2));
+
+				target.mkdir(cachePath.getParentFile());
+				downloadTo = cachePath;
+			} else {
+				downloadTo = targetFilePath;
+			}
 
 			PeerToPeerCopy peerToPeerCopy = Injection.getInstance(PeerToPeerCopy.class);
-			peerToPeerCopy.copy(host, src.getPath(), target, cachePath);
+			peerToPeerCopy.copy(host, src.getPath(), target, downloadTo);
 
-			fileOnTarget = cachePath;
+			fileOnTarget = downloadTo;
 		} else {
 			fileOnTarget = src.getPath();
 		}
@@ -116,12 +130,22 @@ public class FilesystemCasStore implements CasStore {
 			Command copy = Command.build("cp {0} {1}", fileOnTarget, targetFilePath);
 			target.executeCommand(copy);
 		} else {
-			log.info("Skipping copy as already in destination path: " + fileOnTarget);
+			log.info("File is in destination path: " + fileOnTarget);
 		}
 	}
 
 	@Override
-	public ByteString findTag(String tag) throws Exception {
+	public ByteString findTag(String tag) {
 		return null;
+	}
+
+	@Override
+	public int estimateDistance(CasLocation target) throws OpsException {
+		return getLocation().estimateDistance(target);
+	}
+
+	@Override
+	public String toString() {
+		return "FilesystemCasStore [host=" + host + "]";
 	}
 }

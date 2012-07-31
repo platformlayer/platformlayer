@@ -1,5 +1,6 @@
 package org.platformlayer.ops.cas;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -8,7 +9,11 @@ import javax.inject.Inject;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.log4j.Logger;
 import org.openstack.client.OpenstackCredentials;
-import org.platformlayer.cas.CasStoreList;
+import org.platformlayer.cas.CasLocation;
+import org.platformlayer.cas.CasPickClosestStore;
+import org.platformlayer.cas.CasStore;
+import org.platformlayer.cas.CasStoreMap;
+import org.platformlayer.cas.CasStoreObject;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OpaqueMachine;
@@ -54,20 +59,20 @@ public class CasStoreHelper {
 		return new JenkinsCasStore(jenkinsClient);
 	}
 
-	public CasStoreList getCasStores(OpsTarget target) throws OpsException {
+	public CasStoreMap getCasStoreMap(OpsTarget target) throws OpsException {
 		// TODO: Reintroduce (some) caching?
 		// if (this.casStores == null) {
-		CasStoreList casStores = new CasStoreList();
+		CasStoreMap casStores = new CasStoreMap();
 
 		FilesystemCasStore filesystemCasStore = new FilesystemCasStore(new OpsCasTarget(target));
 		casStores.addPrimary(filesystemCasStore);
 
 		// TODO: Don't hard-code
-		casStores.add(buildJenkins("http://192.168.131.14:8080/"));
+		casStores.addSecondary(buildJenkins("http://192.168.131.14:8080/"));
 		// casStores.add(buildJenkins("http://192.168.192.36:8080/"));
 
 		for (OpenstackCredentials credentials : openstackClouds.findOpenstackClouds()) {
-			casStores.add(buildOpenstack(credentials));
+			casStores.addSecondary(buildOpenstack(credentials));
 		}
 
 		// TODO: This is evil
@@ -85,7 +90,11 @@ public class CasStoreHelper {
 			OpsTarget machineTarget = machine
 					.getTarget(sshKeys.findOtherServiceKey(new ServiceType("machines-direct")));
 
-			casStores.add(new FilesystemCasStore(new OpsCasTarget(machineTarget)));
+			FilesystemCasStore store = new FilesystemCasStore(new OpsCasTarget(machineTarget));
+			casStores.addSecondary(store);
+
+			// Use this as a staging store i.e. we can upload files to here instead of to the VM
+			casStores.addStagingStore(store);
 		}
 
 		// this.casStores = casStores;
@@ -93,4 +102,29 @@ public class CasStoreHelper {
 		return casStores;
 	}
 
+	public void copyObject(CasStoreMap casStoreMap, CasStoreObject src, OpsCasTarget opsCasTarget, File remoteFilePath,
+			boolean useStagingStore) throws OpsException {
+		log.info("Copying object from " + src + "  to " + opsCasTarget);
+		try {
+			CasLocation targetLocation = opsCasTarget.getLocation();
+
+			CasStore stagingStore = null;
+			if (useStagingStore) {
+				// Find the nearest staging store
+				CasPickClosestStore pickClosest = new CasPickClosestStore(targetLocation);
+				stagingStore = pickClosest.choose(casStoreMap.getStagingStores());
+			}
+
+			if (stagingStore != null) {
+				if (stagingStore.equals(src.getStore())) {
+					log.info("Already on closest staging server");
+					stagingStore = null;
+				}
+			}
+
+			src.copyTo(opsCasTarget, remoteFilePath, stagingStore);
+		} catch (Exception e) {
+			throw new OpsException("Error copying file to remote CAS", e);
+		}
+	}
 }

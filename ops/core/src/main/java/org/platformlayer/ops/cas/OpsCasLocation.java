@@ -16,4 +16,9 @@ public class OpsCasLocation implements CasLocation {
 		NetworkPoint other = ((OpsCasLocation) destLocation).networkPoint;
 		return NetworkPoint.estimateDistance(this.networkPoint, other);
 	}
+
+	@Override
+	public String toString() {
+		return "OpsCasLocation [networkPoint=" + networkPoint + "]";
+	}
 }

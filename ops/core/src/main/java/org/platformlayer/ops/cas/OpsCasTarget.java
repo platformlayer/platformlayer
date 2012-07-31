@@ -24,4 +24,9 @@ public class OpsCasTarget implements CasTarget {
 		return ((OpsCasTarget) destTarget).getOpsTarget();
 	}
 
+	@Override
+	public String toString() {
+		return "OpsCasTarget [target=" + target + "]";
+	}
+
 }

@@ -3,9 +3,11 @@ package org.platformlayer.cas;
 import org.openstack.crypto.ByteString;
 
 public abstract class CasStoreObjectBase implements CasStoreObject {
+	private final CasStore store;
 	private final ByteString hash;
 
-	public CasStoreObjectBase(ByteString hash) {
+	public CasStoreObjectBase(CasStore store, ByteString hash) {
+		this.store = store;
 		this.hash = hash;
 	}
 
@@ -16,6 +18,11 @@ public abstract class CasStoreObjectBase implements CasStoreObject {
 
 	@Override
 	public void close() {
+	}
+
+	@Override
+	public CasStore getStore() {
+		return store;
 	}
 
 }

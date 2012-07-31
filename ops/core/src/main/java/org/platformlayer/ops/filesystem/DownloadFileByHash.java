@@ -10,7 +10,7 @@ import javax.inject.Inject;
 import org.openstack.crypto.ByteString;
 import org.openstack.crypto.Md5Hash;
 import org.platformlayer.TimeSpan;
-import org.platformlayer.cas.CasStoreList;
+import org.platformlayer.cas.CasStoreMap;
 import org.platformlayer.cas.CasStoreObject;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.CommandEnvironment;
@@ -30,7 +30,7 @@ public class DownloadFileByHash extends ManagedFile {
 	public URI url;
 
 	@Inject
-	CasStoreHelper casStore;
+	CasStoreHelper cas;
 
 	@Inject
 	HttpProxyHelper httpProxies;
@@ -63,7 +63,7 @@ public class DownloadFileByHash extends ManagedFile {
 		if (resolved == null) {
 			if (hash == null) {
 				if (specifier != null) {
-					CasStoreList casStores = casStore.getCasStores(target);
+					CasStoreMap casStores = cas.getCasStoreMap(target);
 					resolved = (Md5Hash) casStores.resolve(specifier);
 				}
 			} else {
@@ -85,9 +85,10 @@ public class DownloadFileByHash extends ManagedFile {
 		ByteString resolved = getResolved(target);
 
 		CasStoreObject casObject;
+		CasStoreMap casStoreMap = cas.getCasStoreMap(target);
+
 		try {
-			CasStoreList casStores = casStore.getCasStores(target);
-			casObject = casStores.findArtifact(new OpsCasTarget(target), resolved);
+			casObject = casStoreMap.findArtifact(new OpsCasTarget(target), resolved);
 		} catch (Exception e) {
 			throw new OpsException("Error while resolving artifact:" + getHumanName(), e);
 		}
@@ -114,11 +115,9 @@ public class DownloadFileByHash extends ManagedFile {
 				throw new OpsException("Unable to find artifact: " + getHumanName());
 			}
 
-			try {
-				casObject.copyTo(new OpsCasTarget(target), remoteFilePath);
-			} catch (Exception e) {
-				throw new OpsException("Error copying file to remote CAS", e);
-			}
+			log.info("Doing a CAS copy from " + casObject + " to target");
+
+			cas.copyObject(casStoreMap, casObject, new OpsCasTarget(target), remoteFilePath, true);
 		}
 	}
 

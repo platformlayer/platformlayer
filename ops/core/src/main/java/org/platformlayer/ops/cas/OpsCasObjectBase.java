@@ -5,6 +5,7 @@ import java.io.File;
 import org.apache.log4j.Logger;
 import org.openstack.crypto.ByteString;
 import org.platformlayer.cas.CasLocation;
+import org.platformlayer.cas.CasStore;
 import org.platformlayer.cas.CasStoreObjectBase;
 import org.platformlayer.cas.CasTarget;
 import org.platformlayer.ops.OpsException;
@@ -15,12 +16,12 @@ import org.platformlayer.ops.cas.filesystem.FilesystemCasStore;
 public abstract class OpsCasObjectBase extends CasStoreObjectBase {
 	static final Logger log = Logger.getLogger(OpsCasObjectBase.class);
 
-	public OpsCasObjectBase(ByteString hash) {
-		super(hash);
+	public OpsCasObjectBase(CasStore store, ByteString hash) {
+		super(store, hash);
 	}
 
 	@Override
-	public void copyTo(CasTarget destTarget, File destPath) throws Exception {
+	public void copyTo(CasTarget destTarget, File destPath, CasStore stagingStore) throws OpsException {
 		CasLocation srcLocation = getLocation();
 		CasLocation destLocation = destTarget.getLocation();
 
@@ -28,15 +29,22 @@ public abstract class OpsCasObjectBase extends CasStoreObjectBase {
 		log.info("Estimated distance from " + srcLocation + " to " + destLocation + " => " + distance);
 
 		if (distance == 0) {
+			log.info("Distance was zero; copying directly");
 			this.copyTo0(OpsCasTarget.getTarget(destTarget), destPath);
 			return;
 		}
 
-		// TODO: Keep a CAS store on each host; don't put them into the guests
-		FilesystemCasStore destCasStore = new FilesystemCasStore((OpsCasTarget) destTarget);
-		FilesystemCasObject onDest = destCasStore.copyToCache(this);
+		if (stagingStore != null) {
+			log.info("Staging object " + this + " to " + stagingStore);
 
-		onDest.copyTo(destTarget, destPath);
+			FilesystemCasObject staged = ((FilesystemCasStore) stagingStore).copyToStaging(this);
+
+			staged.copyTo(destTarget, destPath, null);
+		} else {
+			log.info("Copying object from " + this + " to " + destTarget);
+
+			this.copyTo0(OpsCasTarget.getTarget(destTarget), destPath);
+		}
 	}
 
 	public abstract void copyTo0(OpsTarget destTarget, File destPath) throws OpsException;

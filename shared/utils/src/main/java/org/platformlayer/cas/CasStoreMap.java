@@ -7,11 +7,12 @@ import org.openstack.crypto.ByteString;
 
 import com.google.common.collect.Lists;
 
-public class CasStoreList {
-	private static final Logger log = Logger.getLogger(CasStoreList.class);
+public class CasStoreMap {
+	private static final Logger log = Logger.getLogger(CasStoreMap.class);
 
 	final List<CasStore> primaryList = Lists.newArrayList();
 	final List<CasStore> secondaryList = Lists.newArrayList();
+	final List<CasStore> stagingStores = Lists.newArrayList();
 
 	public CasStoreObject findArtifact(CasTarget target, ByteString hash) throws Exception {
 		for (CasStore casStore : primaryList) {
@@ -71,8 +72,12 @@ public class CasStoreList {
 		primaryList.add(primary);
 	}
 
-	public void add(CasStore secondary) {
+	public void addSecondary(CasStore secondary) {
 		secondaryList.add(secondary);
+	}
+
+	public void addStagingStore(CasStore secondary) {
+		stagingStores.add(secondary);
 	}
 
 	public ByteString resolve(String specifier) {
@@ -91,5 +96,9 @@ public class CasStoreList {
 		}
 
 		return null;
+	}
+
+	public List<CasStore> getStagingStores() {
+		return stagingStores;
 	}
 }

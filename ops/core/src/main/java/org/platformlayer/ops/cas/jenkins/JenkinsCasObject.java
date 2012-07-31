@@ -36,8 +36,8 @@ public class JenkinsCasObject extends OpsCasObjectBase {
 
 	private final URI uri;
 
-	public JenkinsCasObject(ByteString hash, URI uri) {
-		super(hash);
+	public JenkinsCasObject(JenkinsCasStore cas, ByteString hash, URI uri) {
+		super(cas, hash);
 
 		this.uri = uri;
 		Injection.injectMembers(this);
@@ -94,6 +94,11 @@ public class JenkinsCasObject extends OpsCasObjectBase {
 	@Override
 	public CasLocation getLocation() throws OpsException {
 		return new OpsCasLocation(NetworkPoint.forPublicHostname(uri.getHost()));
+	}
+
+	@Override
+	public String toString() {
+		return "JenkinsCasObject [uri=" + uri + "]";
 	}
 
 }

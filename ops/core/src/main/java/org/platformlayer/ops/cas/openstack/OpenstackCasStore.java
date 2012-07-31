@@ -33,7 +33,7 @@ public class OpenstackCasStore implements CasStore {
 	}
 
 	@Override
-	public CasStoreObject findArtifact(ByteString hash) throws Exception {
+	public CasStoreObject findArtifact(ByteString hash) {
 		OpenstackStorageClient storageClient = getStorageClient();
 
 		try {
@@ -75,7 +75,7 @@ public class OpenstackCasStore implements CasStore {
 		final StorageObject storageObject;
 
 		public OpenstackCasObject(StorageObject storageObject) {
-			super(new Md5Hash(storageObject.getHash()));
+			super(OpenstackCasStore.this, new Md5Hash(storageObject.getHash()));
 			this.storageObject = storageObject;
 		}
 
@@ -92,6 +92,10 @@ public class OpenstackCasStore implements CasStore {
 			throw new UnsupportedOperationException();
 		}
 
+		@Override
+		public String toString() {
+			return "OpenstackCasObject [storageObject=" + storageObject + "]";
+		}
 	}
 
 	public OpenstackCredentials getCredentials() {
@@ -99,8 +103,15 @@ public class OpenstackCasStore implements CasStore {
 	}
 
 	@Override
-	public ByteString findTag(String tag) throws Exception {
+	public ByteString findTag(String tag) {
 		return null;
+	}
+
+	@Override
+	public int estimateDistance(CasLocation target) throws OpsException {
+		// TODO: Fix
+		log.warn("Hard-coding distance from Openstack CAS as 4");
+		return 4;
 	}
 
 }
