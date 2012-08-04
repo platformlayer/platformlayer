@@ -4,10 +4,18 @@ import org.apache.log4j.Logger;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.firewall.scripts.PersistIptablesScripts;
+import org.platformlayer.ops.images.direct.PeerToPeerCopy;
 import org.platformlayer.ops.packages.AptSourcesConfigurationFile.DefaultAptSourcesConfigurationFile;
 import org.platformlayer.ops.packages.PackageDependency;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
+/**
+ * General machine configuration.
+ * 
+ * Also used for LXC/KVM direct hosts.
+ * 
+ */
+// TODO: Don't use for LXC/KVM hosts?
 public class InstanceBootstrap extends OpsTreeBase {
 	@SuppressWarnings("unused")
 	private static final Logger log = Logger.getLogger(InstanceBootstrap.class);
@@ -33,6 +41,7 @@ public class InstanceBootstrap extends OpsTreeBase {
 		// We currently use socat for CAS peer-to-peer copying
 		// TODO: Can we optimize this away? Using netcat? SSH?
 		addChild(PackageDependency.build("socat"));
+		addChild(PeerToPeerCopy.FirewallRules.class);
 
 		// if (OpsContext.isDelete()) {
 		// OpenstackComputeMachine machine = OpsContext.get().getInstance(OpenstackComputeMachine.class);

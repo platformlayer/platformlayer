@@ -6,11 +6,12 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.inject.Inject;
 
@@ -20,12 +21,17 @@ import org.openstack.utils.Hex;
 import org.platformlayer.ExceptionUtils;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.ops.Command;
+import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.SshOpsTarget;
+import org.platformlayer.ops.firewall.Protocol;
+import org.platformlayer.ops.firewall.Transport;
+import org.platformlayer.ops.firewall.scripts.IptablesFilterEntry;
 import org.platformlayer.ops.networks.IpRange;
 import org.platformlayer.ops.process.ProcessExecution;
 import org.platformlayer.ops.process.ProcessExecutionException;
+import org.platformlayer.ops.tree.OpsTreeBase;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Objects;
@@ -33,64 +39,122 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 
 public class PeerToPeerCopy {
+	public static class FirewallRules extends OpsTreeBase {
+		@SuppressWarnings("unused")
+		private static final Logger log = Logger.getLogger(FirewallRules.class);
+
+		private static final String KEY = "PeerToPeerCopy";
+
+		@Handler
+		public void handler() {
+		}
+
+		@Override
+		protected void addChildren() throws OpsException {
+			IptablesFilterEntry entry = addChild(IptablesFilterEntry.class);
+			entry.ruleKey = KEY;
+			entry.port = PORT;
+			entry.transport = Transport.Ipv6;
+			entry.protocol = Protocol.Tcp;
+		}
+	}
+
 	static final Logger log = Logger.getLogger(PeerToPeerCopy.class);
+
+	public static final int PORT = 6666;
 
 	@Inject
 	ExecutorService executorService;
 
-	public void copy(final OpsTarget src, final File srcFile, OpsTarget dest, File destFile) throws OpsException {
+	public void copy(final OpsTarget src, final File srcFile, final OpsTarget dest, final File destFile)
+			throws OpsException {
 		int maxAttempts = 3;
-		Random random = new Random();
 
 		for (int attempt = 1; attempt <= maxAttempts; attempt++) {
 			final InetAddressPair channel = findChannel(src, dest);
 
-			// TODO: Better security
-			final int port = random.nextInt(1000) + 20000;
+			final int listenPort = PORT;
 
-			Callable<ProcessExecution> serveFile = new Callable<ProcessExecution>() {
+			Callable<ProcessExecution> pushFile = new Callable<ProcessExecution>() {
 				@Override
 				public ProcessExecution call() throws Exception {
 					// TODO: Secure this better (using host address is probably sufficient, but then we need a full
 					// network map to know which IP to use)
 					// Command sendCommand = Command.build("socat -u OPEN:{0},rdonly TCP4-LISTEN:{1},range={2}",
 					// srcImageFile, port, targetAddress.getHostAddress() + "/32");
-					Command sendCommand = Command.build("socat -u OPEN:{0},rdonly {1}", srcFile,
-							toSocatListen(channel.dest, port));
-					return src.executeCommand(sendCommand.setTimeout(TimeSpan.TEN_MINUTES));
+					Command pushCommand = Command.build("socat -u OPEN:{0},rdonly {1}", srcFile,
+							toSocatPush(channel.dest, listenPort));
+					return src.executeCommand(pushCommand.setTimeout(TimeSpan.TEN_MINUTES));
 				}
 			};
 
-			Future<ProcessExecution> serveFuture = executorService.submit(serveFile);
+			Callable<ProcessExecution> listenFile = new Callable<ProcessExecution>() {
+				@Override
+				public ProcessExecution call() throws Exception {
+					// TODO: Check no concurrent socats?? Move to a better system??
+					Command killExistingSocats = Command.build("pkill socat || true");
+					dest.executeCommand(killExistingSocats);
+
+					Command listenCommand = Command.build("socat -u {0} CREATE:{1}",
+							toSocatListen(channel.src, listenPort), destFile);
+					return dest.executeCommand(listenCommand.setTimeout(TimeSpan.TEN_MINUTES));
+				}
+			};
+
+			Future<ProcessExecution> listenFileFuture = executorService.submit(listenFile);
 
 			for (int readAttempts = 1; readAttempts <= 10; readAttempts++) {
 				TimeSpan.ONE_SECOND.doSafeSleep();
 
-				Command receiveCommand = Command.build("socat -u {0} CREATE:{1}", toSocatDest(channel.src, port),
-						destFile);
-				try {
-					dest.executeCommand(receiveCommand.setTimeout(TimeSpan.TEN_MINUTES));
-					break;
-				} catch (ProcessExecutionException e) {
-					ProcessExecution recvExecution = e.getExecution();
-					if (recvExecution.getExitCode() == 1 && recvExecution.getStdErr().contains("Connection refused")) {
-						log.info("Got connection refused; will retry");
-					} else {
-						throw new OpsException("Error receiving image file", e);
+				if (!listenFileFuture.isDone()) {
+					boolean pushedOkay = false;
+					try {
+						pushFile.call();
+						pushedOkay = true;
+					} catch (Exception e) {
+						ProcessExecution pushExecution = null;
+						if (e instanceof ProcessExecutionException) {
+							pushExecution = ((ProcessExecutionException) e).getExecution();
+						}
+
+						if (pushExecution != null && pushExecution.getExitCode() == 1
+								&& pushExecution.getStdErr().contains("Connection refused")) {
+							log.info("Got connection refused on push; will retry");
+						} else {
+							throw new OpsException("Error pushing file", e);
+						}
+					}
+
+					if (pushedOkay) {
+						try {
+							listenFileFuture.get(5, TimeUnit.SECONDS);
+						} catch (TimeoutException e) {
+							log.info("Timeout while waiting for receive to complete");
+						} catch (InterruptedException e) {
+							Thread.currentThread().interrupt();
+							throw new OpsException("Interrupted during file receive", e);
+						} catch (ExecutionException e) {
+							throw new OpsException("Error during file receive", e);
+						}
 					}
 				}
 
-				if (serveFuture.isDone()) {
+				if (listenFileFuture.isDone()) {
 					try {
-						ProcessExecution serveExecution = serveFuture.get();
-						log.warn("Image sending exited: " + serveExecution);
+						ProcessExecution listenExecution = listenFileFuture.get();
+						log.warn("File receiving exited: " + listenExecution);
+						break;
 					} catch (ExecutionException e) {
-						throw new OpsException("Error sending file to image store", e);
+						throw new OpsException("Error receiving file", e);
 					} catch (InterruptedException e) {
 						ExceptionUtils.handleInterrupted(e);
-						throw new OpsException("Error sending file to image store", e);
+						throw new OpsException("Error receiving file", e);
 					}
 				}
+			}
+
+			if (!listenFileFuture.isDone()) {
+				throw new OpsException("Failed to push file (too many retries");
 			}
 
 			Md5Hash targetHash = dest.getFileHash(destFile);
@@ -107,18 +171,18 @@ public class PeerToPeerCopy {
 				}
 			}
 
-			if (serveFuture.isDone()) {
-				// This is interesting for debug purposes; otherwise not very useful
-				try {
-					ProcessExecution serveExecution = serveFuture.get();
-					log.warn("Serving process exited: " + serveExecution);
-				} catch (ExecutionException e) {
-					throw new OpsException("Error sending file to image store", e);
-				} catch (InterruptedException e) {
-					ExceptionUtils.handleInterrupted(e);
-					throw new OpsException("Error sending file to image store", e);
-				}
-			}
+			// if (serveFuture.isDone()) {
+			// // This is interesting for debug purposes; otherwise not very useful
+			// try {
+			// ProcessExecution serveExecution = serveFuture.get();
+			// log.warn("Serving process exited: " + serveExecution);
+			// } catch (ExecutionException e) {
+			// throw new OpsException("Error sending file to image store", e);
+			// } catch (InterruptedException e) {
+			// ExceptionUtils.handleInterrupted(e);
+			// throw new OpsException("Error sending file to image store", e);
+			// }
+			// }
 		}
 	}
 
@@ -194,20 +258,20 @@ public class PeerToPeerCopy {
 		return null;
 	}
 
-	private String toSocatDest(InetAddress srcAddress, int port) {
-		if (srcAddress instanceof Inet4Address) {
-			return "TCP4:" + srcAddress.getHostAddress() + ":" + port;
-		} else if (srcAddress instanceof Inet6Address) {
-			return "TCP6:[" + srcAddress.getHostAddress() + "]:" + port;
+	private String toSocatPush(InetAddress destAddress, int port) {
+		if (destAddress instanceof Inet4Address) {
+			return "TCP4:" + destAddress.getHostAddress() + ":" + port;
+		} else if (destAddress instanceof Inet6Address) {
+			return "TCP6:[" + destAddress.getHostAddress() + "]:" + port;
 		} else {
 			throw new IllegalStateException();
 		}
 	}
 
-	protected String toSocatListen(InetAddress address, int port) {
-		if (address instanceof Inet4Address) {
+	protected String toSocatListen(InetAddress listenAddress, int port) {
+		if (listenAddress instanceof Inet4Address) {
 			return "TCP4-LISTEN:" + port; // + ",bind=" + address.getHostAddress();
-		} else if (address instanceof Inet6Address) {
+		} else if (listenAddress instanceof Inet6Address) {
 			return "TCP6-LISTEN:" + port; // + ",bind=" + address.getHostAddress();
 		} else {
 			throw new IllegalStateException();
