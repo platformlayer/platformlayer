@@ -11,9 +11,9 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.SimpleFile;
 import org.platformlayer.ops.firewall.FirewallRecord.Direction;
 import org.platformlayer.ops.firewall.Protocol;
-import org.platformlayer.ops.firewall.simple.AllowPolicy;
-import org.platformlayer.ops.firewall.simple.AllowPort;
-import org.platformlayer.ops.firewall.simple.AllowProtocol;
+import org.platformlayer.ops.firewall.Transport;
+import org.platformlayer.ops.firewall.scripts.IptablesFilterEntry;
+import org.platformlayer.ops.firewall.scripts.IptablesFilterPolicy;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.metrics.collectd.ManagedService;
 import org.platformlayer.ops.packages.PackageDependency;
@@ -42,26 +42,36 @@ public class IpsecInstall extends OpsTreeBase {
 		String uuid = platformLayerClient.getOrCreateUuid(model).toString();
 
 		// TODO: Rationalize between our complicated version that can open cloud ports, and this streamlined version
-		AllowPort allowIKE = addChild(AllowPort.class);
-		allowIKE.port = 500;
-		allowIKE.protocol = Protocol.Udp;
-		allowIKE.uuid = "ike-" + uuid;
+		for (Transport transport : Transport.all()) {
+			{
+				IptablesFilterEntry allowIKE = addChild(IptablesFilterEntry.class);
+				allowIKE.port = 500;
+				allowIKE.protocol = Protocol.Udp;
+				allowIKE.ruleKey = transport.getKey() + "-ike-" + uuid;
+				allowIKE.transport = transport;
+			}
 
-		// TODO: Do we want to open NAT-T (4500?)
+			{// TODO: Do we want to open NAT-T (4500?)
+				IptablesFilterEntry allowEsp = addChild(IptablesFilterEntry.class);
+				allowEsp.protocol = Protocol.Esp;
+				allowEsp.ruleKey = transport.getKey() + "-esp-" + uuid;
+				allowEsp.transport = transport;
+			}
 
-		AllowProtocol allowEsp = addChild(AllowProtocol.class);
-		allowEsp.protocol = Protocol.Esp;
-		allowEsp.uuid = "esp-" + uuid;
+			// AH iptables allow doesn't seem to work
+			// AllowProtocol allowAh = addChild(AllowProtocol.class);
+			// allowAh.protocol = Protocol.Ah;
+			// allowAh.uuid = "ah-" + uuid;
 
-		// AH iptables allow doesn't seem to work
-		// AllowProtocol allowAh = addChild(AllowProtocol.class);
-		// allowAh.protocol = Protocol.Ah;
-		// allowAh.uuid = "ah-" + uuid;
+			{
+				IptablesFilterPolicy allowPolicy = addChild(IptablesFilterPolicy.class);
+				allowPolicy.direction = Direction.In;
+				allowPolicy.policy = "ipsec";
+				allowPolicy.ruleKey = transport.getKey() + "-ipsec-" + uuid;
+				allowPolicy.transport = transport;
+			}
 
-		AllowPolicy allowPolicy = addChild(AllowPolicy.class);
-		allowPolicy.direction = Direction.In;
-		allowPolicy.policy = "ipsec";
-
+		}
 		addChild(ManagedService.build("racoon"));
 	}
 }

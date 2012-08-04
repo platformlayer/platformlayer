@@ -12,7 +12,6 @@ import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsProvider;
-import org.platformlayer.ops.OpsSystem;
 
 public class Tagger {
 	static final Logger log = Logger.getLogger(Tagger.class);
