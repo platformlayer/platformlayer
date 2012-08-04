@@ -6,8 +6,8 @@ import java.util.UUID;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
+import org.platformlayer.EnumUtils;
 import org.platformlayer.core.model.ItemBase;
-import org.platformlayer.ops.EnumUtils;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;

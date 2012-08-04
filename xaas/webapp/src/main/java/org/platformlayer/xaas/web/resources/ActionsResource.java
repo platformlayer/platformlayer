@@ -5,12 +5,12 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
 
+import org.platformlayer.EnumUtils;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.jobs.model.JobData;
-import org.platformlayer.ops.EnumUtils;
 import org.platformlayer.ops.OperationType;
 import org.platformlayer.ops.tasks.JobRegistry;
 

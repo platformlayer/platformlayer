@@ -3,7 +3,7 @@ package org.platformlayer.ops.firewall;
 import java.util.Arrays;
 import java.util.List;
 
-import org.platformlayer.ops.EnumUtils;
+import org.platformlayer.EnumUtils;
 
 public enum Transport {
 	// TODO: Is transport the right word?

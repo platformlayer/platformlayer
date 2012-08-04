@@ -1,94 +1,59 @@
 package org.platformlayer.guice;
 
-import java.lang.annotation.Annotation;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Properties;
 
-import javax.inject.Inject;
-import javax.inject.Named;
 import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
+import org.openstack.utils.PropertyUtils;
 
-import com.google.inject.Binding;
-import com.google.inject.Injector;
-import com.google.inject.Key;
 import com.google.inject.Provider;
 import com.jolbox.bonecp.BoneCPDataSource;
 
 public class GuiceDataSourceProvider implements Provider<DataSource> {
 	private static final Logger log = Logger.getLogger(GuiceDataSourceProvider.class);
 
-	// private final String url;
-	// private final String username;
-	// private final String password;
-	// private final String driverClass;
-	private final String prefix;
+	final String jdbcUrl;
+	final String username;
+	final String password;
+	final String driverClassName;
+	final Properties extraProperties;
 
-	@Inject
-	Injector injector;
-
-	private final Properties properties;
-
-	// @Inject
-	// public GuiceDataSourceProvider(@Named("driverClassName") final String driverClass, @Named("url") final String
-	// url, @Named("username") final String username,
-	// @Named("password") final String password) {
-	// this.prefix = null;
-	//
-	// this.driverClass = driverClass;
-	// this.url = url;
-	// this.username = username;
-	// this.password = password;
-	// }
-
-	public GuiceDataSourceProvider(String prefix, Properties properties) {
-		this.properties = properties;
-		this.prefix = prefix;
+	public GuiceDataSourceProvider(String jdbcUrl, String username, String password, String driverClassName,
+			Properties extraProperties) {
+		super();
+		this.jdbcUrl = jdbcUrl;
+		this.username = username;
+		this.password = password;
+		this.driverClassName = driverClassName;
+		this.extraProperties = extraProperties;
 	}
 
 	@Override
 	public DataSource get() {
-		return buildDataSource(prefix, properties);
+		return buildDataSource();
 	}
 
-	DataSource buildDataSource(String prefix, Properties properties) {
-		// BasicDataSource pooledDataSource = new BasicDataSource();
-		//
-		// String keyPrefix = this.prefix;
-		// if (keyPrefix == null) {
-		// keyPrefix = "";
-		// }
-		//
-		// pooledDataSource.setDriverClassName(getProperty(keyPrefix + "driverClassName"));
-		// pooledDataSource.setUrl(getProperty(keyPrefix + "url"));
-		// pooledDataSource.setUsername(getProperty(keyPrefix + "username"));
-		// pooledDataSource.setPassword(getProperty(keyPrefix + "password"));
-		//
-		// return pooledDataSource;
-
+	DataSource buildDataSource() {
 		BoneCPDataSource pooledDataSource = new BoneCPDataSource();
 
-		String keyPrefix = prefix;
-		if (keyPrefix == null) {
-			keyPrefix = "";
-		}
-
-		String jdbcUrl = getProperty(keyPrefix + "url");
-
 		try {
-			Class.forName(getProperty(keyPrefix + "driverClassName"));
+			Class.forName(driverClassName);
 		} catch (ClassNotFoundException e) {
 			log.warn("Ignoring error loading DB driver", e);
 		}
 
 		// pooledDataSource.setDriverClassName(getProperty(keyPrefix + "driverClassName"));
 		pooledDataSource.setJdbcUrl(jdbcUrl);
-		pooledDataSource.setUsername(getProperty(keyPrefix + "username"));
-		pooledDataSource.setPassword(getProperty(keyPrefix + "password"));
+		pooledDataSource.setUsername(username);
+		pooledDataSource.setPassword(password);
 
-		Properties systemProperties = System.getProperties();
-		String logSql = systemProperties.getProperty("sql.debug", "false");
-		pooledDataSource.setLogStatementsEnabled(Boolean.parseBoolean(logSql));
+		if (extraProperties != null) {
+			String logSql = extraProperties.getProperty("sql.debug", "false");
+			pooledDataSource.setLogStatementsEnabled(Boolean.parseBoolean(logSql));
+		}
 
 		// Enable statement caching
 		pooledDataSource.setStatementsCacheSize(32);
@@ -99,26 +64,47 @@ public class GuiceDataSourceProvider implements Provider<DataSource> {
 
 	}
 
-	private String getProperty(final String key) {
-		if (properties != null) {
-			return (String) properties.get(key);
+	public static GuiceDataSourceProvider fromEnvironment(String key) {
+		String value = System.getenv(key);
+		if (value == null) {
+			throw new IllegalStateException("Must define environment variable: " + key);
 		}
 
-		Named annotation = new Named() {
-			@Override
-			public Class<? extends Annotation> annotationType() {
-				return Named.class;
-			}
+		URI dbUri;
+		try {
+			dbUri = new URI(value);
+		} catch (URISyntaxException e) {
+			throw new IllegalArgumentException("Error parsing database environment variable: " + key, e);
+		}
 
-			@Override
-			public String value() {
-				return key;
-			}
-		};
+		String username = dbUri.getUserInfo().split(":")[0];
+		String password = dbUri.getUserInfo().split(":")[1];
+		String jdbcUrl = "jdbc:postgresql://" + dbUri.getHost() + dbUri.getPath() + ":" + dbUri.getPort();
 
-		Key<String> bindingKey = Key.get(String.class, annotation);
+		String driverClassName = org.postgresql.Driver.class.getName();
 
-		Binding<String> binding = injector.getBinding(bindingKey);
-		return binding.getProvider().get();
+		Properties extraProperties = System.getProperties();
+
+		return new GuiceDataSourceProvider(jdbcUrl, username, password, driverClassName, extraProperties);
+	}
+
+	public static GuiceDataSourceProvider fromProperties(Properties properties, String prefix) {
+		String keyPrefix = prefix;
+		if (keyPrefix == null) {
+			keyPrefix = "";
+		}
+
+		if (properties == null) {
+			properties = System.getProperties();
+		}
+
+		String jdbcUrl = properties.getProperty(keyPrefix + "url");
+		String driverClassName = properties.getProperty(keyPrefix + "driverClassName");
+		String username = properties.getProperty(keyPrefix + "username");
+		String password = properties.getProperty(keyPrefix + "password");
+
+		Properties extraProperties = PropertyUtils.getChildProperties(properties, keyPrefix);
+
+		return new GuiceDataSourceProvider(jdbcUrl, username, password, driverClassName, extraProperties);
 	}
 }
