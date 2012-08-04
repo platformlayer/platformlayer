@@ -1,49 +1,44 @@
 package org.platformlayer.service.imagefactory.ops;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.service.imagefactory.OperatingSystem;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
-
 public class PackageHelpers {
 	@Inject
 	OpsContext opsContext;
 
-	public String findPackageFor(String command, OperatingSystem operatingSystem) {
-		List<String> keys = Lists.newArrayList(command, operatingSystem.getDistribution().toString(),
-				operatingSystem.getVersion());
-		return doKeyLookup(keys);
-	}
+	// public String findPackageFor(String command, OperatingSystem operatingSystem) {
+	// List<String> keys = Lists.newArrayList(command, operatingSystem.getDistribution().toString(),
+	// operatingSystem.getVersion());
+	// return doKeyLookup(keys);
+	// }
 
-	public String getPackageFor(String command, OperatingSystem operatingSystem) {
-		String packageName = findPackageFor(command, operatingSystem);
-		if (packageName == null) {
-			throw new IllegalArgumentException("Cannot determine package for " + command + " on " + operatingSystem);
-		}
-		return packageName;
-	}
+	// public String getPackageFor(String command, OperatingSystem operatingSystem) {
+	// String packageName = findPackageFor(command, operatingSystem);
+	// if (packageName == null) {
+	// throw new IllegalArgumentException("Cannot determine package for " + command + " on " + operatingSystem);
+	// }
+	// return packageName;
+	// }
 
-	private String doKeyLookup(Iterable<String> keys) {
-		List<String> lowerKeys = Lists.newArrayList();
-		for (String key : keys) {
-			lowerKeys.add(key.toLowerCase());
-		}
-
-		for (int i = lowerKeys.size(); i >= 1; i--) {
-			String key = Joiner.on('.').join(lowerKeys.subList(0, i));
-			String value = opsContext.getConfiguration().lookup(key, null);
-			if (value != null) {
-				return value;
-			}
-		}
-
-		return null;
-	}
+	// private String doKeyLookup(Iterable<String> keys) {
+	// List<String> lowerKeys = Lists.newArrayList();
+	// for (String key : keys) {
+	// lowerKeys.add(key.toLowerCase());
+	// }
+	//
+	// for (int i = lowerKeys.size(); i >= 1; i--) {
+	// String key = Joiner.on('.').join(lowerKeys.subList(0, i));
+	// String value = opsContext.getConfiguration().lookup(key, null);
+	// if (value != null) {
+	// return value;
+	// }
+	// }
+	//
+	// return null;
+	// }
 
 	public String getDefaultKernelPackage(OperatingSystem operatingSystem) {
 		switch (operatingSystem.getDistribution()) {

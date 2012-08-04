@@ -14,6 +14,7 @@ import org.platformlayer.ApplicationMode;
 import org.platformlayer.CheckedCallable;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.Scope;
+import org.platformlayer.config.Configuration;
 import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.ops.log.JobLogger;
 import org.platformlayer.ops.model.metrics.MetricConfig;
@@ -89,7 +90,7 @@ public class OpsContext implements Closeable {
 		}
 	}
 
-	public OpsConfiguration getConfiguration() {
+	public Configuration getConfiguration() {
 		return getOpsSystem().getConfiguration();
 	}
 

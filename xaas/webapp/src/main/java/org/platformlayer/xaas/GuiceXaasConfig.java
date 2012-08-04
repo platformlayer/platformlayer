@@ -1,8 +1,6 @@
 package org.platformlayer.xaas;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -13,13 +11,13 @@ import javax.sql.DataSource;
 
 import org.openstack.crypto.CertificateAndKey;
 import org.openstack.crypto.KeyStoreUtils;
-import org.openstack.utils.PropertyUtils;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.WellKnownPorts;
 import org.platformlayer.auth.AuthenticationService;
 import org.platformlayer.auth.client.PlatformLayerTokenValidator;
 import org.platformlayer.auth.client.PlatformlayerAuthenticationClient;
 import org.platformlayer.auth.client.PlatformlayerAuthenticationService;
+import org.platformlayer.config.Configuration;
 import org.platformlayer.crypto.AcceptAllHostnameVerifier;
 import org.platformlayer.crypto.EncryptionStore;
 import org.platformlayer.crypto.KeyStoreEncryptionStore;
@@ -35,7 +33,6 @@ import org.platformlayer.guice.xaas.TagEntity;
 import org.platformlayer.inject.ObjectInjector;
 import org.platformlayer.jdbc.simplejpa.ResultSetMappers;
 import org.platformlayer.jdbc.simplejpa.ResultSetMappersProvider;
-import org.platformlayer.ops.OpsConfiguration;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsSystem;
@@ -67,23 +64,9 @@ public class GuiceXaasConfig extends AbstractModule {
 
 	@Override
 	protected void configure() {
-		String configFilePath = System.getProperty("conf");
-		if (configFilePath == null) {
-			configFilePath = new File(new File("."), "configuration.properties").getAbsolutePath();
-		}
-
-		File configFile = new File(configFilePath);
-
-		Properties applicationProperties;
 		try {
-			applicationProperties = PropertyUtils.loadProperties(configFile);
-		} catch (IOException e) {
-			throw new IllegalStateException("Error loading configuration file: " + configFile, e);
-		}
-
-		try {
-			OpsConfiguration configuration = new OpsConfiguration(applicationProperties);
-			bind(OpsConfiguration.class).toInstance(configuration);
+			Configuration configuration = Configuration.load();
+			bind(Configuration.class).toInstance(configuration);
 
 			configuration.bindProperties(binder());
 
@@ -99,7 +82,8 @@ public class GuiceXaasConfig extends AbstractModule {
 			bind(ResultSetMappers.class).toProvider(
 					ResultSetMappersProvider.build(ItemEntity.class, TagEntity.class, SchedulerRecordEntity.class));
 
-			bind(DataSource.class).toProvider(GuiceDataSourceProvider.fromProperties(null, "platformlayer.jdbc."));
+			bind(DataSource.class).toProvider(
+					GuiceDataSourceProvider.fromConfiguration(configuration, "platformlayer.jdbc."));
 
 			JerseyAnnotationDiscovery discovery = new JerseyAnnotationDiscovery();
 			discovery.scan();
@@ -134,11 +118,11 @@ public class GuiceXaasConfig extends AbstractModule {
 
 			bind(PlatformLayerClient.class).toProvider(PlatformLayerClientProvider.class);
 		} catch (OpsException e) {
-			throw new IllegalStateException("Cannot during configuration", e);
+			throw new IllegalStateException("Error during configuration", e);
 		}
 	}
 
-	private void bindAuthTokenValidator(EncryptionStore encryptionStore, OpsConfiguration configuration)
+	private void bindAuthTokenValidator(EncryptionStore encryptionStore, Configuration configuration)
 			throws OpsException {
 		String keystoneServiceUrl = configuration.lookup("auth.system.url", "https://127.0.0.1:"
 				+ WellKnownPorts.PORT_PLATFORMLAYER_AUTH_ADMIN + "/");
@@ -168,7 +152,7 @@ public class GuiceXaasConfig extends AbstractModule {
 		bind(PlatformLayerTokenValidator.class).toInstance(keystoneTokenValidator);
 	}
 
-	private void bindUserAuth(EncryptionStore encryptionStore, OpsConfiguration configuration) throws OpsException {
+	private void bindUserAuth(EncryptionStore encryptionStore, Configuration configuration) throws OpsException {
 		String keystoneUserUrl = configuration.lookup("auth.user.url", "https://127.0.0.1:"
 				+ WellKnownPorts.PORT_PLATFORMLAYER_AUTH_USER + "/v2.0/");
 
@@ -192,7 +176,7 @@ public class GuiceXaasConfig extends AbstractModule {
 		bind(PlatformlayerAuthenticationClient.class).toInstance(authClient);
 	}
 
-	private EncryptionStore bindEncryptionStore(OpsConfiguration configuration) {
+	private EncryptionStore bindEncryptionStore(Configuration configuration) {
 		String keystorePath = configuration.lookup("keystore", "keystore.jks");
 		String secret = configuration.lookup("keystore.password", KeyStoreUtils.DEFAULT_KEYSTORE_SECRET);
 

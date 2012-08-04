@@ -15,6 +15,7 @@ public class ItemBase {
 	public long version;
 
 	public ManagedItemState state;
+
 	public Tags tags;
 
 	public SecretInfo secret;

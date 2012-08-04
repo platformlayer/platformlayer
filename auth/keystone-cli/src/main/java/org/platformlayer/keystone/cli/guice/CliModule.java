@@ -3,10 +3,10 @@ package org.platformlayer.keystone.cli.guice;
 import java.util.Properties;
 
 import org.platformlayer.auth.KeystoneJdbcModule;
+import org.platformlayer.config.Configuration;
 import org.platformlayer.keystone.cli.KeystoneCliOptions;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.name.Names;
 
 public class CliModule extends AbstractModule {
 
@@ -18,10 +18,12 @@ public class CliModule extends AbstractModule {
 
 	@Override
 	protected void configure() {
-		Properties config = options.getConfigurationProperties();
-		Names.bindProperties(binder(), config);
+		Properties properties = options.getConfigurationProperties();
+		Configuration configuration = Configuration.from(properties);
 
-		binder().install(new KeystoneJdbcModule());
+		// Names.bindProperties(binder(), config);
+
+		binder().install(new KeystoneJdbcModule(configuration));
 	}
 
 }

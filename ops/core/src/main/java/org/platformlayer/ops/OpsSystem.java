@@ -13,6 +13,7 @@ import org.openstack.crypto.CertificateAndKey;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.auth.AuthenticationService;
 import org.platformlayer.auth.AuthenticationTokenValidator;
+import org.platformlayer.config.Configuration;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ServiceInfo;
 import org.platformlayer.crypto.CryptoUtils;
@@ -45,7 +46,7 @@ public class OpsSystem {
 	ISshContext sshContext;
 
 	@Inject
-	OpsConfiguration configuration;
+	Configuration configuration;
 
 	@Inject
 	OperationQueue operationQueue;
@@ -87,7 +88,7 @@ public class OpsSystem {
 		return sshContext;
 	}
 
-	public OpsConfiguration getConfiguration() {
+	public Configuration getConfiguration() {
 		return configuration;
 	}
 

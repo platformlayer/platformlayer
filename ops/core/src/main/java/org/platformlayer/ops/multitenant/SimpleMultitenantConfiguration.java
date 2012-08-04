@@ -9,12 +9,12 @@ import org.platformlayer.ApplicationMode;
 import org.platformlayer.auth.AuthenticationService;
 import org.platformlayer.auth.AuthenticationTokenValidator;
 import org.platformlayer.auth.PlatformlayerAuthenticationException;
+import org.platformlayer.config.Configuration;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.crypto.EncryptionStore;
 import org.platformlayer.model.AuthenticationToken;
 import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.ops.MultitenantConfiguration;
-import org.platformlayer.ops.OpsConfiguration;
 import org.platformlayer.ops.OpsException;
 
 import com.google.common.base.Splitter;
@@ -42,7 +42,7 @@ public class SimpleMultitenantConfiguration implements MultitenantConfiguration 
 		return Collections.unmodifiableList(mappedItems);
 	}
 
-	public static MultitenantConfiguration build(OpsConfiguration configuration, EncryptionStore encryptionStore,
+	public static MultitenantConfiguration build(Configuration configuration, EncryptionStore encryptionStore,
 			AuthenticationService authenticationService, AuthenticationTokenValidator authenticationTokenValidator)
 			throws OpsException {
 		String projectKey = configuration.lookup("multitenant.project", null);

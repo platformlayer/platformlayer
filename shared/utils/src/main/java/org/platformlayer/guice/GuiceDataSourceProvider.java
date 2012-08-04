@@ -8,6 +8,7 @@ import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 import org.openstack.utils.PropertyUtils;
+import org.platformlayer.config.Configuration;
 
 import com.google.inject.Provider;
 import com.jolbox.bonecp.BoneCPDataSource;
@@ -39,10 +40,12 @@ public class GuiceDataSourceProvider implements Provider<DataSource> {
 	DataSource buildDataSource() {
 		BoneCPDataSource pooledDataSource = new BoneCPDataSource();
 
-		try {
-			Class.forName(driverClassName);
-		} catch (ClassNotFoundException e) {
-			log.warn("Ignoring error loading DB driver", e);
+		if (driverClassName != null) {
+			try {
+				Class.forName(driverClassName);
+			} catch (ClassNotFoundException e) {
+				log.warn("Ignoring error loading DB driver", e);
+			}
 		}
 
 		// pooledDataSource.setDriverClassName(getProperty(keyPrefix + "driverClassName"));
@@ -88,7 +91,7 @@ public class GuiceDataSourceProvider implements Provider<DataSource> {
 		return new GuiceDataSourceProvider(jdbcUrl, username, password, driverClassName, extraProperties);
 	}
 
-	public static GuiceDataSourceProvider fromProperties(Properties properties, String prefix) {
+	private static GuiceDataSourceProvider fromProperties(Properties properties, String prefix) {
 		String keyPrefix = prefix;
 		if (keyPrefix == null) {
 			keyPrefix = "";
@@ -106,5 +109,16 @@ public class GuiceDataSourceProvider implements Provider<DataSource> {
 		Properties extraProperties = PropertyUtils.getChildProperties(properties, keyPrefix);
 
 		return new GuiceDataSourceProvider(jdbcUrl, username, password, driverClassName, extraProperties);
+	}
+
+	public static GuiceDataSourceProvider fromConfiguration(Configuration configuration, String prefix) {
+		String keyPrefix = prefix;
+		if (keyPrefix == null) {
+			keyPrefix = "";
+		}
+
+		Properties properties = configuration.getChildProperties(keyPrefix);
+
+		return fromProperties(properties, "");
 	}
 }

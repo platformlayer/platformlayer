@@ -234,7 +234,7 @@ public class DiskImageController {
 			// Same with qemu-kvm
 			// (needed for qemu-img convert ... a lot of extra stuff for just the
 			// utils!)
-			String qemuImgPackage = packageHelpers.getPackageFor("qemu-img", operatingSystem);
+			String qemuImgPackage = "qemu-utils"; // packageHelpers.getPackageFor("qemu-img", operatingSystem);
 			apt.install(target, qemuImgPackage);
 
 			// Use local ephemeral storage...
