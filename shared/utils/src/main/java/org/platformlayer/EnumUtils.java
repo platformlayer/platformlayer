@@ -1,4 +1,4 @@
-package org.platformlayer.ops;
+package org.platformlayer;
 
 import java.util.EnumSet;
 import java.util.Enumeration;

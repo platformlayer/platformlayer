@@ -1,6 +1,6 @@
 package org.platformlayer.ops.firewall;
 
-import org.platformlayer.ops.EnumUtils;
+import org.platformlayer.EnumUtils;
 
 public enum Protocol {
 	All, Tcp, Udp, Icmp, TcpOrUdp, Esp, Ah;

@@ -5,7 +5,7 @@ import java.io.IOException;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.platformlayer.ops.EnumUtils;
+import org.platformlayer.EnumUtils;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;

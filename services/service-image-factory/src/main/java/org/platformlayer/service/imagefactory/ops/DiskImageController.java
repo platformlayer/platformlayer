@@ -11,6 +11,7 @@ import java.util.concurrent.TimeoutException;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
+import org.platformlayer.EnumUtils;
 import org.platformlayer.ExceptionUtils;
 import org.platformlayer.ResourceUtils;
 import org.platformlayer.Strings;
@@ -26,7 +27,6 @@ import org.platformlayer.ops.ChrootOpsTarget;
 import org.platformlayer.ops.CloudContext;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.CommandEnvironment;
-import org.platformlayer.ops.EnumUtils;
 import org.platformlayer.ops.FileUpload;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.Machine;

@@ -1,8 +1,8 @@
 package org.platformlayer.ops.images;
 
+import org.platformlayer.EnumUtils;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.Tags;
-import org.platformlayer.ops.EnumUtils;
 
 public enum ImageFormat {
 	Tar, DiskRaw, DiskQcow2;

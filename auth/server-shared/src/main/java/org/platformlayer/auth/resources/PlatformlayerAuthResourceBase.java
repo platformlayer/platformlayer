@@ -12,6 +12,7 @@ import javax.ws.rs.core.HttpHeaders;
 import org.apache.log4j.Logger;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.auth.keystone.KeystoneUserAuthenticator;
+import org.platformlayer.auth.services.RegistrationService;
 
 public class PlatformlayerAuthResourceBase {
 	static final Logger log = Logger.getLogger(PlatformlayerAuthResourceBase.class);
@@ -34,6 +35,9 @@ public class PlatformlayerAuthResourceBase {
 
 	@Inject
 	protected KeystoneUserAuthenticator userAuthenticator;
+
+	@Inject
+	protected RegistrationService registrationService;
 
 	protected void throw404NotFound() {
 		throw new WebApplicationException(404);
