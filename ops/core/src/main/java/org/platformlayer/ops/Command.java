@@ -44,6 +44,11 @@ public class Command {
 			return arg;
 		}
 
+		public static Argument buildQuoted(String value) {
+			Argument arg = new Argument(escapeQuoted(value));
+			return arg;
+		}
+
 		public static Argument buildLiteral(String literal) {
 			Argument arg = new Argument(literal);
 			return arg;
@@ -57,9 +62,14 @@ public class Command {
 	private TimeSpan timeout = TimeSpan.TWO_MINUTES;
 	private CommandEnvironment env;
 
-	private Command(String executable) {
+	// private Command(String executable) {
+	// this();
+	// addLiteral(escapeFile(executable));
+	// }
+
+	public Command(File executable) {
 		this();
-		addLiteral(escapeFile(executable));
+		addFile(executable);
 	}
 
 	private Command() {
@@ -335,4 +345,11 @@ public class Command {
 
 		return newCommand;
 	}
+
+	public static Command build(File executable) {
+		Command command = new Command();
+		command.addFile(executable);
+		return command;
+	}
+
 }
