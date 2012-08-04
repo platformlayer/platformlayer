@@ -6,6 +6,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 import org.apache.log4j.Logger;
+import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.EndpointInfo;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.PublicEndpointBase;
@@ -15,8 +16,6 @@ import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsProvider;
 import org.platformlayer.ops.endpoints.EndpointDnsRecord;
-import org.platformlayer.ops.firewall.FirewallEntry;
-import org.platformlayer.ops.firewall.FirewallRecord;
 import org.platformlayer.ops.firewall.Protocol;
 import org.platformlayer.ops.firewall.Transport;
 import org.platformlayer.ops.helpers.InstanceHelpers;
@@ -78,27 +77,39 @@ public class PublicEndpoint extends OpsTreeBase {
 			OpsProvider<TagChanges> tagChanges = new OpsProvider<TagChanges>() {
 				@Override
 				public TagChanges get() throws OpsException {
-					TagChanges tagChanges = new TagChanges();
+					int maxAttempts = 5;
+					int attempt = 0;
+					while (true) {
+						attempt++;
 
-					PublicEndpointBase item = endpoint.getItem();
-					if (item == null) {
-						if (!OpsContext.isDelete()) {
-							throw new OpsException("Endpoint not created");
+						TagChanges tagChanges = new TagChanges();
+
+						PublicEndpointBase item = endpoint.getItem();
+						if (item == null) {
+							if (!OpsContext.isDelete()) {
+								throw new OpsException("Endpoint not created");
+							} else {
+								log.warn("No endpoint => no tagging to be done");
+								return null;
+							}
+						}
+						List<EndpointInfo> endpointInfos = EndpointInfo.findEndpoints(item.getTags(), publicPort);
+						if (!endpointInfos.isEmpty()) {
+							for (EndpointInfo endpointInfo : endpointInfos) {
+								tagChanges.addTags.add(endpointInfo.toTag());
+							}
+
+							return tagChanges;
+						}
+
+						if (attempt != maxAttempts) {
+							log.info("Endpoint not yet found; sleeping and retrying");
+							TimeSpan.FIVE_SECONDS.doSafeSleep();
+							continue;
 						} else {
-							log.warn("No endpoint => no tagging to be done");
-							return null;
+							throw new OpsException("Cannot find endpoint for port: " + publicPort);
 						}
 					}
-					List<EndpointInfo> endpointInfos = EndpointInfo.findEndpoints(item.getTags(), publicPort);
-					if (endpointInfos.isEmpty()) {
-						throw new OpsException("Cannot find endpoint for port: " + publicPort);
-					}
-
-					for (EndpointInfo endpointInfo : endpointInfos) {
-						tagChanges.addTags.add(endpointInfo.toTag());
-					}
-
-					return tagChanges;
 				}
 			};
 			tagger.platformLayerKey = tagItem;
