@@ -56,6 +56,7 @@ public abstract class ManagedFilesystemItem extends OpsTreeBase {
 	}
 
 	Command updateAction = null;
+	Command deleteAction = null;
 
 	// protected FileMetadata getFileMetadata() {
 	// return new FileMetadata(getFileMode(), getOwner(), getGroup());
@@ -130,8 +131,18 @@ public abstract class ManagedFilesystemItem extends OpsTreeBase {
 		}
 	}
 
+	protected void doDeleteAction(OpsTarget target) throws OpsException {
+		if (getDeleteAction() != null) {
+			target.executeCommand(getDeleteAction());
+		}
+	}
+
 	public Command getUpdateAction() {
 		return updateAction;
+	}
+
+	public Command getDeleteAction() {
+		return deleteAction;
 	}
 
 	public ManagedFilesystemItem setUpdateAction(Command updateAction) {

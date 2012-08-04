@@ -29,6 +29,8 @@ public abstract class ManagedFile extends ManagedFilesystemItem {
 	// String sourceFile;
 	boolean onlyIfNotExists;
 
+	public FileAccess mkdirs;
+
 	//
 	// boolean symlinkVersions = false;
 	//
@@ -62,11 +64,26 @@ public abstract class ManagedFile extends ManagedFilesystemItem {
 		if (operation.isDelete()) {
 			if (remoteMd5 != null) {
 				target.rm(filePath);
+				doDeleteAction(target);
 			}
 		}
 
 		if (operation.isConfigure()) {
 			boolean changed = false;
+
+			if (mkdirs != null) {
+				if (remoteMd5 == null) {
+					File dir = filePath.getParentFile();
+					if (target.getFilesystemInfoFile(dir) == null) {
+						// TODO: Can mkdir return true/false to indicate presence?
+						target.mkdir(dir, mkdirs.mode);
+
+						if (mkdirs.owner != null) {
+							target.chown(dir, mkdirs.owner, mkdirs.group, false, false);
+						}
+					}
+				}
+			}
 
 			boolean doUpload = false;
 			if (!isUpToDate) {
@@ -122,6 +139,7 @@ public abstract class ManagedFile extends ManagedFilesystemItem {
 					// fsInfo = agent.getFilesystemInfoFile(target);
 				}
 
+				// TODO: Should this trigger a change??
 				configureOwnerAndMode(target, fsInfo);
 			}
 
