@@ -13,11 +13,9 @@ import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.firewall.FirewallEntry;
-import org.platformlayer.ops.firewall.FirewallRecord;
-import org.platformlayer.ops.firewall.PortAddressFilter;
 import org.platformlayer.ops.firewall.Protocol;
 import org.platformlayer.ops.firewall.Transport;
+import org.platformlayer.ops.firewall.scripts.IptablesFilterEntry;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.machines.InetAddressUtils;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
@@ -38,6 +36,8 @@ public class PlatformLayerFirewallEntry extends OpsTreeBase {
 	public int port;
 	public Protocol protocol = Protocol.Tcp;
 	public Transport transport = null;
+
+	public String uniqueId;
 
 	@Inject
 	PlatformLayerHelpers platformLayerHelpers;
@@ -77,20 +77,18 @@ public class PlatformLayerFirewallEntry extends OpsTreeBase {
 
 		for (final Transport transport : transports) {
 			if (!Strings.isNullOrEmpty(sourceCidr)) {
-				PortAddressFilter destFilter = PortAddressFilter.withPortRange(port, port);
-				PortAddressFilter srcFilter = PortAddressFilter.withCidr(sourceCidr);
-				FirewallRecord destRule = FirewallRecord.pass().protocol(protocol).in().dest(destFilter)
-						.source(srcFilter);
-				destRule.setTransport(transport);
-
-				FirewallEntry entry = FirewallEntry.build(destRule);
-				dest.addChild(entry);
+				IptablesFilterEntry entry = dest.addChild(IptablesFilterEntry.class);
+				entry.port = port;
+				entry.sourceCidr = sourceCidr;
+				entry.protocol = protocol;
+				entry.transport = transport;
+				entry.ruleKey = uniqueId;
 			}
 
 			if (sourceItemKey != null) {
-				LateBound<FirewallEntry> entry = new LateBound<FirewallEntry>() {
+				LateBound<IptablesFilterEntry> entry = new LateBound<IptablesFilterEntry>() {
 					@Override
-					public FirewallEntry get() throws OpsException {
+					public IptablesFilterEntry get() throws OpsException {
 						ItemBase sourceItem = platformLayerHelpers.getItem(sourceItemKey);
 
 						NetworkPoint targetNetworkPoint = NetworkPoint.forTargetInContext();
@@ -103,18 +101,14 @@ public class PlatformLayerFirewallEntry extends OpsTreeBase {
 							return null;
 						}
 
-						PortAddressFilter destFilter = PortAddressFilter.withPortRange(port, port);
-						FirewallRecord destRule = FirewallRecord.pass().protocol(protocol).in().dest(destFilter);
+						String sourceCidr = null;
 
 						List<InetAddress> addresses = sourceMachine.findAddresses(targetNetworkPoint, port);
-
 						if (transport == Transport.Ipv4) {
 							Iterables.removeIf(addresses, InetAddressUtils.IS_IPV6);
 
 							if (addresses.size() == 1) {
-								PortAddressFilter srcFilter = PortAddressFilter.withCidr(addresses.get(0)
-										.getHostAddress() + "/32");
-								destRule = destRule.source(srcFilter).setTransport(transport);
+								sourceCidr = addresses.get(0).getHostAddress() + "/32";
 							} else {
 								if (addresses.isEmpty()) {
 									return null;
@@ -125,9 +119,7 @@ public class PlatformLayerFirewallEntry extends OpsTreeBase {
 							Iterables.removeIf(addresses, InetAddressUtils.IS_IPV4);
 
 							if (addresses.size() == 1) {
-								PortAddressFilter srcFilter = PortAddressFilter.withCidr(addresses.get(0)
-										.getHostAddress() + "/128");
-								destRule = destRule.source(srcFilter).setTransport(transport);
+								sourceCidr = addresses.get(0).getHostAddress() + "/128";
 							} else {
 								if (addresses.isEmpty()) {
 									return null;
@@ -136,7 +128,13 @@ public class PlatformLayerFirewallEntry extends OpsTreeBase {
 							}
 						}
 
-						FirewallEntry entry = FirewallEntry.build(destRule);
+						IptablesFilterEntry entry = injected(IptablesFilterEntry.class);
+						entry.port = port;
+						entry.sourceCidr = sourceCidr;
+						entry.protocol = protocol;
+						entry.transport = transport;
+						entry.ruleKey = uniqueId;
+
 						return entry;
 					}
 				};

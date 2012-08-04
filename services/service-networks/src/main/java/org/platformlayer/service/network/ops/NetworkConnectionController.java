@@ -1,6 +1,7 @@
 package org.platformlayer.service.network.ops;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -68,6 +69,8 @@ public class NetworkConnectionController extends OpsTreeBase {
 			}
 		}
 
+		UUID uniqueId = platformLayer.getOrCreateUuid(model);
+
 		for (int port : ports) {
 			PlatformLayerFirewallEntry net = injected(PlatformLayerFirewallEntry.class);
 			net.destItem = model.destItem;
@@ -76,6 +79,8 @@ public class NetworkConnectionController extends OpsTreeBase {
 			net.sourceCidr = model.sourceCidr;
 			net.protocol = protocol;
 			net.transport = transport;
+
+			net.uniqueId = port + "-" + uniqueId.toString();
 
 			addChild(net);
 		}

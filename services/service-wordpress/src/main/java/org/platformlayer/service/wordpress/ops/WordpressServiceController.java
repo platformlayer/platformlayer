@@ -8,7 +8,6 @@ import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.metrics.collectd.ManagedService;
@@ -43,6 +42,7 @@ public class WordpressServiceController extends OpsTreeBase {
 
 			net.destItem = model.databaseItem;
 			net.port = 3306;
+			net.uniqueId = getFirewallUniqueId();
 
 			PlatformLayerKey sourceKey = model.getKey();
 			net.sourceItemKey = sourceKey;
@@ -96,5 +96,10 @@ public class WordpressServiceController extends OpsTreeBase {
 		}
 
 		instance.addChild(ManagedService.build("apache2"));
+	}
+
+	private String getFirewallUniqueId() {
+		// Not implemented at the moment
+		throw new UnsupportedOperationException();
 	}
 }
