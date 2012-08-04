@@ -36,6 +36,8 @@ public class BindingHelper {
 			}
 		}
 
+		BindingHelper.INSTANCE.bind(item);
+
 		return item;
 	}
 
