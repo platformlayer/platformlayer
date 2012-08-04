@@ -1,109 +1,87 @@
 package org.platformlayer.service.cloud.direct.ops;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
+import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Command;
+import org.platformlayer.ops.CommandEnvironment;
 import org.platformlayer.ops.Handler;
-import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.OpsTarget;
-import org.platformlayer.ops.networks.IpRange;
-import org.platformlayer.ops.process.ProcessExecution;
-import org.platformlayer.ops.process.ProcessExecutionException;
+import org.platformlayer.ops.filesystem.TemplatedFile;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class NetworkBridge extends OpsTreeBase {
 	static final Logger log = Logger.getLogger(NetworkBridge.class);
 
-	public String bridge;
-	public IpRange ipRange;
+	@Bound
+	HostTemplate template;
 
-	public static NetworkBridge build(String bridge, IpRange ipRange) {
-		NetworkBridge conf = new NetworkBridge();
-		conf.bridge = bridge;
-		conf.ipRange = ipRange;
-		return conf;
-	}
+	// public IpRange ipRange;
+	// public static NetworkBridge build(String bridge, IpRange ipRange) {
+	// NetworkBridge conf = new NetworkBridge();
+	// conf.bridge = bridge;
+	// conf.ipRange = ipRange;
+	// return conf;
+	// }
 
 	@Handler
 	public void handler() throws OpsException, IOException {
-		// TODO: Only if not installed
-		OpsTarget target = OpsContext.get().getInstance(OpsTarget.class);
+		// We assume that the bridge has been manually configured like this:
 
-		boolean found = false;
+		// in /etc/network/interfaces
+		// auto br100
+		// iface br100 inet static
+		// bridge_ports none
+		// bridge_stp off
+		// bridge_maxwait 0
+		// bridge_fd 0
+		// address 172.16.0.1
+		// netmask 255.240.0.0
+		// up ip addr add <ipv6>::1/64 dev br100
 
-		// ProcessExecution execution = target.executeCommand(Command.build("brctl show"));
-		// String[] lines = execution.getStdOut().split("\n");
-		// for (int i = 0; i < lines.length; i++) {
-		// if (i == 0)
-		// continue;
+		// If we're using an ipv6 tunnel, we probably also need something like this:
+		// /etc/network/if-up.d/ip6tables-forward-tunnel
+		// #!/bin/bash
 		//
-		// String line = lines[i];
-		// String[] components = line.split("\t+");
-		// if (components.length != 4) {
-		// throw new IllegalStateException("Error parsing line: " + line);
-		// }
-		// if (components[0].equals(bridge)) {
-		// found = true;
-		// }
-		// }
+		// set -e
 		//
+		// ip6tables -A FORWARD -i tun6rd -o br100 -j ACCEPT
+		// ip6tables -A FORWARD -i br100 -o tun6rd -j ACCEPT
+		//
+		// iptables -t filter -I INPUT -p 41 -j ACCEPT
+		// iptables -t filter -I OUTPUT -p 41 -j ACCEPT
+		//
+		// exit 0
 
-		try {
-			target.executeCommand(Command.build("brctl showmacs {0}", bridge));
-			found = true;
-		} catch (ProcessExecutionException e) {
-			ProcessExecution execution = e.getExecution();
-			if (execution.getExitCode() == 1 && execution.getStdErr().contains("No such device")) {
-				found = false;
-			}
-		}
-
-		throw new OpsException("How many of the remaining are really needed??");
-
-		// if (!found) {
-		// target.executeCommand(Command.build("brctl addbr {0}", bridge));
-		// }
-		//
-		// target.executeCommand(Command.build("brctl setfd {0} 0", bridge));
-
-		// {
-		// String netmask = ipRange.getNetmask();
-		// InetAddress ip = ipRange.getFirstAddress();
-		//
-		// Command command = Command.build("/sbin/ifconfig {0} {1} netmask {2} promisc up", bridge, ip, netmask);
-		// log.warn("Skipping execution of ifconfig; assuming already done: " + command);
-		// // target.executeCommand(command);
-		// }
-
-		// ???
-		// File procIPV4 = new File("/proc/sys/net/ipv4");
-		// File ipForward = new File(procIPV4, "ip_forward");
-		// target.executeCommand(Command.build("echo 1 > {0}", ipForward));
-		//
-		// File proxyArp = new File(procIPV4, "conf/" + bridge + "/proxy_arp");
-		// target.executeCommand(Command.build("echo 1 > {0}", proxyArp));
-		//
-		// // TODO: Idempotency?
-		// target.executeCommand(Command.build("/sbin/iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE"));
-
-		// apt-get install bridge-utils
-		//
-		// /sbin/brctl addbr br0
-		// /sbin/brctl setfd br0 0
-		// #/sbin/ifconfig br0 down
-		//
-		// PREFIX=10.200.17
-		// /sbin/ifconfig br0 ${PREFIX}.1 netmask 255.255.255.0 promisc up
-		// echo 1 > /proc/sys/net/ipv4/ip_forward
-		// echo 1 > /proc/sys/net/ipv4/conf/br0/proxy_arp
-		//
-		// iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 	}
 
 	@Override
 	protected void addChildren() throws OpsException {
+		// We would need proxy_arp if they were on the same IPV4 network
+
+		// Do we need proxy_ndp ???
+		// echo 1 > /proc/sys/net/ipv6/conf/eth0/proxy_ndp
+
+		addChild(SysctlSetting.build("net.ipv4.ip_forward", "1"));
+		addChild(SysctlSetting.build("net.ipv6.conf.all.forwarding", "1"));
+
+		{
+			File scriptPath = new File("/etc/network/if-up.d/nat-for-bridge");
+			TemplatedFile nat = addChild(TemplatedFile.build(template, scriptPath));
+			nat.setFileMode("0755");
+
+			// Simulate an ifup run
+			Command command = Command.build(scriptPath);
+			CommandEnvironment env = new CommandEnvironment();
+			env.put("IFACE", template.getPublicInterface());
+			env.put("MODE", "start");
+			env.put("ADDRFAM", "inet");
+			command.setEnvironment(env);
+
+			nat.setUpdateAction(command);
+		}
 
 	}
 }

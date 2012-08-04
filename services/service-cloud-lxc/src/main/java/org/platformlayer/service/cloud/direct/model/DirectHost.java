@@ -23,4 +23,5 @@ public class DirectHost extends ItemBase {
 	public String ipv6;
 
 	public String bridge = "br100";
+	public String publicInterface = "eth0";
 }

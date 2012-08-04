@@ -17,8 +17,9 @@ import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsProvider;
+import org.platformlayer.ops.firewall.Protocol;
 import org.platformlayer.ops.firewall.Transport;
-import org.platformlayer.ops.firewall.simple.ForwardPort;
+import org.platformlayer.ops.firewall.scripts.IptablesForwardPort;
 import org.platformlayer.ops.helpers.ImageFactory;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.helpers.ServiceContext;
@@ -108,35 +109,38 @@ public class PublicPorts extends OpsTreeBase {
 				throw new UnsupportedOperationException();
 			}
 		} else {
-			ForwardPort forward = injected(ForwardPort.class);
-			forward.publicAddress = assignPublicAddress;
-			forward.uuid = uuid;
+			for (Protocol protocol : Protocol.TcpAndUdp()) {
+				IptablesForwardPort forward = injected(IptablesForwardPort.class);
+				forward.publicAddress = assignPublicAddress;
+				forward.ruleKey = protocol.name() + "-" + uuid;
+				forward.protocol = protocol;
 
-			forward.privateAddress = new OpsProvider<String>() {
-				@Override
-				public String get() throws OpsException {
-					// Refresh item to pick up new tags
-					backendItem = platformLayerClient.getItem(backendItem.getKey(), DirectInstance.class);
+				forward.privateAddress = new OpsProvider<String>() {
+					@Override
+					public String get() throws OpsException {
+						// Refresh item to pick up new tags
+						backendItem = platformLayerClient.getItem(backendItem.getKey(), DirectInstance.class);
 
-					PlatformLayerCloudMachine instanceMachine = (PlatformLayerCloudMachine) instanceHelpers
-							.getMachine(backendItem);
-					DirectInstance instance = (DirectInstance) instanceMachine.getInstance();
-					List<InetAddress> addresses = Tag.NETWORK_ADDRESS.find(instance);
-					InetAddress address = InetAddressChooser.preferIpv4().choose(addresses);
-					if (address == null) {
-						throw new IllegalStateException();
+						PlatformLayerCloudMachine instanceMachine = (PlatformLayerCloudMachine) instanceHelpers
+								.getMachine(backendItem);
+						DirectInstance instance = (DirectInstance) instanceMachine.getInstance();
+						List<InetAddress> addresses = Tag.NETWORK_ADDRESS.find(instance);
+						InetAddress address = InetAddressChooser.preferIpv4().choose(addresses);
+						if (address == null) {
+							throw new IllegalStateException();
+						}
+
+						if (InetAddressUtils.isIpv6(address)) {
+							// We can't NAT IPV4 -> IPV6 (I think)
+							throw new IllegalStateException();
+						}
+						return address.getHostAddress();
 					}
+				};
+				forward.privatePort = backendPort;
 
-					if (InetAddressUtils.isIpv6(address)) {
-						// We can't NAT IPV4 -> IPV6 (I think)
-						throw new IllegalStateException();
-					}
-					return address.getHostAddress();
-				}
-			};
-			forward.privatePort = backendPort;
-
-			cloudHost.addChild(forward);
+				cloudHost.addChild(forward);
+			}
 		}
 
 		{

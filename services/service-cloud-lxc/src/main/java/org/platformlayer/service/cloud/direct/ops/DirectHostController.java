@@ -9,14 +9,14 @@ import org.apache.log4j.Logger;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.bootstrap.InstanceBootstrap;
 import org.platformlayer.ops.dns.DnsResolver;
 import org.platformlayer.ops.filesystem.ManagedDirectory;
 import org.platformlayer.ops.helpers.ServiceContext;
+import org.platformlayer.ops.images.direct.PeerToPeerCopy;
 import org.platformlayer.ops.machines.PlatformLayerCloudContext;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
-import org.platformlayer.ops.networks.IpRange;
 import org.platformlayer.ops.networks.NetworkPoint;
-import org.platformlayer.ops.packages.AptSourcesConfigurationFile.DefaultAptSourcesConfigurationFile;
 import org.platformlayer.ops.packages.PackageDependency;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.direct.model.DirectHost;
@@ -60,7 +60,6 @@ public class DirectHostController extends OpsTreeBase {
 		//
 		// platformLayer.addTag(lxcHost, Tag.INSTANCE_ID, serverId);
 		// }
-
 	}
 
 	@Override
@@ -87,10 +86,13 @@ public class DirectHostController extends OpsTreeBase {
 			host.sshKey = service.getSshKey();
 		}
 
-		// TODO: What do we want to bootstrap here??
-		// host.addChild(InstanceBootstrap.class);
-		host.addChild(DefaultAptSourcesConfigurationFile.class);
+		// TODO: It isn't quite right to call this InstanceBootstrap any more!
+		host.addChild(InstanceBootstrap.class);
+
 		host.addChild(DnsResolver.class);
+
+		// Time synchronization is pretty important
+		host.addChild(PackageDependency.build("ntp"));
 
 		// TODO: Do we want to differentiate between an LXC host and a KVM host?
 		host.addChild(PackageDependency.build("lxc"));
@@ -102,15 +104,15 @@ public class DirectHostController extends OpsTreeBase {
 		host.addChild(PackageDependency.build("bzip2"));
 		host.addChild(PackageDependency.build("socat"));
 
+		host.addChild(PeerToPeerCopy.FirewallRules.class);
+
 		host.addChild(KvmHost.class);
 
 		host.addChild(MountCgroups.build());
 
 		host.addChild(PackageDependency.build("bridge-utils"));
 
-		String bridge = model.host;
-		IpRange ipRange = IpRange.parse(model.ipv4Public);
-		host.addChild(NetworkBridge.build(bridge, ipRange));
+		host.addChild(NetworkBridge.class);
 	}
 
 }

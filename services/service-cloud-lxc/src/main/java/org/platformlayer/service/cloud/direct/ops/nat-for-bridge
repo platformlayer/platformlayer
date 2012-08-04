@@ -1,0 +1,35 @@
+#! /bin/sh
+# Does NAT so machines on the bridge can access the IPV4 network
+
+set -e
+
+# Only for our interface
+if [ "$IFACE" != ${publicInterface} ]; then
+        exit 0
+fi
+
+# Only run from ifup.
+if [ "$MODE" != start ]; then
+        exit 0
+fi
+
+# Only for IPV4
+if [ "$ADDRFAM" != inet ]; then
+        exit 0
+fi
+
+
+# We need to forward everything... (this takes place after inbound NAT rules?)
+#iptables -A FORWARD -i ${publicInterface} -o ${bridgeInterface} -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -A FORWARD -i ${publicInterface} -o ${bridgeInterface} -j ACCEPT
+iptables -A FORWARD -i ${bridgeInterface} -o ${publicInterface} -j ACCEPT
+iptables -A FORWARD -i ${bridgeInterface} -o ${bridgeInterface} -j ACCEPT
+iptables -t nat -A POSTROUTING -o ${publicInterface} -j MASQUERADE
+
+ip6tables -A FORWARD -i ${publicInterface} -o ${bridgeInterface} -j ACCEPT
+ip6tables -A FORWARD -i ${bridgeInterface} -o ${publicInterface} -j ACCEPT
+
+ip6tables -A FORWARD -i ${bridgeInterface} -o ${bridgeInterface} -j ACCEPT
+
+exit 0
+
