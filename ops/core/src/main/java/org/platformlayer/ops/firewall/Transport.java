@@ -20,4 +20,8 @@ public enum Transport {
 
 		return EnumUtils.valueOfCaseInsensitive(Transport.class, value);
 	}
+
+	public String getKey() {
+		return toString().toLowerCase();
+	}
 }

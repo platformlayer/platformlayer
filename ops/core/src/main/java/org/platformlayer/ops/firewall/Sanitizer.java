@@ -24,16 +24,20 @@ public class Sanitizer {
 	}
 
 	public static Sanitizer forFileName() {
-		Sanitizer sanitizer = new Sanitizer(Decision.Block, '_');
+		Sanitizer sanitizer = new Sanitizer(Decision.Replace, '_');
 		sanitizer.allowAlphanumeric();
 		sanitizer.allowCharacters("_-.");
 		return sanitizer;
 	}
 
 	public void allowCharacters(String s) {
+		setDecision(s, Decision.Allow);
+	}
+
+	public void setDecision(String s, Decision decision) {
 		for (int i = 0; i < s.length(); i++) {
 			int cp = s.codePointAt(i);
-			characterRules.put(cp, Decision.Allow);
+			characterRules.put(cp, decision);
 		}
 	}
 
@@ -47,7 +51,7 @@ public class Sanitizer {
 	}
 
 	public static enum Decision {
-		Allow, Block;
+		Allow, Replace, Throw;
 	};
 
 	public String clean(String s) {
@@ -69,7 +73,7 @@ public class Sanitizer {
 				out.appendCodePoint(c);
 				break;
 
-			case Block: {
+			case Replace: {
 				boolean writeBlockChar = true;
 
 				if (combineBlocked) {
@@ -86,6 +90,10 @@ public class Sanitizer {
 				}
 			}
 				break;
+
+			case Throw: {
+				throw new IllegalArgumentException("Found invalid character: " + c);
+			}
 
 			default:
 				throw new IllegalStateException();

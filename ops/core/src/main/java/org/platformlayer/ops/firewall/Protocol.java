@@ -1,5 +1,8 @@
 package org.platformlayer.ops.firewall;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.platformlayer.ops.EnumUtils;
 
 public enum Protocol {
@@ -10,6 +13,10 @@ public enum Protocol {
 			return TcpOrUdp;
 		}
 		return EnumUtils.valueOfCaseInsensitive(Protocol.class, proto);
+	}
+
+	public static List<Protocol> TcpAndUdp() {
+		return Arrays.asList(Protocol.Tcp, Protocol.Udp);
 	}
 
 	public String toIpfString() {

@@ -1,9 +1,11 @@
-#!/bin/bash
+#! /bin/sh
 # Apply iptables rules when an interface comes up
 # (We pre-up with it in 'lockdown', and then open the ports)
 # (Based on the OpenSSH script)
 
 set -e
+
+echo "if-up.d/iptables-ifup[$IFACE][$ADDRFAM]" >> /var/log/platformlayer
 
 # Only run from ifup.
 if [ "$MODE" != start ]; then
@@ -13,7 +15,14 @@ fi
 
 # Run any scripts in the directory e.g. /etc/iptables/eth0/inet6
 if [ -e /etc/iptables/${IFACE}/${ADDRFAM} ]; then
-        run-parts /etc/iptables/${IFACE}/${ADDRFAM}
+	run-parts --verbose /etc/iptables/${IFACE}/${ADDRFAM} >> /var/log/platformlayer 2>&1
+fi
+
+if [ "$IFACE" = "--all" ]; then
+	if [ "$ADDRFAM" = "meta" ]; then
+		echo "Found --all / meta; running everything" >> /var/log/platformlayer 
+ 		find /etc/iptables/ -type d | xargs -L 1 run-parts --verbose >> /var/log/platformlayer 2>&1
+	fi
 fi
 
 exit 0

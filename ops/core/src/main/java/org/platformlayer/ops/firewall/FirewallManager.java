@@ -196,37 +196,37 @@ public abstract class FirewallManager {
 		return duplicates;
 	}
 
-	public void doItemOperation(OpsTarget target, OperationType operationType, FirewallEntry firewallEntry)
-			throws Exception {
-		boolean isValidate = operationType.isValidate();
-
-		FirewallRecord firewallRule = firewallEntry.rule;
-
-		List<FirewallRecord> desired = rewriteRule(target, firewallRule);
-		List<FirewallRecord> actual = getConfiguredRules(target);
-
-		if (DUMP_CONFIG) {
-			log.debug("Actual configuration:");
-			for (FirewallRecord rule : actual) {
-				log.debug("\t" + rule);
-			}
-		}
-
-		SetCompareResults<FirewallRecord> setCompareResults = SetUtils.setCompare(desired, actual);
-		// LEFT= desired
-		// RIGHT= actual
-
-		for (FirewallRecord add : setCompareResults.leftNotRight) {
-			if (!isValidate) {
-				log.info("Adding firewall entry: " + add);
-				configureAddRule(target, add);
-			} else {
-				OpsContext.get().addWarning(this, "Firewall rule not found {0}", add);
-			}
-		}
-
-		// afterChangeConfiguration(null);
-	}
+	// public void doItemOperation(OpsTarget target, OperationType operationType, IptablesFirewallEntry firewallEntry)
+	// throws Exception {
+	// boolean isValidate = operationType.isValidate();
+	//
+	// FirewallRecord firewallRule = firewallEntry.rule;
+	//
+	// List<FirewallRecord> desired = rewriteRule(target, firewallRule);
+	// List<FirewallRecord> actual = getConfiguredRules(target);
+	//
+	// if (DUMP_CONFIG) {
+	// log.debug("Actual configuration:");
+	// for (FirewallRecord rule : actual) {
+	// log.debug("\t" + rule);
+	// }
+	// }
+	//
+	// SetCompareResults<FirewallRecord> setCompareResults = SetUtils.setCompare(desired, actual);
+	// // LEFT= desired
+	// // RIGHT= actual
+	//
+	// for (FirewallRecord add : setCompareResults.leftNotRight) {
+	// if (!isValidate) {
+	// log.info("Adding firewall entry: " + add);
+	// configureAddRule(target, add);
+	// } else {
+	// OpsContext.get().addWarning(this, "Firewall rule not found {0}", add);
+	// }
+	// }
+	//
+	// // afterChangeConfiguration(null);
+	// }
 
 	// protected List<FirewallRecord> getDesiredConfiguration() throws OpsException, InterruptedException {
 	// FirewallConfiguration firewallConfiguration = getAncestor(FirewallConfiguration.class);
