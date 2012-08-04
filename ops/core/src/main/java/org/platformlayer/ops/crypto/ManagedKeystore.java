@@ -272,7 +272,7 @@ public class ManagedKeystore extends OpsTreeBase {
 	}
 
 	private String sanitizeX500Principal(X500Principal issuer) {
-		Sanitizer sanitizer = new Sanitizer(Decision.Block, '_');
+		Sanitizer sanitizer = new Sanitizer(Decision.Replace, '_');
 		sanitizer.allowAlphanumeric().setCombineBlocked(true);
 
 		return sanitizer.clean(issuer.getName());
