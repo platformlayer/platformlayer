@@ -1,0 +1,70 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+	xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:c="urn:import:com.google.gwt.user.cellview.client"
+	xmlns:pl="urn:import:org.platformlayer.gwt.client.widgets">
+
+	<g:HTMLPanel>
+		<div class="row">
+			<div class="span4 offset4">
+				<form class="well form-vertical">
+					<h1>Sign up</h1>
+
+					<pl:AlertContainer ui:field="alerts" />
+
+					<p>
+						Let's get started. Enter your email address and pick a password:
+					</p>
+
+					<fieldset>
+						<pl:ControlGroup ui:field="email">
+							<label class="control-label" for="password">Your email</label>
+							<div class="controls">
+								<input type="text" class="input-xlarge" id="email"
+									placeholder="email" />
+								<p class="help-block">Your email is used as your username</p>
+							</div>
+						</pl:ControlGroup>
+
+						<pl:ControlGroup ui:field="password">
+							<label class="control-label" for="password">Pick a password</label>
+							<div class="controls">
+								<input type="password" class="input-xlarge" id="password"
+									placeholder="Password" />
+							</div>
+						</pl:ControlGroup>
+
+						<pl:ControlGroup ui:field="password2">
+							<label class="control-label" for="password2">Confirm password</label>
+							<div class="controls">
+								<input type="password" class="input-xlarge" id="password2"
+									placeholder="Password (again, to confirm)" />
+							</div>
+						</pl:ControlGroup>
+
+						<div>
+							Signing up signifies that you agree
+							to the
+							<a href="termsofservice">Terms of Service</a>
+							and to the
+							<a href="privacypolicy">Privacy Policy</a>
+							.
+						</div>
+
+						<button ui:field="registerButton" type="submit" class="btn">Sign
+							up
+						</button>
+					</fieldset>
+
+					<hr />
+				</form>
+
+				<div>
+					Already have an account?
+					<a href="#" ui:field="loginAnchor">
+						Log in
+					</a>
+				</div>
+
+			</div>
+		</div>
+	</g:HTMLPanel>
+</ui:UiBinder>

@@ -2,22 +2,25 @@ package org.platformlayer.gwt.client.api.platformlayer;
 
 import java.util.logging.Logger;
 
+import javax.inject.Singleton;
+
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+@Singleton
 public class CorsPlatformLayerService implements PlatformLayerService {
 	static final Logger log = Logger.getLogger(CorsPlatformLayerService.class.getName());
 
 	@Override
 	public void listRoots(final OpsProject project, final AsyncCallback<UntypedItemCollection> callback) {
 		String url = project.getProjectBaseUrl() + "roots";
-		CorsRequest.get(project, url).execute(callback);
+		AuthenticatedCorsRequest.get(project, url).execute(callback);
 	}
 
 	@Override
 	public void listJobs(OpsProject project, AsyncCallback<JobCollection> callback) {
 		String url = project.getProjectBaseUrl() + "jobs";
-		CorsRequest.get(project, url).execute(callback);
+		AuthenticatedCorsRequest.get(project, url).execute(callback);
 	}
 
 	@Override
@@ -26,14 +29,14 @@ public class CorsPlatformLayerService implements PlatformLayerService {
 		url += "/actions";
 
 		String json = new JSONObject(action).toString();
-		CorsRequest.post(project, url, json).execute(callback);
+		AuthenticatedCorsRequest.post(project, url, json).execute(callback);
 	}
 
 	@Override
 	public void getJob(OpsProject project, String jobId, String tree, int skipLogLines, AsyncCallback<Job> callback) {
 		String url = project.getProjectBaseUrl() + "jobs/" + jobId;
 
-		CorsRequest request = CorsRequest.get(project, url);
+		AuthenticatedCorsRequest request = AuthenticatedCorsRequest.get(project, url);
 
 		if (tree != null) {
 			request.add("tree", tree);
@@ -49,7 +52,7 @@ public class CorsPlatformLayerService implements PlatformLayerService {
 	@Override
 	public void getItem(OpsProject project, String key, AsyncCallback<UntypedItem> callback) {
 		String url = toItemUrl(project, key);
-		CorsRequest.get(project, url).execute(callback);
+		AuthenticatedCorsRequest.get(project, url).execute(callback);
 	}
 
 	private String toItemUrl(OpsProject project, String item) {

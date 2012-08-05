@@ -1,5 +1,7 @@
 package org.platformlayer.gwt.client.project;
 
+import javax.inject.Singleton;
+
 import org.platformlayer.gwt.client.view.AbstractApplicationPage;
 
 import com.google.gwt.core.client.GWT;
@@ -10,6 +12,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
 
+@Singleton
 public class ProjectViewImpl extends AbstractApplicationPage implements ProjectView {
 	interface ViewUiBinder extends UiBinder<HTMLPanel, ProjectViewImpl> {
 	}

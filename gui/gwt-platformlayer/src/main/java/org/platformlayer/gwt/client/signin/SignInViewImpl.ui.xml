@@ -1,14 +1,15 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-	xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:c="urn:import:com.google.gwt.user.cellview.client">
+	xmlns:g='urn:import:com.google.gwt.user.client.ui'
+	xmlns:c="urn:import:com.google.gwt.user.cellview.client"
+	xmlns:pl="urn:import:org.platformlayer.gwt.client.widgets">
 
 	<g:HTMLPanel>
 		<div class="row">
 			<div class="span4 offset4">
 				<form class="well form-vertical">
-					<h1>Sign In</h1>
+					<h1>Log	 In</h1>
 
-					<div ui:field="alert" class="alert alert-error">
-					</div>
+					<pl:AlertContainer ui:field="alerts" />
 
 					<fieldset>
 						<input type="text" class="input-xlarge" placeholder="Username"
@@ -20,9 +21,9 @@
 							<a href="#">Forgot password?</a>
 						</div>
 
-						<label class="checkbox">
-							<input type="checkbox" ui:field="rememberMe">Keep me signed in</input>
-						</label>
+						<div>
+						Not yet registered?  <a href="#" ui:field="signupAnchor">Sign up</a>
+						</div>
 
 						<button ui:field="signIn" type="submit" class="btn">Sign in</button>
 					</fieldset>

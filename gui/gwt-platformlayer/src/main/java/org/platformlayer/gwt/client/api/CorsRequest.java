@@ -1,13 +1,13 @@
-package org.platformlayer.gwt.client.api.platformlayer;
+package org.platformlayer.gwt.client.api;
 
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.platformlayer.gwt.client.api.login.Access;
-import org.platformlayer.gwt.client.api.login.Authentication;
-import org.platformlayer.gwt.client.api.login.Token;
+import org.platformlayer.gwt.client.HttpStatusCodeException;
 
-import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.http.client.Request;
@@ -16,70 +16,47 @@ import com.google.gwt.http.client.RequestBuilder.Method;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
+import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class CorsRequest {
 	static final Logger log = Logger.getLogger(CorsRequest.class.getName());
-
-	final OpsProject project;
 
 	final Method method;
 	String url;
 
 	final String postData;
 
-	private CorsRequest(OpsProject project, String url, Method method, String postData) {
+	protected final Map<String, String> headers = Maps.newHashMap();
+
+	protected CorsRequest(String url, Method method, String postData) {
 		super();
 		this.url = url;
-		this.project = project;
 		this.method = method;
 		this.postData = postData;
 	}
 
-	public static CorsRequest get(OpsProject project, String url) {
-		return new CorsRequest(project, url, RequestBuilder.GET, null);
+	public static CorsRequest get(String url) {
+		return new CorsRequest(url, RequestBuilder.GET, null);
 	}
 
-	public static CorsRequest post(OpsProject project, String url, String postData) {
-		return new CorsRequest(project, url, RequestBuilder.POST, postData);
+	public static CorsRequest post(String url, String postData) {
+		return new CorsRequest(url, RequestBuilder.POST, postData);
 	}
 
 	public <T extends JavaScriptObject> void execute(final AsyncCallback<T> callback) {
-		Authentication auth = project.getAuthentication();
-
-		auth.getAccess(new AsyncCallback<Access>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				callback.onFailure(caught);
-			}
-
-			@Override
-			public void onSuccess(Access access) {
-				String tokenId = null;
-				if (access != null) {
-					Token token = access.getToken();
-					if (token != null) {
-						tokenId = token.getId();
-					}
-				}
-
-				if (Strings.isNullOrEmpty(tokenId)) {
-					callback.onFailure(null);
-				} else {
-					execute(project, tokenId, callback);
-				}
-			}
-		});
+		makeCorsRequest(callback);
 	}
 
-	private <T extends JavaScriptObject> void execute(OpsProject project, String tokenId,
-			final AsyncCallback<T> callback) {
-		log.log(Level.INFO, "Making CORS request: GET " + url);
+	protected <T extends JavaScriptObject> void makeCorsRequest(final AsyncCallback<T> callback) {
+		log.log(Level.INFO, "Making CORS request: " + method + " " + url);
 
 		RequestBuilder builder = new RequestBuilder(method, url);
-		builder.setHeader("X-Auth-Token", tokenId);
 		builder.setHeader("Accept", "application/json");
+
+		for (Entry<String, String> entry : headers.entrySet()) {
+			builder.setHeader(entry.getKey(), entry.getValue());
+		}
 
 		if (postData != null) {
 			builder.setHeader("Content-Type", "application/json");
@@ -100,11 +77,9 @@ public class CorsRequest {
 					int statusCode = response.getStatusCode();
 					if (statusCode != 200) {
 						String statusText = response.getStatusText();
-
 						log.log(Level.FINE, "Unexpected status code: " + statusCode + " statusText=" + statusText);
 
-						// TODO: Pass status code
-						callback.onFailure(null);
+						callback.onFailure(new HttpStatusCodeException(statusCode, statusText));
 						return;
 					}
 
@@ -152,5 +127,14 @@ public class CorsRequest {
 
 	public void add(String key, int value) {
 		add(key, String.valueOf(value));
+	}
+
+	public static String toJson(JavaScriptObject postData) {
+		String json = new JSONObject(postData).toString();
+		return json;
+	}
+
+	public void addHeader(String key, String value) {
+		headers.put(key, value);
 	}
 }

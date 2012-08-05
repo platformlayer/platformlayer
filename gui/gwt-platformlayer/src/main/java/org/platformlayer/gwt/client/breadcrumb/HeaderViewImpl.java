@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.platformlayer.gwt.client.home.HomePlace;
 import org.platformlayer.gwt.client.places.ApplicationPlace;
+import org.platformlayer.gwt.client.widgets.Alert;
+import org.platformlayer.gwt.client.widgets.AlertContainer;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
@@ -30,6 +32,9 @@ public class HeaderViewImpl extends Composite implements HeaderView {
 
 	@UiField
 	FlowPanel breadcrumbPanel;
+
+	@UiField
+	AlertContainer alerts;
 
 	public HeaderViewImpl() {
 		initWidget(headerViewUiBinder.createAndBindUi(this));
@@ -76,5 +81,14 @@ public class HeaderViewImpl extends Composite implements HeaderView {
 	@UiHandler("homeButton")
 	public void homeButtonClicked(ClickEvent e) {
 		placeController.goTo(HomePlace.INSTANCE);
+	}
+
+	@Override
+	public void setFlash(Alert flash) {
+		alerts.clear();
+
+		if (flash != null) {
+			alerts.add(flash);
+		}
 	}
 }

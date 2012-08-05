@@ -60,6 +60,9 @@ public abstract class ApplicationAbstractActivity extends AbstractActivity {
 	public OpsProject getProject() {
 		ApplicationPlace place = getPlace();
 		OpsProject project = app.findProject(place);
+		if (project == null) {
+			project = app.getUserProject();
+		}
 		assert project != null;
 		return project;
 	}

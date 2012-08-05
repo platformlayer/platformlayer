@@ -1,6 +1,7 @@
 package org.platformlayer.gwt.client.projectlist;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.platformlayer.gwt.client.ApplicationState;
 import org.platformlayer.gwt.client.api.platformlayer.OpsProject;
@@ -13,6 +14,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.user.client.ui.HTMLPanel;
 
+@Singleton
 public class ProjectListViewImpl extends AbstractApplicationPage implements ProjectListView {
 	interface ViewUiBinder extends UiBinder<HTMLPanel, ProjectListViewImpl> {
 	}

@@ -8,7 +8,7 @@ import org.platformlayer.gwt.client.api.platformlayer.OpsProject;
 import org.platformlayer.gwt.client.api.platformlayer.PlatformLayerService;
 import org.platformlayer.gwt.client.api.platformlayer.UntypedItem;
 import org.platformlayer.gwt.client.api.platformlayer.UntypedItemCollection;
-import org.platformlayer.gwt.client.login.LoginPlace;
+import org.platformlayer.gwt.client.signin.SignInPlace;
 
 import com.google.gwt.place.shared.Place;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -34,10 +34,11 @@ public class HomeActivity extends ApplicationAbstractActivity {
 
 	@Override
 	public void start(AcceptsOneWidget panel, final EventBus eventBus) {
-		OpsProject project = app.findProject("platformlayer");
+		OpsProject project = app.getUserProject();
+
 		if (project == null) {
 			// TODO: Async redirect??
-			placeController.goTo(LoginPlace.INSTANCE);
+			placeController.goTo(SignInPlace.INSTANCE);
 			return;
 		}
 

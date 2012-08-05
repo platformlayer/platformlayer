@@ -1,18 +1,18 @@
-package org.platformlayer.gwt.client.login;
+package org.platformlayer.gwt.client.signup;
 
 import org.platformlayer.gwt.client.home.HomePlace;
 import org.platformlayer.gwt.client.places.ApplicationPlace;
 
-public class LoginPlace extends ApplicationPlace {
-	public LoginPlace() {
-		super(HomePlace.INSTANCE, "login");
+public class SignUpPlace extends ApplicationPlace {
+	public SignUpPlace() {
+		super(HomePlace.INSTANCE, "signup");
 	}
 
-	public static final LoginPlace INSTANCE = new LoginPlace();
+	public static final SignUpPlace INSTANCE = new SignUpPlace();
 
 	@Override
 	public String getLabel() {
-		return "Login";
+		return "Sign Up";
 	}
 
 	@Override

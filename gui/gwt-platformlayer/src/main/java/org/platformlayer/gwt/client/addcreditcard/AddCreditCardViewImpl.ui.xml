@@ -1,0 +1,90 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+	xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:c="urn:import:com.google.gwt.user.cellview.client"
+	xmlns:pl="urn:import:org.platformlayer.gwt.client.widgets">
+
+	<g:HTMLPanel>
+		<div class="row">
+			<div class="span4 offset4">
+				<form class="form-horizontal">
+					<h1>Add a credit card</h1>
+
+					<h2>Enter your card information:</h2>
+
+					<pl:AlertContainer ui:field="alerts" />
+
+					<fieldset>
+						<pl:ControlGroup ui:field="cardNumber">
+							<label class="control-label" for="cardNumber">Card number</label>
+							<div class="controls">
+								<input type="text" class="input-xlarge" id="cardNumber" />
+							</div>
+						</pl:ControlGroup>
+
+						<pl:ControlGroup ui:field="cardholderName">
+							<label class="control-label" for="cardholderName">Name on card</label>
+							<div class="controls">
+								<input type="text" class="input-xlarge" id="cardholderName" />
+							</div>
+						</pl:ControlGroup>
+
+						<pl:ControlGroup ui:field="cvv">
+							<label class="control-label" for="cvv">Security code (CVV)
+							</label>
+							<div class="controls">
+								<input type="text" class="input-xlarge" id="cvv" />
+								<p class="help-block">Your card's 3 or 4 digit security id</p>
+							</div>
+						</pl:ControlGroup>
+
+						<div class="control-group">
+							<label class="control-label" for="expirationMonth">Expiration date</label>
+							<div class="controls">
+								<pl:ToEditor ui:field="expirationMonth">
+									<select id="expirationMonth">
+										<option>01</option>
+										<option>02</option>
+										<option>03</option>
+										<option>04</option>
+										<option>05</option>
+										<option>06</option>
+										<option>07</option>
+										<option>08</option>
+										<option>09</option>
+										<option>10</option>
+										<option>11</option>
+										<option>12</option>
+									</select>
+								</pl:ToEditor>
+								<pl:ToEditor ui:field="expirationYear">
+									<select id="expirationYear">
+										<option>2012</option>
+										<option>2013</option>
+										<option>2014</option>
+										<option>2015</option>
+										<option>2016</option>
+										<option>2017</option>
+										<option>2018</option>
+										<option>2019</option>
+										<option>2020</option>
+										<option>2021</option>
+										<option>2022</option>
+										<option>2023</option>
+										<option>2024</option>
+										<option>2025</option>
+									</select>
+								</pl:ToEditor>
+							</div>
+						</div>
+
+						<div class="form-actions">
+							<button ui:field="submitButton" type="submit" class="btn btn-primary">Add
+								your card</button>
+							<button ui:field="cancelButton" class="btn">Cancel</button>
+						</div>
+					</fieldset>
+
+				</form>
+			</div>
+		</div>
+	</g:HTMLPanel>
+</ui:UiBinder>

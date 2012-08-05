@@ -30,6 +30,7 @@ public class HeaderActivity extends ApplicationAbstractActivity {
 
 		headerView.setBreadcrumbs(breadcrumbs);
 
+		headerView.setFlash(app.getFlash(true));
 		panel.setWidget(headerView.asWidget());
 	}
 

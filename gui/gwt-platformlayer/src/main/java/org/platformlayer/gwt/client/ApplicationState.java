@@ -10,6 +10,7 @@ import org.platformlayer.gwt.client.api.platformlayer.OpsProject;
 import org.platformlayer.gwt.client.places.ApplicationPlace;
 import org.platformlayer.gwt.client.project.ProjectPlace;
 import org.platformlayer.gwt.client.stores.JobStore;
+import org.platformlayer.gwt.client.widgets.Alert;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.place.shared.PlaceController;
@@ -38,19 +39,30 @@ public class ApplicationState {
 
 	private final ListDataProvider<OpsProject> projectsProvider = new ListDataProvider<OpsProject>();
 
+	private Alert flash;
+
+	private OpsProject userProject;
+
 	public Authentication getAuthentication() {
 		return authentication;
 	}
 
-	public void setAuthentication(Authentication authentication, List<String> projects) {
+	public void setAuthentication(String username, Authentication authentication, List<String> projects) {
 		this.authentication = authentication;
 
 		String platformlayerUrl = getPlatformLayerBaseUrl();
 
+		userProject = null;
 		List<OpsProject> projectList = getProjects();
 		projectList.clear();
 		for (String project : projects) {
-			projectList.add(new OpsProject(platformlayerUrl, project, authentication));
+			OpsProject opsProject = new OpsProject(platformlayerUrl, project, authentication);
+			projectList.add(opsProject);
+
+			// Every user should have a per-user project with this magic name
+			if (project.equals("user@@" + username.toLowerCase())) {
+				userProject = opsProject;
+			}
 		}
 	}
 
@@ -115,4 +127,25 @@ public class ApplicationState {
 	public static ApplicationState get() {
 		return INSTANCE;
 	}
+
+	public void flash(Alert flash) {
+		this.flash = flash;
+	}
+
+	public Alert getFlash(boolean clear) {
+		Alert ret = this.flash;
+		if (clear) {
+			this.flash = null;
+		}
+		return ret;
+	}
+
+	public OpsProject getUserProject() {
+		return userProject;
+	}
+
+	public void setUserProject(OpsProject userProject) {
+		this.userProject = userProject;
+	}
+
 }

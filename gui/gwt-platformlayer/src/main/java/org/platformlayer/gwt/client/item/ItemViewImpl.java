@@ -2,11 +2,14 @@ package org.platformlayer.gwt.client.item;
 
 import java.util.logging.Logger;
 
+import javax.inject.Singleton;
+
 import org.platformlayer.gwt.client.api.platformlayer.Job;
 import org.platformlayer.gwt.client.api.platformlayer.Tag;
 import org.platformlayer.gwt.client.api.platformlayer.UntypedItem;
 import org.platformlayer.gwt.client.job.JobPlace;
 import org.platformlayer.gwt.client.view.AbstractApplicationPage;
+import org.platformlayer.gwt.client.widgets.Alert;
 import org.platformlayer.gwt.client.widgets.AlertContainer;
 import org.platformlayer.gwt.client.widgets.Repeater;
 
@@ -22,6 +25,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HTMLPanel;
 
+@Singleton
 public class ItemViewImpl extends AbstractApplicationPage implements ItemView {
 	static final Logger log = Logger.getLogger(ItemViewImpl.class.getName());
 
@@ -108,7 +112,7 @@ public class ItemViewImpl extends AbstractApplicationPage implements ItemView {
 		if (job != null) {
 			// Success
 			JobPlace place = activity.getJobPlace(job);
-			alerts.addSuccess("Started job", place);
+			alerts.add(Alert.success("Started job", place));
 		} else {
 			// Failure
 			alerts.addError("Unable to start job", e);

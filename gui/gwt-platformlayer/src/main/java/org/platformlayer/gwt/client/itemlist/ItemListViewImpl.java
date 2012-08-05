@@ -1,6 +1,7 @@
 package org.platformlayer.gwt.client.itemlist;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.platformlayer.gwt.client.ApplicationState;
 import org.platformlayer.gwt.client.api.platformlayer.UntypedItem;
@@ -13,6 +14,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.user.client.ui.HTMLPanel;
 
+@Singleton
 public class ItemListViewImpl extends AbstractApplicationPage implements ItemListView {
 	interface ViewUiBinder extends UiBinder<HTMLPanel, ItemListViewImpl> {
 	}

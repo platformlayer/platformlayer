@@ -1,8 +1,8 @@
 package org.platformlayer.gwt.client.home;
 
-import org.platformlayer.gwt.client.login.LoginPlace;
 import org.platformlayer.gwt.client.places.ApplicationPlace;
 import org.platformlayer.gwt.client.projectlist.ProjectListPlace;
+import org.platformlayer.gwt.client.signin.SignInPlace;
 
 public class HomePlace extends ApplicationPlace {
 	public HomePlace() {
@@ -22,8 +22,8 @@ public class HomePlace extends ApplicationPlace {
 			return ProjectListPlace.INSTANCE;
 		}
 
-		if (pathToken.equals(LoginPlace.INSTANCE.getPathToken())) {
-			return LoginPlace.INSTANCE;
+		if (pathToken.equals(SignInPlace.INSTANCE.getPathToken())) {
+			return SignInPlace.INSTANCE;
 		}
 
 		return null;

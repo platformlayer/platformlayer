@@ -2,7 +2,7 @@ package org.platformlayer.gwt.client;
 
 import org.platformlayer.gwt.client.bootstrap.Bootstrap;
 import org.platformlayer.gwt.client.breadcrumb.HeaderActivityMapper;
-import org.platformlayer.gwt.client.login.LoginPlace;
+import org.platformlayer.gwt.client.home.HomePlace;
 
 import com.google.gwt.activity.shared.ActivityManager;
 import com.google.gwt.core.client.EntryPoint;
@@ -48,7 +48,7 @@ public class PlatformLayer implements EntryPoint {
 		rootPanel.add(headerWidget);
 		rootPanel.add(appWidget);
 
-		Place defaultPlace = LoginPlace.INSTANCE;
+		Place defaultPlace = HomePlace.INSTANCE;
 		historyHandler.register(injector.getPlaceController(), injector.getEventBus(), defaultPlace);
 		historyHandler.handleCurrentHistory();
 	}

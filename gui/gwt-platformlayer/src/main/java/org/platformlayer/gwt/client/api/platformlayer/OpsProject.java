@@ -2,6 +2,8 @@ package org.platformlayer.gwt.client.api.platformlayer;
 
 import org.platformlayer.gwt.client.api.login.Authentication;
 
+import com.google.gwt.core.client.GWT;
+
 public class OpsProject {
 	final String platformlayerUrl;
 	final String project;
@@ -32,4 +34,18 @@ public class OpsProject {
 		return project;
 	}
 
+	public String getBillingBaseUrl() {
+		String billingUrl;
+
+		if (GWT.isProdMode()) {
+			// TODO: Derive from current path?
+			billingUrl = "https://billing.platformlayer.net/api/";
+		} else {
+			billingUrl = "http://dev.platformlayer.net:8085/api/";
+		}
+		assert billingUrl.endsWith("/");
+
+		String baseUrl = billingUrl + project + "/";
+		return baseUrl;
+	}
 }

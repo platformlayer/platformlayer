@@ -9,6 +9,6 @@ public class AuthenticateResponse extends JavaScriptObject {
 	public final native Access getAccess()
 	/*-{ return this.access; }-*/;
 
-	public final native int getStatusCode()
-	/*-{ return  this.statusCode || 0; }-*/;
+	// public final native int getStatusCode()
+	// /*-{ return this.statusCode || 0; }-*/;
 }

@@ -8,6 +8,8 @@
 				<div class="hero-unit">
 					<h1>Home Sweet Home</h1>
 				</div>
+				
+				<a href="#" ui:field="myAccountButton">My account</a>
 			</div>
 		</div>
 	</g:HTMLPanel>

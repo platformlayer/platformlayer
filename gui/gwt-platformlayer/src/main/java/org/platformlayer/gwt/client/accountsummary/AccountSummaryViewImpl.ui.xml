@@ -1,0 +1,21 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+	xmlns:g='urn:import:com.google.gwt.user.client.ui' 
+	xmlns:c="urn:import:com.google.gwt.user.cellview.client"
+	xmlns:pl="urn:import:org.platformlayer.gwt.client.widgets">
+
+	<g:HTMLPanel>
+		<div class="row">
+			<div class="span4 offset4">
+				<form class="form-horizontal">
+					<h1>Your account</h1>
+
+    		        <pl:AlertContainer ui:field="alerts" />
+
+					<p>Your balance: <g:Label ui:field="balanceLabel" /></p>
+
+					<button ui:field="addCardButton" class="btn btn-primary">Add your credit card</button>
+				</form>
+			</div>
+		</div>
+	</g:HTMLPanel>
+</ui:UiBinder>

@@ -18,7 +18,7 @@ public class ApplicationPlaceHistoryMapper implements PlaceHistoryMapper {
 	public static class Factory implements Provider<ApplicationPlaceHistoryMapper> {
 		@Override
 		public ApplicationPlaceHistoryMapper get() {
-			HomePlace root = new HomePlace();
+			HomePlace root = HomePlace.INSTANCE;
 			ApplicationPlaceHistoryMapper historyMapper = new ApplicationPlaceHistoryMapper(root);
 			return historyMapper;
 		}

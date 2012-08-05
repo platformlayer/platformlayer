@@ -5,7 +5,7 @@ import java.util.logging.Logger;
 import org.platformlayer.gwt.client.ApplicationAbstractActivity;
 import org.platformlayer.gwt.client.api.platformlayer.OpsProject;
 import org.platformlayer.gwt.client.api.platformlayer.PlatformLayerService;
-import org.platformlayer.gwt.client.login.LoginPlace;
+import org.platformlayer.gwt.client.signin.SignInPlace;
 
 import com.google.gwt.place.shared.Place;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
@@ -33,7 +33,7 @@ public class ProjectListActivity extends ApplicationAbstractActivity {
 		OpsProject project = app.findProject("production");
 		if (project == null) {
 			// TODO: Async redirect??
-			placeController.goTo(LoginPlace.INSTANCE);
+			placeController.goTo(SignInPlace.INSTANCE);
 			return;
 		}
 
