@@ -4,9 +4,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 
+import org.platformlayer.jdbc.EnumWithKey;
 import org.platformlayer.jdbc.simplejpa.DatabaseNameMapping;
 import org.platformlayer.jdbc.simplejpa.FieldMap;
 
@@ -54,7 +56,22 @@ class QueryDescriptor {
 				int i = 0;
 				for (Field field : parameterMap) {
 					Object param = field.get(args[0]);
-					ps.setObject(i + 1, param);
+
+					if (param instanceof EnumWithKey) {
+						String key = ((EnumWithKey) param).getKey();
+						ps.setString(i + 1, key);
+					} else if (param instanceof java.util.Date) {
+						java.util.Date date = (java.util.Date) param;
+						Timestamp timestamp = new Timestamp(date.getTime());
+
+						ps.setTimestamp(i + 1, timestamp);
+						// if (!(param instanceof java.sql.Date)) {
+						// ps.setDate(i + 1, (java.util.Date) param);
+						// }
+					} else {
+						ps.setObject(i + 1, param);
+					}
+
 					i++;
 				}
 			} catch (IllegalAccessException e) {

@@ -1,8 +1,6 @@
-package org.platformlayer.guice;
+package org.platformlayer.inject;
 
 import javax.inject.Singleton;
-
-import org.platformlayer.inject.ObjectInjector;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;

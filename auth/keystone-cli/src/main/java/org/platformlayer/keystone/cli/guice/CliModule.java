@@ -1,5 +1,6 @@
 package org.platformlayer.keystone.cli.guice;
 
+import java.io.File;
 import java.util.Properties;
 
 import org.platformlayer.auth.KeystoneJdbcModule;
@@ -19,7 +20,7 @@ public class CliModule extends AbstractModule {
 	@Override
 	protected void configure() {
 		Properties properties = options.getConfigurationProperties();
-		Configuration configuration = Configuration.from(properties);
+		Configuration configuration = Configuration.from(new File("."), properties);
 
 		// Names.bindProperties(binder(), config);
 

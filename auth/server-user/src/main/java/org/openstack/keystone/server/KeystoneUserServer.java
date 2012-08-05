@@ -16,6 +16,7 @@ import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.openstack.crypto.CertificateAndKey;
 import org.openstack.crypto.KeyStoreUtils;
+import org.openstack.keystone.resources.user.RegisterResource;
 import org.openstack.keystone.resources.user.TokensResource;
 import org.platformlayer.WellKnownPorts;
 import org.platformlayer.auth.server.AcceptAllClientCertificatesTrustManager;
@@ -23,6 +24,7 @@ import org.platformlayer.auth.server.CustomTrustManagerSslContextFactory;
 import org.platformlayer.auth.server.GuiceAuthenticationConfig;
 import org.platformlayer.auth.server.GuiceServletConfig;
 import org.platformlayer.crypto.EncryptionStore;
+import org.platformlayer.web.CORSFilter;
 
 import com.google.common.collect.Maps;
 import com.google.inject.Guice;
@@ -45,7 +47,11 @@ public class KeystoneUserServer {
 		Injector injector = Guice.createInjector(new GuiceAuthenticationConfig(), new JerseyServletModule() {
 			@Override
 			protected void configureServlets() {
+				bind(CORSFilter.class).asEagerSingleton();
+				filter("/*").through(CORSFilter.class);
+
 				bind(TokensResource.class);
+				bind(RegisterResource.class);
 
 				Map<String, String> params = Maps.newHashMap();
 				params.put(PackagesResourceConfig.PROPERTY_PACKAGES, "org.codehaus.jackson.jaxrs");

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
 import org.openstack.utils.PropertyUtils;
 import org.platformlayer.ops.OpsException;
 
@@ -11,9 +12,13 @@ import com.google.inject.Binder;
 import com.google.inject.name.Names;
 
 public class Configuration {
+	private static final Logger log = Logger.getLogger(Configuration.class);
+
+	final File basePath;
 	final Properties properties;
 
-	public Configuration(Properties properties) {
+	public Configuration(File basePath, Properties properties) {
+		this.basePath = basePath;
 		this.properties = properties;
 
 		// properties = loadProperties(applicationProperties);
@@ -44,10 +49,15 @@ public class Configuration {
 	}
 
 	public String get(String key) throws OpsException {
-		String value = lookup(key, null);
+		String value = find(key);
 		if (value == null) {
 			throw new OpsException("Required value not found: " + key);
 		}
+		return value;
+	}
+
+	public String find(String key) {
+		String value = lookup(key, null);
 		return value;
 	}
 
@@ -58,23 +68,47 @@ public class Configuration {
 	public static Configuration load() {
 		String configFilePath = System.getProperty("conf");
 		if (configFilePath == null) {
+			configFilePath = System.getenv("CONFIGURATION_FILE");
+		}
+
+		if (configFilePath == null) {
 			configFilePath = new File(new File("."), "configuration.properties").getAbsolutePath();
 		}
 
 		File configFile = new File(configFilePath);
 
-		Properties applicationProperties;
-		try {
-			applicationProperties = PropertyUtils.loadProperties(configFile);
-		} catch (IOException e) {
-			throw new IllegalStateException("Error loading configuration file: " + configFile, e);
+		Properties systemProperties = new Properties();
+		systemProperties.putAll(System.getenv());
+
+		Properties properties = new Properties(systemProperties);
+		if (configFile.exists()) {
+			try {
+				PropertyUtils.loadProperties(properties, configFile);
+			} catch (IOException e) {
+				throw new IllegalStateException("Error loading configuration file: " + configFile, e);
+			}
+		} else {
+			log.info("Configuration file not found; using environment variables");
 		}
 
-		return new Configuration(applicationProperties);
+		return new Configuration(configFile.getParentFile(), properties);
 	}
 
-	public static Configuration from(Properties properties) {
-		return new Configuration(properties);
+	public static Configuration from(File basePath, Properties properties) {
+		return new Configuration(basePath, properties);
+	}
+
+	public File lookupFile(String key, String defaultPath) {
+		String value = lookup(key, defaultPath);
+		if (value.startsWith("/")) {
+			return new File(value);
+		} else {
+			return new File(getBasePath(), value);
+		}
+	}
+
+	private File getBasePath() {
+		return basePath;
 	}
 
 }

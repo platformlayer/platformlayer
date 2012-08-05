@@ -67,8 +67,8 @@ public class GuiceDataSourceProvider implements Provider<DataSource> {
 
 	}
 
-	public static GuiceDataSourceProvider fromEnvironment(String key) {
-		String value = System.getenv(key);
+	public static GuiceDataSourceProvider fromKey(Configuration configuration, String key) {
+		String value = configuration.find(key);
 		if (value == null) {
 			throw new IllegalStateException("Must define environment variable: " + key);
 		}

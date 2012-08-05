@@ -1,7 +1,8 @@
-package org.platformlayer.xaas.web;
+package org.platformlayer.web;
 
 import java.io.IOException;
 
+import javax.inject.Singleton;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
  * Very simple CORS filter
  * 
  */
+@Singleton
 public class CORSFilter implements Filter {
 
 	// TODO: Should we use this instead? http://software.dzhuvinov.com/cors-filter-installation.html

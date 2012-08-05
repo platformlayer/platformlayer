@@ -8,6 +8,7 @@ import java.security.KeyStore;
 import org.apache.log4j.Logger;
 import org.openstack.crypto.CertificateAndKey;
 import org.openstack.crypto.KeyStoreUtils;
+import org.platformlayer.config.Configuration;
 import org.platformlayer.ops.OpsException;
 
 public class KeyStoreEncryptionStore implements EncryptionStore {
@@ -43,7 +44,7 @@ public class KeyStoreEncryptionStore implements EncryptionStore {
 		return certificateAndKey;
 	}
 
-	public static KeyStoreEncryptionStore build(File keystoreFile, String keystoreSecret) {
+	private static KeyStoreEncryptionStore build(File keystoreFile, String keystoreSecret) {
 		if (!keystoreFile.exists()) {
 			throw new IllegalStateException("Keystore not found: " + keystoreFile.getAbsolutePath());
 		}
@@ -58,5 +59,12 @@ public class KeyStoreEncryptionStore implements EncryptionStore {
 		}
 
 		return new KeyStoreEncryptionStore(keyStore);
+	}
+
+	public static EncryptionStore build(Configuration configuration) {
+		File keystoreFile = configuration.lookupFile("keystore", "keystore.jks");
+		String secret = configuration.lookup("keystore.password", KeyStoreUtils.DEFAULT_KEYSTORE_SECRET);
+
+		return build(keystoreFile, secret);
 	}
 }

@@ -4,10 +4,8 @@ import java.util.Map;
 
 import org.platformlayer.Scope;
 import org.platformlayer.ScopeFilter;
-import org.platformlayer.auth.AuthenticationTokenValidator;
-import org.platformlayer.auth.client.PlatformLayerTokenValidator;
 import org.platformlayer.model.ProjectAuthorization;
-import org.platformlayer.xaas.web.CORSFilter;
+import org.platformlayer.web.CORSFilter;
 import org.platformlayer.xaas.web.resources.RootResource;
 
 import com.google.common.collect.Maps;
@@ -38,7 +36,7 @@ public class PlatformLayerServletModule extends JerseyServletModule {
 		// if (ApplicationMode.isDevelopment()) {
 		// bind(AuthenticationTokenValidator.class).to(DevelopmentTokenValidator.class);
 		// } else {
-		bind(AuthenticationTokenValidator.class).to(PlatformLayerTokenValidator.class);
+		// bind(AuthenticationTokenValidator.class).to(PlatformLayerTokenValidator.class);
 		// }
 
 		bind(OpsAuthenticationFilter.class).asEagerSingleton();

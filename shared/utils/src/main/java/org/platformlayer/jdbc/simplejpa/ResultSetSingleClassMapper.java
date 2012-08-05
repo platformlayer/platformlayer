@@ -6,6 +6,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.persistence.IdClass;
 
@@ -15,7 +16,7 @@ import com.google.common.collect.Maps;
 public class ResultSetSingleClassMapper {
 	final Class<?> targetClass;
 	final String tableName;
-	Map<Integer, Field> columnToFieldMap;
+	Map<Integer, MappedColumn> columnToFieldMap;
 	KeyMapper keyMapper;
 	final DatabaseNameMapping nameMapping;
 	final FieldMap fieldMap;
@@ -66,18 +67,18 @@ public class ResultSetSingleClassMapper {
 	}
 
 	private Integer findColumn(ResultSet rs, Field field) throws SQLException {
-		Map<Integer, Field> columnToFieldMap = getColumnToFieldMap(rs);
-		for (Map.Entry<Integer, Field> entry : columnToFieldMap.entrySet()) {
-			if (entry.getValue().equals(field)) {
+		Map<Integer, MappedColumn> columnToFieldMap = getColumnToFieldMap(rs);
+		for (Entry<Integer, MappedColumn> entry : columnToFieldMap.entrySet()) {
+			if (entry.getValue().isField(field)) {
 				return entry.getKey();
 			}
 		}
 		return null;
 	}
 
-	Map<Integer, Field> getColumnToFieldMap(ResultSet rs) throws SQLException {
+	Map<Integer, MappedColumn> getColumnToFieldMap(ResultSet rs) throws SQLException {
 		if (columnToFieldMap == null) {
-			Map<Integer, Field> columnToFieldMap = Maps.newHashMap();
+			Map<Integer, MappedColumn> columnToFieldMap = Maps.newHashMap();
 			ResultSetMetaData rsmd = rs.getMetaData();
 			int columnCount = rsmd.getColumnCount();
 			for (int i = 0; i < columnCount; i++) {
@@ -90,23 +91,24 @@ public class ResultSetSingleClassMapper {
 				if (field == null) {
 					continue;
 				}
-				columnToFieldMap.put(i + 1, field);
+				MappedColumn mappedColumn = buildMappedColumn(field);
+				columnToFieldMap.put(i + 1, mappedColumn);
 			}
 			this.columnToFieldMap = columnToFieldMap;
 		}
 		return this.columnToFieldMap;
 	}
 
+	private MappedColumn buildMappedColumn(Field field) {
+		return new MappedColumn(field);
+	}
+
 	void mapRowToObject(ResultSet rs, Object target) throws SQLException {
-		Map<Integer, Field> columnToFieldMap = getColumnToFieldMap(rs);
-		for (Map.Entry<Integer, Field> entry : columnToFieldMap.entrySet()) {
+		Map<Integer, MappedColumn> columnToFieldMap = getColumnToFieldMap(rs);
+		for (Map.Entry<Integer, MappedColumn> entry : columnToFieldMap.entrySet()) {
 			Object value = rs.getObject(entry.getKey());
-			Field field = entry.getValue();
-			try {
-				field.set(target, value);
-			} catch (IllegalAccessException e) {
-				throw new IllegalStateException("Error mapping field: " + field.getName(), e);
-			}
+			MappedColumn mappedColumn = entry.getValue();
+			mappedColumn.setField(target, value);
 		}
 	}
 

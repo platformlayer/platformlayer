@@ -2,8 +2,11 @@ package org.platformlayer;
 
 import java.util.EnumSet;
 import java.util.Enumeration;
+import java.util.List;
 
 import org.apache.log4j.Logger;
+
+import com.google.common.collect.Lists;
 
 public class EnumUtils {
 	static final Logger log = Logger.getLogger(EnumUtils.class);
@@ -19,6 +22,15 @@ public class EnumUtils {
 		}
 
 		return retval;
+	}
+
+	public static <T extends Enum<T>> List<T> getAllEnumValues(Class<T> enumType) {
+		List<T> enumValues = Lists.newArrayList();
+
+		for (T enumValue : EnumSet.allOf(enumType)) {
+			enumValues.add(enumValue);
+		}
+		return enumValues;
 	}
 
 	public static <T extends Enum<T>> T valueOfCaseInsensitive(Class<T> enumType, String name) {

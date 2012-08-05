@@ -24,7 +24,7 @@ public class RegisterResource extends UserResourceBase {
 	@POST
 	@Produces({ APPLICATION_JSON, APPLICATION_XML })
 	@Consumes({ APPLICATION_JSON, APPLICATION_XML })
-	public RegistrationResponse authenticatePOST(RegistrationRequest request) {
+	public RegistrationResponse doRegister(RegistrationRequest request) {
 		RegistrationResponse response = register(request);
 
 		return response;

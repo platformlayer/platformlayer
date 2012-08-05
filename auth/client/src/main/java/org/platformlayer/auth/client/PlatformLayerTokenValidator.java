@@ -4,6 +4,7 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.TrustManager;
 
+import org.openstack.crypto.CertificateAndKey;
 import org.platformlayer.WellKnownPorts;
 import org.platformlayer.auth.AuthenticationTokenValidator;
 import org.platformlayer.auth.PlatformlayerProjectAuthorization;
@@ -12,12 +13,20 @@ import org.platformlayer.auth.v1.ProjectValidation;
 import org.platformlayer.auth.v1.UserValidation;
 import org.platformlayer.auth.v1.ValidateAccess;
 import org.platformlayer.auth.v1.ValidateTokenResponse;
+import org.platformlayer.config.Configuration;
+import org.platformlayer.crypto.AcceptAllHostnameVerifier;
+import org.platformlayer.crypto.EncryptionStore;
+import org.platformlayer.crypto.PublicKeyTrustManager;
+import org.platformlayer.crypto.SimpleClientCertificateKeyManager;
 import org.platformlayer.model.AuthenticationToken;
 import org.platformlayer.model.ProjectAuthorization;
+import org.platformlayer.ops.OpsException;
 import org.platformlayer.rest.RestClientException;
 import org.platformlayer.rest.RestfulClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Splitter;
 
 public class PlatformLayerTokenValidator extends RestfulClient implements AuthenticationTokenValidator {
 	static final Logger log = LoggerFactory.getLogger(PlatformLayerTokenValidator.class);
@@ -25,9 +34,38 @@ public class PlatformLayerTokenValidator extends RestfulClient implements Authen
 	public static final String DEFAULT_AUTHENTICATION_URL = "https://127.0.0.1:"
 			+ WellKnownPorts.PORT_PLATFORMLAYER_AUTH_ADMIN + "/";
 
-	public PlatformLayerTokenValidator(String baseUrl, KeyManager keyManager, TrustManager trustManager,
+	private PlatformLayerTokenValidator(String baseUrl, KeyManager keyManager, TrustManager trustManager,
 			HostnameVerifier hostnameVerifier) {
 		super(baseUrl, keyManager, trustManager, hostnameVerifier);
+	}
+
+	public static PlatformLayerTokenValidator build(Configuration configuration, EncryptionStore encryptionStore)
+			throws OpsException {
+		String keystoneServiceUrl = configuration.lookup("auth.system.url", "https://127.0.0.1:"
+				+ WellKnownPorts.PORT_PLATFORMLAYER_AUTH_ADMIN + "/");
+
+		String cert = configuration.get("auth.system.ssl.cert");
+		// String secret = configuration.lookup("multitenant.cert.password", KeyStoreUtils.DEFAULT_KEYSTORE_SECRET);
+
+		CertificateAndKey certificateAndKey = encryptionStore.getCertificateAndKey(cert);
+
+		HostnameVerifier hostnameVerifier = null;
+
+		KeyManager keyManager = new SimpleClientCertificateKeyManager(certificateAndKey);
+
+		TrustManager trustManager = null;
+
+		String trustKeys = configuration.lookup("auth.system.ssl.keys", null);
+
+		if (trustKeys != null) {
+			trustManager = new PublicKeyTrustManager(Splitter.on(',').trimResults().split(trustKeys));
+
+			hostnameVerifier = new AcceptAllHostnameVerifier();
+		}
+
+		PlatformLayerTokenValidator keystoneTokenValidator = new PlatformLayerTokenValidator(keystoneServiceUrl,
+				keyManager, trustManager, hostnameVerifier);
+		return keystoneTokenValidator;
 	}
 
 	@Override

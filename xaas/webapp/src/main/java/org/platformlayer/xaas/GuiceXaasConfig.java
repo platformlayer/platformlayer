@@ -1,6 +1,5 @@
 package org.platformlayer.xaas;
 
-import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -9,11 +8,10 @@ import javax.net.ssl.KeyManager;
 import javax.net.ssl.TrustManager;
 import javax.sql.DataSource;
 
-import org.openstack.crypto.CertificateAndKey;
-import org.openstack.crypto.KeyStoreUtils;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.WellKnownPorts;
 import org.platformlayer.auth.AuthenticationService;
+import org.platformlayer.auth.AuthenticationTokenValidator;
 import org.platformlayer.auth.client.PlatformLayerTokenValidator;
 import org.platformlayer.auth.client.PlatformlayerAuthenticationClient;
 import org.platformlayer.auth.client.PlatformlayerAuthenticationService;
@@ -22,14 +20,13 @@ import org.platformlayer.crypto.AcceptAllHostnameVerifier;
 import org.platformlayer.crypto.EncryptionStore;
 import org.platformlayer.crypto.KeyStoreEncryptionStore;
 import org.platformlayer.crypto.PublicKeyTrustManager;
-import org.platformlayer.crypto.SimpleClientCertificateKeyManager;
 import org.platformlayer.guice.GuiceDataSourceProvider;
-import org.platformlayer.guice.GuiceObjectInjector;
 import org.platformlayer.guice.xaas.ItemEntity;
 import org.platformlayer.guice.xaas.JdbcJobRepository;
 import org.platformlayer.guice.xaas.JdbcManagedItemRepository;
 import org.platformlayer.guice.xaas.JdbcServiceAuthorizationRepository;
 import org.platformlayer.guice.xaas.TagEntity;
+import org.platformlayer.inject.GuiceObjectInjector;
 import org.platformlayer.inject.ObjectInjector;
 import org.platformlayer.jdbc.simplejpa.ResultSetMappers;
 import org.platformlayer.jdbc.simplejpa.ResultSetMappersProvider;
@@ -70,7 +67,8 @@ public class GuiceXaasConfig extends AbstractModule {
 
 			configuration.bindProperties(binder());
 
-			EncryptionStore encryptionStore = bindEncryptionStore(configuration);
+			EncryptionStore encryptionStore = KeyStoreEncryptionStore.build(configuration);
+			bind(EncryptionStore.class).toInstance(encryptionStore);
 
 			bind(ISshContext.class).to(MinaSshContext.class);
 
@@ -89,7 +87,9 @@ public class GuiceXaasConfig extends AbstractModule {
 			discovery.scan();
 			bind(AnnotationDiscovery.class).toInstance(discovery);
 
-			bindAuthTokenValidator(encryptionStore, configuration);
+			PlatformLayerTokenValidator tokenValidator = PlatformLayerTokenValidator.build(configuration,
+					encryptionStore);
+			bind(AuthenticationTokenValidator.class).toInstance(tokenValidator);
 
 			boolean isMultitenant = !Strings.isNullOrEmpty(configuration.lookup("multitenant.keys", null));
 			if (true) { // isMultitenant) {
@@ -122,36 +122,6 @@ public class GuiceXaasConfig extends AbstractModule {
 		}
 	}
 
-	private void bindAuthTokenValidator(EncryptionStore encryptionStore, Configuration configuration)
-			throws OpsException {
-		String keystoneServiceUrl = configuration.lookup("auth.system.url", "https://127.0.0.1:"
-				+ WellKnownPorts.PORT_PLATFORMLAYER_AUTH_ADMIN + "/");
-
-		String cert = configuration.get("auth.system.ssl.cert");
-		// String secret = configuration.lookup("multitenant.cert.password", KeyStoreUtils.DEFAULT_KEYSTORE_SECRET);
-
-		CertificateAndKey certificateAndKey = encryptionStore.getCertificateAndKey(cert);
-
-		HostnameVerifier hostnameVerifier = null;
-
-		KeyManager keyManager = new SimpleClientCertificateKeyManager(certificateAndKey);
-
-		TrustManager trustManager = null;
-
-		String trustKeys = configuration.lookup("auth.system.ssl.keys", null);
-
-		if (trustKeys != null) {
-			trustManager = new PublicKeyTrustManager(Splitter.on(',').trimResults().split(trustKeys));
-
-			hostnameVerifier = new AcceptAllHostnameVerifier();
-		}
-
-		PlatformLayerTokenValidator keystoneTokenValidator = new PlatformLayerTokenValidator(keystoneServiceUrl,
-				keyManager, trustManager, hostnameVerifier);
-
-		bind(PlatformLayerTokenValidator.class).toInstance(keystoneTokenValidator);
-	}
-
 	private void bindUserAuth(EncryptionStore encryptionStore, Configuration configuration) throws OpsException {
 		String keystoneUserUrl = configuration.lookup("auth.user.url", "https://127.0.0.1:"
 				+ WellKnownPorts.PORT_PLATFORMLAYER_AUTH_USER + "/v2.0/");
@@ -174,18 +144,6 @@ public class GuiceXaasConfig extends AbstractModule {
 				keyManager, trustManager, hostnameVerifier);
 
 		bind(PlatformlayerAuthenticationClient.class).toInstance(authClient);
-	}
-
-	private EncryptionStore bindEncryptionStore(Configuration configuration) {
-		String keystorePath = configuration.lookup("keystore", "keystore.jks");
-		String secret = configuration.lookup("keystore.password", KeyStoreUtils.DEFAULT_KEYSTORE_SECRET);
-
-		File keystoreFile = new File(keystorePath);
-
-		EncryptionStore encryptionStore = KeyStoreEncryptionStore.build(keystoreFile, secret);
-		bind(EncryptionStore.class).toInstance(encryptionStore);
-
-		return encryptionStore;
 	}
 
 }

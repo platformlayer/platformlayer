@@ -194,7 +194,9 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 
 			db.insertUser(userName, hashedPassword, secretData, publicKeyData, privateKeyData);
 
-			return findUser(userName);
+			UserEntity user = findUser(userName);
+			user.unlockWithPassword(password);
+			return user;
 		} catch (SQLException e) {
 			throw new RepositoryException("Error creating user", e);
 		} finally {
