@@ -1,27 +1,27 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-<parent>
-		<groupId>org.platformlayer</groupId>
-		<artifactId>platformlayer-parent</artifactId>
-		<version>1.0-SNAPSHOT</version>
-	</parent>
+    <parent>
+        <groupId>org.platformlayer</groupId>
+        <artifactId>platformlayer-parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
 
-	<artifactId>platformlayer-shared-parent</artifactId>
-	<name>PlatformLayer :: Shared :: Parent</name>
-<packaging>pom</packaging>
-	
+    <artifactId>platformlayer-shared-parent</artifactId>
+    <name>PlatformLayer :: Shared :: Parent</name>
+    <packaging>pom</packaging>
 
-	<modules>
-		<module>core-model</module>
-		<module>codegen-annotations</module>
-		<module>utils</module>
-		<module>service-base</module>
-		<module>platformlayer-auth</module>
-		<module>platformlayer-maven-utils</module>
-		<module>model-shared</module>
-	</modules>
+
+    <modules>
+        <module>core-model</module>
+        <module>codegen-annotations</module>
+        <module>utils</module>
+        <module>service-base</module>
+        <module>platformlayer-auth</module>
+        <module>platformlayer-maven-utils</module>
+        <module>model-shared</module>
+    </modules>
 
 </project>
 
