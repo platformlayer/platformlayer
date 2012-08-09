@@ -21,8 +21,8 @@ import org.platformlayer.WellKnownPorts;
 import org.platformlayer.auth.server.AcceptAllClientCertificatesTrustManager;
 import org.platformlayer.auth.server.CustomTrustManagerSslContextFactory;
 import org.platformlayer.auth.server.GuiceAuthenticationConfig;
-import org.platformlayer.auth.server.GuiceServletConfig;
 import org.platformlayer.crypto.EncryptionStore;
+import org.platformlayer.web.GuiceServletConfig;
 
 import com.google.common.collect.Maps;
 import com.google.inject.Guice;

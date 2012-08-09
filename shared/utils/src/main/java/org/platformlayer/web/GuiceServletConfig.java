@@ -1,15 +1,13 @@
-package org.platformlayer.xaas;
+package org.platformlayer.web;
+
+import javax.inject.Inject;
 
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceServletContextListener;
 
 public class GuiceServletConfig extends GuiceServletContextListener {
-	final Injector injector;
-
-	public GuiceServletConfig(Injector injector) {
-		super();
-		this.injector = injector;
-	}
+	@Inject
+	Injector injector;
 
 	@Override
 	protected Injector getInjector() {

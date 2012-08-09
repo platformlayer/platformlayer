@@ -26,7 +26,7 @@ import org.platformlayer.crypto.EncryptionStore;
 import org.platformlayer.guice.JdbcGuiceModule;
 import org.platformlayer.ops.log.PerJobAppender;
 import org.platformlayer.ops.schedule.Scheduler;
-import org.platformlayer.xaas.GuiceServletConfig;
+import org.platformlayer.web.GuiceServletConfig;
 import org.platformlayer.xaas.GuiceXaasConfig;
 import org.platformlayer.xaas.PlatformLayerServletModule;
 
@@ -45,13 +45,13 @@ class StandaloneXaasWebserver {
 	private Server server;
 
 	@Inject
+	GuiceServletConfig guiceServletConfig;
+
+	@Inject
 	EncryptionStore encryptionStore;
 
 	@Inject
 	Scheduler scheduler;
-
-	@Inject
-	Injector injector;
 
 	final Map<String, File> wars = Maps.newHashMap();
 
@@ -115,7 +115,7 @@ class StandaloneXaasWebserver {
 		{
 			ServletContextHandler context = new ServletContextHandler(contexts, "/api");
 			// context.setContextPath("/");
-			context.addEventListener(new GuiceServletConfig(injector));
+			context.addEventListener(guiceServletConfig);
 
 			// Must add DefaultServlet for embedded Jetty
 			// Failing to do this will cause 404 errors.

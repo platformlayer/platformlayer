@@ -97,6 +97,11 @@
             <artifactId>bonecp</artifactId>
             <version>0.7.1.RELEASE</version>
         </dependency>
+        <dependency>
+        	<groupId>com.google.inject.extensions</groupId>
+        	<artifactId>guice-servlet</artifactId>
+        	<scope>provided</scope>
+        </dependency>
     </dependencies>
 
 </project>
