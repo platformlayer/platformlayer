@@ -8,8 +8,6 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <version>1.0-SNAPSHOT</version>
-    <groupId>org.platformlayer</groupId>
     <artifactId>keystone-parent</artifactId>
     <name>PlatformLayer :: Auth :: Parent</name>
     <packaging>pom</packaging>
