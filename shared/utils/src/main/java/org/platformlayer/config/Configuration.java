@@ -44,6 +44,11 @@ public class Configuration {
 		return properties.getProperty(key, defaultValue);
 	}
 
+	public int lookup(String key, int defaultValue) {
+		String s = properties.getProperty(key, "" + defaultValue);
+		return Integer.parseInt(s);
+	}
+
 	public void bindProperties(Binder binder) {
 		Names.bindProperties(binder, properties);
 	}

@@ -19,6 +19,12 @@
         </dependency>
 
         <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.platformlayer</groupId>
             <artifactId>openstack-commons</artifactId>
         </dependency>
@@ -65,11 +71,6 @@
         </dependency>
 
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
         </dependency>
@@ -83,10 +84,7 @@
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
         </dependency>
-        <dependency>
-            <groupId>commons-dbcp</groupId>
-            <artifactId>commons-dbcp</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>postgresql</groupId>
             <artifactId>postgresql</artifactId>
@@ -98,9 +96,9 @@
             <version>0.7.1.RELEASE</version>
         </dependency>
         <dependency>
-        	<groupId>com.google.inject.extensions</groupId>
-        	<artifactId>guice-servlet</artifactId>
-        	<scope>provided</scope>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-servlet</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

@@ -6,9 +6,9 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.net.ssl.TrustManager;
+import javax.servlet.DispatcherType;
 
 import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.DispatcherType;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
 import org.eclipse.jetty.servlet.DefaultServlet;
