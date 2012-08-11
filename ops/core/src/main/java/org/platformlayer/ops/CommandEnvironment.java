@@ -36,4 +36,10 @@ public class CommandEnvironment {
 	public Map<String, String> asMap() {
 		return Collections.unmodifiableMap(vars);
 	}
+
+	public static CommandEnvironment build(Map<String, String> env) {
+		CommandEnvironment commandEnvironment = new CommandEnvironment();
+		commandEnvironment.vars.putAll(env);
+		return commandEnvironment;
+	}
 }

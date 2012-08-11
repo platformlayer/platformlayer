@@ -318,6 +318,17 @@ public class Command {
 		return sb.toString();
 	}
 
+	public List<String> buildArgv() {
+		List<String> ret = Lists.newArrayList();
+
+		for (int i = 0; i < args.size(); i++) {
+			Argument arg = args.get(i);
+			ret.add(arg.command);
+		}
+
+		return ret;
+	}
+
 	public Command prefix(Object... prefixArgs) {
 		List<Argument> newArgs = Lists.newArrayList();
 		for (Object prefixArg : prefixArgs) {
