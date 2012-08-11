@@ -35,6 +35,13 @@ public class JenkinsCasStore implements CasStore {
 			}
 
 			BuildId build = fingerprint.getOriginalBuild();
+			if (build == null) {
+				build = fingerprint.getFirstUsage();
+				if (build == null) {
+					log.warn("Cannot find build for fingerprint: " + hash.toHex());
+					return null;
+				}
+			}
 
 			BuildInfo buildInfo = client.findBuildInfo(build);
 			if (buildInfo == null) {

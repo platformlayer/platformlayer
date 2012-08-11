@@ -24,7 +24,7 @@ public class UntypedItemCollection implements Iterable<UntypedItem> {
 	private List<UntypedItem> findItems() {
 		List<UntypedItem> items = Lists.newArrayList();
 
-		Node itemsElement = XmlHelper.findUniqueChild(root, "items");
+		Node itemsElement = XmlHelper.findUniqueChild(root, "items", false);
 		if (itemsElement != null) {
 			NodeList childNodes = itemsElement.getChildNodes();
 			for (int i = 0; i < childNodes.getLength(); i++) {

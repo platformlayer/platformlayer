@@ -85,10 +85,15 @@ public class JenkinsClient {
 		}
 
 		protected Element getChildElement(Element parent, String childKey) {
-			Node child = XmlHelper.findUniqueChild(parent, childKey);
+			Element child = findChildElement(parent, childKey);
 			if (child == null) {
 				throw new IllegalArgumentException("Child element not found: " + childKey);
 			}
+			return child;
+		}
+
+		protected Element findChildElement(Element parent, String childKey) {
+			Node child = XmlHelper.findUniqueChild(parent, childKey, false);
 			return (Element) child;
 		}
 	}
@@ -99,10 +104,13 @@ public class JenkinsClient {
 		}
 
 		public BuildId getOriginalBuild() {
-			Element element = getChildElement(getRoot(), "original");
+			Element original = findChildElement(getRoot(), "original");
+			if (original == null) {
+				return null;
+			}
 
-			String name = getChildElementContents(element, "name");
-			String number = getChildElementContents(element, "number");
+			String name = getChildElementContents(original, "name");
+			String number = getChildElementContents(original, "number");
 
 			return new BuildId(name, Integer.valueOf(number));
 		}
@@ -113,6 +121,26 @@ public class JenkinsClient {
 
 		public String getHash() {
 			return getChildElementContents(getRoot(), "hash");
+		}
+
+		public BuildId getFirstUsage() {
+			Element usage = findChildElement(getRoot(), "usage");
+			if (usage == null) {
+				return null;
+			}
+
+			String name = getChildElementContents(usage, "name");
+			Element ranges = findChildElement(usage, "ranges");
+			if (ranges == null) {
+				return null;
+			}
+			Element range = findChildElement(ranges, "range");
+			if (range == null) {
+				return null;
+			}
+			String number = getChildElementContents(range, "start");
+
+			return new BuildId(name, Integer.valueOf(number));
 		}
 	}
 

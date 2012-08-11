@@ -61,7 +61,7 @@ public class UntypedItem {
 
 	public Tags getTags() {
 		if (tags == null) {
-			Node tagsElement = XmlHelper.findUniqueChild(root, "tags");
+			Node tagsElement = XmlHelper.findUniqueChild(root, "tags", false);
 			if (tagsElement == null) {
 				return null;
 			}
@@ -92,7 +92,7 @@ public class UntypedItem {
 															// "tags");
 		Node imported = root.getOwnerDocument().adoptNode(newTags);
 
-		Node existing = XmlHelper.findUniqueChild(root, "tags");
+		Node existing = XmlHelper.findUniqueChild(root, "tags", false);
 		if (existing == null) {
 			root.appendChild(imported);
 		} else {
@@ -130,7 +130,7 @@ public class UntypedItem {
 	}
 
 	public ManagedItemState getState() {
-		Node element = XmlHelper.findUniqueChild(root, "state");
+		Node element = XmlHelper.findUniqueChild(root, "state", false);
 		if (element == null) {
 			return null;
 		}
