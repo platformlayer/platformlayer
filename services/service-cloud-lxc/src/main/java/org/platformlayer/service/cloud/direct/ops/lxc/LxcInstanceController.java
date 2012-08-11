@@ -142,8 +142,7 @@ public class LxcInstanceController extends OpsTreeBase {
 			script.addresses.add(address4);
 			script.addresses.add(address6);
 
-			// TODO: What if this isn't eth0??
-			script.primaryInterface = "eth0";
+			// script.hostPrimaryInterface = hostModel.publicInterface;
 
 			Command command = Command.build("lxc-start");
 			command.addLiteral("--name").addQuoted(id);
