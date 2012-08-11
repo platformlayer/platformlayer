@@ -3,8 +3,8 @@ package org.platformlayer.service.dns.ops;
 import org.apache.log4j.Logger;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ids.ManagedItemId;
+import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
-import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.firewall.Protocol;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
@@ -20,10 +20,11 @@ public class DnsServerController extends OpsTreeBase {
 	public void handler() {
 	}
 
+	@Bound
+	DnsServer model;
+
 	@Override
 	protected void addChildren() throws OpsException {
-		DnsServer model = OpsContext.get().getInstance(DnsServer.class);
-
 		InstanceBuilder vm = InstanceBuilder.build(model.dnsName, DiskImageRecipeBuilder.buildDiskImageRecipe(this));
 
 		// TODO: Do we need a DnsCluster concept?
