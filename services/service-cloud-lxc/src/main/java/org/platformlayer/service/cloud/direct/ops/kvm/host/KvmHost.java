@@ -18,7 +18,7 @@ public class KvmHost extends OpsTreeBase {
 
 	@Override
 	protected void addChildren() throws OpsException {
-		addChild(injected(SupervisordService.class));
+		addChild(injected(SupervisordInstall.class));
 
 		// To make config cd
 		addChild(PackageDependency.build("genisoimage"));

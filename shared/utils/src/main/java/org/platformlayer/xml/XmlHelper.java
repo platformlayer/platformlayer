@@ -172,10 +172,6 @@ public class XmlHelper {
 		}
 	}
 
-	public static Node findUniqueChild(Element parent, String tagName) {
-		return findUniqueChild(parent, tagName, true);
-	}
-
 	public static Node findUniqueChild(Element parent, String tagName, boolean create) {
 		NodeList children = parent.getChildNodes();
 		List<Node> matches = Lists.newArrayList();

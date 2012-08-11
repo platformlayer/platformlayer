@@ -10,7 +10,7 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.SyntheticFile;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
-public class ManagedSupervisorInstance extends OpsTreeBase {
+public class ManagedSupervisordInstance extends OpsTreeBase {
 	public String key;
 	public Provider<SupervisorProcessConfig> config;
 
@@ -30,14 +30,14 @@ public class ManagedSupervisorInstance extends OpsTreeBase {
 	}
 
 	public static class SupervisorConfigFile extends SyntheticFile {
-		public ManagedSupervisorInstance parent;
+		public ManagedSupervisordInstance parent;
 
 		@Override
 		protected byte[] getContentsBytes() throws OpsException {
 			return Utf8.getBytes(parent.getConfig().buildConfigFile());
 		}
 
-		public SupervisorConfigFile setParent(ManagedSupervisorInstance parent) {
+		public SupervisorConfigFile setParent(ManagedSupervisordInstance parent) {
 			this.parent = parent;
 			return this;
 		}

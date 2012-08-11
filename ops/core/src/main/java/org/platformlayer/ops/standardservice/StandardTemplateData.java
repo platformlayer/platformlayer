@@ -14,6 +14,8 @@ import org.platformlayer.ops.helpers.ProviderHelper;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.templates.TemplateDataSource;
 
+import com.google.common.collect.Maps;
+
 public abstract class StandardTemplateData implements TemplateDataSource {
 
 	@Inject
@@ -54,7 +56,7 @@ public abstract class StandardTemplateData implements TemplateDataSource {
 		return "default";
 	}
 
-	protected abstract Command getCommand();
+	protected abstract Command getCommand() throws OpsException;
 
 	public File getConfigurationFile() {
 		return new File(getConfigDir(), "configuration.properties");
@@ -88,6 +90,10 @@ public abstract class StandardTemplateData implements TemplateDataSource {
 	public boolean shouldExpand() {
 		String distFilename = getDistFile().getName();
 		return distFilename.endsWith(".tar.gz") || distFilename.endsWith(".zip");
+	}
+
+	public Map<String, String> getEnvironment() throws OpsException {
+		return Maps.newHashMap();
 	}
 
 	// public String getDatabaseName() {

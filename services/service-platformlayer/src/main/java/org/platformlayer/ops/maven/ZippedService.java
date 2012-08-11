@@ -13,7 +13,7 @@ import org.platformlayer.ops.filesystem.ManagedSymlink;
 import org.platformlayer.ops.java.JavaVirtualMachine;
 import org.platformlayer.ops.packages.PackageDependency;
 import org.platformlayer.ops.supervisor.SupervisorInstance;
-import org.platformlayer.ops.supervisor.SupervisordService;
+import org.platformlayer.ops.supervisor.SupervisordInstall;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
 public abstract class ZippedService extends OpsTreeBase {
@@ -42,7 +42,7 @@ public abstract class ZippedService extends OpsTreeBase {
 	protected void addChildren() throws OpsException {
 		addChild(PackageDependency.build("unzip"));
 
-		addChild(injected(SupervisordService.class));
+		addChild(injected(SupervisordInstall.class));
 
 		addChild(JavaVirtualMachine.buildJava7());
 

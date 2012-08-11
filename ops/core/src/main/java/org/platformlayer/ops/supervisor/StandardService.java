@@ -3,20 +3,30 @@ package org.platformlayer.ops.supervisor;
 import java.io.File;
 import java.util.Map;
 
+import javax.inject.Inject;
 import javax.inject.Provider;
 
+import org.platformlayer.core.model.ItemBase;
+import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Handler;
+import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
 import com.google.inject.util.Providers;
 
 public class StandardService extends OpsTreeBase {
+	public PlatformLayerKey owner;
+
 	public String key;
 	public Provider<Command> command;
+	public Provider<Map<String, String>> environment;
 	public File instanceDir;
 	public String user;
+
+	@Inject
+	ServiceManager serviceManager;
 
 	@Handler
 	public void handler() {
@@ -26,49 +36,25 @@ public class StandardService extends OpsTreeBase {
 		return key;
 	}
 
-	public void buildConfig(SupervisorProcessConfig config) throws OpsException {
-		Map<String, String> properties = config.getProperties();
-		properties.put("command", command.get().buildCommandString());
-
-		if (instanceDir != null) {
-			properties.put("directory", instanceDir.getAbsolutePath());
-		}
-
-		File logFile = getLogFile();
-		if (logFile != null) {
-			properties.put("redirect_stderr", "true");
-			properties.put("stdout_logfile", logFile.getAbsolutePath());
-			properties.put("stdout_logfile_maxbytes", "50MB");
-			properties.put("stdout_logfile_backups", "0");
-		}
-
-		if (user != null) {
-			properties.put("user", user);
-		}
-	}
-
-	protected File getLogFile() {
+	public File getLogFile() {
 		File logFile = new File("/var/log/" + key + ".log");
 		return logFile;
 	}
 
+	public PlatformLayerKey getOwner() throws OpsException {
+		if (owner != null) {
+			return owner;
+		}
+		ItemBase itemBase = OpsContext.get().getInstance(ItemBase.class);
+		if (itemBase == null) {
+			throw new OpsException("No owner in scope");
+		}
+		return itemBase.getKey();
+	}
+
 	@Override
 	protected void addChildren() throws OpsException {
-		ManagedSupervisorInstance instance = addChild(ManagedSupervisorInstance.class);
-		instance.key = getServiceId();
-		instance.config = new Provider<SupervisorProcessConfig>() {
-			@Override
-			public SupervisorProcessConfig get() {
-				SupervisorProcessConfig config = new SupervisorProcessConfig(getServiceId());
-				try {
-					buildConfig(config);
-				} catch (OpsException e) {
-					throw new IllegalStateException("Error while building config", e);
-				}
-				return config;
-			}
-
-		};
+		serviceManager.addServiceInstance(this);
 	}
 
 	public void setCommand(Command command) {

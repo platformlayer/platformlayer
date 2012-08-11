@@ -9,7 +9,7 @@ import org.platformlayer.ops.filesystem.DownloadFileByHash;
 import org.platformlayer.ops.filesystem.ExpandArchive;
 import org.platformlayer.ops.java.JavaVirtualMachine;
 import org.platformlayer.ops.packages.PackageDependency;
-import org.platformlayer.ops.supervisor.SupervisordService;
+import org.platformlayer.ops.supervisor.SupervisordInstall;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.ops.users.PosixGroup;
 import org.platformlayer.ops.users.PosixUser;
@@ -26,7 +26,7 @@ public class SolrInstall extends OpsTreeBase {
 
 		// addChild(injected(JettyInstall.class));
 
-		addChild(injected(SupervisordService.class));
+		addChild(injected(SupervisordInstall.class));
 
 		{
 			// TODO: Would be nice not to hard code this mirror
