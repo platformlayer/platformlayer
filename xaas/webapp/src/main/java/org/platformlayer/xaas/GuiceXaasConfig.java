@@ -1,5 +1,7 @@
 package org.platformlayer.xaas;
 
+import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -74,6 +76,12 @@ public class GuiceXaasConfig extends AbstractModule {
 
 			bind(OpsSystem.class);
 
+			try {
+				doExplicitBindings(configuration);
+			} catch (ClassNotFoundException e) {
+				throw new OpsException("Class not found during binding", e);
+			}
+
 			bind(OpsContext.class).toProvider(OpsContextProvider.class);
 
 			// TODO: Split off scheduler
@@ -119,6 +127,17 @@ public class GuiceXaasConfig extends AbstractModule {
 			bind(PlatformLayerClient.class).toProvider(PlatformLayerClientProvider.class);
 		} catch (OpsException e) {
 			throw new IllegalStateException("Error during configuration", e);
+		}
+	}
+
+	private void doExplicitBindings(Configuration configuration) throws ClassNotFoundException {
+		Properties bindings = configuration.getChildProperties("bind.");
+		for (Entry<Object, Object> entry : bindings.entrySet()) {
+			String serviceKey = (String) entry.getKey();
+			Class service = Class.forName(serviceKey);
+			Class implementation = Class.forName((String) entry.getValue());
+
+			bind(service).to(implementation);
 		}
 	}
 
