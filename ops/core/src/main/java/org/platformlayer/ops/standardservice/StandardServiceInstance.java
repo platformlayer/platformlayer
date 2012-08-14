@@ -28,12 +28,8 @@ public abstract class StandardServiceInstance extends OpsTreeBase {
 	@Override
 	protected void addChildren() throws OpsException {
 		final StandardTemplateData template = getTemplate();
-		// SystemAuthService model = template.getModel();
-
-		// int port = template.getPort();
 
 		File instanceDir = template.getInstanceDir();
-		// File installDir = template.getInstallDir();
 
 		String user = template.getUser();
 		String group = template.getGroup();
@@ -47,11 +43,17 @@ public abstract class StandardServiceInstance extends OpsTreeBase {
 
 		{
 			StandardService service = addChild(StandardService.class);
-			Command command = template.getCommand();
 
+			Command command = template.getCommand();
 			service.command = Providers.of(command);
+
+			Map<String, String> env = template.getEnvironment();
+			service.environment = Providers.of(env);
+
 			service.instanceDir = instanceDir;
 			service.key = template.getServiceKey();
+
+			service.owner = template.getModel().getKey();
 		}
 
 		if (template.shouldCreateSslKey()) {

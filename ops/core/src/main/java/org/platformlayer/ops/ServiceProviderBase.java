@@ -3,6 +3,7 @@ package org.platformlayer.ops;
 import java.lang.reflect.Field;
 import java.security.PublicKey;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -14,7 +15,6 @@ import org.platformlayer.core.model.ServiceInfo;
 import org.platformlayer.ids.ItemType;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.inject.ObjectInjector;
-import org.platformlayer.jdbc.simplejpa.ReflectionUtils;
 import org.platformlayer.metrics.model.MetricValues;
 import org.platformlayer.ops.crypto.Passwords;
 import org.platformlayer.ops.helpers.ServiceContext;
@@ -30,6 +30,8 @@ import org.platformlayer.xaas.services.ServiceProvider;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.inject.Injector;
 
 public abstract class ServiceProviderBase implements ServiceProvider {
 	private final ServiceType serviceType;
@@ -171,7 +173,13 @@ public abstract class ServiceProviderBase implements ServiceProvider {
 
 		Object controller = injector.getInstance(controllerClass);
 
-		bindController(controller, item);
+		Injector guiceInjector = injector.getInstance(Injector.class);
+
+		Map<Class<?>, Object> prebound = Maps.newHashMap();
+		prebound.put(item.getClass(), item);
+
+		BindingHelper helper = new BindingHelper(guiceInjector, prebound);
+		helper.bind(controller);
 
 		return controller;
 	}
@@ -321,19 +329,4 @@ public abstract class ServiceProviderBase implements ServiceProvider {
 		}
 	}
 
-	private void bindController(Object controller, Object model) {
-		Class<? extends Object> controllerClass = controller.getClass();
-		for (Field field : ReflectionUtils.getAllFields(controllerClass)) {
-			Bound boundAnnotation = field.getAnnotation(Bound.class);
-
-			if (boundAnnotation != null) {
-				field.setAccessible(true);
-				try {
-					field.set(controller, model);
-				} catch (IllegalAccessException e) {
-					throw new IllegalStateException("Error setting field: " + field, e);
-				}
-			}
-		}
-	}
 }

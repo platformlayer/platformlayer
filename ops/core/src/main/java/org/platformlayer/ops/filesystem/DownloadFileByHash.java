@@ -139,4 +139,10 @@ public class DownloadFileByHash extends ManagedFile {
 			throw new IllegalArgumentException("Error parsing URI", e);
 		}
 	}
+
+	public void setFileAccess(FileAccess access) {
+		this.fileMode = access.mode;
+		this.owner = access.owner;
+		this.group = access.group;
+	}
 }

@@ -5,7 +5,7 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.packages.PackageDependency;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
-public class SupervisordService extends OpsTreeBase {
+public class SupervisordInstall extends OpsTreeBase {
 
 	@Handler
 	public void handler() {

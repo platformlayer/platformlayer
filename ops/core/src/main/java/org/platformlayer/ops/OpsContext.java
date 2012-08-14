@@ -66,7 +66,11 @@ public class OpsContext implements Closeable {
 	}
 
 	public <T> T getInstance(Class<T> clazz) {
-		return BindingScope.get().getInstance(clazz);
+		BindingScope scope = BindingScope.get();
+		if (scope == null) {
+			return null;
+		}
+		return scope.getInstance(clazz);
 	}
 
 	public static <T, E extends Exception> T runInContext(OpsContext opsContext, CheckedCallable<T, E> callable)

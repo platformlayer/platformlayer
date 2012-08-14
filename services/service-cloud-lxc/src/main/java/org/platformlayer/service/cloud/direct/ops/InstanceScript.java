@@ -9,13 +9,15 @@ import javax.inject.Provider;
 import org.apache.log4j.Logger;
 import org.openstack.utils.Utf8;
 import org.platformlayer.ops.Command;
+import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.SyntheticFile;
 import org.platformlayer.ops.machines.InetAddressUtils;
 import org.platformlayer.ops.networks.AddressModel;
 import org.platformlayer.ops.networks.ScriptBuilder;
-import org.platformlayer.ops.supervisor.ManagedSupervisorInstance;
+import org.platformlayer.ops.supervisor.ManagedSupervisordInstance;
 import org.platformlayer.ops.supervisor.SupervisorProcessConfig;
+import org.platformlayer.service.cloud.direct.model.DirectHost;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -29,7 +31,7 @@ public class InstanceScript extends SyntheticFile {
 	public Command launchInstanceCommand;
 	public List<Provider<AddressModel>> addresses = Lists.newArrayList();
 
-	public String primaryInterface;
+	public String hostPrimaryInterface;
 
 	public InstanceScript() {
 		this.fileMode = "755";
@@ -54,18 +56,28 @@ public class InstanceScript extends SyntheticFile {
 				AddressModel addressModel = addressProvider.get();
 				InetAddress address = addressModel.getInetAddress();
 				if (InetAddressUtils.isIpv6(address)) {
-					if (Strings.isNullOrEmpty(primaryInterface)) {
+					String hostPrimaryInterface = getHostPrimaryInterface();
+					if (Strings.isNullOrEmpty(hostPrimaryInterface)) {
 						throw new OpsException("primaryInterface not specified");
 					}
 
-					Command command = Command.build("ip neigh add proxy {0} dev {1}", address, primaryInterface);
+					Command command = Command.build("ip neigh add proxy {0} dev {1}", address, hostPrimaryInterface);
 					sb.add(command);
 				}
 			}
 		}
 	}
 
-	public void configure(ManagedSupervisorInstance instance) {
+	private String getHostPrimaryInterface() {
+		if (hostPrimaryInterface != null) {
+			return hostPrimaryInterface;
+		}
+
+		DirectHost host = OpsContext.get().getInstance(DirectHost.class);
+		return host.publicInterface;
+	}
+
+	public void configure(ManagedSupervisordInstance instance) {
 		SupervisorProcessConfig sup = new SupervisorProcessConfig(key);
 		Map<String, String> properties = sup.getProperties();
 

@@ -24,7 +24,7 @@ import org.platformlayer.ops.helpers.SshKeys;
 import org.platformlayer.ops.images.ImageFormat;
 import org.platformlayer.ops.networks.AddressModel;
 import org.platformlayer.ops.pool.NetworkAddressPoolAssignment;
-import org.platformlayer.ops.supervisor.ManagedSupervisorInstance;
+import org.platformlayer.ops.supervisor.ManagedSupervisordInstance;
 import org.platformlayer.ops.tagger.Tagger;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.direct.model.DirectInstance;
@@ -142,8 +142,7 @@ public class LxcInstanceController extends OpsTreeBase {
 			script.addresses.add(address4);
 			script.addresses.add(address6);
 
-			// TODO: What if this isn't eth0??
-			script.primaryInterface = "eth0";
+			// script.hostPrimaryInterface = hostModel.publicInterface;
 
 			Command command = Command.build("lxc-start");
 			command.addLiteral("--name").addQuoted(id);
@@ -151,7 +150,7 @@ public class LxcInstanceController extends OpsTreeBase {
 		}
 
 		{
-			ManagedSupervisorInstance supervisorInstance = instance.addChild(ManagedSupervisorInstance.class);
+			ManagedSupervisordInstance supervisorInstance = instance.addChild(ManagedSupervisordInstance.class);
 			script.configure(supervisorInstance);
 		}
 

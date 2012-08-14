@@ -10,7 +10,7 @@ import org.platformlayer.ops.filesystem.DownloadFileByHash;
 import org.platformlayer.ops.filesystem.ExpandArchive;
 import org.platformlayer.ops.helpers.ServiceContext;
 import org.platformlayer.ops.java.JavaVirtualMachine;
-import org.platformlayer.ops.supervisor.SupervisordService;
+import org.platformlayer.ops.supervisor.ServiceManager;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.ops.users.PosixGroup;
 import org.platformlayer.ops.users.PosixUser;
@@ -18,6 +18,9 @@ import org.platformlayer.ops.users.PosixUser;
 public abstract class StandardServiceInstall extends OpsTreeBase {
 	@Inject
 	ServiceContext service;
+
+	@Inject
+	ServiceManager serviceManager;
 
 	@Handler
 	public void handler() {
@@ -27,7 +30,7 @@ public abstract class StandardServiceInstall extends OpsTreeBase {
 	protected void addChildren() throws OpsException {
 		StandardTemplateData template = getTemplate();
 
-		addChild(injected(SupervisordService.class));
+		addChild(serviceManager.getServiceManagerInstallClass());
 
 		String user = template.getUser();
 		String group = template.getGroup();

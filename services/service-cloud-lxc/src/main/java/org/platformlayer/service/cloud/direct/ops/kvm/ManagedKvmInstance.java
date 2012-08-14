@@ -13,7 +13,7 @@ import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.TemplatedFile;
 import org.platformlayer.ops.networks.AddressModel;
-import org.platformlayer.ops.supervisor.ManagedSupervisorInstance;
+import org.platformlayer.ops.supervisor.ManagedSupervisordInstance;
 import org.platformlayer.ops.templates.TemplateDataSource;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.direct.ops.DirectHostController;
@@ -75,14 +75,13 @@ public class ManagedKvmInstance extends OpsTreeBase {
 
 			script.addresses.addAll(addresses);
 
-			// TODO: What if this isn't eth0??
-			script.primaryInterface = "eth0";
+			// script.hostPrimaryInterface = hostModel.publicInterface;
 
 			script.launchInstanceCommand = buildKvmCommand();
 		}
 
 		{
-			ManagedSupervisorInstance supervisorInstance = addChild(ManagedSupervisorInstance.class);
+			ManagedSupervisordInstance supervisorInstance = addChild(ManagedSupervisordInstance.class);
 			script.configure(supervisorInstance);
 		}
 	}

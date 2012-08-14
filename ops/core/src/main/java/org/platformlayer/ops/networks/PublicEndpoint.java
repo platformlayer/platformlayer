@@ -79,12 +79,12 @@ public class PublicEndpoint extends OpsTreeBase {
 				public TagChanges get() throws OpsException {
 					int maxAttempts = 5;
 					int attempt = 0;
+
+					PublicEndpointBase item = endpoint.getItem();
+
 					while (true) {
 						attempt++;
 
-						TagChanges tagChanges = new TagChanges();
-
-						PublicEndpointBase item = endpoint.getItem();
 						if (item == null) {
 							if (!OpsContext.isDelete()) {
 								throw new OpsException("Endpoint not created");
@@ -93,8 +93,10 @@ public class PublicEndpoint extends OpsTreeBase {
 								return null;
 							}
 						}
+
 						List<EndpointInfo> endpointInfos = EndpointInfo.findEndpoints(item.getTags(), publicPort);
 						if (!endpointInfos.isEmpty()) {
+							TagChanges tagChanges = new TagChanges();
 							for (EndpointInfo endpointInfo : endpointInfos) {
 								tagChanges.addTags.add(endpointInfo.toTag());
 							}
@@ -105,6 +107,8 @@ public class PublicEndpoint extends OpsTreeBase {
 						if (attempt != maxAttempts) {
 							log.info("Endpoint not yet found; sleeping and retrying");
 							TimeSpan.FIVE_SECONDS.doSafeSleep();
+
+							item = platformLayerClient.getItem(item.getKey());
 							continue;
 						} else {
 							throw new OpsException("Cannot find endpoint for port: " + publicPort);

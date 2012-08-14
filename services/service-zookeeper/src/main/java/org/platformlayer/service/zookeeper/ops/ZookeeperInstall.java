@@ -9,7 +9,7 @@ import org.platformlayer.ops.filesystem.DownloadFileByHash;
 import org.platformlayer.ops.filesystem.ExpandArchive;
 import org.platformlayer.ops.java.JavaVirtualMachine;
 import org.platformlayer.ops.packages.PackageDependency;
-import org.platformlayer.ops.supervisor.SupervisordService;
+import org.platformlayer.ops.supervisor.SupervisordInstall;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class ZookeeperInstall extends OpsTreeBase {
@@ -22,7 +22,7 @@ public class ZookeeperInstall extends OpsTreeBase {
 	protected void addChildren() throws OpsException {
 		addChild(JavaVirtualMachine.buildJava6());
 
-		addChild(injected(SupervisordService.class));
+		addChild(injected(SupervisordInstall.class));
 
 		{
 			// TODO: Would be nice not to hard code this mirror

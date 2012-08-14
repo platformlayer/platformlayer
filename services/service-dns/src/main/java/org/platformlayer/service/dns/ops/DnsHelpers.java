@@ -40,16 +40,13 @@ public class DnsHelpers {
 	@Inject
 	InstanceHelpers instances;
 
-	public static final File PATH_BASE = new File("/var/dns");
-	public static final File PATH_ZONES = new File(PATH_BASE, "zones");
-
 	public void upload(OpsTarget target, ZoneFile zoneFile) throws OpsException {
 		upload(new TargetServer(target), zoneFile);
 	}
 
 	public void upload(TargetServer targetServer, ZoneFile zoneFile) throws OpsException {
 		// TODO: Validate / sanitize key
-		File path = new File(PATH_ZONES, zoneFile.getKey());
+		File path = new File(DnsServerTemplate.getZonesDir(), zoneFile.getKey());
 		String data = zoneFile.getData();
 
 		OpsTarget target = targetServer.getTarget();
