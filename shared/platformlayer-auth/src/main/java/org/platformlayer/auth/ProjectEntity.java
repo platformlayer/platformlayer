@@ -57,7 +57,7 @@ public class ProjectEntity implements ProjectInfo {
 		return projectSecret;
 	}
 
-	public void unlockWithUser(OpsUser user) {
+	public void unlockWithUser(UserEntity user) {
 		SecretStore secretStore = new SecretStore(this.secretData);
 		this.projectSecret = secretStore.getSecretFromUser(user);
 		if (this.projectSecret == null) {

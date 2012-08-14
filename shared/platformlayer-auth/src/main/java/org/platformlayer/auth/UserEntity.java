@@ -71,7 +71,6 @@ public class UserEntity implements OpsUser {
 	@Transient
 	private SecretKey userSecret;
 
-	@Override
 	public SecretKey getUserSecret() {
 		if (userSecret == null) {
 			throw new IllegalStateException();

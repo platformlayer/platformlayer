@@ -1,4 +1,4 @@
-package org.platformlayer.auth.server;
+package org.platformlayer.web;
 
 import java.security.KeyStore;
 import java.security.cert.CRL;
@@ -7,7 +7,7 @@ import java.util.Collection;
 import javax.net.ssl.TrustManager;
 
 import org.apache.log4j.Logger;
-import org.eclipse.jetty.http.ssl.SslContextFactory;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 public class CustomTrustManagerSslContextFactory extends SslContextFactory {
 	@SuppressWarnings("unused")

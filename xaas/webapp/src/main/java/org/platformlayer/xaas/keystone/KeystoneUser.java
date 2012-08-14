@@ -2,12 +2,9 @@ package org.platformlayer.xaas.keystone;
 
 import java.security.PrivateKey;
 
-import javax.crypto.SecretKey;
-
 import org.apache.log4j.Logger;
 import org.platformlayer.auth.OpsUser;
 import org.platformlayer.auth.PlatformlayerUserAuthentication;
-import org.platformlayer.crypto.AesUtils;
 
 public class KeystoneUser implements OpsUser {
 	@SuppressWarnings("unused")
@@ -28,14 +25,14 @@ public class KeystoneUser implements OpsUser {
 		return Integer.parseInt(auth.getUserKey());
 	}
 
-	@Override
-	public SecretKey getUserSecret() {
-		byte[] userSecret = auth.getUserSecret();
-		if (userSecret == null) {
-			return null;
-		}
-		return AesUtils.deserializeKey(userSecret);
-	}
+	// @Override
+	// public SecretKey getUserSecret() {
+	// byte[] userSecret = auth.getUserSecret();
+	// if (userSecret == null) {
+	// return null;
+	// }
+	// return AesUtils.deserializeKey(userSecret);
+	// }
 
 	@Override
 	public PrivateKey getPrivateKey() {

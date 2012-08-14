@@ -7,17 +7,21 @@ import java.util.List;
 import javax.crypto.SecretKey;
 
 import org.platformlayer.RepositoryException;
+import org.platformlayer.model.RoleId;
 
 public interface UserDatabase extends UserRepository {
-	OpsUser createUser(String userName, String password, Certificate[] certificateChain) throws RepositoryException;
+	UserEntity createUser(String userName, String password, Certificate[] certificateChain) throws RepositoryException;
 
-	OpsUser findUser(String userName) throws RepositoryException;
+	UserEntity findUser(String userName) throws RepositoryException;
 
-	OpsUser findUserById(int userId) throws RepositoryException;
+	UserEntity findUserById(int userId) throws RepositoryException;
+
+	UserEntity findUserByPublicKey(byte[] publicKeyHash) throws RepositoryException;
 
 	List<ProjectEntity> listProjectsByUserId(int userId) throws RepositoryException;
 
-	void addUserToProject(String username, String projectKey, SecretKey projectSecret) throws RepositoryException;
+	void addUserToProject(String username, String projectKey, SecretKey projectSecret, List<RoleId> roles)
+			throws RepositoryException;
 
 	void grantProjectToProject(String grantToProjectKey, String onProjectKey, SecretKey onProjectSecret)
 			throws RepositoryException;
@@ -33,4 +37,6 @@ public interface UserDatabase extends UserRepository {
 	ServiceAccount findServiceAccount(String name, byte[] publicKey) throws RepositoryException;
 
 	ServiceAccount createServiceAccount(X509Certificate cert) throws RepositoryException;
+
+	UserProjectEntity findUserProject(int userId, int projectId) throws RepositoryException;
 }

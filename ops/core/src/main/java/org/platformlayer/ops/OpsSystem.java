@@ -16,8 +16,8 @@ import org.platformlayer.auth.AuthenticationTokenValidator;
 import org.platformlayer.config.Configuration;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ServiceInfo;
-import org.platformlayer.crypto.CryptoUtils;
 import org.platformlayer.crypto.EncryptionStore;
+import org.platformlayer.crypto.OpenSshUtils;
 import org.platformlayer.ids.ItemType;
 import org.platformlayer.ids.ModelKey;
 import org.platformlayer.ids.ServiceType;
@@ -281,7 +281,7 @@ public class OpsSystem {
 			List<String> trustKeys = Lists.newArrayList();
 			for (X509Certificate certificate : certificateAndKey.getCertificateChain()) {
 				PublicKey publicKey = certificate.getPublicKey();
-				trustKeys.add(CryptoUtils.getSignatureString(publicKey));
+				trustKeys.add(OpenSshUtils.getSignatureString(publicKey));
 			}
 			this.trustKeys = Optional.of(trustKeys);
 		}

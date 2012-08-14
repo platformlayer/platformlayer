@@ -21,7 +21,7 @@ import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.crypto.CertificateReader;
-import org.platformlayer.crypto.CryptoUtils;
+import org.platformlayer.crypto.OpenSshUtils;
 import org.platformlayer.ops.FileUpload;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
@@ -130,7 +130,7 @@ public class ManagedKeystore extends OpsTreeBase {
 				} else {
 					PublicKey certPublicKey = cert[0].getPublicKey();
 
-					String sigString = CryptoUtils.getSignatureString(certPublicKey);
+					String sigString = OpenSshUtils.getSignatureString(certPublicKey);
 					publicKeySigs.add(sigString);
 				}
 				// }

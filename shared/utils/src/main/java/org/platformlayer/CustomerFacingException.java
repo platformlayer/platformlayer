@@ -16,5 +16,4 @@ public class CustomerFacingException extends Exception {
 	public CustomerFacingException(String message) {
 		super(message);
 	}
-
 }

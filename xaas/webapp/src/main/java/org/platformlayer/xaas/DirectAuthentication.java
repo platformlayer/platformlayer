@@ -12,6 +12,7 @@ import org.platformlayer.model.Authentication;
 import org.platformlayer.model.AuthenticationCredentials;
 import org.platformlayer.model.AuthenticationToken;
 import org.platformlayer.model.ProjectAuthorization;
+import org.platformlayer.model.RoleId;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
@@ -118,6 +119,11 @@ public class DirectAuthentication implements AuthenticationCredentials, ProjectA
 					public Authentication getUser() {
 						throw new UnsupportedOperationException();
 					}
+
+					@Override
+					public List<RoleId> getRoles() {
+						throw new UnsupportedOperationException();
+					}
 				};
 			}
 		}
@@ -133,5 +139,10 @@ public class DirectAuthentication implements AuthenticationCredentials, ProjectA
 	@Override
 	public boolean isLocked() {
 		return project.isLocked();
+	}
+
+	@Override
+	public List<RoleId> getRoles() {
+		throw new UnsupportedOperationException();
 	}
 }

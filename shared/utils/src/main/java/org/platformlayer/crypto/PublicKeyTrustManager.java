@@ -33,7 +33,7 @@ public class PublicKeyTrustManager implements X509TrustManager {
 		for (X509Certificate cert : chain) {
 			PublicKey certPublicKey = cert.getPublicKey();
 
-			String sigString = CryptoUtils.getSignatureString(certPublicKey);
+			String sigString = OpenSshUtils.getSignatureString(certPublicKey);
 
 			if (!trusted.contains(sigString)) {
 				throw new CertificateException("Certificate is not in trusted list (" + sigString + ")");

@@ -5,14 +5,18 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
+import org.openstack.utils.Hex;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.auth.AuthenticatorException;
 import org.platformlayer.auth.CertificateAuthenticationRequest;
 import org.platformlayer.auth.CertificateAuthenticationResponse;
-import org.platformlayer.auth.OpsUser;
 import org.platformlayer.auth.ProjectEntity;
 import org.platformlayer.auth.UserDatabase;
 import org.platformlayer.auth.UserEntity;
+import org.platformlayer.auth.UserProjectEntity;
+import org.platformlayer.auth.model.CertificateChainInfo;
+
+import com.google.common.base.Strings;
 
 public class KeystoneRepositoryAuthenticator implements KeystoneUserAuthenticator {
 	private static final Logger log = Logger.getLogger(KeystoneRepositoryAuthenticator.class);
@@ -116,37 +120,13 @@ public class KeystoneRepositoryAuthenticator implements KeystoneUserAuthenticato
 	// }
 
 	@Override
-	public ProjectEntity findProject(String projectKey, final OpsUser user) throws AuthenticatorException {
+	public ProjectEntity findProject(String projectKey) throws AuthenticatorException {
 		ProjectEntity project;
 		try {
 			project = repository.findProjectByKey(projectKey);
 		} catch (RepositoryException e) {
 			throw new AuthenticatorException("Error while fetching project", e);
 		}
-		if (project == null) {
-			return null;
-		}
-
-		// int userId = Integer.parseInt(auth.getUserKey());
-		// user = userRepository.findUserById(userId);
-		// if (user == null) {
-		// log.warn("User not found: " + userId);
-		// throw new SecurityException();
-		// }
-
-		// byte[] userSecret = auth.getUserSecret();
-		// if (userSecret == null) {
-		// throw new SecurityException();
-		// }
-		//
-		// user.unlock(AesUtils.deserializeKey(userSecret));
-
-		project.unlockWithUser(user);
-
-		if (!project.isSecretValid()) {
-			return null;
-		}
-
 		return project;
 	}
 
@@ -161,7 +141,7 @@ public class KeystoneRepositoryAuthenticator implements KeystoneUserAuthenticato
 
 		UserEntity user;
 		try {
-			user = (UserEntity) repository.findUserById(userId);
+			user = repository.findUserById(userId);
 		} catch (RepositoryException e) {
 			throw new AuthenticatorException("Error while authenticating user", e);
 		}
@@ -176,7 +156,40 @@ public class KeystoneRepositoryAuthenticator implements KeystoneUserAuthenticato
 	}
 
 	@Override
+	public UserEntity findUserFromKeychain(CertificateChainInfo chain, boolean unlock) throws AuthenticatorException {
+		if (chain.certificates == null || chain.certificates.isEmpty()) {
+			return null;
+		}
+
+		String publicKeyHash = chain.certificates.get(0).publicKeyHash;
+		if (Strings.isNullOrEmpty(publicKeyHash)) {
+			return null;
+		}
+
+		byte[] hash = Hex.fromHex(publicKeyHash);
+
+		UserEntity user;
+		try {
+			user = repository.findUserByPublicKey(hash);
+		} catch (RepositoryException e) {
+			throw new AuthenticatorException("Error while authenticating user", e);
+		}
+
+		return user;
+	}
+
+	@Override
 	public List<ProjectEntity> listProjects(UserEntity user) throws RepositoryException {
 		return repository.listProjectsByUserId(user.getId());
+	}
+
+	@Override
+	public UserProjectEntity findUserProject(UserEntity user, ProjectEntity project) throws AuthenticatorException {
+		try {
+			return repository.findUserProject(user.getId(), project.getId());
+		} catch (RepositoryException e) {
+			throw new AuthenticatorException("Error while querying authentication store", e);
+		}
+
 	}
 }

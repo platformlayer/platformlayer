@@ -88,7 +88,7 @@ public class SimpleMultitenantConfiguration implements MultitenantConfiguration 
 			throw new OpsException(message);
 		}
 
-		ProjectAuthorization authz = authenticationTokenValidator.validate(authn, projectKey);
+		ProjectAuthorization authz = authenticationTokenValidator.validateToken(authn, projectKey);
 		if (authz == null) {
 			throw new OpsException(message);
 		}

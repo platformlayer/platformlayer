@@ -14,6 +14,7 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
 
+import org.openstack.crypto.Md5Hash;
 import org.openstack.utils.Io;
 import org.openstack.utils.Utf8;
 import org.platformlayer.IoUtils;
@@ -200,5 +201,19 @@ public class OpenSshUtils {
 			sb.append(description);
 		}
 		return sb.toString();
+	}
+
+	public static String getSignatureString(PublicKey publicKey) {
+		Md5Hash sig = getSignature(publicKey);
+
+		String sigString = sig.toHex().toLowerCase();
+		return sigString;
+	}
+
+	public static Md5Hash getSignature(PublicKey publicKey) {
+		byte[] data = encodePublicKey((RSAPublicKey) publicKey);
+
+		Md5Hash sig = new Md5Hash.Hasher().hash(data);
+		return sig;
 	}
 }

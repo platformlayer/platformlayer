@@ -6,16 +6,28 @@ import org.platformlayer.auth.ProjectEntity;
 import org.platformlayer.auth.UserEntity;
 import org.platformlayer.auth.model.ProjectValidation;
 import org.platformlayer.auth.model.Role;
-import org.platformlayer.auth.model.RoleList;
 import org.platformlayer.auth.model.User;
 import org.platformlayer.auth.model.UserValidation;
 import org.platformlayer.crypto.AesUtils;
+import org.platformlayer.model.RoleId;
+
+import com.google.common.collect.Lists;
 
 public class Mapping {
 
-	public static RoleList mapToRoles(List<Role> roles) {
-		RoleList roleList = new RoleList();
-		roleList.roles = roles;
+	// public static RoleList mapToRoles(List<Role> roles) {
+	// RoleList roleList = new RoleList();
+	// roleList.roles = roles;
+	// return roleList;
+	// }
+
+	public static List<Role> mapToRoles(List<RoleId> roles) {
+		List<Role> roleList = Lists.newArrayList();
+		for (RoleId role : roles) {
+			Role xmlRole = new Role();
+			xmlRole.name = role.getKey();
+			roleList.add(xmlRole);
+		}
 		return roleList;
 	}
 
@@ -32,7 +44,7 @@ public class Mapping {
 		UserValidation user = new UserValidation();
 		user.id = "" + userInfo.id;
 		user.name = userInfo.key;
-		user.secret = AesUtils.serialize(userInfo.getUserSecret());
+		// user.secret = AesUtils.serialize(userInfo.getUserSecret());
 		return user;
 	}
 
@@ -40,7 +52,9 @@ public class Mapping {
 		ProjectValidation mapped = new ProjectValidation();
 		mapped.id = "" + entity.id;
 		mapped.name = entity.name;
-		mapped.secret = AesUtils.serialize(entity.getProjectSecret());
+		if (!entity.isLocked()) {
+			mapped.secret = AesUtils.serialize(entity.getProjectSecret());
+		}
 		return mapped;
 	}
 

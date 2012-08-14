@@ -1,6 +1,7 @@
 package org.platformlayer.keystone.cli.commands;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import javax.crypto.SecretKey;
 
@@ -12,8 +13,10 @@ import org.platformlayer.auth.UserEntity;
 import org.platformlayer.auth.crypto.SecretStore;
 import org.platformlayer.keystone.cli.model.ProjectName;
 import org.platformlayer.keystone.cli.model.UserName;
+import org.platformlayer.model.RoleId;
 
 import com.fathomdb.cli.CliException;
+import com.google.common.base.Strings;
 
 public class JoinProject extends KeystoneCommandRunnerBase {
 	@Argument(index = 0, required = true, metaVar = "username")
@@ -21,6 +24,9 @@ public class JoinProject extends KeystoneCommandRunnerBase {
 
 	@Argument(index = 1, required = true, metaVar = "project")
 	public ProjectName projectKey;
+
+	@Argument(index = 2, required = true, metaVar = "role")
+	public String roleKey;
 
 	public JoinProject() {
 		super("join", "project");
@@ -31,7 +37,7 @@ public class JoinProject extends KeystoneCommandRunnerBase {
 		UserDatabase userRepository = getContext().getUserRepository();
 
 		UserEntity me = getContext().loginDirect();
-		ProjectEntity project = (ProjectEntity) userRepository.findProjectByKey(projectKey.getKey());
+		ProjectEntity project = userRepository.findProjectByKey(projectKey.getKey());
 		if (project == null) {
 			throw new CliException("Project not found: " + projectKey.getKey());
 		}
@@ -43,9 +49,13 @@ public class JoinProject extends KeystoneCommandRunnerBase {
 			msg += " Is " + me.key + " a member of " + project.getName() + "?";
 			throw new CliException(msg);
 		}
-		userRepository.addUserToProject(username.getKey(), project.getName(), projectSecret);
+		if (Strings.isNullOrEmpty(roleKey)) {
+			throw new CliException("Role is required");
+		}
+		RoleId role = new RoleId(roleKey);
+		userRepository.addUserToProject(username.getKey(), project.getName(), projectSecret,
+				Collections.singletonList(role));
 
 		return project;
 	}
-
 }

@@ -9,6 +9,12 @@
 
   <xs:element name="authenticateResponse" type="tns:authenticateResponse"/>
 
+  <xs:element name="certificateChainInfo" type="tns:certificateChainInfo"/>
+
+  <xs:element name="registrationRequest" type="tns:registrationRequest"/>
+
+  <xs:element name="registrationResponse" type="tns:registrationResponse"/>
+
   <xs:element name="roles" type="tns:roleList"/>
 
   <xs:element name="user" type="tns:user"/>
@@ -42,7 +48,6 @@
     <xs:sequence>
       <xs:element name="id" type="xs:string" minOccurs="0"/>
       <xs:element name="name" type="xs:string" minOccurs="0"/>
-      <xs:element name="secret" type="xs:base64Binary" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -58,7 +63,6 @@
   <xs:complexType name="role">
     <xs:sequence>
       <xs:element name="name" type="xs:string" minOccurs="0"/>
-      <xs:element name="description" type="xs:string" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -72,6 +76,18 @@
     <xs:sequence>
       <xs:element name="username" type="xs:string" minOccurs="0"/>
       <xs:element name="password" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="certificateChainInfo">
+    <xs:sequence>
+      <xs:element name="certificates" type="tns:certificateInfo" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="certificateInfo">
+    <xs:sequence>
+      <xs:element name="publicKeyHash" type="xs:string" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -118,6 +134,20 @@
     <xs:sequence>
       <xs:element name="token" type="tns:token" minOccurs="0"/>
       <xs:element name="projects" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="registrationResponse">
+    <xs:sequence>
+      <xs:element ref="tns:access" minOccurs="0"/>
+      <xs:element name="errorMessage" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="registrationRequest">
+    <xs:sequence>
+      <xs:element name="username" type="xs:string" minOccurs="0"/>
+      <xs:element name="password" type="xs:string" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 </xs:schema>

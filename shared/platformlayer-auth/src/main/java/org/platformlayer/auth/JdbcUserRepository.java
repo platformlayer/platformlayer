@@ -23,6 +23,7 @@ import org.platformlayer.auth.crypto.SecretStore;
 import org.platformlayer.auth.crypto.SecretStore.Writer;
 import org.platformlayer.crypto.AesUtils;
 import org.platformlayer.crypto.CryptoUtils;
+import org.platformlayer.crypto.OpenSshUtils;
 import org.platformlayer.crypto.PasswordHash;
 import org.platformlayer.crypto.RsaUtils;
 import org.platformlayer.jdbc.DbHelperBase;
@@ -30,6 +31,7 @@ import org.platformlayer.jdbc.JdbcTransaction;
 import org.platformlayer.jdbc.JdbcUtils;
 import org.platformlayer.jdbc.proxy.Query;
 import org.platformlayer.jdbc.proxy.QueryFactory;
+import org.platformlayer.model.RoleId;
 
 import com.google.common.collect.Lists;
 
@@ -41,7 +43,7 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 
 	@Override
 	@JdbcTransaction
-	public void addUserToProject(String username, String projectKey, SecretKey projectSecret)
+	public void addUserToProject(String username, String projectKey, SecretKey projectSecret, List<RoleId> roles)
 			throws RepositoryException {
 		DbHelper db = new DbHelper();
 		try {
@@ -74,7 +76,12 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 
 			db.updateProjectSecret(project.id, newSecretData);
 
-			db.insertUserProject(user.id, project.id);
+			UserProjectEntity userProjectEntity = new UserProjectEntity();
+			userProjectEntity.userId = user.id;
+			userProjectEntity.projectId = project.id;
+			userProjectEntity.addRoles(roles);
+
+			db.insertUserProject(userProjectEntity);
 		} catch (SQLException e) {
 			throw new RepositoryException("Error reading groups", e);
 		} finally {
@@ -142,11 +149,12 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 
 	@Override
 	@JdbcTransaction
-	public OpsUser createUser(String userName, String password, Certificate[] certificateChain)
+	public UserEntity createUser(String userName, String password, Certificate[] certificateChain)
 			throws RepositoryException {
 		DbHelper db = new DbHelper();
 		try {
 			byte[] secretData;
+			byte[] publicKeyHash = null;
 
 			SecretKey userSecretKey = AesUtils.generateKey();
 
@@ -171,6 +179,9 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 				if (certificateChain != null) {
 					Certificate certificate = certificateChain[0];
 					PublicKey publicKey = certificate.getPublicKey();
+
+					publicKeyHash = OpenSshUtils.getSignature(publicKey).toByteArray();
+
 					writer.writeGenericAsymetricKey(userSecret, publicKey);
 				}
 
@@ -196,6 +207,13 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 
 			UserEntity user = findUser(userName);
 			user.unlockWithPassword(password);
+
+			if (publicKeyHash != null) {
+				UserCertEntity userCert = new UserCertEntity();
+				userCert.userId = user.id;
+				userCert.publicKeyHash = publicKeyHash;
+				db.insertUserCert(userCert);
+			}
 			return user;
 		} catch (SQLException e) {
 			throw new RepositoryException("Error creating user", e);
@@ -211,6 +229,27 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 		try {
 			UserEntity user = db.findUserById(userId);
 
+			return user;
+		} catch (SQLException e) {
+			throw new RepositoryException("Error reading user", e);
+		} finally {
+			db.close();
+		}
+	}
+
+	@Override
+	@JdbcTransaction
+	public UserEntity findUserByPublicKey(byte[] publicKeyHash) throws RepositoryException {
+		DbHelper db = new DbHelper();
+		try {
+			// We could do a join here, but we may want to do more verification in future....
+			// e.g. are collisions a possibility?
+			UserCertEntity userCert = db.findUserByPublicKeyHash(publicKeyHash);
+			if (userCert == null) {
+				return null;
+			}
+
+			UserEntity user = db.findUserById(userCert.id);
 			return user;
 		} catch (SQLException e) {
 			throw new RepositoryException("Error reading user", e);
@@ -260,8 +299,11 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 	}
 
 	static interface Queries {
-		@Query("INSERT INTO user_projects (user_id, project_id) VALUES (?,?)")
-		int insertUserProject(int userId, int projectId) throws SQLException;
+		@Query(Query.AUTOMATIC_INSERT)
+		int insert(UserProjectEntity userProjectEntity) throws SQLException;
+
+		@Query(Query.AUTOMATIC_INSERT)
+		int insert(UserCertEntity userCertEntity) throws SQLException;
 
 		@Query("INSERT INTO projects (key, secret, metadata, public_key, private_key) VALUES (?,?,?,?,?)")
 		int insertProject(String key, byte[] secretData, byte[] metadata, byte[] publicKey, byte[] privateKey)
@@ -279,6 +321,15 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 		@Query("SELECT * FROM users WHERE id=?")
 		UserEntity findUserById(int userId) throws SQLException;
 
+		@Query("SELECT * FROM user_cert WHERE public_key_hash=?")
+		UserCertEntity findUserByPublicKeyHash(byte[] publicKeyHash) throws SQLException;
+
+		@Query("SELECT * from user_projects WHERE user_id=?")
+		List<UserProjectEntity> findUserProjects(int userId) throws SQLException;
+
+		@Query("SELECT * from user_projects WHERE user_id=? and project_id=?")
+		UserProjectEntity findUserProject(int userId, int projectId) throws SQLException;
+
 		@Query("SELECT p.* FROM projects as p, user_projects as up WHERE up.user_id=? and p.id = up.project_id")
 		List<ProjectEntity> findProjectsByUserId(int userId) throws SQLException;
 
@@ -293,6 +344,7 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 
 		@Query("INSERT INTO service_accounts (subject, public_key) VALUES (?, ?)")
 		int insertServiceAccount(String subject, byte[] publicKey) throws SQLException;
+
 	}
 
 	@Inject
@@ -306,6 +358,13 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 			this.queries = queryFactory.get(Queries.class);
 		}
 
+		public void insertUserCert(UserCertEntity userCert) throws SQLException {
+			int updateCount = queries.insert(userCert);
+			if (updateCount != 1) {
+				throw new IllegalStateException("Unexpected number of rows inserted");
+			}
+		}
+
 		public void updateProjectSecret(int projectId, byte[] secret) throws SQLException {
 			int updateCount = queries.updateProjectSecret(secret, projectId);
 			if (updateCount != 1) {
@@ -313,8 +372,8 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 			}
 		}
 
-		public void insertUserProject(int userId, int projectId) throws SQLException {
-			int updateCount = queries.insertUserProject(userId, projectId);
+		public void insertUserProject(UserProjectEntity entity) throws SQLException {
+			int updateCount = queries.insert(entity);
 			if (updateCount != 1) {
 				throw new IllegalStateException("Unexpected number of rows inserted");
 			}
@@ -370,6 +429,10 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 			return queries.findUserByKey(key);
 		}
 
+		public UserCertEntity findUserByPublicKeyHash(byte[] publicKeyHash) throws SQLException {
+			return queries.findUserByPublicKeyHash(publicKeyHash);
+		}
+
 		public List<String> listUsers(String keyLike) throws SQLException {
 			return queries.listUsers(keyLike);
 		}
@@ -405,6 +468,10 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 
 		public int insertServiceAccount(String subject, byte[] publicKey) throws SQLException {
 			return queries.insertServiceAccount(subject, publicKey);
+		}
+
+		public UserProjectEntity findUserProject(int userId, int projectId) throws SQLException {
+			return queries.findUserProject(userId, projectId);
 		}
 
 	}
@@ -500,7 +567,12 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 				throw new RepositoryException("Created project not found");
 			}
 
-			db.insertUserProject(owner.id, created.id);
+			UserProjectEntity userProjectEntity = new UserProjectEntity();
+			userProjectEntity.userId = owner.id;
+			userProjectEntity.projectId = created.id;
+			userProjectEntity.addRole(RoleId.OWNER);
+
+			db.insertUserProject(userProjectEntity);
 
 			return created;
 		} catch (SQLException e) {
@@ -620,7 +692,7 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 		if (project == null) {
 			return null;
 		}
-		project.unlockWithUser(user);
+		project.unlockWithUser((UserEntity) user);
 
 		if (!project.isSecretValid()) {
 			return null;
@@ -661,5 +733,18 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 		// TODO: Do we need/want to encrypt/obfuscate the challenge?
 		response.challenge = challenge;
 		return response;
+	}
+
+	@Override
+	public UserProjectEntity findUserProject(int userId, int projectId) throws RepositoryException {
+		DbHelper db = new DbHelper();
+		try {
+			return db.findUserProject(userId, projectId);
+		} catch (SQLException e) {
+			throw new RepositoryException("Error reading user projects", e);
+		} finally {
+			db.close();
+		}
+
 	}
 }

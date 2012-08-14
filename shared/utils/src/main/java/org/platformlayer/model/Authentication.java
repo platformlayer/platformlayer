@@ -3,7 +3,7 @@ package org.platformlayer.model;
 public interface Authentication {
 	String getUserKey();
 
-	byte[] getUserSecret();
+	// byte[] getUserSecret();
 
 	AuthenticationToken getToken();
 

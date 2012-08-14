@@ -1,4 +1,4 @@
-package org.platformlayer.auth.server;
+package org.platformlayer.crypto;
 
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;

@@ -7,12 +7,10 @@ public class PlatformlayerUserAuthentication implements Authentication {
 	final AuthenticationToken authToken;
 
 	private final String userKey;
-	private final byte[] userSecret;
 
-	public PlatformlayerUserAuthentication(AuthenticationToken authToken, String userKey, byte[] userSecret) {
+	public PlatformlayerUserAuthentication(AuthenticationToken authToken, String userKey) {
 		this.authToken = authToken;
 		this.userKey = userKey;
-		this.userSecret = userSecret;
 	}
 
 	// @Override
@@ -28,10 +26,10 @@ public class PlatformlayerUserAuthentication implements Authentication {
 	// return false;
 	// }
 
-	@Override
-	public byte[] getUserSecret() {
-		return userSecret;
-	}
+	// @Override
+	// public byte[] getUserSecret() {
+	// return userSecret;
+	// }
 
 	@Override
 	public String getUserKey() {

@@ -1,17 +1,7 @@
 package org.platformlayer.ops.auth;
 
-import java.util.Map;
-
-import javax.crypto.SecretKey;
-
-import org.platformlayer.auth.AuthenticationTokenValidator;
 import org.platformlayer.auth.OpsUser;
-import org.platformlayer.crypto.AesUtils;
-import org.platformlayer.ids.ProjectId;
 import org.platformlayer.model.Authentication;
-import org.platformlayer.model.ProjectAuthorization;
-
-import com.google.common.collect.Maps;
 
 @Deprecated
 public class OpsAuthentication {
@@ -30,29 +20,29 @@ public class OpsAuthentication {
 		return auth.getUserKey();
 	}
 
-	public SecretKey findUserSecret() {
-		byte[] userSecret = auth.getUserSecret();
-		if (userSecret == null) {
-			return null;
-		}
-		return AesUtils.deserializeKey(userSecret);
-	}
+	// public SecretKey findUserSecret() {
+	// byte[] userSecret = auth.getUserSecret();
+	// if (userSecret == null) {
+	// return null;
+	// }
+	// return AesUtils.deserializeKey(userSecret);
+	// }
 
-	final Map<ProjectId, ProjectAuthorization> projects = Maps.newHashMap();
-
-	public ProjectAuthorization getProject(ProjectId projectId, AuthenticationTokenValidator tokenValidator) {
-		ProjectAuthorization authz = projects.get(projectId);
-		if (authz == null) {
-			authz = tokenValidator.validate(auth.getToken(), projectId.getKey());
-			if (authz == null) {
-				throw new SecurityException();
-			} else {
-				projects.put(projectId, authz);
-			}
-		}
-
-		return authz;
-	}
+	// final Map<ProjectId, ProjectAuthorization> projects = Maps.newHashMap();
+	//
+	// public ProjectAuthorization getProject(ProjectId projectId, AuthenticationTokenValidator tokenValidator) {
+	// ProjectAuthorization authz = projects.get(projectId);
+	// if (authz == null) {
+	// authz = tokenValidator.validateToken(auth.getToken(), projectId.getKey());
+	// if (authz == null) {
+	// throw new SecurityException();
+	// } else {
+	// projects.put(projectId, authz);
+	// }
+	// }
+	//
+	// return authz;
+	// }
 
 	// public ProjectId getProjectId() {
 	// return new ProjectId(project.getName());

@@ -8,6 +8,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.platformlayer.Scope;
 import org.platformlayer.inject.ObjectInjector;
+import org.platformlayer.model.AuthenticationCredentials;
 
 public class ResourceBase {
 	@Inject
@@ -74,6 +75,10 @@ public class ResourceBase {
 			throw new IllegalArgumentException(clazz.getSimpleName() + " is required");
 		}
 		return t;
+	}
+
+	protected AuthenticationCredentials getAuthenticationCredentials() {
+		return getScopeParameter(AuthenticationCredentials.class, false);
 	}
 
 	protected Scope getScope() {

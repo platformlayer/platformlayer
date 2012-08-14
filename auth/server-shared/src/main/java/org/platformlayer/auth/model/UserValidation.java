@@ -8,5 +8,5 @@ public class UserValidation {
 	public String id;
 	public String name;
 
-	public byte[] secret;
+	// public byte[] secret;
 }

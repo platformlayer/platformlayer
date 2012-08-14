@@ -18,10 +18,10 @@ import org.openstack.crypto.CertificateAndKey;
 import org.openstack.crypto.KeyStoreUtils;
 import org.openstack.keystone.resources.admin.TokensResource;
 import org.platformlayer.WellKnownPorts;
-import org.platformlayer.auth.server.AcceptAllClientCertificatesTrustManager;
-import org.platformlayer.auth.server.CustomTrustManagerSslContextFactory;
 import org.platformlayer.auth.server.GuiceAuthenticationConfig;
+import org.platformlayer.crypto.AcceptAllClientCertificatesTrustManager;
 import org.platformlayer.crypto.EncryptionStore;
+import org.platformlayer.web.CustomTrustManagerSslContextFactory;
 import org.platformlayer.web.GuiceServletConfig;
 
 import com.google.common.collect.Maps;

@@ -28,6 +28,7 @@ public class KeystoneJdbcModule extends AbstractModule {
 
 		bind(UserDatabase.class).to(JdbcUserRepository.class).asEagerSingleton();
 		bind(ResultSetMappers.class).toProvider(
-				ResultSetMappersProvider.build(UserEntity.class, ProjectEntity.class, ServiceAccountEntity.class));
+				ResultSetMappersProvider.build(UserEntity.class, ProjectEntity.class, ServiceAccountEntity.class,
+						UserProjectEntity.class, UserCertEntity.class));
 	}
 }

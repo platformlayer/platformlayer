@@ -19,10 +19,11 @@ import javax.crypto.SecretKey;
 import org.apache.log4j.Logger;
 import org.openstack.crypto.Md5Hash;
 import org.platformlayer.IoUtils;
-import org.platformlayer.auth.OpsUser;
 import org.platformlayer.auth.ProjectInfo;
+import org.platformlayer.auth.UserEntity;
 import org.platformlayer.crypto.AesUtils;
 import org.platformlayer.crypto.CryptoUtils;
+import org.platformlayer.crypto.OpenSshUtils;
 import org.platformlayer.crypto.RsaUtils;
 import org.platformlayer.model.ProjectAuthorization;
 
@@ -216,7 +217,7 @@ public class SecretStore {
 		public void writeGenericAsymetricKey(byte[] plaintext, PublicKey publicKey) throws IOException {
 			dos.writeByte(ASYMETRIC_KEY);
 			byte[] encrypted = RsaUtils.encrypt(publicKey, plaintext);
-			Md5Hash signature = CryptoUtils.getSignature(publicKey);
+			Md5Hash signature = OpenSshUtils.getSignature(publicKey);
 			writeArray(dos, signature.toByteArray());
 			writeArray(dos, encrypted);
 		}
@@ -294,7 +295,7 @@ public class SecretStore {
 
 	}
 
-	public SecretKey getSecretFromUser(final OpsUser user) {
+	public SecretKey getSecretFromUser(final UserEntity user) {
 		SecretStoreDecoder visitor = new SecretStoreDecoder() {
 			@Override
 			public void visitUserKey(int userId, byte[] data) {
@@ -420,7 +421,7 @@ public class SecretStore {
 		}
 
 		X509Certificate certificate = certificateChain[0];
-		Md5Hash signature = CryptoUtils.getSignature(certificate.getPublicKey());
+		Md5Hash signature = OpenSshUtils.getSignature(certificate.getPublicKey());
 		final byte[] signatureBytes = signature.toByteArray();
 
 		SecretStoreDecoder visitor = new SecretStoreDecoder() {

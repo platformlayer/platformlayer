@@ -1,14 +1,20 @@
 package org.platformlayer.auth.client;
 
+import java.security.cert.X509Certificate;
+import java.util.List;
+
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.TrustManager;
 
 import org.openstack.crypto.CertificateAndKey;
+import org.openstack.crypto.Md5Hash;
 import org.platformlayer.WellKnownPorts;
 import org.platformlayer.auth.AuthenticationTokenValidator;
 import org.platformlayer.auth.PlatformlayerProjectAuthorization;
 import org.platformlayer.auth.PlatformlayerUserAuthentication;
+import org.platformlayer.auth.v1.CertificateChainInfo;
+import org.platformlayer.auth.v1.CertificateInfo;
 import org.platformlayer.auth.v1.ProjectValidation;
 import org.platformlayer.auth.v1.UserValidation;
 import org.platformlayer.auth.v1.ValidateAccess;
@@ -16,6 +22,7 @@ import org.platformlayer.auth.v1.ValidateTokenResponse;
 import org.platformlayer.config.Configuration;
 import org.platformlayer.crypto.AcceptAllHostnameVerifier;
 import org.platformlayer.crypto.EncryptionStore;
+import org.platformlayer.crypto.OpenSshUtils;
 import org.platformlayer.crypto.PublicKeyTrustManager;
 import org.platformlayer.crypto.SimpleClientCertificateKeyManager;
 import org.platformlayer.model.AuthenticationToken;
@@ -69,8 +76,8 @@ public class PlatformLayerTokenValidator extends RestfulClient implements Authen
 	}
 
 	@Override
-	public ProjectAuthorization validate(AuthenticationToken authToken, String projectId) {
-		// v2.0/tokens/{userToken}[?belongsTo={tenant}]
+	public ProjectAuthorization validateToken(AuthenticationToken authToken, String projectId) {
+		// v2.0/tokens/{userToken}[?project={tenant}]
 
 		String tokenId = ((PlatformlayerAuthenticationToken) authToken).getAuthTokenValue();
 		tokenId = tokenId.trim();
@@ -113,10 +120,10 @@ public class PlatformLayerTokenValidator extends RestfulClient implements Authen
 			// roles.add(role.getName());
 			// }
 
-			byte[] userSecret = userInfo.getSecret();
+			// byte[] userSecret = userInfo.getSecret();
 			String userKey = userInfo.getName();
 
-			PlatformlayerUserAuthentication user = new PlatformlayerUserAuthentication(authToken, userKey, userSecret);
+			PlatformlayerUserAuthentication user = new PlatformlayerUserAuthentication(authToken, userKey);
 			PlatformlayerProjectAuthorization project = new PlatformlayerProjectAuthorization(user, projectInfo);
 			return project;
 		} catch (RestClientException e) {
@@ -125,6 +132,55 @@ public class PlatformLayerTokenValidator extends RestfulClient implements Authen
 				return null;
 			}
 			throw new IllegalArgumentException("Error while validating token", e);
+		}
+	}
+
+	@Override
+	public ProjectAuthorization validateChain(X509Certificate[] chain, String projectKey) {
+		// v2.0/keychain[?project={projectKey}]
+
+		String url = "v2.0/keychain";
+
+		url += "?project=" + urlEncode(projectKey);
+
+		CertificateChainInfo chainInfo = new CertificateChainInfo();
+		List<CertificateInfo> certificates = chainInfo.getCertificates();
+		for (X509Certificate cert : chain) {
+			CertificateInfo certificateInfo = new CertificateInfo();
+			Md5Hash hash = OpenSshUtils.getSignature(cert.getPublicKey());
+			certificateInfo.setPublicKeyHash(hash.toHex());
+			certificates.add(certificateInfo);
+		}
+
+		try {
+			ValidateTokenResponse response = doSimpleRequest("POST", url, chainInfo, ValidateTokenResponse.class);
+
+			ValidateAccess access = response.getAccess();
+			if (access == null) {
+				return null;
+			}
+
+			UserValidation userInfo = access.getUser();
+			if (userInfo == null) {
+				return null;
+			}
+
+			ProjectValidation projectInfo = access.getProject();
+			if (projectInfo == null) {
+				return null;
+			}
+
+			String userKey = userInfo.getName();
+
+			PlatformlayerUserAuthentication user = new PlatformlayerUserAuthentication(null, userKey);
+			PlatformlayerProjectAuthorization project = new PlatformlayerProjectAuthorization(user, projectInfo);
+			return project;
+		} catch (RestClientException e) {
+			if (e.getHttpResponseCode() != null && e.getHttpResponseCode() == 404) {
+				// Not found => invalid token
+				return null;
+			}
+			throw new IllegalArgumentException("Error while validating credentials", e);
 		}
 	}
 }
