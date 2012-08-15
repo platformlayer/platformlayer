@@ -33,6 +33,7 @@ import org.platformlayer.jdbc.proxy.Query;
 import org.platformlayer.jdbc.proxy.QueryFactory;
 import org.platformlayer.model.RoleId;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
 public class JdbcUserRepository implements UserRepository, UserDatabase {

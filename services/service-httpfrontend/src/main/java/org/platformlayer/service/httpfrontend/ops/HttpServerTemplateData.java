@@ -10,6 +10,8 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.java.JavaCommandBuilder;
 import org.platformlayer.ops.templates.TemplateDataSource;
 
+import com.google.common.collect.Maps;
+
 public class HttpServerTemplateData implements TemplateDataSource {
 	static final Logger log = Logger.getLogger(HttpServerTemplateData.class);
 
@@ -49,6 +51,10 @@ public class HttpServerTemplateData implements TemplateDataSource {
 
 	public File getLogConfigurationFile() {
 		return new File(getInstanceDir(), "logback.xml");
+	}
+
+	public Map<String, String> getEnvironment() {
+		return Maps.newHashMap();
 	}
 
 }

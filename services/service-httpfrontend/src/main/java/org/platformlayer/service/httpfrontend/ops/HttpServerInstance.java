@@ -12,6 +12,8 @@ import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.supervisor.StandardService;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
+import com.google.inject.util.Providers;
+
 public class HttpServerInstance extends OpsTreeBase {
 	@Inject
 	PlatformLayerHelpers platformLayer;
@@ -41,6 +43,7 @@ public class HttpServerInstance extends OpsTreeBase {
 			service.instanceDir = template.getInstanceDir();
 			service.user = template.getUser();
 			service.setCommand(template.getCommand());
+			service.environment = Providers.of(template.getEnvironment());
 		}
 
 		addChild(HttpDnsConfiguration.class);
