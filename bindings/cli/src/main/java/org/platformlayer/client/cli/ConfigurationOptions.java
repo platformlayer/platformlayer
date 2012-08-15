@@ -1,10 +1,12 @@
 package org.platformlayer.client.cli;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.Properties;
 
 import org.kohsuke.args4j.Option;
@@ -64,6 +66,12 @@ public class ConfigurationOptions extends CliOptions {
 
 			if (debug) {
 				client.setDebug(System.err);
+			} else {
+				// We don't want debug messages to interfere with our output
+				// TODO: Fix this so debug output doesn't interfere (stderr?)
+				// TODO: Maybe output the debug info only in case of failure?
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				client.setDebug(new PrintStream(baos));
 			}
 
 			// client = FederatedPlatformLayerClient.buildUsingConfig(is);
