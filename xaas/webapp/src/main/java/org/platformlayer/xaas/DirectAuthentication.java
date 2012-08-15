@@ -143,6 +143,10 @@ public class DirectAuthentication implements AuthenticationCredentials, ProjectA
 
 	@Override
 	public List<RoleId> getRoles() {
-		throw new UnsupportedOperationException();
+		log.info("Assuming OWNER role for DirectAuthentication");
+
+		List<RoleId> roles = Lists.newArrayList();
+		roles.add(RoleId.OWNER);
+		return roles;
 	}
 }
