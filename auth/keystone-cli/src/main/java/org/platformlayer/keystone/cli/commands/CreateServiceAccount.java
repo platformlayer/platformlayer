@@ -8,7 +8,7 @@ import org.platformlayer.auth.ServiceAccount;
 import org.platformlayer.auth.UserDatabase;
 
 public class CreateServiceAccount extends KeystoneCommandRunnerBase {
-	@Option(name = "-k", aliases = "--key", usage = "keystore")
+	@Option(name = "-k", aliases = "--key", usage = "keystore", required = true)
 	public String keystore;
 
 	@Option(name = "-s", aliases = "--secret", usage = "keystore secret")

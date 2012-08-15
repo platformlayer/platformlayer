@@ -23,6 +23,7 @@ public class ClientCertificateSystemAuthenticator implements SystemAuthenticator
 	@Override
 	public ServiceAccount authenticate(X509Certificate[] certChain) throws AuthenticatorException {
 		if (certChain.length == 0) {
+			log.debug("Chain empty; can't authenticate");
 			return null;
 		}
 

@@ -65,6 +65,8 @@ public class RestfulClient {
 
 				if (debug != null) {
 					debug.println("HTTP Request: " + method + " " + uri);
+				} else {
+					log.debug("HTTP Request: " + method + " " + uri);
 				}
 
 				SimpleHttpRequest httpRequest = SimpleHttpRequest.build(method, uri);

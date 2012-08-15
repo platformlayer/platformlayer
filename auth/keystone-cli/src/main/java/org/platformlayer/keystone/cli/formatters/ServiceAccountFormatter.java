@@ -3,7 +3,9 @@ package org.platformlayer.keystone.cli.formatters;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 
+import org.openstack.utils.Hex;
 import org.platformlayer.auth.ServiceAccount;
+import org.platformlayer.auth.ServiceAccountEntity;
 
 import com.fathomdb.cli.formatter.SimpleFormatter;
 import com.fathomdb.cli.output.OutputSink;
@@ -19,7 +21,10 @@ public class ServiceAccountFormatter extends SimpleFormatter<ServiceAccount> {
 	public void visit(ServiceAccount o, OutputSink sink) throws IOException {
 		LinkedHashMap<String, Object> values = Maps.newLinkedHashMap();
 
-		values.put("ServiceAccount", o.toString());
+		ServiceAccountEntity entity = (ServiceAccountEntity) o;
+
+		values.put("subject", entity.subject);
+		values.put("publicKeyData", Hex.toHex(entity.publicKeyData));
 
 		sink.outputRow(values);
 	}

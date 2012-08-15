@@ -9,7 +9,7 @@ import org.platformlayer.auth.UserEntity;
 import com.fathomdb.cli.CliException;
 
 public class CreateProject extends KeystoneCommandRunnerBase {
-	@Argument(index = 0, required = true)
+	@Argument(index = 0, required = true, usage = "Project key")
 	public String projectKey;
 
 	public CreateProject() {
