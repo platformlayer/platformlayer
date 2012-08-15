@@ -66,123 +66,138 @@ public class PeerToPeerCopy {
 	@Inject
 	ExecutorService executorService;
 
-	public void copy(final OpsTarget src, final File srcFile, final OpsTarget dest, final File destFile)
+	public void copy(final OpsTarget src, final File srcFile, final OpsTarget dest, final File finalDestFile)
 			throws OpsException {
-		int maxAttempts = 3;
+		File tempDir = dest.createTempDir();
 
-		for (int attempt = 1; attempt <= maxAttempts; attempt++) {
-			final InetAddressPair channel = findChannel(src, dest);
+		try {
+			final File tempDest = new File(tempDir, finalDestFile.getName());
 
-			final int listenPort = PORT;
+			int maxAttempts = 3;
 
-			Callable<ProcessExecution> pushFile = new Callable<ProcessExecution>() {
-				@Override
-				public ProcessExecution call() throws Exception {
-					// TODO: Secure this better (using host address is probably sufficient, but then we need a full
-					// network map to know which IP to use)
-					// Command sendCommand = Command.build("socat -u OPEN:{0},rdonly TCP4-LISTEN:{1},range={2}",
-					// srcImageFile, port, targetAddress.getHostAddress() + "/32");
-					Command pushCommand = Command.build("socat -u OPEN:{0},rdonly {1}", srcFile,
-							toSocatPush(channel.dest, listenPort));
-					return src.executeCommand(pushCommand.setTimeout(TimeSpan.TEN_MINUTES));
+			for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+				final InetAddressPair channel = findChannel(src, dest);
+
+				final int listenPort = PORT;
+
+				Callable<ProcessExecution> pushFile = new Callable<ProcessExecution>() {
+					@Override
+					public ProcessExecution call() throws Exception {
+						// TODO: Secure this better (using host address is probably sufficient, but then we need a full
+						// network map to know which IP to use)
+						// Command sendCommand = Command.build("socat -u OPEN:{0},rdonly TCP4-LISTEN:{1},range={2}",
+						// srcImageFile, port, targetAddress.getHostAddress() + "/32");
+						Command pushCommand = Command.build("socat -u OPEN:{0},rdonly {1}", srcFile,
+								toSocatPush(channel.dest, listenPort));
+						return src.executeCommand(pushCommand.setTimeout(TimeSpan.TEN_MINUTES));
+					}
+				};
+
+				Callable<ProcessExecution> listenFile = new Callable<ProcessExecution>() {
+					@Override
+					public ProcessExecution call() throws Exception {
+						// TODO: Check no concurrent socats?? Move to a better system??
+						Command killExistingSocats = Command.build("pkill socat || true");
+						dest.executeCommand(killExistingSocats);
+
+						try {
+							Command listenCommand = Command.build("socat -u {0} CREATE:{1}",
+									toSocatListen(channel.src, listenPort), tempDest);
+							return dest.executeCommand(listenCommand.setTimeout(TimeSpan.TEN_MINUTES));
+						} catch (ProcessExecutionException e) {
+							log.warn("Error running listen process", e);
+							throw new OpsException("Error running listen process", e);
+						}
+					}
+				};
+
+				Future<ProcessExecution> listenFileFuture = executorService.submit(listenFile);
+
+				for (int readAttempts = 1; readAttempts <= 10; readAttempts++) {
+					TimeSpan.ONE_SECOND.doSafeSleep();
+
+					if (!listenFileFuture.isDone()) {
+						boolean pushedOkay = false;
+						try {
+							pushFile.call();
+							pushedOkay = true;
+						} catch (Exception e) {
+							ProcessExecution pushExecution = null;
+							if (e instanceof ProcessExecutionException) {
+								pushExecution = ((ProcessExecutionException) e).getExecution();
+							}
+
+							if (pushExecution != null && pushExecution.getExitCode() == 1
+									&& pushExecution.getStdErr().contains("Connection refused")) {
+								log.info("Got connection refused on push; will retry");
+							} else {
+								throw new OpsException("Error pushing file", e);
+							}
+						}
+
+						if (pushedOkay) {
+							try {
+								listenFileFuture.get(5, TimeUnit.SECONDS);
+							} catch (TimeoutException e) {
+								log.info("Timeout while waiting for receive to complete");
+							} catch (InterruptedException e) {
+								Thread.currentThread().interrupt();
+								throw new OpsException("Interrupted during file receive", e);
+							} catch (ExecutionException e) {
+								throw new OpsException("Error during file receive", e);
+							}
+						}
+					}
+
+					if (listenFileFuture.isDone()) {
+						try {
+							ProcessExecution listenExecution = listenFileFuture.get();
+							log.warn("File receiving exited: " + listenExecution);
+							break;
+						} catch (ExecutionException e) {
+							throw new OpsException("Error receiving file", e);
+						} catch (InterruptedException e) {
+							ExceptionUtils.handleInterrupted(e);
+							throw new OpsException("Error receiving file", e);
+						}
+					}
 				}
-			};
-
-			Callable<ProcessExecution> listenFile = new Callable<ProcessExecution>() {
-				@Override
-				public ProcessExecution call() throws Exception {
-					// TODO: Check no concurrent socats?? Move to a better system??
-					Command killExistingSocats = Command.build("pkill socat || true");
-					dest.executeCommand(killExistingSocats);
-
-					Command listenCommand = Command.build("socat -u {0} CREATE:{1}",
-							toSocatListen(channel.src, listenPort), destFile);
-					return dest.executeCommand(listenCommand.setTimeout(TimeSpan.TEN_MINUTES));
-				}
-			};
-
-			Future<ProcessExecution> listenFileFuture = executorService.submit(listenFile);
-
-			for (int readAttempts = 1; readAttempts <= 10; readAttempts++) {
-				TimeSpan.ONE_SECOND.doSafeSleep();
 
 				if (!listenFileFuture.isDone()) {
-					boolean pushedOkay = false;
-					try {
-						pushFile.call();
-						pushedOkay = true;
-					} catch (Exception e) {
-						ProcessExecution pushExecution = null;
-						if (e instanceof ProcessExecutionException) {
-							pushExecution = ((ProcessExecutionException) e).getExecution();
-						}
-
-						if (pushExecution != null && pushExecution.getExitCode() == 1
-								&& pushExecution.getStdErr().contains("Connection refused")) {
-							log.info("Got connection refused on push; will retry");
-						} else {
-							throw new OpsException("Error pushing file", e);
-						}
-					}
-
-					if (pushedOkay) {
-						try {
-							listenFileFuture.get(5, TimeUnit.SECONDS);
-						} catch (TimeoutException e) {
-							log.info("Timeout while waiting for receive to complete");
-						} catch (InterruptedException e) {
-							Thread.currentThread().interrupt();
-							throw new OpsException("Interrupted during file receive", e);
-						} catch (ExecutionException e) {
-							throw new OpsException("Error during file receive", e);
-						}
-					}
+					throw new OpsException("Failed to push file (too many retries");
 				}
 
-				if (listenFileFuture.isDone()) {
-					try {
-						ProcessExecution listenExecution = listenFileFuture.get();
-						log.warn("File receiving exited: " + listenExecution);
-						break;
-					} catch (ExecutionException e) {
-						throw new OpsException("Error receiving file", e);
-					} catch (InterruptedException e) {
-						ExceptionUtils.handleInterrupted(e);
-						throw new OpsException("Error receiving file", e);
-					}
-				}
-			}
+				Md5Hash targetHash = dest.getFileHash(tempDest);
+				Md5Hash srcHash = src.getFileHash(srcFile);
 
-			if (!listenFileFuture.isDone()) {
-				throw new OpsException("Failed to push file (too many retries");
-			}
-
-			Md5Hash targetHash = dest.getFileHash(destFile);
-			Md5Hash srcHash = src.getFileHash(srcFile);
-
-			if (Objects.equal(srcHash, targetHash)) {
-				break;
-			} else {
-				dest.rm(destFile);
-				if (attempt != maxAttempts) {
-					log.warn("Files did not match after transfer");
+				if (Objects.equal(srcHash, targetHash)) {
+					break;
 				} else {
-					throw new OpsException("Files did not match after transfer");
+					dest.rm(tempDest);
+					if (attempt != maxAttempts) {
+						log.warn("Files did not match after transfer");
+					} else {
+						throw new OpsException("Files did not match after transfer");
+					}
 				}
+
+				// if (serveFuture.isDone()) {
+				// // This is interesting for debug purposes; otherwise not very useful
+				// try {
+				// ProcessExecution serveExecution = serveFuture.get();
+				// log.warn("Serving process exited: " + serveExecution);
+				// } catch (ExecutionException e) {
+				// throw new OpsException("Error sending file to image store", e);
+				// } catch (InterruptedException e) {
+				// ExceptionUtils.handleInterrupted(e);
+				// throw new OpsException("Error sending file to image store", e);
+				// }
+				// }
 			}
 
-			// if (serveFuture.isDone()) {
-			// // This is interesting for debug purposes; otherwise not very useful
-			// try {
-			// ProcessExecution serveExecution = serveFuture.get();
-			// log.warn("Serving process exited: " + serveExecution);
-			// } catch (ExecutionException e) {
-			// throw new OpsException("Error sending file to image store", e);
-			// } catch (InterruptedException e) {
-			// ExceptionUtils.handleInterrupted(e);
-			// throw new OpsException("Error sending file to image store", e);
-			// }
-			// }
+			dest.mv(tempDest, finalDestFile);
+		} finally {
+			dest.rmdir(tempDir);
 		}
 	}
 
