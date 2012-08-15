@@ -68,7 +68,12 @@ public abstract class StandardServiceInstance extends OpsTreeBase {
 				httpsKey.alias = ManagedKeystore.DEFAULT_WEBSERVER_ALIAS;
 				httpsKey.key = template.findSslKey();
 			}
+
+			addExtraKeys(configDir, keystoreFile);
 		}
+	}
+
+	protected void addExtraKeys(OpsTreeBase parent, File keystoreFile) throws OpsException {
 	}
 
 	/**

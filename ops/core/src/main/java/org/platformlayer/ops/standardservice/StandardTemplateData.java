@@ -80,7 +80,7 @@ public abstract class StandardTemplateData implements TemplateDataSource {
 	}
 
 	public File getKeystoreFile() {
-		return new File(getConfigDir(), "../keystore.jks");
+		return new File(getConfigDir(), "keystore.jks");
 	}
 
 	public File getDistFile() {
