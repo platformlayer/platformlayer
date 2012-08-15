@@ -27,8 +27,10 @@ public class UserProjectEntity {
 
 	public List<RoleId> getRoles() {
 		List<RoleId> ret = Lists.newArrayList();
-		for (String key : Splitter.on(",").split(joinedRoles)) {
-			ret.add(new RoleId(key));
+		if (joinedRoles != null) {
+			for (String key : Splitter.on(",").split(joinedRoles)) {
+				ret.add(new RoleId(key));
+			}
 		}
 		return ret;
 	}

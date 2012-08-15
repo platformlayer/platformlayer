@@ -206,7 +206,10 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 			db.insertUser(userName, hashedPassword, secretData, publicKeyData, privateKeyData);
 
 			UserEntity user = findUser(userName);
-			user.unlockWithPassword(password);
+
+			if (password != null) {
+				user.unlockWithPassword(password);
+			}
 
 			if (publicKeyHash != null) {
 				UserCertEntity userCert = new UserCertEntity();
@@ -214,6 +217,7 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 				userCert.publicKeyHash = publicKeyHash;
 				db.insertUserCert(userCert);
 			}
+
 			return user;
 		} catch (SQLException e) {
 			throw new RepositoryException("Error creating user", e);
@@ -249,7 +253,7 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 				return null;
 			}
 
-			UserEntity user = db.findUserById(userCert.id);
+			UserEntity user = db.findUserById(userCert.userId);
 			return user;
 		} catch (SQLException e) {
 			throw new RepositoryException("Error reading user", e);
@@ -736,6 +740,7 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 	}
 
 	@Override
+	@JdbcTransaction
 	public UserProjectEntity findUserProject(int userId, int projectId) throws RepositoryException {
 		DbHelper db = new DbHelper();
 		try {

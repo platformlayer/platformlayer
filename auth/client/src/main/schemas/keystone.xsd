@@ -100,6 +100,21 @@
     <xs:attribute name="id" type="xs:string"/>
   </xs:complexType>
 
+  <xs:complexType name="authenticateResponse">
+    <xs:sequence>
+      <xs:element ref="tns:access" minOccurs="0"/>
+      <xs:element name="challenge" type="xs:base64Binary" minOccurs="0"/>
+      <xs:element name="statusCode" type="xs:int" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="access">
+    <xs:sequence>
+      <xs:element name="token" type="tns:token" minOccurs="0"/>
+      <xs:element name="projects" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
   <xs:complexType name="authenticateRequest">
     <xs:sequence>
       <xs:element ref="tns:auth" minOccurs="0"/>
@@ -119,21 +134,6 @@
     <xs:sequence>
       <xs:element name="username" type="xs:string" minOccurs="0"/>
       <xs:element name="challengeResponse" type="xs:base64Binary" minOccurs="0"/>
-    </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="authenticateResponse">
-    <xs:sequence>
-      <xs:element ref="tns:access" minOccurs="0"/>
-      <xs:element name="challenge" type="xs:base64Binary" minOccurs="0"/>
-      <xs:element name="statusCode" type="xs:int" minOccurs="0"/>
-    </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="access">
-    <xs:sequence>
-      <xs:element name="token" type="tns:token" minOccurs="0"/>
-      <xs:element name="projects" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
   </xs:complexType>
 

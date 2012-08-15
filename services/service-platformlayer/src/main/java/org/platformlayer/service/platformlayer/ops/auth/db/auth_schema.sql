@@ -8,7 +8,8 @@ create unique index projects_index_key on projects (key);
 grant all on projects to platformlayer_auth;
 grant all on projects_id_seq to platformlayer_auth;
 
-create table user_projects (user_id int, project_id int);
+create table user_projects (user_id int, project_id int, roles varchar);
+// alter table user_projects add column roles varchar;
 create unique index user_projects_index on user_projects (user_id, project_id);
 grant all on user_projects to platformlayer_auth;
 
@@ -16,3 +17,6 @@ create table service_accounts (subject varchar, public_key bytea);
 create index service_accounts_index on service_accounts (public_key);
 grant all on service_accounts to platformlayer_auth;
 
+create table user_cert (id int, user_id int, public_key_hash bytea, primary key (id));
+create index user_cert_index_public_key_hash on user_cert (public_key_hash);
+grant all on user_cert to platformlayer_auth;

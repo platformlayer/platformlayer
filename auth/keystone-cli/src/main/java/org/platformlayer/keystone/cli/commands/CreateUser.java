@@ -13,7 +13,7 @@ import org.platformlayer.auth.UserDatabase;
 import com.fathomdb.cli.CliException;
 
 public class CreateUser extends KeystoneCommandRunnerBase {
-	@Argument(index = 0, required = true)
+	@Argument(index = 0, required = true, usage = "username")
 	public String username;
 
 	@Option(name = "-p", aliases = "--password", usage = "password")

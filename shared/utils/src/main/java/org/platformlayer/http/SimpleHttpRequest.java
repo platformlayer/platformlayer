@@ -10,7 +10,6 @@ import java.security.GeneralSecurityException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.security.UnrecoverableKeyException;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +18,6 @@ import java.util.Map.Entry;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManager;
-import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
@@ -74,33 +72,7 @@ public class SimpleHttpRequest {
 
 	SSLSocketFactory buildSslSocketFactory() throws NoSuchAlgorithmException, UnrecoverableKeyException,
 			KeyStoreException, KeyManagementException {
-		SSLContext context = SSLContext.getInstance("TLS");
-
-		// context.getClientSessionContext().setEndpointIdentificationAlgorithm();
-		// KeyStore keyStore = KeyStore.getInstance("PKCS12");
-		// keyStore.load(new FileInputStream(privateKeyFile), privateKeyPassword.toCharArray());
-
-		// InputStream keyInput = new FileInputStream(pKeyFile);
-		// keyStore.load(keyInput, pKeyPassword.toCharArray());
-		// keyInput.close();
-
-		// We need to pass a keystore password, though I don't think it's used
-		// String keystorePassword = "password";
-		KeyManager[] keyManagers = null;
-		if (keyManager != null) {
-			keyManagers = new KeyManager[] { keyManager };
-		}
-
-		TrustManager[] trustManagers = null;
-
-		if (trustManager != null) {
-			trustManagers = new TrustManager[] { trustManager };
-		}
-
-		context.init(keyManagers, trustManagers, new SecureRandom());
-
-		return context.getSocketFactory();
-
+		return SslHelpers.buildSslSocketFactory(keyManager, trustManager);
 	}
 
 	public class SimpleHttpResponse {

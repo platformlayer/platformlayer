@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.Column;
 import javax.persistence.Id;
 
 import com.google.common.collect.Lists;
@@ -41,12 +42,18 @@ public class FieldMap {
 	}
 
 	void discoverFields() {
-		for (Field field : clazz.getFields()) {
+		for (Field field : ReflectionUtils.getAllFields(clazz)) {
+			Column columnAttribute = field.getAnnotation(Column.class);
+			Id idAnnotation = field.getAnnotation(Id.class);
+
+			if (columnAttribute == null && idAnnotation == null) {
+				continue;
+			}
+
 			String columnName = nameMapping.getColumnName(field);
 			columnNames.add(columnName);
 			boolean isId = false;
 
-			Id idAnnotation = field.getAnnotation(Id.class);
 			if (idAnnotation != null) {
 				idFields.add(field);
 				isId = true;
@@ -69,6 +76,9 @@ public class FieldMap {
 		if (fieldInfo == null) {
 			return null;
 		}
+
+		fieldInfo.field.setAccessible(true);
+
 		return fieldInfo.field;
 	}
 
