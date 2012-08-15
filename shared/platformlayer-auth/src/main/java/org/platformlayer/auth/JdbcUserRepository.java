@@ -303,6 +303,33 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 		}
 	}
 
+	@Override
+	@JdbcTransaction
+	public List<ServiceAccountEntity> listAllServiceAccounts(byte[] filterPublicKey) throws RepositoryException {
+		DbHelper db = new DbHelper();
+		try {
+			List<ServiceAccountEntity> serviceAccounts = db.listAllServiceAccounts();
+
+			List<ServiceAccountEntity> ret = Lists.newArrayList();
+
+			for (ServiceAccountEntity serviceAccount : serviceAccounts) {
+				if (filterPublicKey != null) {
+					if (!Objects.equal(filterPublicKey, serviceAccount.publicKeyData)) {
+						continue;
+					}
+				}
+
+				ret.add(serviceAccount);
+			}
+
+			return ret;
+		} catch (SQLException e) {
+			throw new RepositoryException("Error listing service accounts", e);
+		} finally {
+			db.close();
+		}
+	}
+
 	static interface Queries {
 		@Query(Query.AUTOMATIC_INSERT)
 		int insert(UserProjectEntity userProjectEntity) throws SQLException;
@@ -319,6 +346,9 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 
 		@Query("SELECT key FROM projects WHERE key LIKE ?")
 		List<String> listProjects(String keyLike) throws SQLException;
+
+		@Query("SELECT * FROM service_accounts")
+		List<ServiceAccountEntity> listAllServiceAccounts() throws SQLException;
 
 		@Query("SELECT * FROM users WHERE key=?")
 		UserEntity findUserByKey(String key) throws SQLException;
@@ -444,6 +474,10 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 
 		public List<String> listProjects(String keyLike) throws SQLException {
 			return queries.listProjects(keyLike);
+		}
+
+		public List<ServiceAccountEntity> listAllServiceAccounts() throws SQLException {
+			return queries.listAllServiceAccounts();
 		}
 
 		public UserEntity findUserById(int userId) throws SQLException {

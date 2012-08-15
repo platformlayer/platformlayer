@@ -39,4 +39,6 @@ public interface UserDatabase extends UserRepository {
 	ServiceAccount createServiceAccount(X509Certificate cert) throws RepositoryException;
 
 	UserProjectEntity findUserProject(int userId, int projectId) throws RepositoryException;
+
+	List<ServiceAccountEntity> listAllServiceAccounts(byte[] filterPublicKey) throws RepositoryException;
 }
