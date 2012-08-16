@@ -161,21 +161,29 @@ public class KeystoneRepositoryAuthenticator implements KeystoneUserAuthenticato
 			return null;
 		}
 
-		String publicKeyHash = chain.certificates.get(0).publicKeyHash;
-		if (Strings.isNullOrEmpty(publicKeyHash)) {
-			return null;
+		for (int i = 0; i < chain.certificates.size(); i++) {
+			String publicKeyHash = chain.certificates.get(i).publicKeyHash;
+			if (Strings.isNullOrEmpty(publicKeyHash)) {
+				continue;
+			}
+
+			log.debug("Checking publicKeyHash: " + publicKeyHash);
+
+			byte[] hash = Hex.fromHex(publicKeyHash);
+
+			UserEntity user;
+			try {
+				user = repository.findUserByPublicKey(hash);
+			} catch (RepositoryException e) {
+				throw new AuthenticatorException("Error while authenticating user", e);
+			}
+
+			if (user != null) {
+				return user;
+			}
 		}
 
-		byte[] hash = Hex.fromHex(publicKeyHash);
-
-		UserEntity user;
-		try {
-			user = repository.findUserByPublicKey(hash);
-		} catch (RepositoryException e) {
-			throw new AuthenticatorException("Error while authenticating user", e);
-		}
-
-		return user;
+		return null;
 	}
 
 	@Override
