@@ -11,8 +11,8 @@ import org.platformlayer.core.model.Tags;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobLog;
+import org.platformlayer.metrics.model.MetricDataStream;
 import org.platformlayer.metrics.model.MetricInfoCollection;
-import org.platformlayer.metrics.model.MetricValues;
 
 public interface PlatformLayerClient {
 	// Actions
@@ -62,7 +62,7 @@ public interface PlatformLayerClient {
 	public JobLog getJobLog(String jobId) throws PlatformLayerClientException;
 
 	// Metrics
-	public MetricValues getMetric(PlatformLayerKey key, String metricKey) throws PlatformLayerClientException;
+	public MetricDataStream getMetric(PlatformLayerKey key, String metricKey) throws PlatformLayerClientException;
 
 	public MetricInfoCollection listMetrics(PlatformLayerKey key) throws PlatformLayerClientException;
 

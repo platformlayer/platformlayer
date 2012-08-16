@@ -26,6 +26,11 @@
             <groupId>org.platformlayer</groupId>
             <artifactId>model-shared</artifactId>
         </dependency>
+        
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -57,10 +62,10 @@
                     <includes>
                         <include>**/model/**/*.java</include>
                     </includes>
-                    <!-- jaxb2-maven-plugin doesn't support this (?) <schemas>
-                        <schema> <namespace>http://platformlayer.org/core/v1.0</namespace> <file>platformlayer-core.xsd</file>
-                        </schema> <schema> <namespace>http://platformlayer.org/metrics/v1.0</namespace>
-                        <file>platformlayer-metrics.xsd</file> </schema> <schema> <namespace>http://platformlayer.org/jobs/v1.0</namespace>
+                    <!-- jaxb2-maven-plugin doesn't support this (?) <schemas> 
+                        <schema> <namespace>http://platformlayer.org/core/v1.0</namespace> <file>platformlayer-core.xsd</file> 
+                        </schema> <schema> <namespace>http://platformlayer.org/metrics/v1.0</namespace> 
+                        <file>platformlayer-metrics.xsd</file> </schema> <schema> <namespace>http://platformlayer.org/jobs/v1.0</namespace> 
                         <file>platformlayer-jobs.xsd</file> </schema> </schemas> -->
                 </configuration>
             </plugin>

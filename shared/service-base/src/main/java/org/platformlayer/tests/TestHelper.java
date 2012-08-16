@@ -1,6 +1,6 @@
 package org.platformlayer.tests;
 
-import org.openstack.client.utils.RandomUtil;
+import org.openstack.utils.RandomUtil;
 import org.platformlayer.core.model.Secret;
 
 public class TestHelper {

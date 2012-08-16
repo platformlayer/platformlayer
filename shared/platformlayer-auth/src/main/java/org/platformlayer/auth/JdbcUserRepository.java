@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Random;
 
 import javax.crypto.SecretKey;
 import javax.inject.Inject;
@@ -214,6 +215,11 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 
 			if (publicKeyHash != null) {
 				UserCertEntity userCert = new UserCertEntity();
+
+				// TODO: Retry on collision
+				Random random = new Random();
+				userCert.id = random.nextInt();
+
 				userCert.userId = user.id;
 				userCert.publicKeyHash = publicKeyHash;
 				db.insertUserCert(userCert);

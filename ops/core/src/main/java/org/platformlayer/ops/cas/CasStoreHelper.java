@@ -6,7 +6,8 @@ import java.net.URISyntaxException;
 
 import javax.inject.Inject;
 
-import org.apache.commons.httpclient.HttpClient;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
 import org.openstack.client.OpenstackCredentials;
 import org.platformlayer.cas.CasLocation;
@@ -49,7 +50,7 @@ public class CasStoreHelper {
 	}
 
 	private static JenkinsCasStore buildJenkins(String baseUrl) {
-		HttpClient httpClient = new HttpClient();
+		HttpClient httpClient = new DefaultHttpClient();
 		JenkinsClient jenkinsClient;
 		try {
 			jenkinsClient = new JenkinsClient(httpClient, new URI(baseUrl));

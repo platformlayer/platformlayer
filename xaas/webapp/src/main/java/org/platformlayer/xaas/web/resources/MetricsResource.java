@@ -8,8 +8,8 @@ import javax.ws.rs.Produces;
 import org.platformlayer.CheckedCallable;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.core.model.ItemBase;
+import org.platformlayer.metrics.model.MetricDataSource;
 import org.platformlayer.metrics.model.MetricInfoCollection;
-import org.platformlayer.metrics.model.MetricValues;
 import org.platformlayer.ops.BindingScope;
 import org.platformlayer.ops.MetricCollector;
 import org.platformlayer.ops.OpsContext;
@@ -49,7 +49,7 @@ public class MetricsResource extends XaasResourceBase {
 	@GET
 	@Path("{metricKey}")
 	@Produces({ XML, JSON })
-	public MetricValues getMetrics(@PathParam("metricKey") final String metricKey) throws RepositoryException,
+	public MetricDataSource getMetrics(@PathParam("metricKey") final String metricKey) throws RepositoryException,
 			OpsException {
 		final ItemBase managedItem = getManagedItem();
 		final ServiceProvider serviceProvider = getServiceProvider();
@@ -59,13 +59,12 @@ public class MetricsResource extends XaasResourceBase {
 		final OpsContext opsContext = opsContextBuilder.buildTemporaryOpsContext(getServiceType(),
 				getProjectAuthorization());
 
-		return OpsContext.runInContext(opsContext, new CheckedCallable<MetricValues, Exception>() {
+		return OpsContext.runInContext(opsContext, new CheckedCallable<MetricDataSource, Exception>() {
 			@Override
-			public MetricValues call() throws Exception {
+			public MetricDataSource call() throws Exception {
 				BindingScope bindingScope = BindingScope.push(managedItem, managedItem);
 				try {
-
-					MetricValues metrics = serviceProvider.getMetricValues(managedItem, metricKey);
+					MetricDataSource metrics = serviceProvider.getMetricValues(managedItem, metricKey);
 					return metrics;
 				} finally {
 					bindingScope.pop();

@@ -93,13 +93,16 @@ public class CertificateController extends OpsTreeBase implements ManagedSecretK
 	@Override
 	public X509Certificate getCertificate() throws OpsException {
 		CertificateReader reader = new CertificateReader();
-		Object parsed = reader.parse(model.certificate);
-		if (parsed == null) {
+		java.security.cert.Certificate[] parsed = reader.parse(model.certificate);
+		if (parsed == null || parsed.length == 0) {
 			throw new OpsException("Cannot parse certificate");
-		} else if (parsed instanceof X509Certificate) {
-			return (X509Certificate) parsed;
 		} else {
-			throw new OpsException("Expected X509 certificate, found: " + parsed.getClass().getSimpleName());
+			java.security.cert.Certificate first = parsed[0];
+			if (first instanceof X509Certificate) {
+				return (X509Certificate) first;
+			} else {
+				throw new OpsException("Expected X509 certificate, found: " + first.getClass().getSimpleName());
+			}
 		}
 	}
 

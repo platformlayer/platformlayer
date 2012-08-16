@@ -15,10 +15,11 @@ import org.platformlayer.core.model.ServiceInfo;
 import org.platformlayer.ids.ItemType;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.inject.ObjectInjector;
-import org.platformlayer.metrics.model.MetricValues;
+import org.platformlayer.metrics.model.MetricDataSource;
 import org.platformlayer.ops.crypto.Passwords;
 import org.platformlayer.ops.helpers.ServiceContext;
 import org.platformlayer.ops.helpers.SshKey;
+import org.platformlayer.ops.metrics.MetricFetcher;
 import org.platformlayer.xaas.Controller;
 import org.platformlayer.xaas.Service;
 import org.platformlayer.xaas.discovery.AnnotatedClass;
@@ -210,7 +211,7 @@ public abstract class ServiceProviderBase implements ServiceProvider {
 	}
 
 	@Override
-	public MetricValues getMetricValues(ItemBase item, String metricKey) throws OpsException {
+	public MetricDataSource getMetricValues(ItemBase item, String metricKey) throws OpsException {
 		MetricFetcher metricFetcher = injector.getInstance(MetricFetcher.class);
 		return metricFetcher.fetch(this, item, metricKey);
 	}

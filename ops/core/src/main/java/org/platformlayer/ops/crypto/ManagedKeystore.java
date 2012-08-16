@@ -262,13 +262,17 @@ public class ManagedKeystore extends OpsTreeBase {
 		}
 
 		CertificateReader reader = new CertificateReader();
-		Certificate issuerCert = reader.parse(issuerCertData);
+		Certificate[] issuerCerts = reader.parse(issuerCertData);
 
-		if (issuerCert == null) {
+		if (issuerCerts == null || issuerCerts.length == 0) {
 			throw new OpsException("Error reading certificate: " + issuer);
 		}
 
-		return (X509Certificate) issuerCert;
+		if (issuerCerts.length != 1) {
+			throw new OpsException("Expected only one certificate: " + issuer);
+		}
+
+		return (X509Certificate) issuerCerts[0];
 	}
 
 	private String sanitizeX500Principal(X500Principal issuer) {

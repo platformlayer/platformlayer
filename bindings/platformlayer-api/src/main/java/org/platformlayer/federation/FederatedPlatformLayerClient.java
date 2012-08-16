@@ -36,8 +36,8 @@ import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobLog;
+import org.platformlayer.metrics.model.MetricDataStream;
 import org.platformlayer.metrics.model.MetricInfoCollection;
-import org.platformlayer.metrics.model.MetricValues;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.service.federation.v1.FederatedService;
 import org.platformlayer.service.federation.v1.FederatedServiceMap;
@@ -432,7 +432,7 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
-	public MetricValues getMetric(PlatformLayerKey key, String metricKey) throws PlatformLayerClientException {
+	public MetricDataStream getMetric(PlatformLayerKey key, String metricKey) throws PlatformLayerClientException {
 		MappedPlatformLayerKey mapped = mapToChild(key);
 		return mapped.child.client.getMetric(mapped.key, metricKey);
 	}

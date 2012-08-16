@@ -9,6 +9,7 @@ import org.kohsuke.args4j.Option;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.auth.OpsUser;
 import org.platformlayer.auth.UserDatabase;
+import org.platformlayer.ops.OpsException;
 
 import com.fathomdb.cli.CliException;
 
@@ -18,6 +19,9 @@ public class CreateUser extends KeystoneCommandRunnerBase {
 
 	@Option(name = "-p", aliases = "--password", usage = "password")
 	public String password;
+
+	@Option(name = "-c", aliases = "--cert", usage = "certificate")
+	public String certPath;
 
 	@Option(name = "-k", aliases = "--key", usage = "keystore")
 	public String keystore;
@@ -33,9 +37,9 @@ public class CreateUser extends KeystoneCommandRunnerBase {
 	}
 
 	@Override
-	public Object runCommand() throws RepositoryException, GeneralSecurityException, IOException {
-		if (password == null && keystore == null) {
-			throw new CliException("Either key or password is required");
+	public Object runCommand() throws RepositoryException, GeneralSecurityException, IOException, OpsException {
+		if (password == null && keystore == null && certPath == null) {
+			throw new CliException("Either key or password or cert is required");
 		}
 
 		UserDatabase userRepository = getContext().getUserRepository();
@@ -43,6 +47,8 @@ public class CreateUser extends KeystoneCommandRunnerBase {
 
 		if (keystore != null) {
 			certificateChain = getContext().getCertificateChain(keystore, keystoreSecret, keyAlias);
+		} else if (certPath != null) {
+			certificateChain = getContext().loadCertificateChain(certPath);
 		}
 
 		OpsUser user = userRepository.createUser(username, password, certificateChain);

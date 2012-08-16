@@ -12,6 +12,7 @@ public class PlatformLayerFormatterRegistry extends FormatterRegistryBase {
 		addFormatter(new JobLogLineFormatter());
 		addFormatter(new ServiceInfoFormatter());
 		addFormatter(new UntypedItemFormatter());
+		addFormatter(new MetricDataStreamFormatter());
 		addFormatter(new MetricInfoFormatter());
 		addFormatter(new MetricValueFormatter());
 	}

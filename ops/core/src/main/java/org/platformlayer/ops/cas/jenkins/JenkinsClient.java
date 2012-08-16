@@ -7,9 +7,9 @@ import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.log4j.Logger;
 import org.openstack.utils.Io;
 import org.platformlayer.IoUtils;
@@ -35,14 +35,15 @@ public class JenkinsClient {
 	}
 
 	String get(URI url) throws JenkinsException {
-		HttpMethod method = new GetMethod(url.toString());
+		HttpGet method = new HttpGet(url);
 		InputStream is = null;
 		try {
-			int statusCode = httpClient.executeMethod(method);
+			HttpResponse response = httpClient.execute(method);
+			int statusCode = response.getStatusLine().getStatusCode();
 			if (statusCode != 200) {
 				throw new JenkinsException("Unexpected status code from Jenkins: " + statusCode, statusCode);
 			}
-			is = method.getResponseBodyAsStream();
+			is = response.getEntity().getContent();
 			return Io.readAll(is);
 		} catch (IOException e) {
 			throw new JenkinsException("Error making request to Jenkins", e);

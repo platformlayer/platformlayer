@@ -1,4 +1,4 @@
-package org.platformlayer.ops;
+package org.platformlayer.ops.metrics.collectd;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -9,12 +9,19 @@ import javax.inject.Inject;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ids.ServiceType;
+import org.platformlayer.metrics.model.MetricDataSource;
 import org.platformlayer.metrics.model.MetricValues;
+import org.platformlayer.ops.Command;
+import org.platformlayer.ops.Machine;
+import org.platformlayer.ops.OpsContext;
+import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.OpsTarget;
+import org.platformlayer.ops.ServiceProviderBase;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.helpers.SshKey;
 import org.platformlayer.ops.helpers.SshKeys;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
-import org.platformlayer.ops.metrics.collectd.CollectdHelpers;
+import org.platformlayer.ops.metrics.MetricFetcher;
 import org.platformlayer.ops.model.metrics.Metric;
 import org.platformlayer.ops.model.metrics.MetricConfig;
 import org.platformlayer.ops.process.ProcessExecution;
@@ -25,7 +32,7 @@ import org.platformlayer.xml.UnmarshalException;
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 
-public class MetricFetcher {
+public class CollectdMetricFetcher implements MetricFetcher {
 	@Inject
 	PlatformLayerHelpers platformLayer;
 
@@ -38,7 +45,8 @@ public class MetricFetcher {
 	@Inject
 	OpsContext ops;
 
-	public MetricValues fetch(ServiceProviderBase serviceProviderBase, ItemBase managedItem, String metricKey)
+	@Override
+	public MetricDataSource fetch(ServiceProviderBase serviceProviderBase, ItemBase managedItem, String metricKey)
 			throws OpsException {
 		Object controller = serviceProviderBase.getController(managedItem);
 
@@ -108,11 +116,15 @@ public class MetricFetcher {
 
 			// TODO: We're deserializing the RRD, only to reserialize it to the exact same format
 
-			return metricValues;
+			return toMetricDataSource(metricValues);
 		}
 
 		// No data found
 		return null;
+	}
+
+	private MetricDataSource toMetricDataSource(MetricValues metricValues) {
+		throw new UnsupportedOperationException();
 	}
 
 	private Metric getMetricConfig(MetricConfig metricConfig, String metricKey) throws OpsException {

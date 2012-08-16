@@ -6,6 +6,7 @@ import org.platformlayer.Scope;
 import org.platformlayer.ScopeFilter;
 import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.web.CORSFilter;
+import org.platformlayer.xaas.web.jaxrs.MetricDataSourceWriter;
 import org.platformlayer.xaas.web.resources.RootResource;
 
 import com.google.common.collect.Maps;
@@ -24,6 +25,8 @@ public class PlatformLayerServletModule extends JerseyServletModule {
 		// default:
 		// throw new IllegalStateException("Unhandled application mode: " + ApplicationMode.getMode());
 		// }
+
+		bind(MetricDataSourceWriter.class);
 
 		bind(CORSFilter.class).asEagerSingleton();
 		filter("/*").through(CORSFilter.class);

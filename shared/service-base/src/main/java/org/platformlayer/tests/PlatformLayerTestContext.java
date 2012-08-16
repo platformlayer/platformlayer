@@ -13,8 +13,8 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Properties;
 
-import org.openstack.client.utils.RandomUtil;
 import org.openstack.utils.Io;
+import org.openstack.utils.RandomUtil;
 import org.platformlayer.HttpPlatformLayerClient;
 import org.platformlayer.IoUtils;
 import org.platformlayer.PlatformLayerClient;

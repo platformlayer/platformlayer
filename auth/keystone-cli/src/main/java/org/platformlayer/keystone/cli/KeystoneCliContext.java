@@ -13,9 +13,11 @@ import org.openstack.crypto.KeyStoreUtils;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.auth.UserDatabase;
 import org.platformlayer.auth.UserEntity;
+import org.platformlayer.crypto.CertificateReader;
 import org.platformlayer.keystone.cli.commands.KeystoneCommandRegistry;
 import org.platformlayer.keystone.cli.formatters.KeystoneFormatterRegistry;
 import org.platformlayer.keystone.cli.guice.CliModule;
+import org.platformlayer.ops.OpsException;
 
 import com.fathomdb.cli.CliContextBase;
 import com.fathomdb.cli.CliException;
@@ -95,5 +97,15 @@ public class KeystoneCliContext extends CliContextBase {
 		Certificate[] certificateChain = keyStore.getCertificateChain(keyAlias);
 
 		return certificateChain;
+	}
+
+	public Certificate[] loadCertificateChain(String certPath) throws IOException, OpsException {
+		if (getOptions().isServerMode()) {
+			throw new IllegalArgumentException("Files not supported in server mode");
+		}
+
+		CertificateReader reader = new CertificateReader();
+		Certificate[] certificates = reader.parse(new File(certPath));
+		return certificates;
 	}
 }

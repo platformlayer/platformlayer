@@ -45,10 +45,12 @@
             <groupId>org.platformlayer</groupId>
             <artifactId>openstack-api</artifactId>
         </dependency>
+
         <dependency>
-            <groupId>commons-httpclient</groupId>
-            <artifactId>commons-httpclient</artifactId>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
         </dependency>
+
     </dependencies>
 
 </project>

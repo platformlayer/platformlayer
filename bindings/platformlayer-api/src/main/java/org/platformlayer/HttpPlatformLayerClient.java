@@ -1,5 +1,6 @@
 package org.platformlayer;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -25,8 +26,9 @@ import org.platformlayer.ids.ServiceType;
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobDataList;
 import org.platformlayer.jobs.model.JobLog;
+import org.platformlayer.metrics.model.JsonMetricDataStream;
+import org.platformlayer.metrics.model.MetricDataStream;
 import org.platformlayer.metrics.model.MetricInfoCollection;
-import org.platformlayer.metrics.model.MetricValues;
 import org.platformlayer.xml.JaxbHelper;
 import org.platformlayer.xml.UnmarshalException;
 import org.slf4j.Logger;
@@ -393,14 +395,16 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
-	public MetricValues getMetric(PlatformLayerKey key, String metricKey) throws PlatformLayerClientException {
+	public MetricDataStream getMetric(PlatformLayerKey key, String metricKey) throws PlatformLayerClientException {
 		String relativePath = buildRelativePath(key) + "/metrics/" + metricKey;
 
-		String retval = doRequest("GET", relativePath, String.class, Format.XML, null, null);
-		MetricValues items;
+		// TODO: Don't buffer to string
+		String retval = doRequest("GET", relativePath, String.class, Format.JSON, null, null);
+		MetricDataStream items;
 		try {
-			items = JaxbHelper.deserializeXmlObject(retval, MetricValues.class);
-		} catch (UnmarshalException e) {
+			items = JsonMetricDataStream.build(new ByteArrayInputStream(retval.getBytes()));
+			// items = JaxbHelper.deserializeXmlObject(retval, MetricValues.class);
+		} catch (IOException e) {
 			throw new PlatformLayerClientException("Error parsing returned data", e);
 		}
 		return items;

@@ -18,7 +18,6 @@
 
         <version.project>1.0-SNAPSHOT</version.project>
 
-        <version.jackson>1.9.8</version.jackson>
 
         <version.postgresql>9.1-901.jdbc4</version.postgresql>
         <version.jettison>1.3.2</version.jettison>
@@ -431,16 +430,15 @@
             <!-- Jackson is better at serializing collections than the built 
                 in Jersey stuff -->
             <dependency>
-                <groupId>org.codehaus.jackson</groupId>
-                <artifactId>jackson-xc</artifactId>
-                <version>${version.jackson}</version>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>2.0.0</version>
             </dependency>
             <dependency>
-                <groupId>org.codehaus.jackson</groupId>
-                <artifactId>jackson-jaxrs</artifactId>
-                <version>${version.jackson}</version>
+                <groupId>com.fasterxml.jackson.jaxrs</groupId>
+                <artifactId>jackson-jaxrs-json-provider</artifactId>
+                <version>2.0.4</version>
             </dependency>
-
             <!-- JSP support for Jetty -->
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
@@ -459,9 +457,9 @@
             </dependency>
 
             <dependency>
-                <groupId>commons-httpclient</groupId>
-                <artifactId>commons-httpclient</artifactId>
-                <version>3.1</version>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>4.2.1</version>
             </dependency>
 
             <dependency>
@@ -525,12 +523,12 @@
                 <artifactId>bcprov-jdk15on</artifactId>
                 <version>1.47</version>
             </dependency>
-	
-		<dependency>
-		    <groupId>org.bouncycastle</groupId>
-		    <artifactId>bcpkix-jdk15on</artifactId>
-		    <version>1.47</version>
-		</dependency>
+
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcpkix-jdk15on</artifactId>
+                <version>1.47</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.json</groupId>
