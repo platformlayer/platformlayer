@@ -1,6 +1,7 @@
 package org.platformlayer.ops.helpers;
 
 import javax.inject.Inject;
+import javax.security.auth.x500.X500Principal;
 
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.ops.OpsContext;
@@ -35,6 +36,10 @@ public class ServiceContext {
 
 	public String getSecurityGroupName() {
 		return "service-" + getServiceKey();
+	}
+
+	public X500Principal getX500Principal() {
+		return new X500Principal("CN=" + getServiceKey());
 	}
 
 }
