@@ -40,8 +40,11 @@ public class MetricToJsonVisitor implements MetricDataVisitor, Closeable {
 	public static String toString(MetricDataStream s) throws IOException {
 		// TODO: This is not very efficient; we deserialize a JSON stream and reserialize it
 		StringWriter writer = new StringWriter();
+
 		MetricToJsonVisitor visitor = new MetricToJsonVisitor(writer);
 		s.accept(visitor);
+		visitor.close();
+
 		return writer.toString();
 	}
 
