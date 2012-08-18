@@ -3,6 +3,7 @@ package org.platformlayer.auth.client;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
+import javax.crypto.SecretKey;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.TrustManager;
@@ -16,11 +17,15 @@ import org.platformlayer.auth.PlatformlayerUserAuthentication;
 import org.platformlayer.auth.v1.CertificateChainInfo;
 import org.platformlayer.auth.v1.CertificateInfo;
 import org.platformlayer.auth.v1.ProjectValidation;
+import org.platformlayer.auth.v1.SignCertificateRequest;
+import org.platformlayer.auth.v1.SignCertificateResponse;
 import org.platformlayer.auth.v1.UserValidation;
 import org.platformlayer.auth.v1.ValidateAccess;
 import org.platformlayer.auth.v1.ValidateTokenResponse;
 import org.platformlayer.config.Configuration;
 import org.platformlayer.crypto.AcceptAllHostnameVerifier;
+import org.platformlayer.crypto.AesUtils;
+import org.platformlayer.crypto.CertificateUtils;
 import org.platformlayer.crypto.EncryptionStore;
 import org.platformlayer.crypto.OpenSshUtils;
 import org.platformlayer.crypto.PublicKeyTrustManager;
@@ -34,19 +39,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 
-public class PlatformLayerTokenValidator extends RestfulClient implements AuthenticationTokenValidator {
-	static final Logger log = LoggerFactory.getLogger(PlatformLayerTokenValidator.class);
+public class PlatformLayerAdminClient extends RestfulClient implements AuthenticationTokenValidator {
+	static final Logger log = LoggerFactory.getLogger(PlatformLayerAdminClient.class);
 
 	public static final String DEFAULT_AUTHENTICATION_URL = "https://127.0.0.1:"
 			+ WellKnownPorts.PORT_PLATFORMLAYER_AUTH_ADMIN + "/";
 
-	private PlatformLayerTokenValidator(String baseUrl, KeyManager keyManager, TrustManager trustManager,
+	private PlatformLayerAdminClient(String baseUrl, KeyManager keyManager, TrustManager trustManager,
 			HostnameVerifier hostnameVerifier) {
 		super(baseUrl, keyManager, trustManager, hostnameVerifier);
 	}
 
-	public static PlatformLayerTokenValidator build(Configuration configuration, EncryptionStore encryptionStore)
+	public static PlatformLayerAdminClient build(Configuration configuration, EncryptionStore encryptionStore)
 			throws OpsException {
 		String keystoneServiceUrl = configuration.lookup("auth.system.url", "https://127.0.0.1:"
 				+ WellKnownPorts.PORT_PLATFORMLAYER_AUTH_ADMIN + "/");
@@ -70,8 +76,8 @@ public class PlatformLayerTokenValidator extends RestfulClient implements Authen
 			hostnameVerifier = new AcceptAllHostnameVerifier();
 		}
 
-		PlatformLayerTokenValidator keystoneTokenValidator = new PlatformLayerTokenValidator(keystoneServiceUrl,
-				keyManager, trustManager, hostnameVerifier);
+		PlatformLayerAdminClient keystoneTokenValidator = new PlatformLayerAdminClient(keystoneServiceUrl, keyManager,
+				trustManager, hostnameVerifier);
 		return keystoneTokenValidator;
 	}
 
@@ -183,4 +189,28 @@ public class PlatformLayerTokenValidator extends RestfulClient implements Authen
 			throw new IllegalArgumentException("Error while validating credentials", e);
 		}
 	}
+
+	// This can actually be moved to the user-auth system
+	public List<X509Certificate> signCsr(String projectKey, SecretKey projectSecret, String csr) {
+		String url = "pki/csr";
+
+		SignCertificateRequest request = new SignCertificateRequest();
+		request.setProject(projectKey);
+		request.setCsr(csr);
+		request.setProjectSecret(AesUtils.serialize(projectSecret));
+
+		try {
+			SignCertificateResponse response = doSimpleRequest("POST", url, request, SignCertificateResponse.class);
+
+			List<X509Certificate> certificates = Lists.newArrayList();
+			for (String cert : response.getCertificates()) {
+				certificates.addAll(CertificateUtils.fromPem(cert));
+			}
+
+			return certificates;
+		} catch (RestClientException e) {
+			throw new IllegalArgumentException("Error while signing certificate", e);
+		}
+	}
+
 }

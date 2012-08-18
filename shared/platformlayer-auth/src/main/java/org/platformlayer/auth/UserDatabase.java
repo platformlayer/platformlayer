@@ -6,8 +6,10 @@ import java.util.List;
 
 import javax.crypto.SecretKey;
 
+import org.openstack.crypto.CertificateAndKey;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.model.RoleId;
+import org.platformlayer.ops.OpsException;
 
 public interface UserDatabase extends UserRepository {
 	UserEntity createUser(String userName, String password, Certificate[] certificateChain) throws RepositoryException;
@@ -41,4 +43,6 @@ public interface UserDatabase extends UserRepository {
 	UserProjectEntity findUserProject(int userId, int projectId) throws RepositoryException;
 
 	List<ServiceAccountEntity> listAllServiceAccounts(byte[] filterPublicKey) throws RepositoryException;
+
+	CertificateAndKey getProjectPki(ProjectEntity project) throws RepositoryException, OpsException;
 }

@@ -16,8 +16,11 @@ import java.util.Random;
 import javax.crypto.SecretKey;
 import javax.inject.Inject;
 import javax.inject.Provider;
+import javax.security.auth.x500.X500Principal;
 
 import org.apache.log4j.Logger;
+import org.openstack.crypto.CertificateAndKey;
+import org.openstack.crypto.SimpleCertificateAndKey;
 import org.openstack.utils.Utf8;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.auth.crypto.SecretStore;
@@ -27,12 +30,14 @@ import org.platformlayer.crypto.CryptoUtils;
 import org.platformlayer.crypto.OpenSshUtils;
 import org.platformlayer.crypto.PasswordHash;
 import org.platformlayer.crypto.RsaUtils;
+import org.platformlayer.crypto.SimpleCertificateAuthority;
 import org.platformlayer.jdbc.DbHelperBase;
 import org.platformlayer.jdbc.JdbcTransaction;
 import org.platformlayer.jdbc.JdbcUtils;
 import org.platformlayer.jdbc.proxy.Query;
 import org.platformlayer.jdbc.proxy.QueryFactory;
 import org.platformlayer.model.RoleId;
+import org.platformlayer.ops.OpsException;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
@@ -343,6 +348,9 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 		@Query(Query.AUTOMATIC_INSERT)
 		int insert(UserCertEntity userCertEntity) throws SQLException;
 
+		@Query(Query.AUTOMATIC_UPDATE)
+		int update(ProjectEntity project) throws SQLException;
+
 		@Query("INSERT INTO projects (key, secret, metadata, public_key, private_key) VALUES (?,?,?,?,?)")
 		int insertProject(String key, byte[] secretData, byte[] metadata, byte[] publicKey, byte[] privateKey)
 				throws SQLException;
@@ -519,6 +527,12 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 			return queries.findUserProject(userId, projectId);
 		}
 
+		public void update(ProjectEntity project) throws SQLException {
+			int updateCount = queries.update(project);
+			if (updateCount != 1) {
+				throw new IllegalStateException("Unexpected number of rows updated");
+			}
+		}
 	}
 
 	@Override
@@ -622,6 +636,43 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 			return created;
 		} catch (SQLException e) {
 			throw new RepositoryException("Error creating project", e);
+		} finally {
+			db.close();
+		}
+	}
+
+	@Override
+	@JdbcTransaction
+	public CertificateAndKey getProjectPki(ProjectEntity project) throws RepositoryException, OpsException {
+		DbHelper db = new DbHelper();
+		try {
+			ProjectEntity existing = findProjectByKey(db, project.getName());
+			if (existing == null) {
+				return null;
+			}
+
+			project.setProjectSecret(project.getProjectSecret());
+
+			if (project.getPkiCertificate() == null) {
+				KeyPair keyPair = RsaUtils.generateRsaKeyPair();
+				SimpleCertificateAuthority ca = new SimpleCertificateAuthority();
+				X500Principal subject = new X500Principal("CN=" + project.getName());
+				X509Certificate certificate = ca.selfSign(subject, keyPair);
+				project.setPkiCertificate(certificate);
+				project.setPkiPrivateKey(keyPair.getPrivate());
+
+				db.update(project);
+			}
+
+			X509Certificate[] certificateChain = new X509Certificate[1];
+			certificateChain[0] = project.getPkiCertificate();
+
+			CertificateAndKey certificateAndKey = new SimpleCertificateAndKey(certificateChain,
+					project.getPkiPrivateKey());
+
+			return certificateAndKey;
+		} catch (SQLException e) {
+			throw new RepositoryException("Error retrieving PKI info", e);
 		} finally {
 			db.close();
 		}

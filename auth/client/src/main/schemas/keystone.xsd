@@ -17,6 +17,10 @@
 
   <xs:element name="roles" type="tns:roleList"/>
 
+  <xs:element name="signCertificateRequest" type="tns:signCertificateRequest"/>
+
+  <xs:element name="signCertificateResponse" type="tns:signCertificateResponse"/>
+
   <xs:element name="user" type="tns:user"/>
 
   <xs:element name="validateAccess" type="tns:validateAccess"/>
@@ -79,6 +83,12 @@
     </xs:sequence>
   </xs:complexType>
 
+  <xs:complexType name="signCertificateResponse">
+    <xs:sequence>
+      <xs:element name="certificates" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
   <xs:complexType name="certificateChainInfo">
     <xs:sequence>
       <xs:element name="certificates" type="tns:certificateInfo" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
@@ -134,6 +144,14 @@
     <xs:sequence>
       <xs:element name="username" type="xs:string" minOccurs="0"/>
       <xs:element name="challengeResponse" type="xs:base64Binary" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="signCertificateRequest">
+    <xs:sequence>
+      <xs:element name="project" type="xs:string" minOccurs="0"/>
+      <xs:element name="csr" type="xs:string" minOccurs="0"/>
+      <xs:element name="projectSecret" type="xs:base64Binary" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 

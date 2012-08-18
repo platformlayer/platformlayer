@@ -1,6 +1,5 @@
 package org.openstack.keystone.resources.admin;
 
-import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -16,14 +15,10 @@ import org.platformlayer.auth.model.ValidateAccess;
 import org.platformlayer.auth.model.ValidateTokenResponse;
 import org.platformlayer.auth.resources.Mapping;
 import org.platformlayer.auth.services.TokenInfo;
-import org.platformlayer.auth.services.TokenService;
 
 @Path("v2.0/tokens")
 public class TokensResource extends RootResource {
 	static final Logger log = Logger.getLogger(TokensResource.class);
-
-	@Inject
-	TokenService tokenService;
 
 	@GET
 	// @HEAD support is automatic from the @GET
@@ -41,12 +36,6 @@ public class TokensResource extends RootResource {
 		if (checkTokenInfo == null || checkTokenInfo.hasExpired()) {
 			throw404NotFound();
 		}
-
-		// if (project != null) {
-		// if (!Objects.equal(project, checkTokenInfo.project)) {
-		// throw404NotFound();
-		// }
-		// }
 
 		UserEntity userEntity = null;
 		try {

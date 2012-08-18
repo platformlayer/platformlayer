@@ -14,7 +14,7 @@ import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.WellKnownPorts;
 import org.platformlayer.auth.AuthenticationService;
 import org.platformlayer.auth.AuthenticationTokenValidator;
-import org.platformlayer.auth.client.PlatformLayerTokenValidator;
+import org.platformlayer.auth.client.PlatformLayerAdminClient;
 import org.platformlayer.auth.client.PlatformlayerAuthenticationClient;
 import org.platformlayer.auth.client.PlatformlayerAuthenticationService;
 import org.platformlayer.config.Configuration;
@@ -95,7 +95,7 @@ public class GuiceXaasConfig extends AbstractModule {
 			discovery.scan();
 			bind(AnnotationDiscovery.class).toInstance(discovery);
 
-			PlatformLayerTokenValidator tokenValidator = PlatformLayerTokenValidator.build(configuration,
+			PlatformLayerAdminClient tokenValidator = PlatformLayerAdminClient.build(configuration,
 					encryptionStore);
 			bind(AuthenticationTokenValidator.class).toInstance(tokenValidator);
 

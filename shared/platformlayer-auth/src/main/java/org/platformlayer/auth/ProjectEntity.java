@@ -2,6 +2,7 @@ package org.platformlayer.auth;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.cert.X509Certificate;
 
 import javax.crypto.SecretKey;
 import javax.persistence.Column;
@@ -14,8 +15,10 @@ import org.apache.log4j.Logger;
 import org.openstack.utils.Utf8;
 import org.platformlayer.auth.crypto.SecretStore;
 import org.platformlayer.crypto.AesUtils;
+import org.platformlayer.crypto.CertificateUtils;
 import org.platformlayer.crypto.RsaUtils;
 import org.platformlayer.crypto.SecureComparison;
+import org.platformlayer.ops.OpsException;
 
 @Entity
 @Table(name = "projects")
@@ -43,6 +46,12 @@ public class ProjectEntity implements ProjectInfo {
 
 	@Column(name = "public_key")
 	public byte[] publicKeyData;
+
+	@Column(name = "pki_private")
+	public byte[] pkiPrivateKeyData;
+
+	@Column(name = "pki_cert")
+	public byte[] pkiCertificateData;
 
 	@Override
 	public boolean isLocked() {
@@ -126,6 +135,50 @@ public class ProjectEntity implements ProjectInfo {
 	public void setPublicKey(PublicKey publicKey) {
 		this.publicKeyData = RsaUtils.serialize(publicKey);
 		this.publicKey = publicKey;
+	}
+
+	@Transient
+	PrivateKey pkiPrivateKey;
+
+	public PrivateKey getPkiPrivateKey() {
+		if (pkiPrivateKey == null) {
+			if (pkiPrivateKeyData == null) {
+				return null;
+			}
+			byte[] plaintext = AesUtils.decrypt(getProjectSecret(), pkiPrivateKeyData);
+			pkiPrivateKey = RsaUtils.deserializePrivateKey(plaintext);
+		}
+		return pkiPrivateKey;
+	}
+
+	public void setPkiPrivateKey(PrivateKey pkiPrivateKey) {
+		byte[] pkiPrivateKeyData = RsaUtils.serialize(pkiPrivateKey);
+		pkiPrivateKeyData = AesUtils.encrypt(getProjectSecret(), pkiPrivateKeyData);
+		this.pkiPrivateKeyData = privateKeyData;
+		this.pkiPrivateKey = pkiPrivateKey;
+	}
+
+	@Transient
+	X509Certificate pkiCertificate;
+
+	public X509Certificate getPkiCertificate() throws OpsException {
+		if (pkiCertificate == null) {
+			if (pkiCertificateData == null) {
+				return null;
+			}
+
+			X509Certificate[] certificates = CertificateUtils.deserialize(pkiCertificateData);
+			if (certificates.length != 1) {
+				throw new IllegalStateException();
+			}
+			pkiCertificate = certificates[0];
+		}
+		return pkiCertificate;
+	}
+
+	public void setPkiCertificate(X509Certificate pkiCertificate) {
+		this.pkiCertificateData = CertificateUtils.serialize(pkiCertificate);
+		this.pkiCertificate = pkiCertificate;
 	}
 
 	@Override

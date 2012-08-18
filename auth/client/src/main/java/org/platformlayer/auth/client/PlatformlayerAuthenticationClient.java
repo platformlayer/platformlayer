@@ -122,4 +122,5 @@ public class PlatformlayerAuthenticationClient extends RestfulClient {
 
 		return null;
 	}
+
 }

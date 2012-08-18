@@ -6,9 +6,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -21,16 +21,16 @@ public class CertificateReader {
 	@SuppressWarnings("unused")
 	private static final Logger log = Logger.getLogger(CertificateReader.class);
 
-	public Certificate[] parse(byte[] data) throws OpsException {
+	public X509Certificate[] parse(byte[] data) throws OpsException {
 		return parse(new ByteArrayInputStream(data));
 	}
 
-	public Certificate[] parse(InputStream is) throws OpsException {
-		List<Certificate> certs = Lists.newArrayList();
+	public X509Certificate[] parse(InputStream is) throws OpsException {
+		List<X509Certificate> certs = Lists.newArrayList();
 		try {
 			CertificateFactory x509CertificateFactory = getX509CertificateFactory();
 			while (is.available() > 0) {
-				Certificate cert = x509CertificateFactory.generateCertificate(is);
+				X509Certificate cert = (X509Certificate) x509CertificateFactory.generateCertificate(is);
 				certs.add(cert);
 			}
 		} catch (CertificateException ce) {
@@ -39,10 +39,10 @@ public class CertificateReader {
 			throw new OpsException("Error reading certificates", e);
 		}
 
-		return certs.toArray(new Certificate[certs.size()]);
+		return certs.toArray(new X509Certificate[certs.size()]);
 	}
 
-	public Certificate[] parse(File file) throws OpsException, FileNotFoundException {
+	public X509Certificate[] parse(File file) throws OpsException, FileNotFoundException {
 		FileInputStream fis = new FileInputStream(file);
 		try {
 			return parse(fis);
@@ -51,7 +51,7 @@ public class CertificateReader {
 		}
 	}
 
-	public Certificate[] parse(String data) throws OpsException {
+	public X509Certificate[] parse(String data) throws OpsException {
 		return parse(data.getBytes());
 	}
 

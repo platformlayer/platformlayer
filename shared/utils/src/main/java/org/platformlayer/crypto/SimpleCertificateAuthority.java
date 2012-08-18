@@ -2,6 +2,7 @@ package org.platformlayer.crypto;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.PrivateKey;
@@ -30,6 +31,8 @@ import org.bouncycastle.operator.DefaultSignatureAlgorithmIdentifierFinder;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.bc.BcRSAContentSignerBuilder;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
+import org.bouncycastle.util.io.pem.PemObject;
+import org.bouncycastle.util.io.pem.PemReader;
 import org.platformlayer.ops.OpsException;
 
 public class SimpleCertificateAuthority {
@@ -38,7 +41,7 @@ public class SimpleCertificateAuthority {
 	private static final Logger log = Logger.getLogger(SimpleCertificateAuthority.class);
 	private static final long ONE_DAY = 24L * 60L * 60L * 1000L;
 
-	public X509Certificate caCertificate;
+	public X509Certificate[] caCertificate;
 	public PrivateKey caPrivateKey;
 
 	private static Certificate buildCertificate(X500Name issuer, PrivateKey issuerPrivateKey, X500Name subject,
@@ -127,11 +130,24 @@ public class SimpleCertificateAuthority {
 	// }
 	// }
 
+	public X509Certificate signCsr(String csr) throws OpsException {
+		try {
+			PemReader reader = new PemReader(new StringReader(csr));
+			PemObject pemObject = reader.readPemObject();
+			reader.close();
+
+			PKCS10CertificationRequest csrHolder = new PKCS10CertificationRequest(pemObject.getContent());
+			return signCsr(csrHolder);
+		} catch (IOException e) {
+			throw new OpsException("Error reading CSR", e);
+		}
+	}
+
 	public X509Certificate signCsr(PKCS10CertificationRequest csr) throws OpsException {
 		SubjectPublicKeyInfo subjectPublicKeyInfo = csr.getSubjectPublicKeyInfo();
 		X500Name subject = csr.getSubject();
-		Certificate certificate = buildCertificate(toX500Name(caCertificate.getSubjectX500Principal()), caPrivateKey,
-				subject, subjectPublicKeyInfo);
+		Certificate certificate = buildCertificate(toX500Name(caCertificate[0].getSubjectX500Principal()),
+				caPrivateKey, subject, subjectPublicKeyInfo);
 		return toX509(certificate);
 	}
 

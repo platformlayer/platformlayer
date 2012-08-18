@@ -17,6 +17,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.openstack.crypto.CertificateAndKey;
 import org.openstack.crypto.KeyStoreUtils;
 import org.openstack.keystone.resources.admin.KeychainResource;
+import org.openstack.keystone.resources.admin.PkiResource;
 import org.openstack.keystone.resources.admin.TokensResource;
 import org.platformlayer.WellKnownPorts;
 import org.platformlayer.auth.server.GuiceAuthenticationConfig;
@@ -48,6 +49,7 @@ public class KeystoneAdminServer {
 			protected void configureServlets() {
 				bind(TokensResource.class);
 				bind(KeychainResource.class);
+				bind(PkiResource.class);
 
 				Map<String, String> params = Maps.newHashMap();
 				params.put(PackagesResourceConfig.PROPERTY_PACKAGES,
