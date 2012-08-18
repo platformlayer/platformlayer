@@ -29,7 +29,7 @@ public class MetricToJsonVisitor implements MetricDataVisitor, Closeable {
 	public MetricToJsonVisitor(Writer writer) throws IOException {
 		JsonFactory jsonFactory = buildJsonFactory();
 		JsonGenerator jsonGenerator = jsonFactory.createJsonGenerator(writer);
-
+		jsonGenerator.useDefaultPrettyPrinter();
 		this.jsonGenerator = jsonGenerator;
 	}
 
