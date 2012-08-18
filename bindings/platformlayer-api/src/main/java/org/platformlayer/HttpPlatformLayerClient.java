@@ -29,6 +29,7 @@ import org.platformlayer.jobs.model.JobLog;
 import org.platformlayer.metrics.model.JsonMetricDataStream;
 import org.platformlayer.metrics.model.MetricDataStream;
 import org.platformlayer.metrics.model.MetricInfoCollection;
+import org.platformlayer.metrics.model.MetricQuery;
 import org.platformlayer.xml.JaxbHelper;
 import org.platformlayer.xml.UnmarshalException;
 import org.slf4j.Logger;
@@ -395,11 +396,11 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
-	public MetricDataStream getMetric(PlatformLayerKey key, String metricKey) throws PlatformLayerClientException {
-		String relativePath = buildRelativePath(key) + "/metrics/" + metricKey;
+	public MetricDataStream getMetric(MetricQuery query) throws PlatformLayerClientException {
+		String relativePath = buildRelativePath(query.item) + "/metrics";
 
 		// TODO: Don't buffer to string
-		String retval = doRequest("GET", relativePath, String.class, Format.JSON, null, null);
+		String retval = doRequest("POST", relativePath, String.class, Format.JSON, query, Format.XML);
 		MetricDataStream items;
 		try {
 			items = JsonMetricDataStream.build(new ByteArrayInputStream(retval.getBytes()));

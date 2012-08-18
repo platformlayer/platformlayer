@@ -16,6 +16,7 @@ import org.platformlayer.ids.ItemType;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.inject.ObjectInjector;
 import org.platformlayer.metrics.model.MetricDataSource;
+import org.platformlayer.metrics.model.MetricQuery;
 import org.platformlayer.ops.crypto.Passwords;
 import org.platformlayer.ops.helpers.ServiceContext;
 import org.platformlayer.ops.helpers.SshKey;
@@ -211,9 +212,9 @@ public abstract class ServiceProviderBase implements ServiceProvider {
 	}
 
 	@Override
-	public MetricDataSource getMetricValues(ItemBase item, String metricKey) throws OpsException {
+	public MetricDataSource getMetricValues(ItemBase item, MetricQuery query) throws OpsException {
 		MetricFetcher metricFetcher = injector.getInstance(MetricFetcher.class);
-		return metricFetcher.fetch(this, item, metricKey);
+		return metricFetcher.fetch(this, item, query);
 	}
 
 	@Override

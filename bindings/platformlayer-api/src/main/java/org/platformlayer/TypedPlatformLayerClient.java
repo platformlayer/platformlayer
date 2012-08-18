@@ -21,6 +21,7 @@ import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobLog;
 import org.platformlayer.metrics.model.MetricDataStream;
 import org.platformlayer.metrics.model.MetricInfoCollection;
+import org.platformlayer.metrics.model.MetricQuery;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.xml.JaxbHelper;
 
@@ -286,8 +287,8 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 	}
 
 	@Override
-	public MetricDataStream getMetric(PlatformLayerKey key, String metricKey) throws PlatformLayerClientException {
-		return platformLayerClient.getMetric(key, metricKey);
+	public MetricDataStream getMetric(MetricQuery query) throws PlatformLayerClientException {
+		return platformLayerClient.getMetric(query);
 	}
 
 	@Override

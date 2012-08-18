@@ -1,8 +1,7 @@
 package org.platformlayer.xaas.web.resources;
 
 import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
 
 import org.platformlayer.CheckedCallable;
@@ -10,6 +9,7 @@ import org.platformlayer.RepositoryException;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.metrics.model.MetricDataSource;
 import org.platformlayer.metrics.model.MetricInfoCollection;
+import org.platformlayer.metrics.model.MetricQuery;
 import org.platformlayer.ops.BindingScope;
 import org.platformlayer.ops.MetricCollector;
 import org.platformlayer.ops.OpsContext;
@@ -46,11 +46,9 @@ public class MetricsResource extends XaasResourceBase {
 		});
 	}
 
-	@GET
-	@Path("{metricKey}")
+	@POST
 	@Produces({ XML, JSON })
-	public MetricDataSource getMetrics(@PathParam("metricKey") final String metricKey) throws RepositoryException,
-			OpsException {
+	public MetricDataSource getMetrics(final MetricQuery query) throws RepositoryException, OpsException {
 		final ItemBase managedItem = getManagedItem();
 		final ServiceProvider serviceProvider = getServiceProvider();
 
@@ -64,7 +62,7 @@ public class MetricsResource extends XaasResourceBase {
 			public MetricDataSource call() throws Exception {
 				BindingScope bindingScope = BindingScope.push(managedItem, managedItem);
 				try {
-					MetricDataSource metrics = serviceProvider.getMetricValues(managedItem, metricKey);
+					MetricDataSource metrics = serviceProvider.getMetricValues(managedItem, query);
 					return metrics;
 				} finally {
 					bindingScope.pop();

@@ -7,6 +7,7 @@ import org.platformlayer.core.model.ServiceInfo;
 import org.platformlayer.ids.ItemType;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.metrics.model.MetricDataSource;
+import org.platformlayer.metrics.model.MetricQuery;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.xaas.model.ServiceAuthorization;
 
@@ -25,7 +26,7 @@ public interface ServiceProvider {
 
 	void initialize();
 
-	MetricDataSource getMetricValues(ItemBase item, String serviceKey) throws OpsException;
+	MetricDataSource getMetricValues(ItemBase item, MetricQuery query) throws OpsException;
 
 	Class<?> getJavaClass(ItemType itemType);
 
