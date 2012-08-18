@@ -8,7 +8,7 @@ import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
-import org.platformlayer.ops.metrics.collectd.CollectdCollector;
+import org.platformlayer.ops.metrics.MetricsInstance;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.jetty.ops.JettyInstance;
 import org.platformlayer.service.nexus.model.NexusService;
@@ -37,7 +37,7 @@ public class NexusServiceController extends OpsTreeBase {
 		JettyInstance jetty = vm.addChild(injected(JettyInstance.class));
 		jetty.addApp(NexusApp.build());
 
-		vm.addChild(CollectdCollector.build());
+		vm.addChild(MetricsInstance.class);
 	}
 
 }

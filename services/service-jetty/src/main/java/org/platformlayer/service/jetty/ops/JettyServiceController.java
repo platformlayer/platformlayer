@@ -8,7 +8,7 @@ import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
-import org.platformlayer.ops.metrics.collectd.CollectdCollector;
+import org.platformlayer.ops.metrics.MetricsInstance;
 import org.platformlayer.ops.networks.HasPorts;
 import org.platformlayer.ops.networks.PublicEndpoint;
 import org.platformlayer.ops.tree.OpsTreeBase;
@@ -63,7 +63,7 @@ public class JettyServiceController extends OpsTreeBase implements HasPorts {
 			vm.addChild(endpoint);
 		}
 
-		vm.addChild(CollectdCollector.build());
+		vm.addChild(MetricsInstance.class);
 	}
 
 	@Override

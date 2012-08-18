@@ -1,6 +1,7 @@
 package org.platformlayer.crypto;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -92,5 +93,9 @@ public class CertificateUtils {
 		} finally {
 			IoUtils.safeClose(reader);
 		}
+	}
+
+	public static List<X509Certificate> fromPem(File path) throws IOException {
+		return fromPem(IoUtils.readAll(path));
 	}
 }

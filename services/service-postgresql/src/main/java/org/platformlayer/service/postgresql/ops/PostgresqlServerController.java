@@ -20,11 +20,11 @@ import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.machines.InetAddressUtils;
-import org.platformlayer.ops.metrics.collectd.CollectdCollector;
-import org.platformlayer.ops.metrics.collectd.ManagedService;
+import org.platformlayer.ops.metrics.MetricsInstance;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.networks.PublicEndpoint;
 import org.platformlayer.ops.packages.PackageDependency;
+import org.platformlayer.ops.service.ManagedService;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.postgresql.model.PostgresqlServer;
 
@@ -72,7 +72,7 @@ public class PostgresqlServerController extends OpsTreeBase implements Database 
 
 		instance.addChild(PostgresqlServerBootstrap.build());
 
-		instance.addChild(CollectdCollector.build());
+		instance.addChild(MetricsInstance.class);
 
 		{
 			PublicEndpoint endpoint = injected(PublicEndpoint.class);

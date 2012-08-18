@@ -10,9 +10,9 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
-import org.platformlayer.ops.metrics.collectd.ManagedService;
 import org.platformlayer.ops.networks.PublicEndpoint;
 import org.platformlayer.ops.packages.PackageDependency;
+import org.platformlayer.ops.service.ManagedService;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class NginxServiceController extends OpsTreeBase {

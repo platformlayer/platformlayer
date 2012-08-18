@@ -6,10 +6,9 @@ import org.apache.log4j.Logger;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
-import org.platformlayer.ops.metrics.collectd.CollectdCollector;
+import org.platformlayer.ops.metrics.MetricsInstance;
 import org.platformlayer.ops.networks.PublicEndpoint;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.openldap.model.LdapService;
@@ -33,7 +32,7 @@ public class LdapServiceController extends OpsTreeBase {
 				DiskImageRecipeBuilder.loadDiskImageResource(getClass(), "DiskImageRecipe.xml"));
 		addChild(instance);
 
-		instance.addChild(CollectdCollector.build());
+		instance.addChild(MetricsInstance.class);
 
 		instance.addChild(LdapMasterPassword.build(model.ldapServerPassword));
 

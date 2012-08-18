@@ -10,9 +10,9 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.helpers.ImageFactory;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
-import org.platformlayer.ops.metrics.collectd.CollectdCollector;
-import org.platformlayer.ops.metrics.collectd.ManagedService;
+import org.platformlayer.ops.metrics.MetricsInstance;
 import org.platformlayer.ops.packages.PackageDependency;
+import org.platformlayer.ops.service.ManagedService;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.dnsresolver.model.DnsResolverService;
 
@@ -40,7 +40,7 @@ public class DnsResolverServiceController extends OpsTreeBase {
 		instance.addChild(PackageDependency.build("bind9"));
 		instance.addChild(ManagedService.build("bind9"));
 
-		instance.addChild(CollectdCollector.build());
+		instance.addChild(MetricsInstance.class);
 
 		// Debian bind9 sets up a recursive resolver by default :-)
 

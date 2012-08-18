@@ -4,10 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
+import java.security.PrivateKey;
+import java.security.cert.X509Certificate;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.openstack.crypto.CertificateAndKey;
 import org.openstack.crypto.KeyStoreUtils;
+import org.openstack.crypto.SimpleCertificateAndKey;
 import org.platformlayer.config.Configuration;
 import org.platformlayer.ops.OpsException;
 
@@ -25,20 +29,44 @@ public class KeyStoreEncryptionStore implements EncryptionStore {
 
 	@Override
 	public CertificateAndKey getCertificateAndKey(String alias) throws OpsException {
-		String password = DEFAULT_PASSWORD;
-
-		// TODO: Cache??
-
 		CertificateAndKey certificateAndKey;
-		try {
-			certificateAndKey = KeyStoreUtils.getCertificateAndKey(keyStore, alias, password);
-		} catch (GeneralSecurityException e) {
-			throw new OpsException("Error reading private key", e);
-		}
 
-		if (certificateAndKey == null) {
-			log.warn("Unable to find private key: " + alias);
-			throw new OpsException("Private key not found");
+		if (alias.startsWith("/")) {
+			// Path to file
+			File certPath = new File(alias + ".crt");
+
+			List<X509Certificate> certificate;
+			try {
+				certificate = CertificateUtils.fromPem(certPath);
+			} catch (IOException e) {
+				throw new OpsException("Error reading certificate: " + certPath, e);
+			}
+
+			File keyPath = new File(alias + ".key");
+
+			PrivateKey privateKey;
+			try {
+				privateKey = PrivateKeys.fromPem(keyPath);
+			} catch (IOException e) {
+				throw new OpsException("Error reading private key: " + keyPath, e);
+			}
+
+			certificateAndKey = new SimpleCertificateAndKey(certificate, privateKey);
+		} else {
+			String password = DEFAULT_PASSWORD;
+
+			// TODO: Cache??
+
+			try {
+				certificateAndKey = KeyStoreUtils.getCertificateAndKey(keyStore, alias, password);
+			} catch (GeneralSecurityException e) {
+				throw new OpsException("Error reading private key", e);
+			}
+
+			if (certificateAndKey == null) {
+				log.warn("Unable to find private key: " + alias);
+				throw new OpsException("Private key not found");
+			}
 		}
 
 		return certificateAndKey;

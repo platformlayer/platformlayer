@@ -15,8 +15,8 @@ import org.platformlayer.ops.firewall.Transport;
 import org.platformlayer.ops.firewall.scripts.IptablesFilterEntry;
 import org.platformlayer.ops.firewall.scripts.IptablesFilterPolicy;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
-import org.platformlayer.ops.metrics.collectd.ManagedService;
 import org.platformlayer.ops.packages.PackageDependency;
+import org.platformlayer.ops.service.ManagedService;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class IpsecInstall extends OpsTreeBase {
