@@ -15,6 +15,8 @@ import java.util.List;
 import javax.security.auth.x500.X500Principal;
 
 import org.apache.log4j.Logger;
+import org.bouncycastle.openssl.PEMReader;
+import org.bouncycastle.openssl.PEMWriter;
 import org.openstack.crypto.CertificateAndKey;
 import org.openstack.crypto.KeyStoreUtils;
 import org.platformlayer.IoUtils;
@@ -61,7 +63,7 @@ public class CertificateUtils {
 		try {
 			StringWriter stringWriter = new StringWriter();
 
-			SimplePemWriter writer = new SimplePemWriter(stringWriter);
+			PEMWriter writer = new PEMWriter(stringWriter);
 			for (X509Certificate cert : certs) {
 				writer.writeObject(cert);
 			}
@@ -77,9 +79,9 @@ public class CertificateUtils {
 	public static List<X509Certificate> fromPem(String cert) {
 		List<X509Certificate> certificates = Lists.newArrayList();
 
-		SimplePemReader reader = null;
+		PEMReader reader = null;
 		try {
-			reader = new SimplePemReader(new StringReader(cert));
+			reader = new PEMReader(new StringReader(cert));
 			while (true) {
 				Object o = reader.readObject();
 				if (o == null) {

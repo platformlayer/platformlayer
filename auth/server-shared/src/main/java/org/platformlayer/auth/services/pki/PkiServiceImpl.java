@@ -11,6 +11,7 @@ import org.platformlayer.RepositoryException;
 import org.platformlayer.auth.ProjectEntity;
 import org.platformlayer.auth.UserDatabase;
 import org.platformlayer.auth.services.PkiService;
+import org.platformlayer.crypto.SimpleCertificateAuthority;
 import org.platformlayer.ops.OpsException;
 
 import com.google.common.collect.Lists;

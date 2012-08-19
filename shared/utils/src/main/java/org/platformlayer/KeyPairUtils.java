@@ -7,14 +7,14 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 
-import org.platformlayer.crypto.SimplePemReader;
-import org.platformlayer.crypto.SimplePemWriter;
+import org.bouncycastle.openssl.PEMReader;
+import org.bouncycastle.openssl.PEMWriter;
 import org.platformlayer.ops.OpsException;
 
 public class KeyPairUtils {
 
 	public static KeyPair deserialize(String keyData) throws IOException {
-		SimplePemReader r = new SimplePemReader(new StringReader(keyData));
+		PEMReader r = new PEMReader(new StringReader(keyData));
 		try {
 			return (KeyPair) r.readObject();
 		} finally {
@@ -24,7 +24,7 @@ public class KeyPairUtils {
 
 	public static String serialize(KeyPair keyPair) throws IOException {
 		StringWriter writer = new StringWriter();
-		SimplePemWriter pemWriter = new SimplePemWriter(writer);
+		PEMWriter pemWriter = new PEMWriter(writer);
 		try {
 			pemWriter.writeObject(keyPair);
 			pemWriter.flush();
