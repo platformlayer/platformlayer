@@ -1,4 +1,4 @@
-package org.platformlayer.crypto;
+package org.platformlayer.auth.services.pki;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

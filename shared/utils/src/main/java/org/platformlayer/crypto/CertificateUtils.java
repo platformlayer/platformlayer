@@ -5,14 +5,18 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.security.GeneralSecurityException;
+import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
+import javax.security.auth.x500.X500Principal;
+
 import org.apache.log4j.Logger;
-import org.bouncycastle.openssl.PEMReader;
-import org.bouncycastle.openssl.PEMWriter;
+import org.openstack.crypto.CertificateAndKey;
+import org.openstack.crypto.KeyStoreUtils;
 import org.platformlayer.IoUtils;
 import org.platformlayer.ops.OpsException;
 
@@ -56,16 +60,12 @@ public class CertificateUtils {
 	public static String toPem(Iterable<X509Certificate> certs) {
 		try {
 			StringWriter stringWriter = new StringWriter();
-			PEMWriter writer = new PEMWriter(stringWriter);
+
+			SimplePemWriter writer = new SimplePemWriter(stringWriter);
 			for (X509Certificate cert : certs) {
 				writer.writeObject(cert);
 			}
 			writer.close();
-
-			// StringBuilder sb = new StringBuilder();
-			// sb.append("-----BEGIN CERTIFICATE-----\n");
-			// sb.append(CryptoUtils.toBase64(machineCertificate.getEncoded()));
-			// sb.append("\n-----END CERTIFICATE-----\n");
 
 			String s = stringWriter.toString();
 			return s;
@@ -77,9 +77,9 @@ public class CertificateUtils {
 	public static List<X509Certificate> fromPem(String cert) {
 		List<X509Certificate> certificates = Lists.newArrayList();
 
-		PEMReader reader = null;
+		SimplePemReader reader = null;
 		try {
-			reader = new PEMReader(new StringReader(cert));
+			reader = new SimplePemReader(new StringReader(cert));
 			while (true) {
 				Object o = reader.readObject();
 				if (o == null) {
@@ -98,4 +98,31 @@ public class CertificateUtils {
 	public static List<X509Certificate> fromPem(File path) throws IOException {
 		return fromPem(IoUtils.readAll(path));
 	}
+
+	public static CertificateAndKey createSelfSigned(X500Principal principal, int keySize) {
+		try {
+			String keyAlgorithmName = "RSA";
+			String signatureAlgName = "SHA1WithRSA";
+
+			String keyPassword = KeyStoreUtils.DEFAULT_KEYSTORE_SECRET;
+
+			int validityDays = 365 * 10;
+
+			String alias = "self";
+
+			sun.security.x509.X500Name x500Name = new sun.security.x509.X500Name(
+					principal.getName(X500Principal.RFC2253));
+
+			KeyStore keyStore = KeyStoreUtils.createEmpty(KeyStoreUtils.DEFAULT_KEYSTORE_SECRET);
+			KeyStoreUtils.createSelfSigned(keyStore, alias, keyPassword, x500Name, validityDays, keyAlgorithmName,
+					keySize, signatureAlgName);
+
+			return KeyStoreUtils.getCertificateAndKey(keyStore, alias, keyPassword);
+		} catch (GeneralSecurityException e) {
+			throw new IllegalArgumentException("Error creating self-signed certificate", e);
+		} catch (IOException e) {
+			throw new IllegalArgumentException("Error creating self-signed certificate", e);
+		}
+	}
+
 }

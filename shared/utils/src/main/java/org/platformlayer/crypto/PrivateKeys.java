@@ -5,14 +5,13 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.security.PrivateKey;
 
-import org.bouncycastle.openssl.PEMReader;
 import org.platformlayer.IoUtils;
 
 public class PrivateKeys {
 	public static PrivateKey fromPem(String data) {
-		PEMReader reader = null;
+		SimplePemReader reader = null;
 		try {
-			reader = new PEMReader(new StringReader(data));
+			reader = new SimplePemReader(new StringReader(data));
 			while (true) {
 				Object o = reader.readObject();
 				return (PrivateKey) o;

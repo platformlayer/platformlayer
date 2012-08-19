@@ -26,11 +26,11 @@ import org.platformlayer.RepositoryException;
 import org.platformlayer.auth.crypto.SecretStore;
 import org.platformlayer.auth.crypto.SecretStore.Writer;
 import org.platformlayer.crypto.AesUtils;
+import org.platformlayer.crypto.CertificateUtils;
 import org.platformlayer.crypto.CryptoUtils;
 import org.platformlayer.crypto.OpenSshUtils;
 import org.platformlayer.crypto.PasswordHash;
 import org.platformlayer.crypto.RsaUtils;
-import org.platformlayer.crypto.SimpleCertificateAuthority;
 import org.platformlayer.jdbc.DbHelperBase;
 import org.platformlayer.jdbc.JdbcTransaction;
 import org.platformlayer.jdbc.JdbcUtils;
@@ -654,12 +654,13 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 			project.setProjectSecret(project.getProjectSecret());
 
 			if (project.getPkiCertificate() == null) {
-				KeyPair keyPair = RsaUtils.generateRsaKeyPair();
-				SimpleCertificateAuthority ca = new SimpleCertificateAuthority();
+				// KeyPair keyPair = RsaUtils.generateRsaKeyPair();
+				// SimpleCertificateAuthority ca = new SimpleCertificateAuthority();
 				X500Principal subject = new X500Principal("CN=" + project.getName());
-				X509Certificate certificate = ca.selfSign(subject, keyPair);
-				project.setPkiCertificate(certificate);
-				project.setPkiPrivateKey(keyPair.getPrivate());
+				CertificateAndKey certificateAndKey = CertificateUtils.createSelfSigned(subject,
+						RsaUtils.DEFAULT_KEYSIZE);
+				project.setPkiCertificate(certificateAndKey.getCertificateChain()[0]);
+				project.setPkiPrivateKey(certificateAndKey.getPrivateKey());
 
 				db.update(project);
 			}
