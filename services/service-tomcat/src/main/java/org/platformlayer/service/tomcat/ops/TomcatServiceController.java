@@ -9,9 +9,9 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.java.JavaVirtualMachine;
-import org.platformlayer.ops.metrics.collectd.CollectdCollector;
-import org.platformlayer.ops.metrics.collectd.ManagedService;
+import org.platformlayer.ops.metrics.MetricsInstance;
 import org.platformlayer.ops.packages.PackageDependency;
+import org.platformlayer.ops.service.ManagedService;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.tomcat.model.TomcatService;
 
@@ -42,7 +42,7 @@ public class TomcatServiceController extends OpsTreeBase {
 
 		instance.addChild(TomcatServerBootstrap.build());
 
-		instance.addChild(CollectdCollector.build());
+		instance.addChild(MetricsInstance.class);
 
 		instance.addChild(ManagedService.build("tomcat6"));
 	}

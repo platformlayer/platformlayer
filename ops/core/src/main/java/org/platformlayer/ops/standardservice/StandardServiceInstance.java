@@ -11,6 +11,8 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.crypto.ManagedKeystore;
 import org.platformlayer.ops.filesystem.ManagedDirectory;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
+import org.platformlayer.ops.metrics.MetricsInstance;
+import org.platformlayer.ops.metrics.MetricsManager;
 import org.platformlayer.ops.supervisor.StandardService;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
@@ -21,6 +23,9 @@ public abstract class StandardServiceInstance extends OpsTreeBase {
 	@Inject
 	PlatformLayerHelpers platformLayer;
 
+	@Inject
+	MetricsManager metricsManager;
+
 	@Handler
 	public void handler() {
 	}
@@ -30,6 +35,8 @@ public abstract class StandardServiceInstance extends OpsTreeBase {
 		final StandardTemplateData template = getTemplate();
 
 		File instanceDir = template.getInstanceDir();
+
+		addChild(MetricsInstance.class);
 
 		String user = template.getUser();
 		String group = template.getGroup();
@@ -69,6 +76,7 @@ public abstract class StandardServiceInstance extends OpsTreeBase {
 				httpsKey.key = template.findSslKey();
 			}
 
+			// TODO: Should we always call addExtraKeys?
 			addExtraKeys(configDir, keystoreFile);
 		}
 	}

@@ -18,10 +18,10 @@ import org.platformlayer.ops.helpers.ServiceContext;
 import org.platformlayer.ops.helpers.SshKey;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
-import org.platformlayer.ops.metrics.collectd.CollectdCollector;
-import org.platformlayer.ops.metrics.collectd.ManagedService;
+import org.platformlayer.ops.metrics.MetricsInstance;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.packages.PackageDependency;
+import org.platformlayer.ops.service.ManagedService;
 import org.platformlayer.ops.ssh.SshAuthorizedKey;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
@@ -93,6 +93,6 @@ public class ImageStoreController extends OpsTreeBase {
 		instance.addChild(PackageDependency.build("glance"));
 		instance.addChild(ManagedService.build("glance"));
 
-		instance.addChild(CollectdCollector.build());
+		instance.addChild(MetricsInstance.class);
 	}
 }

@@ -10,8 +10,8 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.metrics.collectd.CollectdSink;
-import org.platformlayer.ops.metrics.collectd.ManagedService;
 import org.platformlayer.ops.packages.PackageDependency;
+import org.platformlayer.ops.service.ManagedService;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.collectd.model.CollectdService;
 

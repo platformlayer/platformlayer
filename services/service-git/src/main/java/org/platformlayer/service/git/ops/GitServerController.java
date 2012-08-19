@@ -12,17 +12,16 @@ import org.platformlayer.core.model.EndpointInfo;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.filesystem.ManagedDirectory;
 import org.platformlayer.ops.filesystem.TemplatedFile;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.ldap.LdapDN;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
-import org.platformlayer.ops.metrics.collectd.CollectdCollector;
-import org.platformlayer.ops.metrics.collectd.ManagedService;
+import org.platformlayer.ops.metrics.MetricsInstance;
 import org.platformlayer.ops.networks.PublicEndpoint;
 import org.platformlayer.ops.packages.PackageDependency;
+import org.platformlayer.ops.service.ManagedService;
 import org.platformlayer.ops.templates.TemplateDataSource;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.git.model.GitService;
@@ -133,7 +132,7 @@ public class GitServerController extends OpsTreeBase implements TemplateDataSour
 
 		vm.addChild(ManagedService.build("apache2"));
 
-		vm.addChild(CollectdCollector.build());
+		vm.addChild(MetricsInstance.class);
 
 		{
 			PublicEndpoint endpoint = injected(PublicEndpoint.class);

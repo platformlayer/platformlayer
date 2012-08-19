@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.service.ManagedService;
 
 public class CollectdSink extends CollectdCommon {
 	static final Logger log = Logger.getLogger(CollectdSink.class);

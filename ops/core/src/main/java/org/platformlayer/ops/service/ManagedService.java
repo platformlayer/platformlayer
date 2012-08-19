@@ -1,4 +1,4 @@
-package org.platformlayer.ops.metrics.collectd;
+package org.platformlayer.ops.service;
 
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.Injection;
