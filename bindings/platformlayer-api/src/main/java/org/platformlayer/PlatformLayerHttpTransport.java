@@ -91,11 +91,12 @@ class PlatformLayerHttpTransport {
 					trustKeys);
 			request.debug = debug;
 			try {
+				T retval = null;
 				if (i == maxRetries) {
-					return request.doRequest(retvalClass, acceptFormat, sendData, sendDataFormat);
+					retval = request.doRequest(retvalClass, acceptFormat, sendData, sendDataFormat);
 				} else {
 					try {
-						return request.doRequest(retvalClass, acceptFormat, sendData, sendDataFormat);
+						retval = request.doRequest(retvalClass, acceptFormat, sendData, sendDataFormat);
 					} catch (PlatformlayerAuthenticationException e) {
 						log.warn("Reauthorizing after auth error", e);
 						authClient.clearAuthenticationToken();
@@ -115,6 +116,14 @@ class PlatformLayerHttpTransport {
 					} catch (InterruptedException e) {
 						Thread.currentThread().interrupt();
 					}
+				}
+
+				if (retval != null) {
+					if (retval instanceof StreamingResponse) {
+						// Don't close
+						request = null;
+					}
+					return retval;
 				}
 			} finally {
 				IoUtils.safeClose(request);

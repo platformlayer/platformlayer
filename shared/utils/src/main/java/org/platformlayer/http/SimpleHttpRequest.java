@@ -1,5 +1,6 @@
 package org.platformlayer.http;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -75,7 +76,7 @@ public class SimpleHttpRequest {
 		return SslHelpers.buildSslSocketFactory(keyManager, trustManager);
 	}
 
-	public class SimpleHttpResponse {
+	public class SimpleHttpResponse implements Closeable {
 		private final int responseCode;
 
 		public SimpleHttpResponse() throws IOException {
@@ -111,6 +112,7 @@ public class SimpleHttpRequest {
 			return is;
 		}
 
+		@Override
 		public void close() throws IOException {
 			if (is != null) {
 				is.close();

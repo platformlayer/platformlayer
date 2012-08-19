@@ -1,9 +1,13 @@
 package org.platformlayer.client.cli.commands;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
+import org.platformlayer.client.cli.output.MetricToJsonVisitor;
 import org.platformlayer.metrics.model.MetricDataStream;
 import org.platformlayer.metrics.model.MetricQuery;
 
@@ -37,4 +41,18 @@ public class GetMetric extends PlatformLayerCommandRunnerBase {
 
 		return dataStream;
 	}
+
+	@Override
+	public void formatRaw(Object o, PrintWriter writer) {
+		MetricDataStream dataStream = (MetricDataStream) o;
+
+		try {
+			MetricToJsonVisitor visitor = new MetricToJsonVisitor(writer);
+			dataStream.accept(visitor);
+			visitor.close();
+		} catch (IOException e) {
+			throw new IllegalArgumentException("Error formatting results", e);
+		}
+	}
+
 }

@@ -191,6 +191,8 @@ class PlatformLayerHttpRequest implements Closeable {
 				}
 
 				return CastUtils.as(text, retvalClass);
+			} else if (StreamingResponse.class.equals(retvalClass)) {
+				return CastUtils.as(new StreamingResponse(getResponse()), retvalClass);
 			} else {
 				if (debug != null) {
 					debug.println("Response: XML/JSON content");

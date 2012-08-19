@@ -1,6 +1,5 @@
 package org.platformlayer;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -399,16 +398,18 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 	public MetricDataStream getMetric(MetricQuery query) throws PlatformLayerClientException {
 		String relativePath = buildRelativePath(query.item) + "/metrics";
 
-		// TODO: Don't buffer to string
-		String retval = doRequest("POST", relativePath, String.class, Format.JSON, query, Format.XML);
-		MetricDataStream items;
+		StreamingResponse response = doRequest("POST", relativePath, StreamingResponse.class, Format.JSON, query,
+				Format.XML);
+		MetricDataStream dataStream;
 		try {
-			items = JsonMetricDataStream.build(new ByteArrayInputStream(retval.getBytes()));
-			// items = JaxbHelper.deserializeXmlObject(retval, MetricValues.class);
+			dataStream = JsonMetricDataStream.build(response.getResponseStream());
+			response = null; // Don't close yet
 		} catch (IOException e) {
 			throw new PlatformLayerClientException("Error parsing returned data", e);
+		} finally {
+			IoUtils.safeClose(response);
 		}
-		return items;
+		return dataStream;
 	}
 
 	@Override
