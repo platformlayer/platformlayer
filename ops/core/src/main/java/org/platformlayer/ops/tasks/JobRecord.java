@@ -73,6 +73,10 @@ public class JobRecord {
 	}
 
 	public PlatformLayerKey getTargetItemKey() {
+		if (key == null) {
+			return null;
+		}
+
 		return key.getTargetItemKey();
 	}
 

@@ -6,7 +6,6 @@ import java.io.StringReader;
 import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -15,7 +14,6 @@ import java.util.Date;
 import javax.security.auth.x500.X500Principal;
 
 import org.apache.log4j.Logger;
-import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.Certificate;
@@ -24,7 +22,6 @@ import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
 import org.bouncycastle.crypto.util.PrivateKeyFactory;
-import org.bouncycastle.jce.X509Principal;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.DefaultDigestAlgorithmIdentifierFinder;
 import org.bouncycastle.operator.DefaultSignatureAlgorithmIdentifierFinder;
@@ -146,8 +143,9 @@ public class SimpleCertificateAuthority {
 	public X509Certificate signCsr(PKCS10CertificationRequest csr) throws OpsException {
 		SubjectPublicKeyInfo subjectPublicKeyInfo = csr.getSubjectPublicKeyInfo();
 		X500Name subject = csr.getSubject();
-		Certificate certificate = buildCertificate(toX500Name(caCertificate[0].getSubjectX500Principal()),
-				caPrivateKey, subject, subjectPublicKeyInfo);
+		Certificate certificate = buildCertificate(
+				BouncyCastleHelpers.toX500Name(caCertificate[0].getSubjectX500Principal()), caPrivateKey, subject,
+				subjectPublicKeyInfo);
 		return toX509(certificate);
 	}
 
@@ -161,23 +159,6 @@ public class SimpleCertificateAuthority {
 			throw new IllegalArgumentException("Error converting certificate", e);
 		} catch (CertificateException e) {
 			throw new IllegalArgumentException("Error converting certificate", e);
-		}
-	}
-
-	private SubjectPublicKeyInfo toPublicKeyInfo(PublicKey publicKey) {
-		try {
-			return SubjectPublicKeyInfo.getInstance(new ASN1InputStream(publicKey.getEncoded()).readObject());
-		} catch (IOException e) {
-			throw new IllegalArgumentException("Error converting to SubjectPublicKeyInfo", e);
-		}
-	}
-
-	private X500Name toX500Name(X500Principal principal) {
-		try {
-			X509Principal x509 = new X509Principal(principal.getEncoded());
-			return X500Name.getInstance(x509);
-		} catch (IOException e) {
-			throw new IllegalArgumentException("Error converting to X500", e);
 		}
 	}
 
@@ -201,8 +182,9 @@ public class SimpleCertificateAuthority {
 
 	public X509Certificate selfSign(X500Principal subject, KeyPair keyPair) throws OpsException {
 		X500Principal issuer = subject;
-		Certificate certificate = buildCertificate(toX500Name(issuer), keyPair.getPrivate(), toX500Name(subject),
-				toPublicKeyInfo(keyPair.getPublic()));
+		Certificate certificate = buildCertificate(BouncyCastleHelpers.toX500Name(issuer), keyPair.getPrivate(),
+				BouncyCastleHelpers.toX500Name(subject),
+				BouncyCastleHelpers.toSubjectPublicKeyInfo(keyPair.getPublic()));
 		return toX509(certificate);
 	}
 }

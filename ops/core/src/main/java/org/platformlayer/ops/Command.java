@@ -53,6 +53,11 @@ public class Command {
 			Argument arg = new Argument(literal);
 			return arg;
 		}
+
+		public static Argument buildFile(File path) {
+			Argument arg = new Argument(escapeFile(path));
+			return arg;
+		}
 	}
 
 	public static final String MASKED = "***";
@@ -127,7 +132,8 @@ public class Command {
 	}
 
 	public void addFile(File fileArg) {
-		addUnmaskedArg(escapeFile(fileArg));
+		Argument arg = Argument.buildFile(fileArg);
+		args.add(arg);
 	}
 
 	static String escapeQuoted(String s) {

@@ -20,6 +20,9 @@ grant all on service_authorizations to platformlayer_ops;
 create table service_metadata (service int, project int, metadata_key int, data bytea, secret bytea, primary key (service, project, metadata_key));
 grant all on service_metadata to platformlayer_ops;
 
+create table project_metadata (project int, metadata_key int, data bytea, secret bytea, primary key (project, metadata_key));
+grant all on project_metadata to platformlayer_ops;
+
 create table items (service int, model int, project int, id serial, key varchar(512), state int, data bytea, secret bytea, primary key (service, model, project, id));
 grant all on items_id_seq to platformlayer_ops;
 grant all on items to platformlayer_ops;

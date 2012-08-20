@@ -35,7 +35,7 @@ import com.google.common.collect.Lists;
 
 public class OpsContextBuilder {
 	@Inject
-	ServiceAuthorizationService serviceAuthenticationService;
+	ServiceAuthorizationService serviceAuthorizationService;
 
 	@Inject
 	OpsSystem opsSystem;
@@ -109,12 +109,11 @@ public class OpsContextBuilder {
 		ProjectId runAsProjectId = new ProjectId(runAsProject.getName());
 		PlatformLayerClient platformLayerClient = FederatedPlatformLayerClient.build(runAsProjectId, federationMap);
 
-		ServiceConfiguration serviceConfiguration = new ServiceConfiguration(serviceAuthenticationService, serviceType,
-				runAsProjectId);
+		ServiceConfiguration serviceConfiguration = new ServiceConfiguration(runAsProjectId, serviceType);
 
 		ServiceAuthorization serviceAuthorization;
 		try {
-			serviceAuthorization = serviceConfiguration.findServiceAuthorization();
+			serviceAuthorization = serviceAuthorizationService.findServiceAuthorization(serviceType, runAsProjectId);
 			// if (serviceAuthorization == null) {
 			// throw new OpsServiceNotAuthorizedException();
 			// }

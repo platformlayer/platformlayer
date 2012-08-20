@@ -1,56 +1,37 @@
 package org.platformlayer.service.zookeeper.ops;
 
-import java.io.File;
-
 import org.openstack.crypto.Md5Hash;
 import org.platformlayer.ops.Handler;
-import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.DownloadFileByHash;
-import org.platformlayer.ops.filesystem.ExpandArchive;
-import org.platformlayer.ops.java.JavaVirtualMachine;
-import org.platformlayer.ops.packages.PackageDependency;
-import org.platformlayer.ops.supervisor.SupervisordInstall;
-import org.platformlayer.ops.tree.OpsTreeBase;
+import org.platformlayer.ops.standardservice.StandardServiceInstall;
 
-public class ZookeeperInstall extends OpsTreeBase {
+public class ZookeeperInstall extends StandardServiceInstall {
 
+	@Override
+	protected ZookeeperInstanceModel getTemplate() {
+		return injected(ZookeeperInstanceModel.class);
+	}
+
+	@Override
+	protected DownloadFileByHash buildDownload() {
+		DownloadFileByHash download = super.buildDownload();
+
+		// TODO: Would be nice not to hard code this mirror
+		String apacheMirror = "http://ftp.osuosl.org/pub/apache/";
+
+		// This probably does need to be hard-coded though
+		// (though maybe selectable from a list of supported releases)
+		String url = apacheMirror + "zookeeper/zookeeper-3.3.5/zookeeper-3.3.5.tar.gz";
+
+		download.setUrl(url);
+		download.hash = new Md5Hash("4c2c969bce8717d6443e184ff91dfdc7");
+
+		return download;
+	}
+
+	@Override
 	@Handler
 	public void handler() {
 	}
 
-	@Override
-	protected void addChildren() throws OpsException {
-		addChild(JavaVirtualMachine.buildJava6());
-
-		addChild(injected(SupervisordInstall.class));
-
-		{
-			// TODO: Would be nice not to hard code this mirror
-			String apacheMirror = "http://ftp.osuosl.org/pub/apache/";
-
-			// This probably does need to be hard-coded though
-			// (though maybe selectable from a list of supported releases)
-			String file = "zookeeper/zookeeper-3.3.5/zookeeper-3.3.5.tar.gz";
-			Md5Hash hash = new Md5Hash("4c2c969bce8717d6443e184ff91dfdc7");
-
-			File basePath = new File("/opt/zookeeper/");
-			File zipFile = new File(basePath, "zookeeper-3.3.5.tar.gz");
-			File extractPath = new File(basePath, "zookeeper-3.3.5");
-
-			DownloadFileByHash download = injected(DownloadFileByHash.class);
-			download.setUrl(apacheMirror + file);
-			download.hash = hash;
-			download.filePath = zipFile;
-			addChild(download);
-
-			// Needed for ExpandArchive
-			addChild(PackageDependency.build("unzip"));
-
-			// TODO: Only unzip if newly downloaded
-			ExpandArchive unzip = injected(ExpandArchive.class);
-			unzip.archiveFile = zipFile;
-			unzip.extractPath = extractPath;
-			addChild(unzip);
-		}
-	}
 }

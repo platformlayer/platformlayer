@@ -29,6 +29,9 @@ public class JdbcServiceAuthorizationRepository implements ServiceAuthorizationR
 	@Inject
 	Provider<Connection> connectionProvider;
 
+	@Inject
+	SecretHelper secretHelper;
+
 	@Override
 	@JdbcTransaction
 	public ServiceAuthorization findServiceAuthorization(ServiceType serviceType, ProjectId project)
@@ -124,7 +127,12 @@ public class JdbcServiceAuthorizationRepository implements ServiceAuthorizationR
 
 		ResultSet rs = null;
 		try {
-			rs = db.selectMetadata();
+			if (serviceType == null) {
+				rs = db.selectProjectMetadata();
+			} else {
+				rs = db.selectServiceMetadata();
+			}
+
 			while (rs.next()) {
 				byte[] plaintext = secretHelper.decryptSecret(rs.getBytes("data"), rs.getBytes("secret"));
 				String value = Utf8.toString(plaintext);
@@ -147,9 +155,6 @@ public class JdbcServiceAuthorizationRepository implements ServiceAuthorizationR
 		return values.get(0);
 	}
 
-	@Inject
-	SecretHelper secretHelper;
-
 	@Override
 	@JdbcTransaction
 	public void setPrivateData(ServiceType serviceType, ProjectId project, ServiceMetadataKey metadataKey, String value)
@@ -167,7 +172,12 @@ public class JdbcServiceAuthorizationRepository implements ServiceAuthorizationR
 			// TODO: Encode this differently from items??
 			byte[] secretData = secretHelper.encodeItemSecret(secret);
 
-			db.insertMetadata(ciphertext, secretData);
+			if (serviceType == null) {
+				db.insertProjectMetadata(ciphertext, secretData);
+			} else {
+				db.insertServiceMetadata(ciphertext, secretData);
+			}
+
 		} catch (SQLException e) {
 			throw new RepositoryException("Error running query", e);
 		} finally {
@@ -182,12 +192,14 @@ public class JdbcServiceAuthorizationRepository implements ServiceAuthorizationR
 
 		public DbHelper(ServiceType serviceType, ProjectId project, ServiceMetadataKey metadataKey) {
 			super(connectionProvider.get());
-			setAtom(serviceType);
+			if (serviceType != null) {
+				setAtom(serviceType);
+			}
 			setAtom(project);
 			setAtom(metadataKey);
 		}
 
-		public ResultSet selectMetadata() throws SQLException {
+		public ResultSet selectServiceMetadata() throws SQLException {
 			String sql = "SELECT data, secret FROM service_metadata WHERE service=? and project=? and metadata_key=?";
 			PreparedStatement ps = prepareStatement(sql);
 
@@ -198,7 +210,17 @@ public class JdbcServiceAuthorizationRepository implements ServiceAuthorizationR
 			return ps.executeQuery();
 		}
 
-		public void insertMetadata(byte[] data, byte[] secret) throws SQLException {
+		public ResultSet selectProjectMetadata() throws SQLException {
+			String sql = "SELECT data, secret FROM project_metadata WHERE project=? and metadata_key=?";
+			PreparedStatement ps = prepareStatement(sql);
+
+			setAtom(ps, 1, ProjectId.class);
+			setAtom(ps, 2, ServiceMetadataKey.class);
+
+			return ps.executeQuery();
+		}
+
+		public void insertServiceMetadata(byte[] data, byte[] secret) throws SQLException {
 			final String sql = "INSERT INTO service_metadata (service, project, metadata_key, data, secret) VALUES (?, ?, ?, ?, ?)";
 
 			PreparedStatement ps = prepareStatement(sql);
@@ -209,6 +231,26 @@ public class JdbcServiceAuthorizationRepository implements ServiceAuthorizationR
 				setAtom(ps, 3, ServiceMetadataKey.class);
 				ps.setBytes(4, data);
 				ps.setBytes(5, secret);
+
+				int updateCount = ps.executeUpdate();
+				if (updateCount != 1) {
+					throw new IllegalStateException("Unexpected number of rows inserted");
+				}
+			} finally {
+				JdbcUtils.safeClose(rs);
+			}
+		}
+
+		public void insertProjectMetadata(byte[] data, byte[] secret) throws SQLException {
+			final String sql = "INSERT INTO project_metadata (project, metadata_key, data, secret) VALUES (?, ?, ?, ?)";
+
+			PreparedStatement ps = prepareStatement(sql);
+			ResultSet rs = null;
+			try {
+				setAtom(ps, 1, ProjectId.class);
+				setAtom(ps, 2, ServiceMetadataKey.class);
+				ps.setBytes(3, data);
+				ps.setBytes(4, secret);
 
 				int updateCount = ps.executeUpdate();
 				if (updateCount != 1) {

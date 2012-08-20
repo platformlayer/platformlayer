@@ -10,19 +10,23 @@ import org.apache.log4j.Logger;
 import org.platformlayer.TagFilter;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
+import org.platformlayer.ops.Command;
+import org.platformlayer.ops.Command.Argument;
 import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.helpers.InstanceHelpers;
+import org.platformlayer.ops.java.JavaCommandBuilder;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.networks.NetworkPoint;
-import org.platformlayer.ops.templates.TemplateDataSource;
+import org.platformlayer.ops.standardservice.StandardTemplateData;
 import org.platformlayer.service.zookeeper.model.ZookeeperCluster;
 import org.platformlayer.service.zookeeper.model.ZookeeperServer;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
-public class ZookeeperInstanceModel implements TemplateDataSource {
+public class ZookeeperInstanceModel extends StandardTemplateData {
 	static final Logger log = Logger.getLogger(ZookeeperInstanceModel.class);
 
 	@Inject
@@ -31,7 +35,8 @@ public class ZookeeperInstanceModel implements TemplateDataSource {
 	@Inject
 	InstanceHelpers instances;
 
-	ZookeeperServer getModel() {
+	@Override
+	public ZookeeperServer getModel() {
 		ZookeeperServer model = OpsContext.get().getInstance(ZookeeperServer.class);
 		return model;
 	}
@@ -82,14 +87,17 @@ public class ZookeeperInstanceModel implements TemplateDataSource {
 		return getModel().clusterId;
 	}
 
+	@Override
 	public File getInstallDir() {
 		return new File("/opt/zookeeper/zookeeper-3.3.5/zookeeper-3.3.5");
 	}
 
+	@Override
 	public File getInstanceDir() {
 		return new File(new File("/var/zookeeper"), getInstanceKey());
 	}
 
+	@Override
 	public String getInstanceKey() {
 		// TOOD: Should this be the cluster unique id??
 		String instanceKey = "default";
@@ -117,6 +125,79 @@ public class ZookeeperInstanceModel implements TemplateDataSource {
 
 		ZookeeperCluster cluster = platformLayer.getItem(parentKey, ZookeeperCluster.class);
 		return cluster;
+	}
+
+	@Override
+	public String getKey() {
+		return "zookeeper";
+	}
+
+	@Override
+	protected Command getCommand() throws OpsException {
+		JavaCommandBuilder builder = new JavaCommandBuilder();
+		builder.setMainClass("org.apache.zookeeper.server.quorum.QuorumPeerMain");
+		builder.addArgument(Argument.buildFile(getConfigurationFile()));
+		builder.addClasspath(getInstanceDir(), false);
+		builder.addClasspathFolder(getInstallDir());
+		builder.addClasspathFolder(new File(getInstallDir(), "lib"));
+
+		return builder.get();
+		// directory=${instanceDir}
+		// command=java -Xmx512m -XX:+HeapDumpOnOutOfMemoryError -cp
+		// "${instanceDir}:${installDir}/*:${installDir}/lib/*" org.apache.zookeeper.server.quorum.QuorumPeerMain
+		// zookeeper.cfg
+	}
+
+	@Override
+	protected Map<String, String> getConfigurationProperties() throws OpsException {
+		Map<String, String> config = Maps.newHashMap();
+
+		// The number of milliseconds of each tick
+		config.put("tickTime", "2000");
+
+		// The number of ticks that the initial
+		// synchronization phase can take
+		config.put("initLimit", "10");
+
+		// The number of ticks that can pass between
+		// sending a request and getting an acknowledgment
+		config.put("syncLimit", "5");
+
+		// the directory where the snapshot is stored.
+		config.put("dataDir", getDataDir().getAbsolutePath());
+
+		// the port at which the clients will connect
+		config.put("clientPort", "2181");
+
+		Cluster cluster = getCluster();
+
+		if (cluster.servers.size() == 1) {
+			// Server list ommitted to side-step ZOOKEEPER-1460 (for now)
+		} else {
+			for (ClusterServer server : cluster.servers) {
+				config.put("server." + server.key, server.ip + ":2888:2889");
+			}
+		}
+
+		return config;
+	}
+
+	@Override
+	protected PlatformLayerKey getSslKeyPath() {
+		return null;
+	}
+
+	public File getDataDir() {
+		return new File(getInstanceDir(), "data");
+	}
+
+	public File getLogsDir() {
+		return new File(getInstanceDir(), "logs");
+	}
+
+	@Override
+	public File getConfigurationFile() {
+		return new File(getInstanceDir(), "zookeeper.cfg");
 	}
 
 }

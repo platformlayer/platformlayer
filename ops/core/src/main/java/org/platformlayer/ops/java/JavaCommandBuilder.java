@@ -18,15 +18,27 @@ public class JavaCommandBuilder {
 	final Map<String, String> defines = Maps.newHashMap();
 	String mainClass;
 
-	final List<File> classpathFolders = Lists.newArrayList();
+	static class ClasspathEntry {
+		public File path;
+		public boolean wildcard;
+	}
+
+	final List<ClasspathEntry> classpath = Lists.newArrayList();
 	final List<Argument> arguments = Lists.newArrayList();
 
 	public void addArgument(Argument argument) {
 		arguments.add(argument);
 	}
 
-	public void addClasspathFolder(File f) {
-		classpathFolders.add(f);
+	public void addClasspath(File path, boolean wildcard) {
+		ClasspathEntry entry = new ClasspathEntry();
+		entry.path = path;
+		entry.wildcard = wildcard;
+		classpath.add(entry);
+	}
+
+	public void addClasspathFolder(File path) {
+		addClasspath(path, true);
 	}
 
 	public void addDefine(String key, String value) {
@@ -53,19 +65,23 @@ public class JavaCommandBuilder {
 			command.addLiteral("-D" + define.getKey() + "=" + define.getValue());
 		}
 
-		StringBuilder classpath = new StringBuilder();
-		for (File classpathFolder : classpathFolders) {
-			if (classpath.length() != 0) {
-				classpath.append(":");
+		StringBuilder cp = new StringBuilder();
+		for (ClasspathEntry entry : classpath) {
+			if (cp.length() != 0) {
+				cp.append(":");
 			}
-			// TODO: Adding * is gross
-			classpath.append(classpathFolder.getAbsolutePath() + "/*");
+			String s = entry.path.getAbsolutePath();
+			if (entry.wildcard) {
+				// TODO: Adding * is gross
+				s += "/*";
+			}
+			cp.append(s);
 		}
 
 		// TODO: This is not nice either
-		classpath.append(":.");
+		cp.append(":.");
 
-		command.addLiteral("-cp").addQuoted(classpath.toString());
+		command.addLiteral("-cp").addQuoted(cp.toString());
 
 		command.addQuoted(mainClass);
 
