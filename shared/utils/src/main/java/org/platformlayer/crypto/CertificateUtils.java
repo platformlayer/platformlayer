@@ -63,7 +63,7 @@ public class CertificateUtils {
 		try {
 			StringWriter stringWriter = new StringWriter();
 
-			PEMWriter writer = new PEMWriter(stringWriter);
+			PEMWriter writer = new PEMWriter(stringWriter, BouncyCastleLoader.getName());
 			for (X509Certificate cert : certs) {
 				writer.writeObject(cert);
 			}
@@ -81,7 +81,7 @@ public class CertificateUtils {
 
 		PEMReader reader = null;
 		try {
-			reader = new PEMReader(new StringReader(cert));
+			reader = new PEMReader(new StringReader(cert), null, BouncyCastleLoader.getName());
 			while (true) {
 				Object o = reader.readObject();
 				if (o == null) {

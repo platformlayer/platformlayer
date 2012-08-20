@@ -27,12 +27,12 @@ public class OpenSshUtils {
 
 	// TODO: I can't believe this isn't in Bouncycastle or something!!
 
-	static class KeyInputStream implements Closeable {
+	static class OpenSshInputStream implements Closeable {
 		final InputStream is;
 
 		static final int MAX_BUFFER_SIZE = 32768;
 
-		public KeyInputStream(InputStream is) {
+		public OpenSshInputStream(InputStream is) {
 			super();
 			this.is = is;
 		}
@@ -139,7 +139,7 @@ public class OpenSshUtils {
 			String base64 = sshPublicKey.substring(SSH_RSA_PREFIX.length());
 			byte[] data = CryptoUtils.fromBase64(base64);
 
-			KeyInputStream is = new KeyInputStream(new ByteArrayInputStream(data));
+			OpenSshInputStream is = new OpenSshInputStream(new ByteArrayInputStream(data));
 			try {
 				String keyType = is.readString();
 

@@ -1,4 +1,4 @@
-package org.platformlayer;
+package org.platformlayer.crypto;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -9,12 +9,13 @@ import java.security.NoSuchAlgorithmException;
 
 import org.bouncycastle.openssl.PEMReader;
 import org.bouncycastle.openssl.PEMWriter;
+import org.platformlayer.IoUtils;
 import org.platformlayer.ops.OpsException;
 
 public class KeyPairUtils {
 
 	public static KeyPair deserialize(String keyData) throws IOException {
-		PEMReader r = new PEMReader(new StringReader(keyData));
+		PEMReader r = new PEMReader(new StringReader(keyData), null, BouncyCastleLoader.getName());
 		try {
 			return (KeyPair) r.readObject();
 		} finally {
@@ -24,7 +25,7 @@ public class KeyPairUtils {
 
 	public static String serialize(KeyPair keyPair) throws IOException {
 		StringWriter writer = new StringWriter();
-		PEMWriter pemWriter = new PEMWriter(writer);
+		PEMWriter pemWriter = new PEMWriter(writer, BouncyCastleLoader.getName());
 		try {
 			pemWriter.writeObject(keyPair);
 			pemWriter.flush();

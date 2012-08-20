@@ -12,7 +12,7 @@ public class PrivateKeys {
 	public static PrivateKey fromPem(String data) {
 		PEMReader reader = null;
 		try {
-			reader = new PEMReader(new StringReader(data));
+			reader = new PEMReader(new StringReader(data), null, BouncyCastleLoader.getName());
 			while (true) {
 				Object o = reader.readObject();
 				return (PrivateKey) o;
