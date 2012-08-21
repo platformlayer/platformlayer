@@ -179,4 +179,10 @@ public class GerritInstanceModel extends StandardTemplateData {
 		return getWarFile();
 	}
 
+	@Override
+	public String getMatchExecutableName() {
+		// We run a script, but that script runs java
+		return "java";
+	}
+
 }

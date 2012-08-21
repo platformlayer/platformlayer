@@ -96,6 +96,10 @@ public abstract class StandardTemplateData implements TemplateDataSource {
 		return Maps.newHashMap();
 	}
 
+	public String getMatchExecutableName() {
+		return null;
+	}
+
 	// public String getDatabaseName() {
 	// return "main";
 	// }

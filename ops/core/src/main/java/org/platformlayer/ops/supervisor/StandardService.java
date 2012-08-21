@@ -24,6 +24,7 @@ public class StandardService extends OpsTreeBase {
 	public Provider<Map<String, String>> environment;
 	public File instanceDir;
 	public String user;
+	public String matchExecutableName;
 
 	@Inject
 	ServiceManager serviceManager;

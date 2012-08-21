@@ -61,6 +61,8 @@ public abstract class StandardServiceInstance extends OpsTreeBase {
 			service.key = template.getServiceKey();
 
 			service.owner = template.getModel().getKey();
+
+			service.matchExecutableName = template.getMatchExecutableName();
 		}
 
 		if (template.shouldCreateSslKey()) {
