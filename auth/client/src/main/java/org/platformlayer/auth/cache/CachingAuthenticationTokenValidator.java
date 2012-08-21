@@ -57,9 +57,16 @@ public class CachingAuthenticationTokenValidator implements AuthenticationTokenV
 
 	};
 
-	final LoadingCache<CacheKey, CachedResult> cache = CacheBuilder.newBuilder().maximumSize(CACHE_MAX_SIZE)
+	final LoadingCache<CacheKey, CachedResult> cache = CacheBuilder.newBuilder()
+	// limit size
+			.maximumSize(CACHE_MAX_SIZE)
+			// max validity
 			.expireAfterWrite(CACHE_VALIDITY_MINUTES, TimeUnit.MINUTES)
-			// .removalListener(MY_LISTENER)
+
+			// We want stats
+			.recordStats()
+
+			// Load on demand
 			.build(new CacheLoader<CacheKey, CachedResult>() {
 				@Override
 				public CachedResult load(CacheKey key) throws Exception {
