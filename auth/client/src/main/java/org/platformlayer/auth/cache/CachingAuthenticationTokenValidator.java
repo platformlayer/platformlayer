@@ -1,11 +1,13 @@
 package org.platformlayer.auth.cache;
 
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.platformlayer.auth.AuthenticationTokenValidator;
+import org.platformlayer.crypto.CertificateUtils;
 import org.platformlayer.metrics.HasMetrics;
 import org.platformlayer.metrics.MetricsSystem;
 import org.platformlayer.model.AuthenticationToken;
@@ -28,10 +30,49 @@ public class CachingAuthenticationTokenValidator implements AuthenticationTokenV
 		this.inner = inner;
 	}
 
+	static class CertificateChainData {
+		final byte[] data;
+
+		public CertificateChainData(X509Certificate[] chain) {
+			this.data = CertificateUtils.serialize(chain);
+		}
+
+		public X509Certificate[] buildCertificates() {
+			return CertificateUtils.deserialize(data);
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + Arrays.hashCode(data);
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			CertificateChainData other = (CertificateChainData) obj;
+			if (!Arrays.equals(data, other.data)) {
+				return false;
+			}
+			return true;
+		}
+
+	};
+
 	static class CacheKey {
 		final String projectKey;
 		final AuthenticationToken token;
-		final X509Certificate[] chain;
+		final CertificateChainData chain;
 
 		CacheKey(String projectKey, AuthenticationToken token) {
 			this.projectKey = projectKey;
@@ -39,11 +80,56 @@ public class CachingAuthenticationTokenValidator implements AuthenticationTokenV
 			this.chain = null;
 		}
 
-		// TODO: The cert chain is probably quite memory hungry...
 		CacheKey(String projectKey, X509Certificate[] chain) {
 			this.projectKey = projectKey;
 			this.token = null;
-			this.chain = chain;
+			this.chain = new CertificateChainData(chain);
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((chain == null) ? 0 : chain.hashCode());
+			result = prime * result + ((projectKey == null) ? 0 : projectKey.hashCode());
+			result = prime * result + ((token == null) ? 0 : token.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			CacheKey other = (CacheKey) obj;
+			if (chain == null) {
+				if (other.chain != null) {
+					return false;
+				}
+			} else if (!chain.equals(other.chain)) {
+				return false;
+			}
+			if (projectKey == null) {
+				if (other.projectKey != null) {
+					return false;
+				}
+			} else if (!projectKey.equals(other.projectKey)) {
+				return false;
+			}
+			if (token == null) {
+				if (other.token != null) {
+					return false;
+				}
+			} else if (!token.equals(other.token)) {
+				return false;
+			}
+			return true;
 		}
 
 	};
@@ -96,7 +182,7 @@ public class CachingAuthenticationTokenValidator implements AuthenticationTokenV
 		if (key.token != null) {
 			authorization = inner.validateToken(key.token, key.projectKey);
 		} else {
-			authorization = inner.validateChain(key.chain, key.projectKey);
+			authorization = inner.validateChain(key.chain.buildCertificates(), key.projectKey);
 		}
 
 		// TODO: Different cache validity for "access denied"?

@@ -20,7 +20,6 @@ import org.bouncycastle.openssl.PEMWriter;
 import org.openstack.crypto.CertificateAndKey;
 import org.openstack.crypto.KeyStoreUtils;
 import org.platformlayer.IoUtils;
-import org.platformlayer.ops.OpsException;
 
 import com.google.common.collect.Lists;
 
@@ -50,7 +49,7 @@ public class CertificateUtils {
 		return baos.toByteArray();
 	}
 
-	public static X509Certificate[] deserialize(byte[] data) throws OpsException {
+	public static X509Certificate[] deserialize(byte[] data) {
 		CertificateReader reader = new CertificateReader();
 		return reader.parse(data);
 	}

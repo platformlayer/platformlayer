@@ -21,11 +21,11 @@ public class CertificateReader {
 	@SuppressWarnings("unused")
 	private static final Logger log = Logger.getLogger(CertificateReader.class);
 
-	public X509Certificate[] parse(byte[] data) throws OpsException {
+	public X509Certificate[] parse(byte[] data) {
 		return parse(new ByteArrayInputStream(data));
 	}
 
-	public X509Certificate[] parse(InputStream is) throws OpsException {
+	public X509Certificate[] parse(InputStream is) {
 		List<X509Certificate> certs = Lists.newArrayList();
 		try {
 			CertificateFactory x509CertificateFactory = getX509CertificateFactory();
@@ -34,9 +34,9 @@ public class CertificateReader {
 				certs.add(cert);
 			}
 		} catch (CertificateException ce) {
-			throw new OpsException("Not an X509 certificate", ce);
+			throw new IllegalArgumentException("Not an X509 certificate", ce);
 		} catch (IOException e) {
-			throw new OpsException("Error reading certificates", e);
+			throw new IllegalArgumentException("Error reading certificates", e);
 		}
 
 		return certs.toArray(new X509Certificate[certs.size()]);
@@ -57,12 +57,12 @@ public class CertificateReader {
 
 	CertificateFactory certificateFactory;
 
-	private CertificateFactory getX509CertificateFactory() throws OpsException {
+	private CertificateFactory getX509CertificateFactory() {
 		if (certificateFactory == null) {
 			try {
 				certificateFactory = CertificateFactory.getInstance("X509");
 			} catch (CertificateException e) {
-				throw new OpsException("Error loading X509 provider", e);
+				throw new IllegalStateException("Error loading X509 provider", e);
 			}
 		}
 
