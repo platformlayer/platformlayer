@@ -13,6 +13,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
+import org.platformlayer.IoUtils;
 import org.platformlayer.metrics.model.MetricDataSource;
 import org.platformlayer.web.ResourceBase;
 
@@ -36,12 +37,16 @@ public class MetricDataSourceWriter implements MessageBodyWriter<MetricDataSourc
 	public void writeTo(MetricDataSource metricData, Class<?> type, Type genericType, Annotation[] annotations,
 			MediaType mediaType, MultivaluedMap<String, Object> headers, OutputStream out) throws IOException,
 			WebApplicationException {
-		if (mediaType.isCompatible(MediaType.APPLICATION_JSON_TYPE)) {
-			metricData.serializeAsJson(out);
-		} else if (mediaType.isCompatible(MediaType.APPLICATION_XML_TYPE)) {
-			metricData.serializeAsXml(out);
-		} else {
-			throw new UnsupportedOperationException();
+		try {
+			if (mediaType.isCompatible(MediaType.APPLICATION_JSON_TYPE)) {
+				metricData.serializeAsJson(out);
+			} else if (mediaType.isCompatible(MediaType.APPLICATION_XML_TYPE)) {
+				metricData.serializeAsXml(out);
+			} else {
+				throw new UnsupportedOperationException();
+			}
+		} finally {
+			IoUtils.safeClose(metricData);
 		}
 	}
 }

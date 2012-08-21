@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
@@ -14,6 +15,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.platformlayer.http.HttpRequest;
 import org.platformlayer.http.HttpResponse;
@@ -63,10 +65,6 @@ public class ApacheCommonsHttpRequest implements HttpRequest {
 		return uri;
 	}
 
-	void releaseConnection() {
-		request.releaseConnection();
-	}
-
 	public class ApacheCommonsHttpResponse implements HttpResponse {
 		private final org.apache.http.HttpResponse response;
 
@@ -76,7 +74,8 @@ public class ApacheCommonsHttpRequest implements HttpRequest {
 
 		@Override
 		public void close() throws IOException {
-			releaseConnection();
+			HttpEntity httpEntity = response.getEntity();
+			EntityUtils.consume(httpEntity);
 		}
 
 		@Override
