@@ -46,7 +46,7 @@ public class JreRestfulClient implements RestfulClient {
 		Object postObject;
 		Class<T> responseClass;
 
-		SslConfiguration sslConfiguration = JreRestfulClient.this.sslConfiguration;
+		SslConfiguration sslConfiguration = null;
 
 		JreRequest(String method, String relativeUri, Object postObject, Class<T> responseClass) {
 			super();
@@ -67,7 +67,8 @@ public class JreRestfulClient implements RestfulClient {
 					log.debug("HTTP Request: " + method + " " + uri);
 				}
 
-				HttpRequest httpRequest = httpStrategy.buildConfiguration(sslConfiguration).buildRequest(method, uri);
+				HttpRequest httpRequest = httpStrategy.buildConfiguration(getSslConfiguration()).buildRequest(method,
+						uri);
 				httpRequest.setRequestHeader("Accept", "application/xml");
 
 				if (debug != null) {
@@ -112,12 +113,15 @@ public class JreRestfulClient implements RestfulClient {
 
 		@Override
 		public SslConfiguration getSslConfiguration() {
-			return sslConfiguration;
+			if (sslConfiguration != null) {
+				return sslConfiguration;
+			}
+			return JreRestfulClient.this.sslConfiguration;
 		}
 
 		@Override
 		public void setKeyManager(KeyManager keyManager) {
-			this.sslConfiguration = sslConfiguration.copyWithNewKeyManager(keyManager);
+			this.sslConfiguration = getSslConfiguration().copyWithNewKeyManager(keyManager);
 		}
 	}
 

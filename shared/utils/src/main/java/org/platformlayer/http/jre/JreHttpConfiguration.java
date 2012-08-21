@@ -31,4 +31,8 @@ public class JreHttpConfiguration implements HttpConfiguration {
 		}
 	}
 
+	@Override
+	public void close() throws IOException {
+	}
+
 }

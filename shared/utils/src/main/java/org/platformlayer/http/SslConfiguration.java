@@ -54,4 +54,10 @@ public class SslConfiguration {
 		return keyManager == null && trustManager == null && hostnameVerifier == null;
 	}
 
+	@Override
+	public String toString() {
+		return "SslConfiguration [keyManager=" + keyManager + ", trustManager=" + trustManager + ", hostnameVerifier="
+				+ hostnameVerifier + "]";
+	}
+
 }

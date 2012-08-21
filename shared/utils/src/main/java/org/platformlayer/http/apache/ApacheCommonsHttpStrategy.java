@@ -1,17 +1,19 @@
 package org.platformlayer.http.apache;
 
+import javax.inject.Singleton;
+
 import org.apache.log4j.Logger;
 import org.platformlayer.http.HttpConfiguration;
-import org.platformlayer.http.HttpStrategy;
 import org.platformlayer.http.SslConfiguration;
 
-public class ApacheCommonsHttpStrategy implements HttpStrategy {
+@Singleton
+public class ApacheCommonsHttpStrategy extends CachingHttpStrategy {
 	@SuppressWarnings("unused")
 	private static final Logger log = Logger.getLogger(ApacheCommonsHttpStrategy.class);
 
 	@Override
-	public HttpConfiguration buildConfiguration(SslConfiguration sslConfiguration) {
+	protected HttpConfiguration build0(SslConfiguration sslConfiguration) {
+		log.info("Build http configuration for: " + sslConfiguration);
 		return new ApacheCommonsHttpConfiguration(sslConfiguration);
 	}
-
 }

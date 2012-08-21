@@ -1,5 +1,6 @@
 package org.platformlayer.http.apache;
 
+import java.io.IOException;
 import java.net.URI;
 import java.security.GeneralSecurityException;
 
@@ -26,8 +27,6 @@ public class ApacheCommonsHttpConfiguration implements HttpConfiguration {
 
 	final HttpClient httpClient;
 
-	private static HttpClient sharedHttpClient;
-
 	ApacheCommonsHttpConfiguration(SslConfiguration sslConfiguration) {
 		super();
 		this.httpClient = buildHttpClient(sslConfiguration);
@@ -39,40 +38,44 @@ public class ApacheCommonsHttpConfiguration implements HttpConfiguration {
 	}
 
 	private HttpClient buildHttpClient(SslConfiguration sslConfiguration) {
-		if (sslConfiguration == null || sslConfiguration.isEmpty()) {
-			return getSharedHttpClient();
-		}
-
-		// Pool custom http clients?
-		SchemeSocketFactory schemeSocketFactory;
-		try {
-			javax.net.ssl.SSLSocketFactory sslSocketFactory = sslConfiguration.getSslSocketFactory();
-
-			X509HostnameVerifier apacheHostnameVerifier = null;
-			if (sslConfiguration.getHostnameVerifier() != null) {
-				apacheHostnameVerifier = new ApacheHostnameVerifierAdapter(sslConfiguration.getHostnameVerifier());
-			}
-			schemeSocketFactory = new SSLSocketFactory(sslSocketFactory, apacheHostnameVerifier);
-		} catch (GeneralSecurityException e) {
-			throw new IllegalArgumentException("Error building SSL client", e);
-		}
-
-		SchemeRegistry schemeRegistry = new SchemeRegistry();
-		schemeRegistry.register(new Scheme("https", 443, schemeSocketFactory));
-
-		ClientConnectionManager connectionManager = buildConnectionManager(schemeRegistry);
-
 		HttpParams httpParams = null;
+
+		if (sslConfiguration == null || sslConfiguration.isEmpty()) {
+			sslConfiguration = null;
+		}
+
+		ClientConnectionManager connectionManager;
+		if (sslConfiguration != null) {
+			SchemeSocketFactory schemeSocketFactory;
+			try {
+				javax.net.ssl.SSLSocketFactory sslSocketFactory = sslConfiguration.getSslSocketFactory();
+
+				X509HostnameVerifier apacheHostnameVerifier = null;
+				if (sslConfiguration.getHostnameVerifier() != null) {
+					apacheHostnameVerifier = new ApacheHostnameVerifierAdapter(sslConfiguration.getHostnameVerifier());
+				}
+				schemeSocketFactory = new SSLSocketFactory(sslSocketFactory, apacheHostnameVerifier);
+			} catch (GeneralSecurityException e) {
+				throw new IllegalArgumentException("Error building SSL client", e);
+			}
+
+			SchemeRegistry schemeRegistry = new SchemeRegistry();
+			schemeRegistry.register(new Scheme("https", 443, schemeSocketFactory));
+
+			connectionManager = buildConnectionManager(schemeRegistry);
+		} else {
+			SchemeRegistry schemeRegistry = SchemeRegistryFactory.createDefault();
+			connectionManager = buildConnectionManager(schemeRegistry);
+		}
+
 		HttpClient httpClient = buildDefaultHttpClient(connectionManager, httpParams);
+
 		httpClient = wrapHttpClient(httpClient);
 
 		return httpClient;
 	}
 
 	protected ClientConnectionManager buildConnectionManager(SchemeRegistry schemeRegistry) {
-		if (schemeRegistry == null) {
-			schemeRegistry = SchemeRegistryFactory.createDefault();
-		}
 		return new PoolingClientConnectionManager(schemeRegistry);
 	}
 
@@ -86,17 +89,9 @@ public class ApacheCommonsHttpConfiguration implements HttpConfiguration {
 		return httpClient;
 	}
 
-	protected HttpClient getSharedHttpClient() {
-		if (sharedHttpClient == null) {
-			synchronized (ApacheCommonsHttpConfiguration.class) {
-				ClientConnectionManager connectionManager = buildConnectionManager(null);
-				HttpParams httpParams = null;
-				HttpClient httpClient = buildDefaultHttpClient(connectionManager, httpParams);
-				sharedHttpClient = wrapHttpClient(httpClient);
-			}
-		}
-
-		return sharedHttpClient;
+	@Override
+	public void close() throws IOException {
+		httpClient.getConnectionManager().shutdown();
 	}
 
 }
