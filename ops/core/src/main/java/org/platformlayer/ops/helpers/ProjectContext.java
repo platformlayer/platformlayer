@@ -95,7 +95,7 @@ public class ProjectContext {
 				throw new IllegalStateException();
 			}
 
-			PlatformLayerAuthAdminClient adminClient = (PlatformLayerAuthAdminClient) authenticationTokenValidator;
+			PlatformLayerAuthAdminClient adminClient = PlatformLayerAuthAdminClient.find(authenticationTokenValidator);
 			String csr = buildCsr(keyPair, getX500Principal());
 			chain = adminClient.signCsr(projectId.getKey(), projectAuthorization.getProjectSecret(), csr);
 

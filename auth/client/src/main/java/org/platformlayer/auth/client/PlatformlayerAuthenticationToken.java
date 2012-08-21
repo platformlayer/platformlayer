@@ -44,4 +44,34 @@ public class PlatformlayerAuthenticationToken implements AuthenticationToken {
 		httpRequest.setRequestHeader("X-Auth-Token", getAuthTokenValue());
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((authToken == null) ? 0 : authToken.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		PlatformlayerAuthenticationToken other = (PlatformlayerAuthenticationToken) obj;
+		if (authToken == null) {
+			if (other.authToken != null) {
+				return false;
+			}
+		} else if (!authToken.equals(other.authToken)) {
+			return false;
+		}
+		return true;
+	}
+
 }

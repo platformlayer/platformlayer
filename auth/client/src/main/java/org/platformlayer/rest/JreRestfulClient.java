@@ -71,7 +71,8 @@ public class JreRestfulClient implements RestfulClient {
 
 				// We rely on httpStrategy implementing caching if it's needed
 				HttpConfiguration http = httpStrategy.buildConfiguration(getSslConfiguration());
-				HttpRequest httpRequest = http.buildRequest(method, uri);
+				HttpRequest httpRequest = http.buildRequest(method,
+						uri);
 				httpRequest.setRequestHeader("Accept", "application/xml");
 
 				if (debug != null) {

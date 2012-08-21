@@ -103,7 +103,7 @@ public class GuiceXaasConfig extends AbstractModule {
 			HttpStrategy httpStrategy = new InstrumentedApacheHttpStrategy();
 			bind(HttpStrategy.class).toInstance(httpStrategy);
 
-			PlatformLayerAuthAdminClient tokenValidator = PlatformLayerAuthAdminClient.build(httpStrategy,
+			AuthenticationTokenValidator tokenValidator = PlatformLayerAuthAdminClient.build(httpStrategy,
 					configuration, encryptionStore);
 			bind(AuthenticationTokenValidator.class).toInstance(tokenValidator);
 

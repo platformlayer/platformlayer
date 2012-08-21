@@ -14,6 +14,7 @@ import org.platformlayer.WellKnownPorts;
 import org.platformlayer.auth.AuthenticationTokenValidator;
 import org.platformlayer.auth.PlatformlayerProjectAuthorization;
 import org.platformlayer.auth.PlatformlayerUserAuthentication;
+import org.platformlayer.auth.cache.CachingAuthenticationTokenValidator;
 import org.platformlayer.auth.v1.CertificateChainInfo;
 import org.platformlayer.auth.v1.CertificateInfo;
 import org.platformlayer.auth.v1.ProjectValidation;
@@ -58,7 +59,7 @@ public class PlatformLayerAuthAdminClient implements AuthenticationTokenValidato
 		this.restfulClient = restfulClient;
 	}
 
-	public static PlatformLayerAuthAdminClient build(HttpStrategy httpStrategy, Configuration configuration,
+	public static AuthenticationTokenValidator build(HttpStrategy httpStrategy, Configuration configuration,
 			EncryptionStore encryptionStore) throws OpsException {
 		String keystoneServiceUrl = configuration.lookup("auth.system.url", "https://127.0.0.1:"
 				+ WellKnownPorts.PORT_PLATFORMLAYER_AUTH_ADMIN + "/");
@@ -84,8 +85,10 @@ public class PlatformLayerAuthAdminClient implements AuthenticationTokenValidato
 
 		SslConfiguration sslConfiguration = new SslConfiguration(keyManager, trustManager, hostnameVerifier);
 		RestfulClient restfulClient = new JreRestfulClient(httpStrategy, keystoneServiceUrl, sslConfiguration);
-		PlatformLayerAuthAdminClient keystoneTokenValidator = new PlatformLayerAuthAdminClient(restfulClient);
-		return keystoneTokenValidator;
+
+		AuthenticationTokenValidator tokenValidator = new PlatformLayerAuthAdminClient(restfulClient);
+		tokenValidator = new CachingAuthenticationTokenValidator(tokenValidator);
+		return tokenValidator;
 	}
 
 	@Override
@@ -103,7 +106,6 @@ public class PlatformLayerAuthAdminClient implements AuthenticationTokenValidato
 			ValidateTokenResponse response = doSimpleRequest("GET", url, null, ValidateTokenResponse.class);
 
 			ValidateAccess access = response.getAccess();
-
 			if (access == null) {
 				return null;
 			}
@@ -114,7 +116,6 @@ public class PlatformLayerAuthAdminClient implements AuthenticationTokenValidato
 			// }
 
 			UserValidation userInfo = access.getUser();
-
 			if (userInfo == null) {
 				return null;
 			}
@@ -224,6 +225,17 @@ public class PlatformLayerAuthAdminClient implements AuthenticationTokenValidato
 			throws RestClientException {
 		RestfulRequest<T> request = restfulClient.buildRequest(method, relativeUri, postObject, responseClass);
 		return request.execute();
+	}
+
+	public static PlatformLayerAuthAdminClient find(AuthenticationTokenValidator authenticationTokenValidator) {
+		if (authenticationTokenValidator instanceof PlatformLayerAuthAdminClient) {
+			return (PlatformLayerAuthAdminClient) authenticationTokenValidator;
+		}
+		if (authenticationTokenValidator instanceof CachingAuthenticationTokenValidator) {
+			return find(((CachingAuthenticationTokenValidator) authenticationTokenValidator).getInner());
+		}
+		throw new IllegalArgumentException();
+
 	}
 
 }
