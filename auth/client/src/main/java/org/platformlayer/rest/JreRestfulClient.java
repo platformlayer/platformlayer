@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import org.openstack.utils.Utf8;
 import org.platformlayer.CastUtils;
 import org.platformlayer.IoUtils;
+import org.platformlayer.http.HttpConfiguration;
 import org.platformlayer.http.HttpRequest;
 import org.platformlayer.http.HttpResponse;
 import org.platformlayer.http.HttpStrategy;
@@ -58,6 +59,7 @@ public class JreRestfulClient implements RestfulClient {
 
 		@Override
 		public T execute() throws RestClientException {
+			HttpResponse response = null;
 			try {
 				URI uri = new URI(baseUrl + relativeUri);
 
@@ -67,8 +69,9 @@ public class JreRestfulClient implements RestfulClient {
 					log.debug("HTTP Request: " + method + " " + uri);
 				}
 
-				HttpRequest httpRequest = httpStrategy.buildConfiguration(getSslConfiguration()).buildRequest(method,
-						uri);
+				// We rely on httpStrategy implementing caching if it's needed
+				HttpConfiguration http = httpStrategy.buildConfiguration(getSslConfiguration());
+				HttpRequest httpRequest = http.buildRequest(method, uri);
 				httpRequest.setRequestHeader("Accept", "application/xml");
 
 				if (debug != null) {
@@ -85,7 +88,7 @@ public class JreRestfulClient implements RestfulClient {
 					}
 				}
 
-				HttpResponse response = httpRequest.doRequest();
+				response = httpRequest.doRequest();
 
 				int responseCode = response.getHttpResponseCode();
 				switch (responseCode) {
@@ -108,6 +111,8 @@ public class JreRestfulClient implements RestfulClient {
 				throw new RestClientException("Error communicating with service", e);
 			} catch (URISyntaxException e) {
 				throw new RestClientException("Error building URI", e);
+			} finally {
+				IoUtils.safeClose(response);
 			}
 		}
 
