@@ -6,6 +6,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.platformlayer.auth.AuthenticationTokenValidator;
+import org.platformlayer.metrics.HasMetrics;
+import org.platformlayer.metrics.MetricsSystem;
 import org.platformlayer.model.AuthenticationToken;
 import org.platformlayer.model.ProjectAuthorization;
 
@@ -13,7 +15,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
-public class CachingAuthenticationTokenValidator implements AuthenticationTokenValidator {
+public class CachingAuthenticationTokenValidator implements AuthenticationTokenValidator, HasMetrics {
 	@SuppressWarnings("unused")
 	private static final Logger log = Logger.getLogger(CachingAuthenticationTokenValidator.class);
 
@@ -70,7 +72,6 @@ public class CachingAuthenticationTokenValidator implements AuthenticationTokenV
 		CacheKey key = new CacheKey(projectKey, token);
 
 		return authenticate(key);
-
 	}
 
 	private ProjectAuthorization authenticate(CacheKey key) {
@@ -104,5 +105,11 @@ public class CachingAuthenticationTokenValidator implements AuthenticationTokenV
 
 	public AuthenticationTokenValidator getInner() {
 		return inner;
+	}
+
+	@Override
+	public void addMetrics(MetricsSystem system) {
+		system.add(getClass(), null, cache);
+		system.discoverMetrics(inner);
 	}
 }
