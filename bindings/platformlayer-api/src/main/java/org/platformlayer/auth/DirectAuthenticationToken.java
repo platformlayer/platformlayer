@@ -3,7 +3,7 @@ package org.platformlayer.auth;
 import javax.crypto.SecretKey;
 
 import org.platformlayer.crypto.CryptoUtils;
-import org.platformlayer.http.SimpleHttpRequest;
+import org.platformlayer.http.HttpRequest;
 import org.platformlayer.model.AuthenticationToken;
 
 public class DirectAuthenticationToken implements AuthenticationToken {
@@ -31,7 +31,7 @@ public class DirectAuthenticationToken implements AuthenticationToken {
 	}
 
 	@Override
-	public void populateRequest(SimpleHttpRequest httpRequest) {
+	public void populateRequest(HttpRequest httpRequest) {
 		httpRequest.setRequestHeader("X-Auth-Key", token);
 		httpRequest.setRequestHeader("X-Auth-Secret", CryptoUtils.toBase64(secret.getEncoded()));
 	}

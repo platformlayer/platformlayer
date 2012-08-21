@@ -3,8 +3,6 @@ package org.platformlayer;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.net.ConnectException;
 import java.net.URI;
@@ -12,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.KeyManager;
 import javax.net.ssl.TrustManager;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -21,8 +21,9 @@ import org.codehaus.jettison.json.JSONException;
 import org.openstack.utils.Utf8;
 import org.platformlayer.crypto.AcceptAllHostnameVerifier;
 import org.platformlayer.crypto.PublicKeyTrustManager;
-import org.platformlayer.http.SimpleHttpRequest;
-import org.platformlayer.http.SimpleHttpRequest.SimpleHttpResponse;
+import org.platformlayer.http.HttpRequest;
+import org.platformlayer.http.HttpResponse;
+import org.platformlayer.http.SslConfiguration;
 import org.platformlayer.xml.JaxbHelper;
 import org.platformlayer.xml.JsonHelper;
 import org.platformlayer.xml.UnmarshalException;
@@ -33,25 +34,27 @@ class PlatformLayerHttpRequest implements Closeable {
 	static final Logger log = LoggerFactory.getLogger(PlatformLayerHttpRequest.class);
 
 	final PlatformLayerHttpTransport client;
-	final SimpleHttpRequest httpRequest;
-	SimpleHttpResponse response;
+	final HttpRequest httpRequest;
+	HttpResponse response;
 
 	PrintStream debug;
 
 	public PlatformLayerHttpRequest(PlatformLayerHttpTransport client, String method, URI uri, List<String> trustKeys)
 			throws PlatformLayerClientException {
 		this.client = client;
-		try {
-			this.httpRequest = SimpleHttpRequest.build(method, uri);
-		} catch (IOException e) {
-			throw new PlatformLayerClientException("Error building http request " + method + " " + uri, e);
-		}
+
+		KeyManager keyManager = null;
+		TrustManager trustManager = null;
+		HostnameVerifier hostnameVerifier = null;
 
 		if (trustKeys != null) {
-			TrustManager trustManager = new PublicKeyTrustManager(trustKeys);
-			this.httpRequest.setTrustManager(trustManager);
-			this.httpRequest.setHostnameVerifier(new AcceptAllHostnameVerifier());
+			trustManager = new PublicKeyTrustManager(trustKeys);
+			hostnameVerifier = new AcceptAllHostnameVerifier();
 		}
+
+		SslConfiguration sslConfiguration = new SslConfiguration(keyManager, trustManager, hostnameVerifier);
+
+		this.httpRequest = client.getHttpStrategy().buildConfiguration(sslConfiguration).buildRequest(method, uri);
 	}
 
 	void populateHttpRequest(Format acceptFormat, Format contentFormat) throws PlatformLayerClientException {
@@ -92,7 +95,7 @@ class PlatformLayerHttpRequest implements Closeable {
 		this.client.getAuthenticationToken().populateRequest(httpRequest);
 	}
 
-	SimpleHttpResponse getResponse() throws IOException {
+	HttpResponse getResponse() throws IOException {
 		if (response == null) {
 			response = httpRequest.doRequest();
 		}
@@ -115,10 +118,6 @@ class PlatformLayerHttpRequest implements Closeable {
 		return getResponse().getErrorStream();
 	}
 
-	OutputStream getOutputStream() throws IOException {
-		return httpRequest.getOutputStream();
-	}
-
 	public <T> T doRequest(Class<T> retvalClass, Format acceptFormat, Object sendData, Format sendDataFormat)
 			throws PlatformLayerClientException {
 		try {
@@ -135,9 +134,7 @@ class PlatformLayerHttpRequest implements Closeable {
 					}
 
 					String sendDataString = (String) sendData;
-					OutputStreamWriter writer = Utf8.openWriter(getOutputStream());
-					writer.write(sendDataString);
-					writer.flush();
+					httpRequest.setRequestContent(Utf8.getBytes(sendDataString));
 				} else {
 					switch (sendDataFormat) {
 					case XML:
@@ -146,7 +143,9 @@ class PlatformLayerHttpRequest implements Closeable {
 						}
 
 						JaxbHelper jaxbHelper = JaxbHelper.get(sendData.getClass());
-						jaxbHelper.marshal(sendData, false, getOutputStream());
+						String xml = jaxbHelper.marshal(sendData, false);
+						httpRequest.setRequestContent(Utf8.getBytes(xml));
+						// jaxbHelper.marshal(sendData, false, getOutputStream());
 						break;
 					case JSON:
 						if (debug != null) {
@@ -154,7 +153,9 @@ class PlatformLayerHttpRequest implements Closeable {
 						}
 
 						JsonHelper jsonHelper = JsonHelper.build(sendData.getClass());
-						jsonHelper.marshal(sendData, false, getOutputStream());
+						String json = jsonHelper.marshal(sendData, false);
+						httpRequest.setRequestContent(Utf8.getBytes(json));
+						// jsonHelper.marshal(sendData, false, getOutputStream());
 						break;
 					default:
 						throw new IllegalStateException();
@@ -211,7 +212,7 @@ class PlatformLayerHttpRequest implements Closeable {
 		}
 	}
 
-	private void processHttpResponseCode(SimpleHttpResponse response) throws PlatformLayerClientException, IOException {
+	private void processHttpResponseCode(HttpResponse response) throws PlatformLayerClientException, IOException {
 		// Send the HTTP request
 		int httpResponseCode = response.getHttpResponseCode();
 

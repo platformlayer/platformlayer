@@ -1,7 +1,7 @@
 package org.platformlayer.auth.client;
 
 import org.platformlayer.auth.v1.Access;
-import org.platformlayer.http.SimpleHttpRequest;
+import org.platformlayer.http.HttpRequest;
 import org.platformlayer.model.AuthenticationToken;
 
 public class PlatformlayerAuthenticationToken implements AuthenticationToken {
@@ -40,7 +40,7 @@ public class PlatformlayerAuthenticationToken implements AuthenticationToken {
 	// }
 
 	@Override
-	public void populateRequest(SimpleHttpRequest httpRequest) {
+	public void populateRequest(HttpRequest httpRequest) {
 		httpRequest.setRequestHeader("X-Auth-Token", getAuthTokenValue());
 	}
 

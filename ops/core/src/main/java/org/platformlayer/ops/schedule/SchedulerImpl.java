@@ -22,6 +22,7 @@ import org.platformlayer.auth.DirectAuthenticator;
 import org.platformlayer.core.model.JobSchedule;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.crypto.AesUtils;
+import org.platformlayer.http.HttpStrategy;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ops.OpsException;
 
@@ -45,6 +46,9 @@ public class SchedulerImpl implements Scheduler {
 
 	@Inject
 	SchedulerRepository repository;
+
+	@Inject
+	HttpStrategy httpStrategy;
 
 	final Map<String, SchedulerTask> tasks = Maps.newHashMap();
 
@@ -238,7 +242,7 @@ public class SchedulerImpl implements Scheduler {
 			@Override
 			public void run() {
 				try {
-					PlatformLayerClient platformLayer = HttpPlatformLayerClient.build(
+					PlatformLayerClient platformLayer = HttpPlatformLayerClient.build(httpStrategy,
 							endpoint.getPlatformlayerBaseUrl(), endpoint.getAuthenticator(), endpoint.getProjectId(),
 							endpoint.getTrustKeys());
 

@@ -8,6 +8,7 @@ import java.util.List;
 import org.platformlayer.auth.Authenticator;
 import org.platformlayer.auth.PlatformlayerAuthenticationException;
 import org.platformlayer.exceptions.OpenstackClientConnectionException;
+import org.platformlayer.http.HttpStrategy;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.model.AuthenticationToken;
 import org.slf4j.Logger;
@@ -23,7 +24,11 @@ class PlatformLayerHttpTransport {
 
 	final List<String> trustKeys;
 
-	public PlatformLayerHttpTransport(String platformlayerEndpoint, Authenticator authClient, List<String> trustKeys) {
+	final HttpStrategy httpStrategy;
+
+	public PlatformLayerHttpTransport(HttpStrategy httpStrategy, String platformlayerEndpoint,
+			Authenticator authClient, List<String> trustKeys) {
+		this.httpStrategy = httpStrategy;
 		this.platformlayerEndpoint = platformlayerEndpoint;
 		this.authClient = authClient;
 		this.trustKeys = trustKeys;
@@ -144,5 +149,9 @@ class PlatformLayerHttpTransport {
 
 	public PlatformLayerEndpointInfo getEndpointInfo(ProjectId projectId) {
 		return new PlatformLayerEndpointInfo(authClient, platformlayerEndpoint, projectId, trustKeys);
+	}
+
+	public HttpStrategy getHttpStrategy() {
+		return httpStrategy;
 	}
 }

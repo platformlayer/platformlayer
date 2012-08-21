@@ -1,12 +1,12 @@
 package org.platformlayer.auth.client;
 
+import java.io.PrintStream;
+import java.net.URI;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.Random;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.KeyManager;
-import javax.net.ssl.TrustManager;
 
 import org.platformlayer.auth.PlatformlayerAuthenticationException;
 import org.platformlayer.auth.v1.Auth;
@@ -16,13 +16,13 @@ import org.platformlayer.auth.v1.CertificateCredentials;
 import org.platformlayer.auth.v1.PasswordCredentials;
 import org.platformlayer.crypto.RsaUtils;
 import org.platformlayer.crypto.SimpleClientCertificateKeyManager;
-import org.platformlayer.http.SimpleHttpRequest;
 import org.platformlayer.rest.RestClientException;
 import org.platformlayer.rest.RestfulClient;
+import org.platformlayer.rest.RestfulRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PlatformlayerAuthenticationClient extends RestfulClient {
+public class PlatformlayerAuthenticationClient {
 	static final Logger log = LoggerFactory.getLogger(PlatformlayerAuthenticationClient.class);
 
 	public static final String AUTH_HEADER = "X-Auth-Token";
@@ -33,13 +33,10 @@ public class PlatformlayerAuthenticationClient extends RestfulClient {
 
 	static Random random = new Random();
 
-	public PlatformlayerAuthenticationClient(String baseUrl) {
-		this(baseUrl, null, null, null);
-	}
+	final RestfulClient httpClient;
 
-	public PlatformlayerAuthenticationClient(String baseUrl, KeyManager keyManager, TrustManager trustManager,
-			HostnameVerifier hostnameVerifier) {
-		super(baseUrl, keyManager, trustManager, hostnameVerifier);
+	public PlatformlayerAuthenticationClient(RestfulClient httpClient) {
+		this.httpClient = httpClient;
 	}
 
 	public PlatformlayerAuthenticationToken authenticate(PasswordCredentials passwordCredentials)
@@ -88,16 +85,10 @@ public class PlatformlayerAuthenticationClient extends RestfulClient {
 		for (int i = 0; i < 2; i++) {
 			AuthenticateResponse response;
 			try {
-				Request<AuthenticateResponse> httpRequest = new Request<AuthenticateResponse>("POST", "tokens",
-						request, AuthenticateResponse.class) {
+				RestfulRequest<AuthenticateResponse> httpRequest = httpClient.buildRequest("POST", "tokens", request,
+						AuthenticateResponse.class);
 
-					@Override
-					protected void addHeaders(SimpleHttpRequest httpRequest) {
-						super.addHeaders(httpRequest);
-
-						httpRequest.setKeyManager(keyManager);
-					}
-				};
+				httpRequest.setKeyManager(keyManager);
 
 				response = httpRequest.execute();
 			} catch (RestClientException e) {
@@ -121,6 +112,20 @@ public class PlatformlayerAuthenticationClient extends RestfulClient {
 		}
 
 		return null;
+	}
+
+	protected <T> T doSimpleRequest(String method, String relativeUri, Object postObject, Class<T> responseClass)
+			throws RestClientException {
+		RestfulRequest<T> request = httpClient.buildRequest(method, relativeUri, postObject, responseClass);
+		return request.execute();
+	}
+
+	public URI getBaseUri() {
+		return httpClient.getBaseUri();
+	}
+
+	public void setDebug(PrintStream debug) {
+		httpClient.setDebug(debug);
 	}
 
 }

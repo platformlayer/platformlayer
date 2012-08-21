@@ -26,7 +26,7 @@ import org.openstack.crypto.CertificateAndKey;
 import org.openstack.crypto.SimpleCertificateAndKey;
 import org.platformlayer.Scope;
 import org.platformlayer.auth.AuthenticationTokenValidator;
-import org.platformlayer.auth.client.PlatformLayerAdminClient;
+import org.platformlayer.auth.client.PlatformLayerAuthAdminClient;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.crypto.BouncyCastleHelpers;
 import org.platformlayer.crypto.RsaUtils;
@@ -95,7 +95,7 @@ public class ProjectContext {
 				throw new IllegalStateException();
 			}
 
-			PlatformLayerAdminClient adminClient = (PlatformLayerAdminClient) authenticationTokenValidator;
+			PlatformLayerAuthAdminClient adminClient = (PlatformLayerAuthAdminClient) authenticationTokenValidator;
 			String csr = buildCsr(keyPair, getX500Principal());
 			chain = adminClient.signCsr(projectId.getKey(), projectAuthorization.getProjectSecret(), csr);
 

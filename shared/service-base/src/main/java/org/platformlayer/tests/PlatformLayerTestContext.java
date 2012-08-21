@@ -27,6 +27,8 @@ import org.platformlayer.core.model.EndpointInfo;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.core.model.PlatformLayerKey;
+import org.platformlayer.http.HttpStrategy;
+import org.platformlayer.http.jre.JreHttpStrategy;
 import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.ops.OpsException;
@@ -87,7 +89,9 @@ public class PlatformLayerTestContext {
 			} catch (IOException e) {
 				throw new IOException("Error reading configuration file", e);
 			}
-			client = HttpPlatformLayerClient.buildUsingProperties(properties);
+
+			HttpStrategy httpStrategy = new JreHttpStrategy();
+			client = HttpPlatformLayerClient.buildUsingProperties(httpStrategy, properties);
 		} finally {
 			if (is != System.in) {
 				IoUtils.safeClose(is);

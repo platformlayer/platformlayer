@@ -18,6 +18,7 @@ import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ServiceInfo;
 import org.platformlayer.crypto.EncryptionStore;
 import org.platformlayer.crypto.OpenSshUtils;
+import org.platformlayer.http.HttpStrategy;
 import org.platformlayer.ids.ItemType;
 import org.platformlayer.ids.ModelKey;
 import org.platformlayer.ids.ServiceType;
@@ -59,6 +60,9 @@ public class OpsSystem {
 
 	@Inject
 	ManagedItemRepository managedItemRepository;
+
+	@Inject
+	HttpStrategy httpStrategy;
 
 	// @Inject
 	// Provider<OpsAuthentication> authenticationProvider;
@@ -290,5 +294,9 @@ public class OpsSystem {
 
 	public AuthenticationTokenValidator getTokenValidator() {
 		return authenticationTokenValidator;
+	}
+
+	public HttpStrategy getHttpStrategy() {
+		return httpStrategy;
 	}
 }

@@ -14,7 +14,7 @@ import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.WellKnownPorts;
 import org.platformlayer.auth.AuthenticationService;
 import org.platformlayer.auth.AuthenticationTokenValidator;
-import org.platformlayer.auth.client.PlatformLayerAdminClient;
+import org.platformlayer.auth.client.PlatformLayerAuthAdminClient;
 import org.platformlayer.auth.client.PlatformlayerAuthenticationClient;
 import org.platformlayer.auth.client.PlatformlayerAuthenticationService;
 import org.platformlayer.config.Configuration;
@@ -28,6 +28,9 @@ import org.platformlayer.guice.xaas.JdbcJobRepository;
 import org.platformlayer.guice.xaas.JdbcManagedItemRepository;
 import org.platformlayer.guice.xaas.JdbcServiceAuthorizationRepository;
 import org.platformlayer.guice.xaas.TagEntity;
+import org.platformlayer.http.HttpStrategy;
+import org.platformlayer.http.SslConfiguration;
+import org.platformlayer.http.apache.InstrumentedApacheHttpStrategy;
 import org.platformlayer.inject.GuiceObjectInjector;
 import org.platformlayer.inject.ObjectInjector;
 import org.platformlayer.jdbc.simplejpa.ResultSetMappers;
@@ -42,6 +45,8 @@ import org.platformlayer.ops.schedule.jdbc.SchedulerRecordEntity;
 import org.platformlayer.ops.ssh.ISshContext;
 import org.platformlayer.ops.tasks.OperationQueue;
 import org.platformlayer.ops.tasks.SimpleOperationQueue;
+import org.platformlayer.rest.JreRestfulClient;
+import org.platformlayer.rest.RestfulClient;
 import org.platformlayer.ssh.mina.MinaSshContext;
 import org.platformlayer.xaas.discovery.AnnotationDiscovery;
 import org.platformlayer.xaas.discovery.JerseyAnnotationDiscovery;
@@ -95,13 +100,16 @@ public class GuiceXaasConfig extends AbstractModule {
 			discovery.scan();
 			bind(AnnotationDiscovery.class).toInstance(discovery);
 
-			PlatformLayerAdminClient tokenValidator = PlatformLayerAdminClient.build(configuration,
-					encryptionStore);
+			HttpStrategy httpStrategy = new InstrumentedApacheHttpStrategy();
+			bind(HttpStrategy.class).toInstance(httpStrategy);
+
+			PlatformLayerAuthAdminClient tokenValidator = PlatformLayerAuthAdminClient.build(httpStrategy,
+					configuration, encryptionStore);
 			bind(AuthenticationTokenValidator.class).toInstance(tokenValidator);
 
 			boolean isMultitenant = !Strings.isNullOrEmpty(configuration.lookup("multitenant.keys", null));
 			if (true) { // isMultitenant) {
-				bindUserAuth(encryptionStore, configuration);
+				bindUserAuth(httpStrategy, encryptionStore, configuration);
 
 				bind(AuthenticationService.class).to(PlatformlayerAuthenticationService.class).asEagerSingleton();
 			}
@@ -141,7 +149,8 @@ public class GuiceXaasConfig extends AbstractModule {
 		}
 	}
 
-	private void bindUserAuth(EncryptionStore encryptionStore, Configuration configuration) throws OpsException {
+	private void bindUserAuth(HttpStrategy httpStrategy, EncryptionStore encryptionStore, Configuration configuration)
+			throws OpsException {
 		String keystoneUserUrl = configuration.lookup("auth.user.url", "https://127.0.0.1:"
 				+ WellKnownPorts.PORT_PLATFORMLAYER_AUTH_USER + "/v2.0/");
 
@@ -159,8 +168,9 @@ public class GuiceXaasConfig extends AbstractModule {
 			hostnameVerifier = new AcceptAllHostnameVerifier();
 		}
 
-		PlatformlayerAuthenticationClient authClient = new PlatformlayerAuthenticationClient(keystoneUserUrl,
-				keyManager, trustManager, hostnameVerifier);
+		SslConfiguration sslConfiguration = new SslConfiguration(keyManager, trustManager, hostnameVerifier);
+		RestfulClient restfulClient = new JreRestfulClient(httpStrategy, keystoneUserUrl, sslConfiguration);
+		PlatformlayerAuthenticationClient authClient = new PlatformlayerAuthenticationClient(restfulClient);
 
 		bind(PlatformlayerAuthenticationClient.class).toInstance(authClient);
 	}

@@ -1,6 +1,5 @@
-package org.platformlayer.http;
+package org.platformlayer.http.jre;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -8,39 +7,34 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.security.GeneralSecurityException;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.KeyManager;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
 
 import org.apache.log4j.Logger;
+import org.platformlayer.http.HttpRequest;
+import org.platformlayer.http.HttpResponse;
+import org.platformlayer.http.SslConfiguration;
 
 import com.google.common.collect.Maps;
 
-public class SimpleHttpRequest {
-	static final Logger log = Logger.getLogger(SimpleHttpRequest.class);
+public class JreHttpRequest implements HttpRequest {
+	static final Logger log = Logger.getLogger(JreHttpRequest.class);
 
 	final HttpURLConnection httpConn;
-	final URL url;
+	final URI uri;
 	final String method;
 
-	public static SimpleHttpRequest build(String method, URI uri) throws IOException {
-		return new SimpleHttpRequest(method, uri);
-	}
+	final SslConfiguration sslConfiguration;
 
-	protected SimpleHttpRequest(String method, URI uri) throws IOException {
+	JreHttpRequest(String method, URI uri, SslConfiguration sslConfiguration) throws IOException {
 		this.method = method;
+		this.sslConfiguration = sslConfiguration;
+		this.uri = uri;
 
-		this.url = uri.toURL();
+		URL url = uri.toURL();
 
 		httpConn = (HttpURLConnection) url.openConnection();
 		httpConn.setDoInput(true);
@@ -49,52 +43,51 @@ public class SimpleHttpRequest {
 		httpConn.setDefaultUseCaches(false);
 		httpConn.setAllowUserInteraction(false);
 		httpConn.setRequestMethod(method);
+
+		configureSslParameters();
 	}
 
+	@Override
 	public void setRequestHeader(String key, String value) {
 		httpConn.setRequestProperty(key, value);
 	}
 
-	SimpleHttpResponse response;
+	JreHttpResponse response;
 
-	private KeyManager keyManager;
-	private TrustManager trustManager;
-
-	public SimpleHttpResponse doRequest() throws IOException {
+	@Override
+	public JreHttpResponse doRequest() throws IOException {
 		if (response == null) {
 			response = doRequest0();
 		}
 		return response;
 	}
 
-	protected SimpleHttpResponse doRequest0() throws IOException {
-		return new SimpleHttpResponse();
+	protected JreHttpResponse doRequest0() throws IOException {
+		return new JreHttpResponse();
 	}
 
-	SSLSocketFactory buildSslSocketFactory() throws NoSuchAlgorithmException, UnrecoverableKeyException,
-			KeyStoreException, KeyManagementException {
-		return SslHelpers.buildSslSocketFactory(keyManager, trustManager);
-	}
-
-	public class SimpleHttpResponse implements Closeable {
+	public class JreHttpResponse implements HttpResponse {
 		private final int responseCode;
 
-		public SimpleHttpResponse() throws IOException {
+		public JreHttpResponse() throws IOException {
 			this(httpConn.getResponseCode());
 		}
 
-		public SimpleHttpResponse(int responseCode) {
+		public JreHttpResponse(int responseCode) {
 			this.responseCode = responseCode;
 		}
 
+		@Override
 		public int getHttpResponseCode() throws IOException {
 			return responseCode;
 		}
 
+		@Override
 		public Map<String, List<String>> getHeaderFields() {
 			return httpConn.getHeaderFields();
 		}
 
+		@Override
 		public InputStream getErrorStream() {
 			return httpConn.getErrorStream();
 		}
@@ -105,6 +98,7 @@ public class SimpleHttpRequest {
 
 		InputStream is = null;
 
+		@Override
 		public InputStream getInputStream() throws IOException {
 			if (is == null) {
 				is = httpConn.getInputStream();
@@ -120,6 +114,7 @@ public class SimpleHttpRequest {
 			}
 		}
 
+		@Override
 		public String getResponseHeaderField(String name) {
 			return httpConn.getHeaderField(name);
 		}
@@ -151,12 +146,9 @@ public class SimpleHttpRequest {
 
 	}
 
-	public OutputStream getOutputStream() throws IOException {
-		return httpConn.getOutputStream();
-	}
-
-	public URL getUrl() {
-		return url;
+	@Override
+	public URI getUrl() {
+		return uri;
 	}
 
 	public String getMethod() {
@@ -174,34 +166,25 @@ public class SimpleHttpRequest {
 		return sb.toString();
 	}
 
-	public void setKeyManager(KeyManager keyManager) {
-		this.keyManager = keyManager;
+	private void configureSslParameters() {
+		if (sslConfiguration != null) {
+			HttpsURLConnection https = (HttpsURLConnection) httpConn;
+			try {
+				https.setSSLSocketFactory(sslConfiguration.getSslSocketFactory());
 
-		updateSslParameters();
-	}
-
-	private void updateSslParameters() {
-		HttpsURLConnection https = (HttpsURLConnection) httpConn;
-		try {
-			https.setSSLSocketFactory(buildSslSocketFactory());
-		} catch (GeneralSecurityException e) {
-			throw new IllegalArgumentException("Error loading certificate", e);
+				if (sslConfiguration.getHostnameVerifier() != null) {
+					https.setHostnameVerifier(sslConfiguration.getHostnameVerifier());
+				}
+			} catch (GeneralSecurityException e) {
+				throw new IllegalArgumentException("Error loading certificate", e);
+			}
 		}
 	}
 
-	public TrustManager getTrustManager() {
-		return trustManager;
-	}
-
-	public void setTrustManager(TrustManager trustManager) {
-		this.trustManager = trustManager;
-
-		updateSslParameters();
-	}
-
-	public void setHostnameVerifier(HostnameVerifier hostnameVerifier) {
-		HttpsURLConnection https = (HttpsURLConnection) httpConn;
-		https.setHostnameVerifier(hostnameVerifier);
+	@Override
+	public void setRequestContent(byte[] bytes) throws IOException {
+		OutputStream os = httpConn.getOutputStream();
+		os.write(bytes);
 	}
 
 }

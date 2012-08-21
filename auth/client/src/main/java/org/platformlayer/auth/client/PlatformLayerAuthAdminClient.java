@@ -30,30 +30,36 @@ import org.platformlayer.crypto.EncryptionStore;
 import org.platformlayer.crypto.OpenSshUtils;
 import org.platformlayer.crypto.PublicKeyTrustManager;
 import org.platformlayer.crypto.SimpleClientCertificateKeyManager;
+import org.platformlayer.http.HttpStrategy;
+import org.platformlayer.http.SslConfiguration;
 import org.platformlayer.model.AuthenticationToken;
 import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.rest.HttpUtils;
+import org.platformlayer.rest.JreRestfulClient;
 import org.platformlayer.rest.RestClientException;
 import org.platformlayer.rest.RestfulClient;
+import org.platformlayer.rest.RestfulRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 
-public class PlatformLayerAdminClient extends RestfulClient implements AuthenticationTokenValidator {
-	static final Logger log = LoggerFactory.getLogger(PlatformLayerAdminClient.class);
+public class PlatformLayerAuthAdminClient implements AuthenticationTokenValidator {
+	static final Logger log = LoggerFactory.getLogger(PlatformLayerAuthAdminClient.class);
 
 	public static final String DEFAULT_AUTHENTICATION_URL = "https://127.0.0.1:"
 			+ WellKnownPorts.PORT_PLATFORMLAYER_AUTH_ADMIN + "/";
 
-	private PlatformLayerAdminClient(String baseUrl, KeyManager keyManager, TrustManager trustManager,
-			HostnameVerifier hostnameVerifier) {
-		super(baseUrl, keyManager, trustManager, hostnameVerifier);
+	final RestfulClient restfulClient;
+
+	private PlatformLayerAuthAdminClient(RestfulClient restfulClient) {
+		this.restfulClient = restfulClient;
 	}
 
-	public static PlatformLayerAdminClient build(Configuration configuration, EncryptionStore encryptionStore)
-			throws OpsException {
+	public static PlatformLayerAuthAdminClient build(HttpStrategy httpStrategy, Configuration configuration,
+			EncryptionStore encryptionStore) throws OpsException {
 		String keystoneServiceUrl = configuration.lookup("auth.system.url", "https://127.0.0.1:"
 				+ WellKnownPorts.PORT_PLATFORMLAYER_AUTH_ADMIN + "/");
 
@@ -76,8 +82,9 @@ public class PlatformLayerAdminClient extends RestfulClient implements Authentic
 			hostnameVerifier = new AcceptAllHostnameVerifier();
 		}
 
-		PlatformLayerAdminClient keystoneTokenValidator = new PlatformLayerAdminClient(keystoneServiceUrl, keyManager,
-				trustManager, hostnameVerifier);
+		SslConfiguration sslConfiguration = new SslConfiguration(keyManager, trustManager, hostnameVerifier);
+		RestfulClient restfulClient = new JreRestfulClient(httpStrategy, keystoneServiceUrl, sslConfiguration);
+		PlatformLayerAuthAdminClient keystoneTokenValidator = new PlatformLayerAuthAdminClient(restfulClient);
 		return keystoneTokenValidator;
 	}
 
@@ -90,7 +97,7 @@ public class PlatformLayerAdminClient extends RestfulClient implements Authentic
 
 		String url = "v2.0/tokens/" + tokenId;
 
-		url += "?project=" + urlEncode(projectId);
+		url += "?project=" + HttpUtils.urlEncode(projectId);
 
 		try {
 			ValidateTokenResponse response = doSimpleRequest("GET", url, null, ValidateTokenResponse.class);
@@ -147,7 +154,7 @@ public class PlatformLayerAdminClient extends RestfulClient implements Authentic
 
 		String url = "v2.0/keychain";
 
-		url += "?project=" + urlEncode(projectKey);
+		url += "?project=" + HttpUtils.urlEncode(projectKey);
 
 		CertificateChainInfo chainInfo = new CertificateChainInfo();
 		List<CertificateInfo> certificates = chainInfo.getCertificates();
@@ -211,6 +218,12 @@ public class PlatformLayerAdminClient extends RestfulClient implements Authentic
 		} catch (RestClientException e) {
 			throw new IllegalArgumentException("Error while signing certificate", e);
 		}
+	}
+
+	protected <T> T doSimpleRequest(String method, String relativeUri, Object postObject, Class<T> responseClass)
+			throws RestClientException {
+		RestfulRequest<T> request = restfulClient.buildRequest(method, relativeUri, postObject, responseClass);
+		return request.execute();
 	}
 
 }

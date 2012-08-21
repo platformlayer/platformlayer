@@ -1,7 +1,7 @@
 package org.platformlayer.model;
 
-import org.platformlayer.http.SimpleHttpRequest;
+import org.platformlayer.http.HttpRequest;
 
 public interface AuthenticationToken {
-	void populateRequest(SimpleHttpRequest httpRequest);
+	void populateRequest(HttpRequest httpRequest);
 }

@@ -12,6 +12,7 @@ import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.federation.model.FederationConfiguration;
 import org.platformlayer.federation.model.FederationRule;
 import org.platformlayer.federation.model.PlatformLayerConnectionConfiguration;
+import org.platformlayer.http.HttpStrategy;
 import org.platformlayer.ids.FederationKey;
 import org.platformlayer.ids.ProjectId;
 
@@ -31,6 +32,8 @@ public class FederationMap {
 
 	final List<Rule> rules;
 
+	private final HttpStrategy httpStrategy;
+
 	static class MappedTarget {
 		PlatformLayerConnectionConfiguration configuration;
 		TypedPlatformLayerClient client;
@@ -41,7 +44,8 @@ public class FederationMap {
 		public PlatformLayerKey mappedItems;
 	}
 
-	public FederationMap(TypedItemMapper mapper, FederationConfiguration config) {
+	public FederationMap(HttpStrategy httpStrategy, TypedItemMapper mapper, FederationConfiguration config) {
+		this.httpStrategy = httpStrategy;
 		this.mapper = mapper;
 
 		this.rules = Lists.newArrayList();
@@ -156,7 +160,8 @@ public class FederationMap {
 		}
 
 		if (target.client == null) {
-			PlatformLayerClient client = HttpPlatformLayerClient.buildUsingConfiguration(target.configuration);
+			PlatformLayerClient client = HttpPlatformLayerClient.buildUsingConfiguration(httpStrategy,
+					target.configuration);
 
 			TypedPlatformLayerClient typedClient = new TypedPlatformLayerClient(client, mapper);
 			// TODO: Save client??

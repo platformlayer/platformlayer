@@ -15,7 +15,6 @@ import org.platformlayer.PlatformLayerClientBase;
 import org.platformlayer.PlatformLayerClientException;
 import org.platformlayer.PlatformLayerClientNotFoundException;
 import org.platformlayer.PlatformLayerEndpointInfo;
-import org.platformlayer.TypedItemMapper;
 import org.platformlayer.TypedPlatformLayerClient;
 import org.platformlayer.UntypedItem;
 import org.platformlayer.core.model.Action;
@@ -645,18 +644,18 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 		return new FederatedPlatformLayerClient(defaultProject, federationMap, forkJoinPool);
 	}
 
-	public static FederationMap buildFederationMap(TypedPlatformLayerClient localClient, TypedItemMapper mapper)
-			throws OpsException {
-		FederationConfiguration federationMapConfig = buildFederationConfiguration(localClient);
-
-		FederationMap federationMap = new FederationMap(mapper, federationMapConfig);
-
-		if (localClient != null) {
-			federationMap.addDefault(localClient);
-		}
-
-		return federationMap;
-	}
+	// public static FederationMap buildFederationMap(HttpStrategy httpStrategy, TypedPlatformLayerClient localClient,
+	// TypedItemMapper mapper) throws OpsException {
+	// FederationConfiguration federationMapConfig = buildFederationConfiguration(localClient);
+	//
+	// FederationMap federationMap = new FederationMap(httpStrategy, mapper, federationMapConfig);
+	//
+	// if (localClient != null) {
+	// federationMap.addDefault(localClient);
+	// }
+	//
+	// return federationMap;
+	// }
 
 	public static FederationConfiguration buildFederationConfiguration(TypedPlatformLayerClient localClient)
 			throws OpsException {

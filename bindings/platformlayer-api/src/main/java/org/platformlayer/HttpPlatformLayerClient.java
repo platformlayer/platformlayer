@@ -18,6 +18,7 @@ import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.core.model.Tags;
 import org.platformlayer.federation.model.PlatformLayerConnectionConfiguration;
+import org.platformlayer.http.HttpStrategy;
 import org.platformlayer.ids.ItemType;
 import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.ids.ProjectId;
@@ -54,7 +55,8 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 		this.projectId = projectId;
 	}
 
-	public static HttpPlatformLayerClient buildUsingSavedConfiguration(String key) throws IOException {
+	public static HttpPlatformLayerClient buildUsingSavedConfiguration(HttpStrategy httpStrategy, String key)
+			throws IOException {
 		File credentialsFile = new File(System.getProperty("user.home") + File.separator + ".credentials"
 				+ File.separator + key);
 		if (!credentialsFile.exists()) {
@@ -68,23 +70,26 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 			throw new IOException("Error reading credentials file: " + credentialsFile, e);
 		}
 
-		return buildUsingProperties(properties);
+		return buildUsingProperties(httpStrategy, properties);
 	}
 
-	public static HttpPlatformLayerClient buildUsingConfiguration(PlatformLayerConnectionConfiguration config) {
+	public static HttpPlatformLayerClient buildUsingConfiguration(HttpStrategy httpStrategy,
+			PlatformLayerConnectionConfiguration config) {
 		String project = config.tenant;
 		String server = config.authenticationEndpoint;
 		String username = config.username;
 		String secret = config.secret;
 		List<String> authTrustKeys = config.authTrustKeys;
 
-		Authenticator authenticator = new PlatformlayerAuthenticator(username, secret, server, authTrustKeys);
+		Authenticator authenticator = new PlatformlayerAuthenticator(httpStrategy, username, secret, server,
+				authTrustKeys);
 		ProjectId projectId = new ProjectId(project);
 
-		return build(config.platformlayerEndpoint, authenticator, projectId, config.platformlayerTrustKeys);
+		return build(httpStrategy, config.platformlayerEndpoint, authenticator, projectId,
+				config.platformlayerTrustKeys);
 	}
 
-	public static HttpPlatformLayerClient buildUsingProperties(Properties properties) {
+	public static HttpPlatformLayerClient buildUsingProperties(HttpStrategy httpStrategy, Properties properties) {
 		PlatformLayerConnectionConfiguration config = new PlatformLayerConnectionConfiguration();
 		config.tenant = properties.getProperty("platformlayer.tenant");
 		config.authenticationEndpoint = properties.getProperty("platformlayer.auth.url");
@@ -102,17 +107,18 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 			config.authTrustKeys = Lists.newArrayList(Splitter.on(',').trimResults().split(authTrustKeys));
 		}
 
-		return buildUsingConfiguration(config);
+		return buildUsingConfiguration(httpStrategy, config);
 	}
 
-	public static HttpPlatformLayerClient build(String platformlayerBaseUrl, Authenticator authenticator,
-			ProjectId projectId, List<String> trustKeys) {
+	public static HttpPlatformLayerClient build(HttpStrategy httpStrategy, String platformlayerBaseUrl,
+			Authenticator authenticator, ProjectId projectId, List<String> trustKeys) {
 		String url = platformlayerBaseUrl;
 		if (!url.endsWith("/")) {
 			url += "/";
 		}
 
-		return new HttpPlatformLayerClient(new PlatformLayerHttpTransport(url, authenticator, trustKeys), projectId);
+		return new HttpPlatformLayerClient(new PlatformLayerHttpTransport(httpStrategy, url, authenticator, trustKeys),
+				projectId);
 	}
 
 	@Override

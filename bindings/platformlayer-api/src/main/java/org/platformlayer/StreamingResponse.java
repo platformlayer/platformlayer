@@ -4,14 +4,14 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.platformlayer.http.SimpleHttpRequest.SimpleHttpResponse;
+import org.platformlayer.http.HttpResponse;
 
 public class StreamingResponse implements Closeable {
 
 	private final InputStream responseStream;
-	private final SimpleHttpResponse response;
+	private final HttpResponse response;
 
-	public StreamingResponse(SimpleHttpResponse response) throws IOException {
+	public StreamingResponse(HttpResponse response) throws IOException {
 		this.response = response;
 		this.responseStream = response.getInputStream();
 	}

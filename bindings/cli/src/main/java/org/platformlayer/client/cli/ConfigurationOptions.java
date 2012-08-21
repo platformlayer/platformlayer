@@ -15,6 +15,8 @@ import org.openstack.utils.NoCloseInputStream;
 import org.platformlayer.HttpPlatformLayerClient;
 import org.platformlayer.IoUtils;
 import org.platformlayer.PlatformLayerClient;
+import org.platformlayer.http.HttpStrategy;
+import org.platformlayer.http.jre.JreHttpStrategy;
 import org.platformlayer.ops.OpsException;
 
 import com.fathomdb.cli.CliException;
@@ -62,7 +64,8 @@ public class ConfigurationOptions extends CliOptions {
 				throw new CliException("User property not set in configuration file");
 			}
 
-			client = HttpPlatformLayerClient.buildUsingProperties(properties);
+			HttpStrategy httpStrategy = new JreHttpStrategy();
+			client = HttpPlatformLayerClient.buildUsingProperties(httpStrategy, properties);
 
 			if (debug) {
 				client.setDebug(System.err);

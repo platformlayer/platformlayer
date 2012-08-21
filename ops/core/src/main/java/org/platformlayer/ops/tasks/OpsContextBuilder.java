@@ -16,6 +16,7 @@ import org.platformlayer.federation.FederatedPlatformLayerClient;
 import org.platformlayer.federation.FederationMap;
 import org.platformlayer.federation.FederationMapping;
 import org.platformlayer.federation.model.FederationConfiguration;
+import org.platformlayer.http.HttpStrategy;
 import org.platformlayer.ids.FederationKey;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceType;
@@ -45,6 +46,9 @@ public class OpsContextBuilder {
 
 	@Inject
 	PlatformLayerTypedItemMapper mapper;
+
+	@Inject
+	HttpStrategy httpStrategy;
 
 	public ProjectId getRunAsProjectId(ProjectAuthorization project) throws OpsException {
 		ProjectAuthorization runAsProject = project; // authentication.getProject();
@@ -84,7 +88,7 @@ public class OpsContextBuilder {
 		FederationConfiguration federationMapConfig = FederatedPlatformLayerClient
 				.buildFederationConfiguration(defaultClient);
 
-		FederationMap federationMap = new FederationMap(mapper, federationMapConfig);
+		FederationMap federationMap = new FederationMap(httpStrategy, mapper, federationMapConfig);
 
 		if (multitenant != null) {
 			ProjectAuthorization localProject = projectAuthz; // .getProject();
@@ -153,8 +157,8 @@ public class OpsContextBuilder {
 		// TODO: Introduce a direct client for "loopback" (normal) calls?
 		String platformLayerUrl = OpsSystem.getPlatformLayerUrlBase();
 		List<String> trustKeys = opsSystem.getServerTrustKeys();
-		HttpPlatformLayerClient client = HttpPlatformLayerClient.build(platformLayerUrl, directAuthenticator,
-				projectId, trustKeys);
+		HttpPlatformLayerClient client = HttpPlatformLayerClient.build(httpStrategy, platformLayerUrl,
+				directAuthenticator, projectId, trustKeys);
 
 		return new PlatformLayerHelpers(client, serviceProviderHelpers);
 	}
