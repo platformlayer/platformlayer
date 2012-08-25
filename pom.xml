@@ -46,6 +46,11 @@
     <dependencyManagement>
         <dependencies>
             <!-- Declare our own projects -->
+            <dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>metrics-client</artifactId>
+                <version>${version.project}</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.platformlayer</groupId>

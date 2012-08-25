@@ -19,4 +19,8 @@ public class NullMetricsSystem implements MetricsSystem {
 	@Override
 	public void discoverMetrics(Object o) {
 	}
+
+	@Override
+	public void init() {
+	}
 }

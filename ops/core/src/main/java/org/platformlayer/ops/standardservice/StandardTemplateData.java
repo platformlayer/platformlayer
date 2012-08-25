@@ -12,6 +12,7 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.crypto.ManagedSecretKey;
 import org.platformlayer.ops.helpers.ProviderHelper;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
+import org.platformlayer.ops.metrics.MetricsManager;
 import org.platformlayer.ops.templates.TemplateDataSource;
 
 import com.google.common.collect.Maps;
@@ -23,6 +24,9 @@ public abstract class StandardTemplateData implements TemplateDataSource {
 
 	@Inject
 	protected PlatformLayerHelpers platformLayer;
+
+	@Inject
+	protected MetricsManager metricsManager;
 
 	public abstract ItemBase getModel();
 
@@ -98,6 +102,10 @@ public abstract class StandardTemplateData implements TemplateDataSource {
 
 	public String getMatchExecutableName() {
 		return null;
+	}
+
+	public void addMetricsProperties(Map<String, String> properties) {
+		metricsManager.addConfigurationProperties(getModel().getKey(), properties);
 	}
 
 	// public String getDatabaseName() {

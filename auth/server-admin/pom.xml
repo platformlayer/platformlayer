@@ -17,6 +17,16 @@
             <artifactId>keystone-webapp-shared</artifactId>
             <version>${version.project}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.platformlayer</groupId>
+            <artifactId>metrics-client</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.yammer.metrics</groupId>
+            <artifactId>metrics-jetty</artifactId>
+        </dependency>
     </dependencies>
 
 

@@ -15,6 +15,7 @@ import org.platformlayer.service.platformlayer.ops.auth.CommonAuthTemplateData;
 public class SystemAuthInstanceModel extends CommonAuthTemplateData {
 	static final Logger log = Logger.getLogger(SystemAuthInstanceModel.class);
 
+	@Override
 	public SystemAuthService getModel() {
 		SystemAuthService model = OpsContext.get().getInstance(SystemAuthService.class);
 		return model;

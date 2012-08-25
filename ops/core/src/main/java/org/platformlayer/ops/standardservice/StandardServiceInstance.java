@@ -101,7 +101,11 @@ public abstract class StandardServiceInstance extends OpsTreeBase {
 			@Override
 			public Map<String, String> get() {
 				try {
-					return template.getConfigurationProperties();
+					Map<String, String> properties = template.getConfigurationProperties();
+
+					template.addMetricsProperties(properties);
+
+					return properties;
 				} catch (OpsException e) {
 					throw new IllegalStateException("Error building configuration", e);
 				}

@@ -8,4 +8,6 @@ public interface MetricsSystem {
 	void addInjected(Class<?> injected);
 
 	void discoverMetrics(Object o);
+
+	void init();
 }

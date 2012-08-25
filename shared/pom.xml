@@ -21,6 +21,7 @@
         <module>platformlayer-auth</module>
         <module>platformlayer-maven-utils</module>
         <module>model-shared</module>
+        <module>metrics-client</module>
     </modules>
 
 </project>
