@@ -45,8 +45,9 @@ public class CodahaleMetricsModule extends AbstractModule {
 		// bindJmxReporter();
 		JmxReporter.shutdownDefault();
 
-		// TODO: Tolerate if Jersey not on classpath?
-		bind(JerseyMetricsHook.class);
+		if (ClasspathHelpers.isJerseyOnClasspath()) {
+			bind(JerseyMetricsHook.class);
+		}
 
 		// bindListener(Matchers.any(), new MeteredListener(metricsRegistry));
 		// bindListener(Matchers.any(), new TimedListener(metricsRegistry));

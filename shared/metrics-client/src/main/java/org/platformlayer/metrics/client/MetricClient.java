@@ -48,10 +48,9 @@ import com.google.common.collect.Lists;
 import com.google.inject.ProvidedBy;
 
 @Singleton
-@ProvidedBy(MetricClientProvider.class)
+@ProvidedBy(MetricClient.Provider.class)
 public class MetricClient implements Closeable {
-	public class Provider implements javax.inject.Provider<MetricClient> {
-
+	public static class Provider implements com.google.inject.Provider<MetricClient> {
 		@Inject
 		Configuration configuration;
 
