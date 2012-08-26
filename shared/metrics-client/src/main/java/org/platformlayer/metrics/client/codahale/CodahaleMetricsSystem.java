@@ -1,4 +1,4 @@
-package org.platformlayer.metrics.client;
+package org.platformlayer.metrics.client.codahale;
 
 import java.util.concurrent.TimeUnit;
 
@@ -7,10 +7,17 @@ import javax.inject.Inject;
 import org.apache.log4j.Logger;
 import org.platformlayer.metrics.DiscoverSingletonMetrics;
 import org.platformlayer.metrics.HasMetrics;
+import org.platformlayer.metrics.MetricKey;
+import org.platformlayer.metrics.MetricTimer;
 import org.platformlayer.metrics.MetricsSystem;
+import org.platformlayer.metrics.client.MetricClient;
+import org.platformlayer.metrics.client.PlatformlayerMetricsReporter;
+import org.platformlayer.metrics.client.ReportCacheMetrics;
 
 import com.google.common.cache.Cache;
 import com.google.inject.Injector;
+import com.yammer.metrics.core.MetricName;
+import com.yammer.metrics.core.MetricsRegistry;
 
 public class CodahaleMetricsSystem implements MetricsSystem {
 	private static final Logger log = Logger.getLogger(CodahaleMetricsSystem.class);
@@ -23,6 +30,12 @@ public class CodahaleMetricsSystem implements MetricsSystem {
 
 	@Inject
 	MetricClient metricClient;
+
+	final MetricsRegistry registry;
+
+	public CodahaleMetricsSystem(MetricsRegistry registry) {
+		this.registry = registry;
+	}
 
 	@Override
 	public void add(Class<?> context, String prefix, Cache<?, ?> cache) {
@@ -52,6 +65,12 @@ public class CodahaleMetricsSystem implements MetricsSystem {
 		metricsDiscovery.discover();
 
 		PlatformlayerMetricsReporter.enable(10, TimeUnit.SECONDS, metricClient);
+	}
+
+	@Override
+	public MetricTimer buildNewTimer(MetricKey metricKey) {
+		MetricName metricName = new MetricName(metricKey.getGroup(), metricKey.getTypeName(), metricKey.getName());
+		return new MetricTimerAdapter(registry.newTimer(metricName, TimeUnit.MILLISECONDS, TimeUnit.SECONDS));
 	}
 
 }

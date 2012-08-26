@@ -20,6 +20,11 @@
             <artifactId>jackson-jaxrs-json-provider</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.yammer.metrics</groupId>
+            <artifactId>metrics-annotation</artifactId>
+        </dependency>
+
         <!-- Jetty WebServer -->
         <dependency>
             <groupId>org.eclipse.jetty</groupId>

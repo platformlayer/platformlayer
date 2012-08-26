@@ -15,7 +15,9 @@ import org.platformlayer.auth.services.TokenInfo;
 import org.platformlayer.auth.services.TokenService;
 import org.platformlayer.crypto.CryptoUtils;
 import org.platformlayer.crypto.SecureComparison;
+import org.platformlayer.metrics.Instrumented;
 
+@Instrumented
 public class SharedSecretTokenService implements TokenService {
 	private final SecretKeySpec userSecretKeySpec;
 

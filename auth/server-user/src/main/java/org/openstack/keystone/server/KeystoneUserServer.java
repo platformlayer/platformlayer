@@ -11,6 +11,7 @@ import org.openstack.keystone.resources.user.TokensResource;
 import org.platformlayer.WellKnownPorts;
 import org.platformlayer.auth.server.GuiceAuthenticationConfig;
 import org.platformlayer.metrics.MetricsSystem;
+import org.platformlayer.metrics.client.codahale.CodahaleMetricsModule;
 import org.platformlayer.web.CORSFilter;
 import org.platformlayer.web.SslOption;
 import org.platformlayer.web.WebServerBuilder;
@@ -35,7 +36,7 @@ public class KeystoneUserServer {
 	Injector injector;
 
 	public static void main(String[] args) throws Exception {
-		Injector injector = Guice.createInjector(new GuiceAuthenticationConfig(), new UserGuiceBindings(),
+		Injector injector = Guice.createInjector(new GuiceAuthenticationConfig(), new CodahaleMetricsModule(),
 				new JerseyServletModule() {
 					@Override
 					protected void configureServlets() {

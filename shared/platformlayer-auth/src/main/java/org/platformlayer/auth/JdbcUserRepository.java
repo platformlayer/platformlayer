@@ -36,12 +36,14 @@ import org.platformlayer.jdbc.JdbcTransaction;
 import org.platformlayer.jdbc.JdbcUtils;
 import org.platformlayer.jdbc.proxy.Query;
 import org.platformlayer.jdbc.proxy.QueryFactory;
+import org.platformlayer.metrics.Instrumented;
 import org.platformlayer.model.RoleId;
 import org.platformlayer.ops.OpsException;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
+@Instrumented
 public class JdbcUserRepository implements UserRepository, UserDatabase {
 	static final Logger log = Logger.getLogger(JdbcUserRepository.class);
 

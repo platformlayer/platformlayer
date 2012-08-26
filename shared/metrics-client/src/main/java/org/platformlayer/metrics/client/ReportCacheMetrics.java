@@ -37,7 +37,7 @@ public class ReportCacheMetrics {
 		return last;
 	}
 
-	void init() {
+	public void init() {
 		String prefix = this.prefix;
 		if (prefix == null) {
 			prefix = "";

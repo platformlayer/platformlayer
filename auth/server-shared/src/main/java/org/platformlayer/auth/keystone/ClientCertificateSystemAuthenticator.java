@@ -13,7 +13,9 @@ import org.platformlayer.auth.AuthenticatorException;
 import org.platformlayer.auth.ServiceAccount;
 import org.platformlayer.auth.UserDatabase;
 import org.platformlayer.auth.services.SystemAuthenticator;
+import org.platformlayer.metrics.Instrumented;
 
+@Instrumented
 public class ClientCertificateSystemAuthenticator implements SystemAuthenticator {
 	private static final Logger log = Logger.getLogger(ClientCertificateSystemAuthenticator.class);
 

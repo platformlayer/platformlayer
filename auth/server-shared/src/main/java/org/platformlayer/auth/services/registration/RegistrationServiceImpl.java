@@ -9,10 +9,12 @@ import org.platformlayer.RepositoryException;
 import org.platformlayer.auth.OpsUser;
 import org.platformlayer.auth.UserDatabase;
 import org.platformlayer.auth.services.RegistrationService;
+import org.platformlayer.metrics.Instrumented;
 
 import com.google.common.base.Strings;
 
 @Singleton
+@Instrumented
 public class RegistrationServiceImpl implements RegistrationService {
 	static final Logger log = Logger.getLogger(RegistrationServiceImpl.class);
 

@@ -2,7 +2,6 @@ package org.platformlayer.jdbc.proxy;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,31 +19,25 @@ import org.platformlayer.jdbc.simplejpa.JoinedQueryResult;
 import org.platformlayer.jdbc.simplejpa.JoinedQueryResult.ObjectList;
 import org.platformlayer.jdbc.simplejpa.ResultSetMapper;
 import org.platformlayer.jdbc.simplejpa.ResultSetMappers;
+import org.platformlayer.metrics.MetricTimer;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
-public class JdbcProxyInvocationHandler implements InvocationHandler {
+public class JdbcProxyInvocationHandler<T> implements InvocationHandler {
 	private static final Logger log = Logger.getLogger(JdbcProxyInvocationHandler.class);
 
-	private final Class<?> interfaceType;
+	private final Class<T> interfaceType;
 	private final Connection connection;
 	private final Provider<ResultSetMappers> resultSetMappersProvider;
+	private final JdbcClassProxy<T> classProxy;
 
-	private JdbcProxyInvocationHandler(Provider<ResultSetMappers> resultSetMappersProvider, Connection connection,
-			Class<?> interfaceType) {
+	JdbcProxyInvocationHandler(Provider<ResultSetMappers> resultSetMappersProvider, Connection connection,
+			Class<T> interfaceType, JdbcClassProxy<T> classProxy) {
 		this.resultSetMappersProvider = resultSetMappersProvider;
 		this.connection = connection;
 		this.interfaceType = interfaceType;
-	}
-
-	public static <T> T newInstance(Provider<ResultSetMappers> resultSetMappersProvider, Connection connection,
-			Class<T> interfaceType) {
-		Class[] proxyInterfaces = new Class[] { interfaceType };
-		JdbcProxyInvocationHandler backend = new JdbcProxyInvocationHandler(resultSetMappersProvider, connection,
-				interfaceType);
-		T frontend = (T) Proxy.newProxyInstance(interfaceType.getClassLoader(), proxyInterfaces, backend);
-		return frontend;
+		this.classProxy = classProxy;
 	}
 
 	@Override
@@ -56,6 +49,13 @@ public class JdbcProxyInvocationHandler implements InvocationHandler {
 		QueryDescriptor queryDescriptor = QueryDescriptor.getQueryDescriptor(m);
 
 		String sql = queryDescriptor.getSql();
+
+		MetricTimer.Context timerContext = null;
+
+		MetricTimer timer = classProxy.getTimer(m, queryDescriptor);
+		if (timer != null) {
+			timerContext = timer.start();
+		}
 
 		PreparedStatement ps = null;
 		try {
@@ -81,6 +81,9 @@ public class JdbcProxyInvocationHandler implements InvocationHandler {
 			}
 		} finally {
 			JdbcUtils.safeClose(ps);
+			if (timerContext != null) {
+				timerContext.stop();
+			}
 		}
 	}
 

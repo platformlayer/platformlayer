@@ -24,6 +24,7 @@ import org.openstack.crypto.CertificateAndKey;
 import org.openstack.crypto.KeyStoreUtils;
 import org.platformlayer.crypto.EncryptionStore;
 import org.platformlayer.guice.JdbcGuiceModule;
+import org.platformlayer.metrics.NullMetricsModule;
 import org.platformlayer.ops.log.PerJobAppender;
 import org.platformlayer.ops.schedule.Scheduler;
 import org.platformlayer.web.GuiceServletConfig;
@@ -59,6 +60,7 @@ class StandaloneXaasWebserver {
 		try {
 			List<Module> modules = Lists.newArrayList();
 			// modules.add(new GuiceOpsConfig());
+			modules.add(new NullMetricsModule());
 			modules.add(new GuiceXaasConfig());
 			modules.add(new JdbcGuiceModule());
 			modules.add(new PlatformLayerServletModule());

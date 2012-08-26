@@ -10,4 +10,6 @@ public interface MetricsSystem {
 	void discoverMetrics(Object o);
 
 	void init();
+
+	MetricTimer buildNewTimer(MetricKey metricKey);
 }
