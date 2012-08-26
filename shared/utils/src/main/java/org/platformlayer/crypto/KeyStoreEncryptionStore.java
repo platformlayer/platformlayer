@@ -8,6 +8,9 @@ import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import org.apache.log4j.Logger;
 import org.openstack.crypto.CertificateAndKey;
 import org.openstack.crypto.KeyStoreUtils;
@@ -15,6 +18,7 @@ import org.openstack.crypto.SimpleCertificateAndKey;
 import org.platformlayer.config.Configuration;
 import org.platformlayer.ops.OpsException;
 
+@Singleton
 public class KeyStoreEncryptionStore implements EncryptionStore {
 	private static final Logger log = Logger.getLogger(KeyStoreEncryptionStore.class);
 
@@ -25,6 +29,16 @@ public class KeyStoreEncryptionStore implements EncryptionStore {
 	public KeyStoreEncryptionStore(KeyStore keyStore) {
 		super();
 		this.keyStore = keyStore;
+	}
+
+	public static class Provider implements javax.inject.Provider<EncryptionStore> {
+		@Inject
+		Configuration configuration;
+
+		@Override
+		public EncryptionStore get() {
+			return KeyStoreEncryptionStore.build(configuration);
+		}
 	}
 
 	@Override

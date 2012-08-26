@@ -6,21 +6,33 @@ import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.Random;
 
+import javax.inject.Inject;
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.KeyManager;
+import javax.net.ssl.TrustManager;
 
+import org.platformlayer.WellKnownPorts;
 import org.platformlayer.auth.PlatformlayerAuthenticationException;
 import org.platformlayer.auth.v1.Auth;
 import org.platformlayer.auth.v1.AuthenticateRequest;
 import org.platformlayer.auth.v1.AuthenticateResponse;
 import org.platformlayer.auth.v1.CertificateCredentials;
 import org.platformlayer.auth.v1.PasswordCredentials;
+import org.platformlayer.config.Configuration;
+import org.platformlayer.crypto.AcceptAllHostnameVerifier;
+import org.platformlayer.crypto.PublicKeyTrustManager;
 import org.platformlayer.crypto.RsaUtils;
 import org.platformlayer.crypto.SimpleClientCertificateKeyManager;
+import org.platformlayer.http.HttpStrategy;
+import org.platformlayer.http.SslConfiguration;
+import org.platformlayer.rest.JreRestfulClient;
 import org.platformlayer.rest.RestClientException;
 import org.platformlayer.rest.RestfulClient;
 import org.platformlayer.rest.RestfulRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Splitter;
 
 public class PlatformlayerAuthenticationClient {
 	static final Logger log = LoggerFactory.getLogger(PlatformlayerAuthenticationClient.class);
@@ -37,6 +49,40 @@ public class PlatformlayerAuthenticationClient {
 
 	public PlatformlayerAuthenticationClient(RestfulClient httpClient) {
 		this.httpClient = httpClient;
+	}
+
+	public static class Provider implements javax.inject.Provider<PlatformlayerAuthenticationClient> {
+		@Inject
+		Configuration configuration;
+
+		@Inject
+		HttpStrategy httpStrategy;
+
+		@Override
+		public PlatformlayerAuthenticationClient get() {
+			String keystoneUserUrl = configuration.lookup("auth.user.url", "https://127.0.0.1:"
+					+ WellKnownPorts.PORT_PLATFORMLAYER_AUTH_USER + "/v2.0/");
+
+			HostnameVerifier hostnameVerifier = null;
+
+			KeyManager keyManager = null;
+
+			TrustManager trustManager = null;
+
+			String trustKeys = configuration.lookup("auth.user.ssl.keys", null);
+
+			if (trustKeys != null) {
+				trustManager = new PublicKeyTrustManager(Splitter.on(',').trimResults().split(trustKeys));
+
+				hostnameVerifier = new AcceptAllHostnameVerifier();
+			}
+
+			SslConfiguration sslConfiguration = new SslConfiguration(keyManager, trustManager, hostnameVerifier);
+			RestfulClient restfulClient = new JreRestfulClient(httpStrategy, keystoneUserUrl, sslConfiguration);
+			PlatformlayerAuthenticationClient authClient = new PlatformlayerAuthenticationClient(restfulClient);
+
+			return authClient;
+		}
 	}
 
 	public PlatformlayerAuthenticationToken authenticate(PasswordCredentials passwordCredentials)

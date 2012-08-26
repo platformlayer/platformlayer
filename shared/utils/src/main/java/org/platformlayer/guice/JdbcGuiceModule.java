@@ -5,6 +5,7 @@ import java.sql.Connection;
 import org.platformlayer.jdbc.JdbcTransaction;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.matcher.Matchers;
 
 public class JdbcGuiceModule extends AbstractModule {
@@ -14,6 +15,8 @@ public class JdbcGuiceModule extends AbstractModule {
 		requestInjection(interceptor);
 		bindInterceptor(Matchers.any(), Matchers.annotatedWith(JdbcTransaction.class), interceptor);
 
-		bind(Connection.class).toProvider(JdbcGuiceProviders.class);
+		install(new FactoryModuleBuilder().build(GuiceDataSourceProvider.Factory.class));
+
+		bind(Connection.class).toProvider(JdbcConnectionProvider.class);
 	}
 }

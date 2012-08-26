@@ -4,6 +4,7 @@ import java.security.cert.X509Certificate;
 import java.util.List;
 
 import javax.crypto.SecretKey;
+import javax.inject.Inject;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.TrustManager;
@@ -235,6 +236,26 @@ public class PlatformLayerAuthAdminClient implements AuthenticationTokenValidato
 			return find(((CachingAuthenticationTokenValidator) authenticationTokenValidator).getInner());
 		}
 		throw new IllegalArgumentException();
+	}
+
+	public static class Provider implements javax.inject.Provider<AuthenticationTokenValidator> {
+		@Inject
+		HttpStrategy httpStrategy;
+
+		@Inject
+		Configuration configuration;
+
+		@Inject
+		EncryptionStore encryptionStore;
+
+		@Override
+		public AuthenticationTokenValidator get() {
+			try {
+				return build(httpStrategy, configuration, encryptionStore);
+			} catch (OpsException e) {
+				throw new IllegalStateException("Error building AuthenticationTokenValidator", e);
+			}
+		}
 
 	}
 

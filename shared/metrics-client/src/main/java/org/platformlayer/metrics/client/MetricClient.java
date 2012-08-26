@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Properties;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.TrustManager;
@@ -49,6 +50,24 @@ import com.google.inject.ProvidedBy;
 @Singleton
 @ProvidedBy(MetricClientProvider.class)
 public class MetricClient implements Closeable {
+	public class Provider implements javax.inject.Provider<MetricClient> {
+
+		@Inject
+		Configuration configuration;
+
+		@Inject
+		EncryptionStore encryptionStore;
+
+		@Override
+		public MetricClient get() {
+			try {
+				return MetricClient.build(configuration, encryptionStore);
+			} catch (OpsException e) {
+				throw new IllegalStateException("Error building metric client", e);
+			}
+		}
+	}
+
 	private static final Logger log = LoggerFactory.getLogger(MetricClient.class);
 
 	final HttpClient httpClient;

@@ -11,5 +11,5 @@ public interface MetricsSystem {
 
 	void init();
 
-	MetricTimer buildNewTimer(MetricKey metricKey);
+	MetricTimer getTimer(MetricKey metricKey);
 }

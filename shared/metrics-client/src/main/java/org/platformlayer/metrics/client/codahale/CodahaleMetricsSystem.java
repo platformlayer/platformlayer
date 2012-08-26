@@ -68,7 +68,7 @@ public class CodahaleMetricsSystem implements MetricsSystem {
 	}
 
 	@Override
-	public MetricTimer buildNewTimer(MetricKey metricKey) {
+	public MetricTimer getTimer(MetricKey metricKey) {
 		MetricName metricName = new MetricName(metricKey.getGroup(), metricKey.getTypeName(), metricKey.getName());
 		return new MetricTimerAdapter(registry.newTimer(metricName, TimeUnit.MILLISECONDS, TimeUnit.SECONDS));
 	}

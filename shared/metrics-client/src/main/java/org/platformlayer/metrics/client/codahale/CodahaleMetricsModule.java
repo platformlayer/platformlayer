@@ -1,6 +1,7 @@
 package org.platformlayer.metrics.client.codahale;
 
 import org.platformlayer.metrics.InstrumentedListener;
+import org.platformlayer.metrics.JerseyMetricsHook;
 import org.platformlayer.metrics.MetricsSystem;
 import org.platformlayer.web.InstrumentedJettyWebServerBuilder;
 import org.platformlayer.web.WebServerBuilder;
@@ -43,6 +44,9 @@ public class CodahaleMetricsModule extends AbstractModule {
 		// (it should sanitize them, of course!)
 		// bindJmxReporter();
 		JmxReporter.shutdownDefault();
+
+		// TODO: Tolerate if Jersey not on classpath?
+		bind(JerseyMetricsHook.class);
 
 		// bindListener(Matchers.any(), new MeteredListener(metricsRegistry));
 		// bindListener(Matchers.any(), new TimedListener(metricsRegistry));

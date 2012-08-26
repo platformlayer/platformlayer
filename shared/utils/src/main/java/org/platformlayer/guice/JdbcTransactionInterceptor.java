@@ -8,7 +8,7 @@ import javax.sql.DataSource;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
-public class JdbcTransactionInterceptor implements MethodInterceptor {
+class JdbcTransactionInterceptor implements MethodInterceptor {
 
 	private static final ThreadLocal<Connection> threadLocalConnection = new ThreadLocal<Connection>();
 

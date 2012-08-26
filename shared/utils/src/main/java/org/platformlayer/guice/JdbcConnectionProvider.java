@@ -4,7 +4,7 @@ import java.sql.Connection;
 
 import com.google.inject.Provider;
 
-public class JdbcGuiceProviders implements Provider<Connection> {
+class JdbcConnectionProvider implements Provider<Connection> {
 
 	@Override
 	public Connection get() {

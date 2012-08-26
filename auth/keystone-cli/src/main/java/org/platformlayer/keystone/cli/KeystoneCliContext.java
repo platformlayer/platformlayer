@@ -8,23 +8,28 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.util.List;
+import java.util.Properties;
 
 import org.openstack.crypto.KeyStoreUtils;
 import org.platformlayer.RepositoryException;
+import org.platformlayer.auth.KeystoneJdbcModule;
 import org.platformlayer.auth.UserDatabase;
 import org.platformlayer.auth.UserEntity;
+import org.platformlayer.config.Configuration;
+import org.platformlayer.config.ConfigurationModule;
 import org.platformlayer.crypto.CertificateReader;
 import org.platformlayer.keystone.cli.commands.KeystoneCommandRegistry;
 import org.platformlayer.keystone.cli.formatters.KeystoneFormatterRegistry;
-import org.platformlayer.keystone.cli.guice.CliModule;
 import org.platformlayer.ops.OpsException;
 
 import com.fathomdb.cli.CliContextBase;
 import com.fathomdb.cli.CliException;
 import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import com.google.inject.ConfigurationException;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Module;
 
 public class KeystoneCliContext extends CliContextBase {
 	final KeystoneCliOptions options;
@@ -37,7 +42,15 @@ public class KeystoneCliContext extends CliContextBase {
 
 	@Override
 	public void connect() throws Exception {
-		this.injector = Guice.createInjector(new CliModule(options));
+		Properties properties = options.getConfigurationProperties();
+		Configuration configuration = Configuration.from(new File("."), properties);
+
+		List<Module> modules = Lists.newArrayList();
+
+		modules.add(new ConfigurationModule(configuration));
+		modules.add(new KeystoneJdbcModule());
+
+		this.injector = Guice.createInjector(modules);
 	}
 
 	public UserDatabase getUserRepository() {

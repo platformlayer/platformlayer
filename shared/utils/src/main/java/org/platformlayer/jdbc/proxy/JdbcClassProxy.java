@@ -99,7 +99,7 @@ public class JdbcClassProxy<T> {
 					String sql = query.getSql();
 
 					MetricKey metricKey = MetricKey.build(interfaceType, sql);
-					methodInfo.timer = metricsSystem.buildNewTimer(metricKey);
+					methodInfo.timer = metricsSystem.getTimer(metricKey);
 
 					return methodInfo;
 				}

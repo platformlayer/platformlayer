@@ -8,11 +8,13 @@ import java.io.InputStream;
 import java.util.Date;
 
 import javax.crypto.spec.SecretKeySpec;
+import javax.inject.Inject;
 
 import org.openstack.utils.Utf8;
 import org.platformlayer.IoUtils;
 import org.platformlayer.auth.services.TokenInfo;
 import org.platformlayer.auth.services.TokenService;
+import org.platformlayer.config.Configuration;
 import org.platformlayer.crypto.CryptoUtils;
 import org.platformlayer.crypto.SecureComparison;
 import org.platformlayer.metrics.Instrumented;
@@ -24,6 +26,22 @@ public class SharedSecretTokenService implements TokenService {
 	// To keep the numbers smaller; we quantize time and offset it
 	static final long TIME_GRANULARITY = 60000L;
 	static final long TIME_OFFSET = 1234567890;
+
+	public static class Provider implements javax.inject.Provider<SharedSecretTokenService> {
+
+		@Inject
+		Configuration configuration;
+
+		@Override
+		public SharedSecretTokenService get() {
+			String secret = configuration.find("sharedsecret");
+			if (secret == null) {
+				throw new IllegalStateException("sharedsecret is required");
+			}
+			SharedSecretTokenService tokenService = new SharedSecretTokenService(secret);
+			return tokenService;
+		}
+	}
 
 	public SharedSecretTokenService(String secret) {
 		this.userSecretKeySpec = CryptoUtils.deriveHmacSha1Key(secret);

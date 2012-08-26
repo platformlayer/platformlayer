@@ -25,7 +25,7 @@ public class NullMetricsSystem implements MetricsSystem {
 	}
 
 	@Override
-	public MetricTimer buildNewTimer(MetricKey metricKey) {
+	public MetricTimer getTimer(MetricKey metricKey) {
 		return null;
 	}
 }
