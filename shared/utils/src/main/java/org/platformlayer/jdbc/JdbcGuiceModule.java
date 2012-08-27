@@ -1,5 +1,6 @@
 package org.platformlayer.jdbc;
 
+import javax.sql.DataSource;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
@@ -9,8 +10,8 @@ public class JdbcGuiceModule extends AbstractModule {
 	@Override
 	protected void configure() {
 		bind(DatabaseStatistics.class).asEagerSingleton();
-		JdbcTransactionInterceptor interceptor = new JdbcTransactionInterceptor();
-		requestInjection(interceptor);
+
+		JdbcTransactionInterceptor interceptor = new JdbcTransactionInterceptor(getProvider(DataSource.class));
 		bindInterceptor(Matchers.any(), Matchers.annotatedWith(JdbcTransaction.class), interceptor);
 
 		install(new FactoryModuleBuilder().build(GuiceDataSourceProvider.Factory.class));

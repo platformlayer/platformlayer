@@ -24,7 +24,7 @@ public class InstrumentedListener implements TypeListener {
 			for (Method method : klass.getDeclaredMethods()) {
 				final MethodInterceptor interceptor = InstrumentedInterceptor.forMethod(metricsSystem, klass, method);
 				if (interceptor != null) {
-					encounter.bindInterceptor(Matchers.only(method), interceptor);
+					encounter.bindInterceptor(Matchers.only(method).and(new NotSynthetic()), interceptor);
 				}
 			}
 		} while ((klass = klass.getSuperclass()) != null);

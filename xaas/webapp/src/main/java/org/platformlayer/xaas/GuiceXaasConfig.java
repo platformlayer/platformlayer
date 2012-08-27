@@ -65,7 +65,7 @@ public class GuiceXaasConfig extends AbstractModule {
 		bind(ResultSetMappers.class).toProvider(
 				ResultSetMappersProvider.build(ItemEntity.class, TagEntity.class, SchedulerRecordEntity.class));
 
-		bind(DataSource.class).toProvider(GuiceDataSourceProvider.bind("platformlayer.jdbc."));
+		bind(DataSource.class).toProvider(GuiceDataSourceProvider.bind("platformlayer.jdbc.")).asEagerSingleton();
 
 		JerseyAnnotationDiscovery discovery = new JerseyAnnotationDiscovery();
 		discovery.scan();

@@ -24,6 +24,7 @@ import org.openstack.utils.Utf8;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.auth.crypto.SecretStore;
 import org.platformlayer.auth.crypto.SecretStore.Writer;
+import org.platformlayer.cache.Memoize;
 import org.platformlayer.crypto.AesUtils;
 import org.platformlayer.crypto.CertificateUtils;
 import org.platformlayer.crypto.CryptoUtils;
@@ -683,6 +684,7 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 
 	@Override
 	@JdbcTransaction
+	@Memoize(ttl = 60)
 	public ServiceAccountEntity findServiceAccount(String subject, byte[] publicKey) throws RepositoryException {
 		if (publicKey == null || subject == null) {
 			throw new IllegalArgumentException();

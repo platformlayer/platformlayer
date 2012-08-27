@@ -1,6 +1,7 @@
 package org.platformlayer.jdbc;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
@@ -10,6 +11,7 @@ import com.google.inject.Provider;
 import com.google.inject.assistedinject.Assisted;
 import com.jolbox.bonecp.BoneCPDataSource;
 
+@Singleton
 public class GuiceDataSourceProvider implements Provider<DataSource> {
 	private static final Logger log = Logger.getLogger(GuiceDataSourceProvider.class);
 
@@ -19,9 +21,16 @@ public class GuiceDataSourceProvider implements Provider<DataSource> {
 
 	final DatabaseStatistics databaseStatistics;
 
+	DataSource dataSource = null;
+
 	@Override
 	public DataSource get() {
-		return buildDataSource(jdbcConfig);
+		synchronized (this) {
+			if (dataSource == null) {
+				dataSource = buildDataSource(jdbcConfig);
+			}
+			return dataSource;
+		}
 	}
 
 	DataSource buildDataSource(JdbcConfiguration jdbcConfig) {

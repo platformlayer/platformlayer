@@ -13,7 +13,7 @@ public class KeystoneJdbcModule extends AbstractModule {
 
 	@Override
 	protected void configure() {
-		bind(DataSource.class).toProvider(GuiceDataSourceProvider.bind("auth.jdbc."));
+		bind(DataSource.class).toProvider(GuiceDataSourceProvider.bind("auth.jdbc.")).asEagerSingleton();
 
 		JdbcGuiceModule jdbcGuiceModule = new JdbcGuiceModule();
 		binder().install(jdbcGuiceModule);

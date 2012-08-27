@@ -17,10 +17,20 @@ public class ReportConnectionPoolMetrics {
 	final Class<?> context;
 	final String prefix;
 
-	final BoneCP pool;
+	BoneCP pool;
+
+	final BoneCPDataSource dataSource;
+
+	BoneCP getPool() {
+		if (pool == null) {
+			pool = getPool(dataSource);
+		}
+		return pool;
+	}
 
 	public ReportConnectionPoolMetrics(String prefix, BoneCPDataSource dataSource) {
 		super();
+		this.dataSource = dataSource;
 		this.context = BoneCP.class;
 		this.prefix = prefix;
 
@@ -48,6 +58,12 @@ public class ReportConnectionPoolMetrics {
 	protected Statistics getStats() {
 		long now = System.currentTimeMillis();
 		if (last == null || now - lastFetch > 1000) {
+			BoneCP pool = getPool();
+			if (pool == null) {
+				// TODO: Should we handle this properly??
+				return null;
+			}
+
 			last = pool.getStatistics();
 			lastFetch = now;
 		}
