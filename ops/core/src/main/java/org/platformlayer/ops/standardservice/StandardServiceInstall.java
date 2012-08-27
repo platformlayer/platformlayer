@@ -30,7 +30,7 @@ public abstract class StandardServiceInstall extends OpsTreeBase {
 	protected void addChildren() throws OpsException {
 		StandardTemplateData template = getTemplate();
 
-		addChild(serviceManager.getServiceManagerInstallClass());
+		serviceManager.addServiceInstall(template.getModel().getKey(), this);
 
 		String user = template.getUser();
 		String group = template.getGroup();

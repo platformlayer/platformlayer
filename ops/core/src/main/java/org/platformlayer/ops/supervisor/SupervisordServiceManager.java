@@ -6,16 +6,13 @@ import java.util.Map;
 import javax.inject.Provider;
 
 import org.apache.log4j.Logger;
+import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class SupervisordServiceManager implements ServiceManager {
 	@SuppressWarnings("unused")
 	private static final Logger log = Logger.getLogger(SupervisordServiceManager.class);
-
-	@Override
-	public Class<?> getServiceManagerInstallClass() {
-		return SupervisordInstall.class;
-	}
 
 	@Override
 	public void addServiceInstance(final StandardService service) throws OpsException {
@@ -61,6 +58,11 @@ public class SupervisordServiceManager implements ServiceManager {
 		}
 
 		return config;
+	}
+
+	@Override
+	public void addServiceInstall(PlatformLayerKey owner, OpsTreeBase container) throws OpsException {
+		container.addChild(SupervisordInstall.class);
 	}
 
 }
