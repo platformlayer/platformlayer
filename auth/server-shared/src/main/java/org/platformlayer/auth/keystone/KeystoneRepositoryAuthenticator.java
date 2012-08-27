@@ -15,9 +15,11 @@ import org.platformlayer.auth.UserDatabase;
 import org.platformlayer.auth.UserEntity;
 import org.platformlayer.auth.UserProjectEntity;
 import org.platformlayer.auth.model.CertificateChainInfo;
+import org.platformlayer.metrics.Instrumented;
 
 import com.google.common.base.Strings;
 
+@Instrumented
 public class KeystoneRepositoryAuthenticator implements KeystoneUserAuthenticator {
 	private static final Logger log = Logger.getLogger(KeystoneRepositoryAuthenticator.class);
 
