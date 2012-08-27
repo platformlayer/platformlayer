@@ -30,18 +30,18 @@ public class ResultSetSingleClassMapper {
 		this.fieldMap = FieldMap.build(nameMapping, targetClass);
 	}
 
-	Object getKey(ResultSet rs) throws SQLException {
-		return getKeyMapper(rs).getKey(rs);
+	Object getKey(ConnectionMetadata connectionMetadata, ResultSet rs) throws SQLException {
+		return getKeyMapper(connectionMetadata, rs).getKey(rs);
 	}
 
-	private KeyMapper getKeyMapper(ResultSet rs) throws SQLException {
+	private KeyMapper getKeyMapper(ConnectionMetadata connectionMetadata, ResultSet rs) throws SQLException {
 		if (this.keyMapper == null) {
 			KeyMapper keyMapper = null;
 
 			List<Integer> columnNumbers = Lists.newArrayList();
 			List<Field> idFields = fieldMap.getIdFields();
 			for (Field idField : idFields) {
-				Integer columnNumber = findColumn(rs, idField);
+				Integer columnNumber = findColumn(connectionMetadata, rs, idField);
 				if (columnNumber == null) {
 					throw new IllegalArgumentException("Id Field not found in result set: " + idField);
 				}
@@ -66,8 +66,8 @@ public class ResultSetSingleClassMapper {
 		return this.keyMapper;
 	}
 
-	private Integer findColumn(ResultSet rs, Field field) throws SQLException {
-		Map<Integer, MappedColumn> columnToFieldMap = getColumnToFieldMap(rs);
+	private Integer findColumn(ConnectionMetadata connectionMetadata, ResultSet rs, Field field) throws SQLException {
+		Map<Integer, MappedColumn> columnToFieldMap = getColumnToFieldMap(connectionMetadata, rs);
 		for (Entry<Integer, MappedColumn> entry : columnToFieldMap.entrySet()) {
 			if (entry.getValue().isField(field)) {
 				return entry.getKey();
@@ -76,13 +76,14 @@ public class ResultSetSingleClassMapper {
 		return null;
 	}
 
-	Map<Integer, MappedColumn> getColumnToFieldMap(ResultSet rs) throws SQLException {
+	Map<Integer, MappedColumn> getColumnToFieldMap(ConnectionMetadata connectionMetadata, ResultSet rs)
+			throws SQLException {
 		if (columnToFieldMap == null) {
 			Map<Integer, MappedColumn> columnToFieldMap = Maps.newHashMap();
 			ResultSetMetaData rsmd = rs.getMetaData();
 			int columnCount = rsmd.getColumnCount();
 			for (int i = 0; i < columnCount; i++) {
-				String tableName = DatabaseUtils.getTableName(rsmd, i + 1);
+				String tableName = connectionMetadata.getTableName(rsmd, i + 1);
 				if (!tableName.equals(this.tableName)) {
 					continue;
 				}
@@ -103,8 +104,8 @@ public class ResultSetSingleClassMapper {
 		return new MappedColumn(field);
 	}
 
-	void mapRowToObject(ResultSet rs, Object target) throws SQLException {
-		Map<Integer, MappedColumn> columnToFieldMap = getColumnToFieldMap(rs);
+	void mapRowToObject(ConnectionMetadata connectionMetadata, ResultSet rs, Object target) throws SQLException {
+		Map<Integer, MappedColumn> columnToFieldMap = getColumnToFieldMap(connectionMetadata, rs);
 		for (Map.Entry<Integer, MappedColumn> entry : columnToFieldMap.entrySet()) {
 			Object value = rs.getObject(entry.getKey());
 			MappedColumn mappedColumn = entry.getValue();

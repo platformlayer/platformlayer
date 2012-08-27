@@ -3,6 +3,7 @@ package org.platformlayer.metrics;
 import org.apache.log4j.Logger;
 
 import com.google.common.cache.Cache;
+import com.jolbox.bonecp.BoneCPDataSource;
 
 public class NullMetricsSystem implements MetricsSystem {
 	@SuppressWarnings("unused")
@@ -27,5 +28,9 @@ public class NullMetricsSystem implements MetricsSystem {
 	@Override
 	public MetricTimer getTimer(MetricKey metricKey) {
 		return null;
+	}
+
+	@Override
+	public void add(Class<?> context, String prefix, BoneCPDataSource pool) {
 	}
 }

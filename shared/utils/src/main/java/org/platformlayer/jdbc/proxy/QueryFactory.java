@@ -1,16 +1,15 @@
 package org.platformlayer.jdbc.proxy;
 
-import java.sql.Connection;
-
 import javax.inject.Inject;
 import javax.inject.Provider;
 
+import org.platformlayer.jdbc.JdbcConnection;
 import org.platformlayer.jdbc.simplejpa.ResultSetMappers;
 import org.platformlayer.metrics.MetricsSystem;
 
 public class QueryFactory {
 	@Inject
-	Provider<Connection> connection;
+	Provider<JdbcConnection> connectionProvider;
 
 	@Inject
 	Provider<ResultSetMappers> resultSetMappersProvider;
@@ -21,6 +20,8 @@ public class QueryFactory {
 	public <T> T get(Class<T> interfaceType) {
 		JdbcClassProxy<T> proxy = JdbcClassProxy.get(metricsSystem, interfaceType);
 
-		return proxy.buildHandler(resultSetMappersProvider, connection.get());
+		JdbcConnection connection = connectionProvider.get();
+
+		return proxy.buildHandler(resultSetMappersProvider, connection);
 	}
 }

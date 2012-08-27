@@ -45,7 +45,8 @@ public class ResultSetMapper {
 		this.resultSetMappers = resultSetMappers;
 	}
 
-	public JoinedQueryResult doMap(PreparedStatement preparedStatement) throws SQLException {
+	public JoinedQueryResult doMap(ConnectionMetadata connectionMetadata, PreparedStatement preparedStatement)
+			throws SQLException {
 		JoinedQueryResult result = new JoinedQueryResult();
 
 		// We might generate the mapping in parallel on multiple threads during initialization
@@ -66,7 +67,7 @@ public class ResultSetMapper {
 
 			ResultSetMapping resultSetMapping;
 			if (buildingMapping) {
-				resultSetMapping = buildResultSetMapping(rs);
+				resultSetMapping = buildResultSetMapping(connectionMetadata, rs);
 				mapping.mappings.add(resultSetMapping);
 			} else {
 				resultSetMapping = mapping.mappings.get(resultSetIndex);
@@ -98,7 +99,7 @@ public class ResultSetMapper {
 
 				while (rs.next()) {
 					Object newObject = classMapper.newInstance();
-					classMapper.mapRowToObject(rs, newObject);
+					classMapper.mapRowToObject(connectionMetadata, rs, newObject);
 
 					// We use the object as the synthetic key
 					Object key = newObject;
@@ -108,7 +109,7 @@ public class ResultSetMapper {
 				while (rs.next()) {
 					for (int j = 0; j < classMappers.length; j++) {
 						ResultSetSingleClassMapper classMapper = classMappers[j];
-						Object key = classMapper.getKey(rs);
+						Object key = classMapper.getKey(connectionMetadata, rs);
 						if (key == null) {
 							continue;
 						}
@@ -119,7 +120,7 @@ public class ResultSetMapper {
 						}
 
 						Object newObject = classMapper.newInstance();
-						classMapper.mapRowToObject(rs, newObject);
+						classMapper.mapRowToObject(connectionMetadata, rs, newObject);
 						objectList.put(key, newObject);
 					}
 				}
@@ -153,12 +154,13 @@ public class ResultSetMapper {
 		return result;
 	}
 
-	private ResultSetMapping buildResultSetMapping(ResultSet rs) throws SQLException {
+	private ResultSetMapping buildResultSetMapping(ConnectionMetadata connectionMetadata, ResultSet rs)
+			throws SQLException {
 		ResultSetMetaData rsmd = rs.getMetaData();
 		Map<String, ResultSetSingleClassMapper> tableMaps = Maps.newHashMap();
 
 		for (int i = 0; i < rsmd.getColumnCount(); i++) {
-			String tableName = DatabaseUtils.getTableName(rsmd, i + 1);
+			String tableName = connectionMetadata.getTableName(rsmd, i + 1);
 			if (tableMaps.containsKey(tableName)) {
 				continue;
 			}

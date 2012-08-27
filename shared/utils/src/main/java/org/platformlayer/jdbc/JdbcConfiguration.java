@@ -1,4 +1,4 @@
-package org.platformlayer.guice;
+package org.platformlayer.jdbc;
 
 import java.net.URI;
 import java.net.URISyntaxException;

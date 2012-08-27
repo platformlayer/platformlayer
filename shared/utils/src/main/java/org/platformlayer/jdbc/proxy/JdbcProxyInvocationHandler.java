@@ -2,7 +2,6 @@ package org.platformlayer.jdbc.proxy;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -14,6 +13,7 @@ import java.util.Map;
 import javax.inject.Provider;
 
 import org.apache.log4j.Logger;
+import org.platformlayer.jdbc.JdbcConnection;
 import org.platformlayer.jdbc.JdbcUtils;
 import org.platformlayer.jdbc.simplejpa.JoinedQueryResult;
 import org.platformlayer.jdbc.simplejpa.JoinedQueryResult.ObjectList;
@@ -28,14 +28,14 @@ public class JdbcProxyInvocationHandler<T> implements InvocationHandler {
 	private static final Logger log = Logger.getLogger(JdbcProxyInvocationHandler.class);
 
 	private final Class<T> interfaceType;
-	private final Connection connection;
+	private final JdbcConnection jdbcConnection;
 	private final Provider<ResultSetMappers> resultSetMappersProvider;
 	private final JdbcClassProxy<T> classProxy;
 
-	JdbcProxyInvocationHandler(Provider<ResultSetMappers> resultSetMappersProvider, Connection connection,
+	JdbcProxyInvocationHandler(Provider<ResultSetMappers> resultSetMappersProvider, JdbcConnection jdbcConnection,
 			Class<T> interfaceType, JdbcClassProxy<T> classProxy) {
 		this.resultSetMappersProvider = resultSetMappersProvider;
-		this.connection = connection;
+		this.jdbcConnection = jdbcConnection;
 		this.interfaceType = interfaceType;
 		this.classProxy = classProxy;
 	}
@@ -61,7 +61,7 @@ public class JdbcProxyInvocationHandler<T> implements InvocationHandler {
 		try {
 			log.debug("Executing SQL: " + sql);
 
-			ps = connection.prepareStatement(sql);
+			ps = jdbcConnection.getConnection().prepareStatement(sql);
 			queryDescriptor.setParameters(ps, args);
 
 			boolean isResultSet = ps.execute();
@@ -118,7 +118,7 @@ public class JdbcProxyInvocationHandler<T> implements InvocationHandler {
 
 		ResultSetMappers mappers = resultSetMappersProvider.get();
 		ResultSetMapper mapper = new ResultSetMapper(mappers);
-		JoinedQueryResult result = mapper.doMap(ps);
+		JoinedQueryResult result = mapper.doMap(jdbcConnection.getConnectionMetadata(), ps);
 
 		if (returnType.equals(List.class)) {
 			Map<Class<?>, ObjectList<?>> types = result.types;

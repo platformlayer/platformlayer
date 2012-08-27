@@ -24,7 +24,7 @@ import org.openstack.crypto.CertificateAndKey;
 import org.openstack.crypto.KeyStoreUtils;
 import org.platformlayer.config.ConfigurationModule;
 import org.platformlayer.crypto.EncryptionStore;
-import org.platformlayer.guice.JdbcGuiceModule;
+import org.platformlayer.jdbc.JdbcGuiceModule;
 import org.platformlayer.metrics.NullMetricsModule;
 import org.platformlayer.ops.log.PerJobAppender;
 import org.platformlayer.ops.schedule.Scheduler;

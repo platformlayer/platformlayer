@@ -1,6 +1,5 @@
 package org.platformlayer.guice.xaas;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 
 import javax.inject.Inject;
@@ -14,6 +13,7 @@ import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.jdbc.DbHelperBase;
+import org.platformlayer.jdbc.JdbcConnection;
 import org.platformlayer.jdbc.JdbcTransaction;
 import org.platformlayer.jdbc.proxy.Query;
 import org.platformlayer.jdbc.proxy.QueryFactory;
@@ -29,7 +29,7 @@ public class JdbcJobRepository implements JobRepository {
 	ServiceProviderDictionary serviceProviderDictionary;
 
 	@Inject
-	Provider<Connection> connectionProvider;
+	Provider<JdbcConnection> connectionProvider;
 
 	@Override
 	public JobData getJob(PlatformLayerKey jobId, boolean fetchLog) {
@@ -77,7 +77,7 @@ public class JdbcJobRepository implements JobRepository {
 		final Queries queries;
 
 		public DbHelper() {
-			super(connectionProvider.get());
+			super(connectionProvider.get().getConnection());
 
 			this.queries = queryFactory.get(Queries.class);
 		}

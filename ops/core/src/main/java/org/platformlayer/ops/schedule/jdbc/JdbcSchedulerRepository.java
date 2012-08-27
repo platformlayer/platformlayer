@@ -1,6 +1,5 @@
 package org.platformlayer.ops.schedule.jdbc;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -15,6 +14,7 @@ import org.platformlayer.core.model.JobSchedule;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Secret;
 import org.platformlayer.jdbc.DbHelperBase;
+import org.platformlayer.jdbc.JdbcConnection;
 import org.platformlayer.jdbc.JdbcTransaction;
 import org.platformlayer.jdbc.proxy.Query;
 import org.platformlayer.jdbc.proxy.QueryFactory;
@@ -30,7 +30,7 @@ public class JdbcSchedulerRepository implements SchedulerRepository {
 	private static final Logger log = Logger.getLogger(JdbcSchedulerRepository.class);
 
 	@Inject
-	Provider<Connection> connectionProvider;
+	Provider<JdbcConnection> connectionProvider;
 
 	static interface Queries {
 		@Query("SELECT * FROM scheduler_job WHERE key=?")
@@ -53,7 +53,7 @@ public class JdbcSchedulerRepository implements SchedulerRepository {
 		final Queries queries;
 
 		public DbHelper() {
-			super(connectionProvider.get());
+			super(connectionProvider.get().getConnection());
 
 			this.queries = queryFactory.get(Queries.class);
 		}

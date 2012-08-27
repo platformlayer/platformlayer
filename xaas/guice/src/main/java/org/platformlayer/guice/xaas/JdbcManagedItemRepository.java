@@ -1,7 +1,6 @@
 package org.platformlayer.guice.xaas;
 
 import java.io.StringWriter;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -33,6 +32,7 @@ import org.platformlayer.ids.ModelKey;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.jdbc.DbHelperBase;
+import org.platformlayer.jdbc.JdbcConnection;
 import org.platformlayer.jdbc.JdbcTransaction;
 import org.platformlayer.jdbc.JdbcUtils;
 import org.platformlayer.jdbc.proxy.Query;
@@ -60,7 +60,7 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 	ServiceProviderDictionary serviceProviderDirectory;
 
 	@Inject
-	Provider<Connection> connectionProvider;
+	Provider<JdbcConnection> connectionProvider;
 
 	@Inject
 	SecretHelper itemSecrets;
@@ -333,7 +333,7 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 		}
 
 		public DbHelper(ServiceType serviceType, ItemType itemType, ProjectId project) {
-			super(connectionProvider.get());
+			super(connectionProvider.get().getConnection());
 			if (serviceType != null) {
 				setAtom(serviceType);
 			}

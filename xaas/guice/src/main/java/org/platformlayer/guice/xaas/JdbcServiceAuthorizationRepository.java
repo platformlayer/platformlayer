@@ -17,6 +17,7 @@ import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceMetadataKey;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.jdbc.DbHelperBase;
+import org.platformlayer.jdbc.JdbcConnection;
 import org.platformlayer.jdbc.JdbcTransaction;
 import org.platformlayer.jdbc.JdbcUtils;
 import org.platformlayer.ops.crypto.SecretHelper;
@@ -27,7 +28,7 @@ import com.google.common.collect.Lists;
 
 public class JdbcServiceAuthorizationRepository implements ServiceAuthorizationRepository {
 	@Inject
-	Provider<Connection> connectionProvider;
+	Provider<JdbcConnection> connectionProvider;
 
 	@Inject
 	SecretHelper secretHelper;
@@ -37,7 +38,7 @@ public class JdbcServiceAuthorizationRepository implements ServiceAuthorizationR
 	public ServiceAuthorization findServiceAuthorization(ServiceType serviceType, ProjectId project)
 			throws RepositoryException {
 		try {
-			Connection connection = connectionProvider.get();
+			Connection connection = connectionProvider.get().getConnection();
 			int serviceId = JdbcRepositoryHelpers.getServiceKey(connection, serviceType);
 			int projectId = JdbcRepositoryHelpers.getProjectKey(connection, project);
 
@@ -79,7 +80,7 @@ public class JdbcServiceAuthorizationRepository implements ServiceAuthorizationR
 		try {
 			ServiceType serviceType = new ServiceType(authorization.serviceType);
 
-			Connection connection = connectionProvider.get();
+			Connection connection = connectionProvider.get().getConnection();
 			int serviceId = JdbcRepositoryHelpers.getServiceKey(connection, serviceType);
 			int projectId = JdbcRepositoryHelpers.getProjectKey(connection, project);
 
@@ -191,7 +192,7 @@ public class JdbcServiceAuthorizationRepository implements ServiceAuthorizationR
 	class DbHelper extends DbHelperBase {
 
 		public DbHelper(ServiceType serviceType, ProjectId project, ServiceMetadataKey metadataKey) {
-			super(connectionProvider.get());
+			super(connectionProvider.get().getConnection());
 			if (serviceType != null) {
 				setAtom(serviceType);
 			}

@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
+import org.platformlayer.jdbc.ReportConnectionPoolMetrics;
 import org.platformlayer.metrics.DiscoverSingletonMetrics;
 import org.platformlayer.metrics.HasMetrics;
 import org.platformlayer.metrics.MetricKey;
@@ -16,6 +17,7 @@ import org.platformlayer.metrics.client.ReportCacheMetrics;
 
 import com.google.common.cache.Cache;
 import com.google.inject.Injector;
+import com.jolbox.bonecp.BoneCPDataSource;
 import com.yammer.metrics.core.MetricName;
 import com.yammer.metrics.core.MetricsRegistry;
 
@@ -40,6 +42,12 @@ public class CodahaleMetricsSystem implements MetricsSystem {
 	@Override
 	public void add(Class<?> context, String prefix, Cache<?, ?> cache) {
 		ReportCacheMetrics reporter = new ReportCacheMetrics(context, prefix, cache);
+		reporter.init();
+	}
+
+	@Override
+	public void add(Class<?> context, String prefix, BoneCPDataSource pool) {
+		ReportConnectionPoolMetrics reporter = new ReportConnectionPoolMetrics(prefix, pool);
 		reporter.init();
 	}
 

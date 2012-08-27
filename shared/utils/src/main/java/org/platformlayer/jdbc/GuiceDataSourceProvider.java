@@ -1,4 +1,4 @@
-package org.platformlayer.guice;
+package org.platformlayer.jdbc;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
@@ -15,9 +15,9 @@ public class GuiceDataSourceProvider implements Provider<DataSource> {
 
 	private final JdbcConfiguration jdbcConfig;
 
-	public GuiceDataSourceProvider(JdbcConfiguration jdbcConfig) {
-		this.jdbcConfig = jdbcConfig;
-	}
+	private final String key;
+
+	final DatabaseStatistics databaseStatistics;
 
 	@Override
 	public DataSource get() {
@@ -48,6 +48,11 @@ public class GuiceDataSourceProvider implements Provider<DataSource> {
 		// Enable statement caching
 		pooledDataSource.setStatementsCacheSize(32);
 
+		// Track statistics
+		pooledDataSource.setStatisticsEnabled(true);
+
+		databaseStatistics.register(key, pooledDataSource);
+
 		log.warn("Building data source for " + jdbcConfig.jdbcUrl);
 
 		return pooledDataSource;
@@ -58,8 +63,11 @@ public class GuiceDataSourceProvider implements Provider<DataSource> {
 	}
 
 	@Inject
-	public GuiceDataSourceProvider(Configuration configuration, @Assisted String key) {
-		this(JdbcConfiguration.build(configuration, key));
+	public GuiceDataSourceProvider(Configuration configuration, DatabaseStatistics databaseStatistics,
+			@Assisted String key) {
+		this.key = key;
+		this.jdbcConfig = JdbcConfiguration.build(configuration, key);
+		this.databaseStatistics = databaseStatistics;
 	}
 
 	public static Provider<DataSource> bind(final String key) {
@@ -69,6 +77,9 @@ public class GuiceDataSourceProvider implements Provider<DataSource> {
 
 			@Override
 			public DataSource get() {
+				if (factory == null) {
+					throw new IllegalStateException("factory is null");
+				}
 				return factory.create(key).get();
 			}
 		};

@@ -2,8 +2,8 @@ package org.platformlayer.auth;
 
 import javax.sql.DataSource;
 
-import org.platformlayer.guice.GuiceDataSourceProvider;
-import org.platformlayer.guice.JdbcGuiceModule;
+import org.platformlayer.jdbc.GuiceDataSourceProvider;
+import org.platformlayer.jdbc.JdbcGuiceModule;
 import org.platformlayer.jdbc.simplejpa.ResultSetMappers;
 import org.platformlayer.jdbc.simplejpa.ResultSetMappersProvider;
 

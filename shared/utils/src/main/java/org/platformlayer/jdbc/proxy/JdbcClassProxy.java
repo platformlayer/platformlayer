@@ -5,13 +5,13 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.sql.Connection;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
 import javax.inject.Provider;
 
 import org.apache.log4j.Logger;
+import org.platformlayer.jdbc.JdbcConnection;
 import org.platformlayer.jdbc.simplejpa.ResultSetMappers;
 import org.platformlayer.metrics.MetricKey;
 import org.platformlayer.metrics.MetricTimer;
@@ -47,7 +47,7 @@ public class JdbcClassProxy<T> {
 		}
 	}
 
-	public T buildHandler(Provider<ResultSetMappers> resultSetMappersProvider, Connection connection) {
+	public T buildHandler(Provider<ResultSetMappers> resultSetMappersProvider, JdbcConnection connection) {
 		JdbcProxyInvocationHandler<T> backend = new JdbcProxyInvocationHandler<T>(resultSetMappersProvider, connection,
 				interfaceType, this);
 

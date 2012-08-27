@@ -6,7 +6,6 @@ import java.security.KeyPair;
 import java.security.PublicKey;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -32,6 +31,7 @@ import org.platformlayer.crypto.OpenSshUtils;
 import org.platformlayer.crypto.PasswordHash;
 import org.platformlayer.crypto.RsaUtils;
 import org.platformlayer.jdbc.DbHelperBase;
+import org.platformlayer.jdbc.JdbcConnection;
 import org.platformlayer.jdbc.JdbcTransaction;
 import org.platformlayer.jdbc.JdbcUtils;
 import org.platformlayer.jdbc.proxy.Query;
@@ -48,7 +48,7 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 	static final Logger log = Logger.getLogger(JdbcUserRepository.class);
 
 	@Inject
-	Provider<Connection> connectionProvider;
+	Provider<JdbcConnection> connectionProvider;
 
 	@Override
 	@JdbcTransaction
@@ -405,7 +405,7 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 		final Queries queries;
 
 		public DbHelper() {
-			super(connectionProvider.get());
+			super(connectionProvider.get().getConnection());
 			this.queries = queryFactory.get(Queries.class);
 		}
 
