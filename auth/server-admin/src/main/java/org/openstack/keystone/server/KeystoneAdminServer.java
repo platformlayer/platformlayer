@@ -14,6 +14,7 @@ import org.platformlayer.WellKnownPorts;
 import org.platformlayer.auth.KeystoneJdbcModule;
 import org.platformlayer.auth.keystone.KeystoneOpsSystemModule;
 import org.platformlayer.auth.server.GuiceAuthenticationConfig;
+import org.platformlayer.cache.CacheModule;
 import org.platformlayer.config.ConfigurationModule;
 import org.platformlayer.metrics.MetricsSystem;
 import org.platformlayer.metrics.client.codahale.CodahaleMetricsModule;
@@ -44,6 +45,7 @@ public class KeystoneAdminServer {
 	public static void main(String[] args) throws Exception {
 		List<Module> modules = Lists.newArrayList();
 		modules.add(new ConfigurationModule());
+		modules.add(new CacheModule());
 		modules.add(new GuiceAuthenticationConfig());
 		modules.add(new KeystoneJdbcModule());
 		modules.add(new KeystoneOpsSystemModule());

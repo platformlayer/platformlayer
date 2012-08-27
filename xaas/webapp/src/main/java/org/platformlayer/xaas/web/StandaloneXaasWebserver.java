@@ -22,6 +22,7 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.openstack.crypto.CertificateAndKey;
 import org.openstack.crypto.KeyStoreUtils;
+import org.platformlayer.cache.CacheModule;
 import org.platformlayer.config.ConfigurationModule;
 import org.platformlayer.crypto.EncryptionStore;
 import org.platformlayer.jdbc.JdbcGuiceModule;
@@ -64,6 +65,7 @@ class StandaloneXaasWebserver {
 			modules.add(new NullMetricsModule());
 			modules.add(new GuiceXaasConfig());
 			modules.add(new ConfigurationModule());
+			modules.add(new CacheModule());
 			modules.add(new JdbcGuiceModule());
 			modules.add(new PlatformLayerServletModule());
 
