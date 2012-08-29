@@ -17,7 +17,7 @@ class InstrumentedInterceptor implements MethodInterceptor {
 		}
 
 		if (annotation != null) {
-			MetricKey metricKey = MetricKey.forMethod(clazz, method);
+			MetricKey metricKey = MetricKey.build(clazz, method);
 			MetricTimer timer = metricsSystem.getTimer(metricKey);
 			if (timer != null) {
 				return new InstrumentedInterceptor(timer);

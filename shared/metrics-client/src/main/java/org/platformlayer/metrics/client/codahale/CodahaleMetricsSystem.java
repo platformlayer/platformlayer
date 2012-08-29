@@ -5,19 +5,19 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.platformlayer.jdbc.ReportConnectionPoolMetrics;
 import org.platformlayer.metrics.DiscoverSingletonMetrics;
 import org.platformlayer.metrics.HasMetrics;
+import org.platformlayer.metrics.MetricHistogram;
 import org.platformlayer.metrics.MetricKey;
+import org.platformlayer.metrics.MetricMeter;
 import org.platformlayer.metrics.MetricTimer;
+import org.platformlayer.metrics.MetricsReporter;
 import org.platformlayer.metrics.MetricsSystem;
 import org.platformlayer.metrics.client.MetricClient;
 import org.platformlayer.metrics.client.PlatformlayerMetricsReporter;
-import org.platformlayer.metrics.client.ReportCacheMetrics;
 
-import com.google.common.cache.Cache;
+import com.google.common.base.Joiner;
 import com.google.inject.Injector;
-import com.jolbox.bonecp.BoneCPDataSource;
 import com.yammer.metrics.core.MetricName;
 import com.yammer.metrics.core.MetricsRegistry;
 
@@ -35,20 +35,12 @@ public class CodahaleMetricsSystem implements MetricsSystem {
 
 	final MetricsRegistry registry;
 
+	final PlatformlayerMetricsReporter reporter;
+
 	public CodahaleMetricsSystem(MetricsRegistry registry) {
 		this.registry = registry;
-	}
 
-	@Override
-	public void add(Class<?> context, String prefix, Cache<?, ?> cache) {
-		ReportCacheMetrics reporter = new ReportCacheMetrics(context, prefix, cache);
-		reporter.init();
-	}
-
-	@Override
-	public void add(Class<?> context, String prefix, BoneCPDataSource pool) {
-		ReportConnectionPoolMetrics reporter = new ReportConnectionPoolMetrics(prefix, pool);
-		reporter.init();
+		this.reporter = PlatformlayerMetricsReporter.enable(10, TimeUnit.SECONDS, metricClient);
 	}
 
 	@Override
@@ -60,9 +52,14 @@ public class CodahaleMetricsSystem implements MetricsSystem {
 
 	@Override
 	public void discoverMetrics(Object o) {
-		if (o instanceof HasMetrics) {
+		if (o instanceof MetricsReporter) {
 			log.debug("Adding metrics from " + o);
-			((HasMetrics) o).addMetrics(this);
+			add((MetricsReporter) o);
+		}
+
+		if (o instanceof HasMetrics) {
+			log.debug("Discovering metrics on" + o);
+			((HasMetrics) o).discoverMetrics(this);
 		} else {
 			log.debug("No metrics discovered on " + o);
 		}
@@ -71,14 +68,39 @@ public class CodahaleMetricsSystem implements MetricsSystem {
 	@Override
 	public void init() {
 		metricsDiscovery.discover();
-
-		PlatformlayerMetricsReporter.enable(10, TimeUnit.SECONDS, metricClient);
 	}
 
 	@Override
 	public MetricTimer getTimer(MetricKey metricKey) {
-		MetricName metricName = new MetricName(metricKey.getGroup(), metricKey.getTypeName(), metricKey.getName());
+		MetricName metricName = toMetricName(metricKey);
 		return new MetricTimerAdapter(registry.newTimer(metricName, TimeUnit.MILLISECONDS, TimeUnit.SECONDS));
 	}
 
+	private MetricName toMetricName(MetricKey metricKey) {
+		Class<?> sourceClass = metricKey.getSourceClass();
+
+		String[] path = metricKey.getPath();
+		String name = Joiner.on('.').join(path);
+
+		return new MetricName(sourceClass, name);
+	}
+
+	@Override
+	public MetricHistogram getHistogram(MetricKey metricKey) {
+		MetricName metricName = toMetricName(metricKey);
+		boolean biased = true;
+		return new MetricHistogramAdapter(registry.newHistogram(metricName, biased));
+	}
+
+	@Override
+	public MetricMeter getCounter(MetricKey metricKey) {
+		MetricName metricName = toMetricName(metricKey);
+		String eventType = "events";
+		return new MetricMeterAdapter(registry.newMeter(metricName, eventType, TimeUnit.SECONDS));
+	}
+
+	@Override
+	public void add(MetricsReporter metricsReporter) {
+		reporter.addReporter(metricsReporter);
+	}
 }

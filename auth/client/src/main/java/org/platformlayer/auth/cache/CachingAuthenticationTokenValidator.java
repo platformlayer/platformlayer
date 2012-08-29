@@ -8,7 +8,9 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 import org.platformlayer.auth.AuthenticationTokenValidator;
 import org.platformlayer.crypto.CertificateUtils;
+import org.platformlayer.metrics.CacheMetricsReporter;
 import org.platformlayer.metrics.HasMetrics;
+import org.platformlayer.metrics.MetricKey;
 import org.platformlayer.metrics.MetricsSystem;
 import org.platformlayer.model.AuthenticationToken;
 import org.platformlayer.model.ProjectAuthorization;
@@ -201,8 +203,9 @@ public class CachingAuthenticationTokenValidator implements AuthenticationTokenV
 	}
 
 	@Override
-	public void addMetrics(MetricsSystem system) {
-		system.add(getClass(), null, cache);
+	public void discoverMetrics(MetricsSystem system) {
+		MetricKey key = MetricKey.build(getClass(), "cache");
+		system.add(new CacheMetricsReporter(key, cache));
 		system.discoverMetrics(inner);
 	}
 }

@@ -6,6 +6,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.log4j.Logger;
+import org.platformlayer.metrics.BoneCpMetricsReporter;
+import org.platformlayer.metrics.MetricKey;
 import org.platformlayer.metrics.MetricsSystem;
 
 import com.google.common.collect.Maps;
@@ -28,7 +30,9 @@ public class DatabaseStatistics {
 			}
 
 			dataSources.put(key, pooledDataSource);
-			metrics.add(DatabaseStatistics.class, key, pooledDataSource);
+
+			MetricKey metricKey = MetricKey.build(DatabaseStatistics.class, key);
+			metrics.add(new BoneCpMetricsReporter(metricKey, pooledDataSource));
 		}
 	}
 

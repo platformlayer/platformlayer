@@ -1,13 +1,6 @@
 package org.platformlayer.metrics;
 
-import com.google.common.cache.Cache;
-import com.jolbox.bonecp.BoneCPDataSource;
-
 public interface MetricsSystem {
-	void add(Class<?> context, String prefix, Cache<?, ?> cache);
-
-	void add(Class<?> context, String prefix, BoneCPDataSource pool);
-
 	void addInjected(Class<?> injected);
 
 	void discoverMetrics(Object o);
@@ -15,4 +8,10 @@ public interface MetricsSystem {
 	void init();
 
 	MetricTimer getTimer(MetricKey metricKey);
+
+	MetricHistogram getHistogram(MetricKey metricKey);
+
+	MetricMeter getCounter(MetricKey metricKey);
+
+	void add(MetricsReporter metricsReporter);
 }

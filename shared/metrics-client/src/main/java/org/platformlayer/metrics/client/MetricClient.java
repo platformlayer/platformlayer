@@ -37,6 +37,7 @@ import org.platformlayer.crypto.EncryptionStore;
 import org.platformlayer.crypto.PublicKeyTrustManager;
 import org.platformlayer.crypto.SimpleClientCertificateKeyManager;
 import org.platformlayer.http.SslHelpers;
+import org.platformlayer.metrics.MetricTreeObject;
 import org.platformlayer.metrics.model.MetricQuery;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.rest.RestClientException;
@@ -75,9 +76,9 @@ public class MetricClient implements Closeable {
 
 	final String project;
 
-	final MetricTree tags;
+	final MetricTreeObject tags;
 
-	public MetricClient(URI metricBaseUrl, String project, MetricTree tags, CertificateAndKey certificateAndKey,
+	public MetricClient(URI metricBaseUrl, String project, MetricTreeObject tags, CertificateAndKey certificateAndKey,
 			List<String> trustKeys) {
 		super();
 		this.metricBaseUrl = metricBaseUrl;
@@ -140,7 +141,7 @@ public class MetricClient implements Closeable {
 	}
 
 	// TODO: Throw on failure??
-	public boolean sendMetrics(MetricTree tree) {
+	public boolean sendMetrics(MetricTreeObject tree) {
 		if (tags != null) {
 			tree.mergeTree(tags);
 		}
@@ -199,13 +200,13 @@ public class MetricClient implements Closeable {
 			for (String filter : query.filters) {
 				int firstEquals = filter.indexOf('=');
 				if (firstEquals == -1) {
-					throw new IllegalArgumentException("Invalid filter: " + filter);
+					uriBuilder.addParameter("has." + filter, "");
+				} else {
+					String key = filter.substring(0, firstEquals);
+					String value = filter.substring(firstEquals + 1);
+
+					uriBuilder.addParameter("filter." + key, value);
 				}
-
-				String key = filter.substring(0, firstEquals);
-				String value = filter.substring(firstEquals + 1);
-
-				uriBuilder.addParameter("filter." + key, value);
 			}
 		}
 
@@ -252,21 +253,21 @@ public class MetricClient implements Closeable {
 
 		String project = configuration.get("metrics.report.project");
 
-		MetricTree tags = new MetricTree();
+		MetricTreeObject tags = new MetricTreeObject(null);
 		Properties tagProperties = configuration.getChildProperties("metrics.report.tags.");
 		copyPropertiesToTree(tagProperties, tags.getSubtree("tags"));
 
 		return build(configuration, encryptionStore, project, tags, certificateAndKey);
 	}
 
-	private static void copyPropertiesToTree(Properties properties, MetricTree dest) {
+	private static void copyPropertiesToTree(Properties properties, MetricTreeObject dest) {
 		for (Entry<Object, Object> entry : properties.entrySet()) {
 			String key = (String) entry.getKey();
 			String value = (String) entry.getValue();
 
 			List<String> tokens = Lists.newArrayList(Splitter.on('.').split(key));
 
-			MetricTree subtree = dest;
+			MetricTreeObject subtree = dest;
 			for (int i = 0; i < tokens.size() - 1; i++) {
 				subtree = subtree.getSubtree(tokens.get(i));
 			}
@@ -278,7 +279,7 @@ public class MetricClient implements Closeable {
 	}
 
 	public static MetricClient build(Configuration configuration, EncryptionStore encryptionStore, String project,
-			MetricTree tags, CertificateAndKey certificateAndKey) throws OpsException {
+			MetricTreeObject tags, CertificateAndKey certificateAndKey) throws OpsException {
 		String metricBaseUrl = configuration.lookup("metrics.report.url", "https://metrics.platformlayer.net:8099/");
 
 		String trustKeysString = configuration.lookup("metrics.report.ssl.keys", null);

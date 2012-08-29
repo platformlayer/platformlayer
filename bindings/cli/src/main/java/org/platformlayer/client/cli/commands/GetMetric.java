@@ -2,6 +2,7 @@ package org.platformlayer.client.cli.commands;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
@@ -11,8 +12,6 @@ import org.platformlayer.client.cli.output.MetricToJsonVisitor;
 import org.platformlayer.metrics.model.MetricDataStream;
 import org.platformlayer.metrics.model.MetricQuery;
 
-import com.google.common.base.Strings;
-
 public class GetMetric extends PlatformLayerCommandRunnerBase {
 	@Argument(index = 0, required = true, usage = "path")
 	public String path;
@@ -21,7 +20,7 @@ public class GetMetric extends PlatformLayerCommandRunnerBase {
 	// public String metricKey;
 
 	@Option(name = "-filter", usage = "Filter for query")
-	public String filter;
+	public List<String> filters;
 
 	public GetMetric() {
 		super("get", "metric");
@@ -33,9 +32,7 @@ public class GetMetric extends PlatformLayerCommandRunnerBase {
 
 		MetricQuery query = new MetricQuery();
 		query.item = getContext().pathToItem(path);
-		if (!Strings.isNullOrEmpty(filter)) {
-			query.filters.add(filter);
-		}
+		query.filters.addAll(filters);
 
 		MetricDataStream dataStream = client.getMetric(query);
 

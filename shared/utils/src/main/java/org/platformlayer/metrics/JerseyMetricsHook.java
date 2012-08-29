@@ -77,7 +77,7 @@ public class JerseyMetricsHook implements ResourceMethodDispatchAdapter {
 
 			if (instrument) {
 				Class<?> clazz = jerseyMethod.getDeclaringResource().getResourceClass();
-				MetricKey metricKey = MetricKey.forMethod(clazz, method);
+				MetricKey metricKey = MetricKey.build(clazz, method);
 
 				MetricTimer timer = metrics.getTimer(metricKey);
 				if (timer != null) {

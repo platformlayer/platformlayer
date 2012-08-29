@@ -3,45 +3,30 @@ package org.platformlayer.metrics;
 import java.lang.reflect.Method;
 
 public class MetricKey {
-	final String group;
-	final String className;
-	final String name;
+	final Class<?> sourceClass;
 
-	public MetricKey(String group, String className, String name) {
+	final String[] path;
+
+	public MetricKey(Class<?> sourceClass, String[] path) {
 		super();
-		this.group = group;
-		this.className = className;
-		this.name = name;
+		this.sourceClass = sourceClass;
+		this.path = path;
 	}
 
-	private static String buildPackageName(Class<?> clazz) {
-		return clazz.getPackage() == null ? "" : clazz.getPackage().getName();
+	public static MetricKey build(Class<?> sourceClass, Method method) {
+		return build(sourceClass, method.getName());
 	}
 
-	private static String buildClassName(Class<?> clazz) {
-		String name = clazz.getSimpleName();
-		name = name.replaceAll("\\$$", "");
-		return name;
+	public static MetricKey build(Class<?> sourceClass, String name) {
+		return new MetricKey(sourceClass, new String[] { name });
 	}
 
-	public static MetricKey forMethod(Class<?> clazz, Method method) {
-		return build(clazz, method.getName());
+	public Class<?> getSourceClass() {
+		return sourceClass;
 	}
 
-	public static MetricKey build(Class<?> clazz, String name) {
-		return new MetricKey(buildPackageName(clazz), buildClassName(clazz), name);
-	}
-
-	public String getTypeName() {
-		return className;
-	}
-
-	public String getGroup() {
-		return group;
-	}
-
-	public String getName() {
-		return name;
+	public String[] getPath() {
+		return path;
 	}
 
 }
