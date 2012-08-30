@@ -31,7 +31,7 @@ public class MetricTreeObject extends MetricTreeBase {
 		}
 	}
 
-	public void addString(String valueName, String value) {
+	public void addString(String key, String value) {
 		MetricTreeBase child = findChild(key);
 		if (child != null) {
 			throw new IllegalStateException();
