@@ -12,10 +12,10 @@ import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.jobs.model.JobData;
 
 public class DoAction extends PlatformLayerCommandRunnerBase {
-	@Argument(index = 0)
+	@Argument(index = 0, usage = "path", required = true)
 	public ItemPath path;
 
-	@Argument(index = 1)
+	@Argument(index = 1, usage = "action", required = true)
 	public CliAction action;
 
 	public DoAction() {
