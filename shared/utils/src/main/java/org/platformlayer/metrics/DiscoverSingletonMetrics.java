@@ -15,7 +15,7 @@ public class DiscoverSingletonMetrics {
 	private static final Logger log = Logger.getLogger(DiscoverSingletonMetrics.class);
 
 	@Inject
-	MetricsSystem metricsSystem;
+	MetricRegistry metricsRegistry;
 
 	@Inject
 	Injector injector;
@@ -28,7 +28,7 @@ public class DiscoverSingletonMetrics {
 				public Void visitEagerSingleton() {
 					log.debug("Found eager singleton: " + binding);
 					Object o = binding.getProvider().get();
-					metricsSystem.discoverMetrics(o);
+					metricsRegistry.discoverMetrics(o);
 					return null;
 				}
 

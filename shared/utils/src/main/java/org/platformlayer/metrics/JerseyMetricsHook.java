@@ -18,7 +18,7 @@ import com.sun.jersey.spi.dispatch.RequestDispatcher;
 @Singleton
 public class JerseyMetricsHook implements ResourceMethodDispatchAdapter {
 	@Inject
-	MetricsSystem metrics;
+	MetricRegistry metrics;
 
 	@Configured
 	boolean instrumentAllMethods = true;

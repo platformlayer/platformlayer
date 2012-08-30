@@ -16,7 +16,7 @@ import org.platformlayer.auth.keystone.KeystoneOpsSystemModule;
 import org.platformlayer.auth.server.GuiceAuthenticationConfig;
 import org.platformlayer.cache.CacheModule;
 import org.platformlayer.config.ConfigurationModule;
-import org.platformlayer.metrics.MetricsSystem;
+import org.platformlayer.metrics.MetricReporter;
 import org.platformlayer.metrics.client.codahale.CodahaleMetricsModule;
 import org.platformlayer.web.SslOption;
 import org.platformlayer.web.WebServerBuilder;
@@ -40,7 +40,7 @@ public class KeystoneAdminServer {
 	Injector injector;
 
 	@Inject
-	MetricsSystem metricsSystem;
+	MetricReporter metricReporter;
 
 	public static void main(String[] args) throws Exception {
 		List<Module> modules = Lists.newArrayList();
@@ -78,7 +78,7 @@ public class KeystoneAdminServer {
 
 		this.jettyServer = serverBuilder.start();
 
-		metricsSystem.init();
+		metricReporter.start();
 	}
 
 	public void stop() throws Exception {

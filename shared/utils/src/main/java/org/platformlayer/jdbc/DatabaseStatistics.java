@@ -8,7 +8,7 @@ import javax.inject.Singleton;
 import org.apache.log4j.Logger;
 import org.platformlayer.metrics.BoneCpMetricsReporter;
 import org.platformlayer.metrics.MetricKey;
-import org.platformlayer.metrics.MetricsSystem;
+import org.platformlayer.metrics.MetricRegistry;
 
 import com.google.common.collect.Maps;
 import com.jolbox.bonecp.BoneCPDataSource;
@@ -21,7 +21,7 @@ public class DatabaseStatistics {
 	final Map<String, BoneCPDataSource> dataSources = Maps.newHashMap();
 
 	@Inject
-	MetricsSystem metrics;
+	MetricRegistry metrics;
 
 	public void register(String key, BoneCPDataSource pooledDataSource) {
 		synchronized (dataSources) {

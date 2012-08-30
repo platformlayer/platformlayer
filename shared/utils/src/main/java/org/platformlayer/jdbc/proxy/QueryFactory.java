@@ -5,7 +5,7 @@ import javax.inject.Provider;
 
 import org.platformlayer.jdbc.JdbcConnection;
 import org.platformlayer.jdbc.simplejpa.ResultSetMappers;
-import org.platformlayer.metrics.MetricsSystem;
+import org.platformlayer.metrics.MetricRegistry;
 
 public class QueryFactory {
 	@Inject
@@ -15,7 +15,7 @@ public class QueryFactory {
 	Provider<ResultSetMappers> resultSetMappersProvider;
 
 	@Inject
-	MetricsSystem metricsSystem;
+	MetricRegistry metricsSystem;
 
 	public <T> T get(Class<T> interfaceType) {
 		JdbcClassProxy<T> proxy = JdbcClassProxy.get(metricsSystem, interfaceType);

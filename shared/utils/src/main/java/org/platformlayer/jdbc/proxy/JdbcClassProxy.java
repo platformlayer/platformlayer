@@ -14,8 +14,8 @@ import org.apache.log4j.Logger;
 import org.platformlayer.jdbc.JdbcConnection;
 import org.platformlayer.jdbc.simplejpa.ResultSetMappers;
 import org.platformlayer.metrics.MetricKey;
+import org.platformlayer.metrics.MetricRegistry;
 import org.platformlayer.metrics.MetricTimer;
-import org.platformlayer.metrics.MetricsSystem;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -24,17 +24,17 @@ public class JdbcClassProxy<T> {
 	@SuppressWarnings("unused")
 	private static final Logger log = Logger.getLogger(JdbcClassProxy.class);
 
-	final MetricsSystem metricsSystem;
+	final MetricRegistry metricsSystem;
 	final Class<T> interfaceType;
 
-	private JdbcClassProxy(MetricsSystem metricsSystem, Class<T> interfaceType) {
+	private JdbcClassProxy(MetricRegistry metricsSystem, Class<T> interfaceType) {
 		this.metricsSystem = metricsSystem;
 		this.interfaceType = interfaceType;
 	}
 
 	static final Cache<Class, JdbcClassProxy> cache = CacheBuilder.newBuilder().build();
 
-	public static <T> JdbcClassProxy<T> get(final MetricsSystem metricsSystem, final Class<T> interfaceType) {
+	public static <T> JdbcClassProxy<T> get(final MetricRegistry metricsSystem, final Class<T> interfaceType) {
 		try {
 			return cache.get(interfaceType, new Callable<JdbcClassProxy>() {
 				@Override

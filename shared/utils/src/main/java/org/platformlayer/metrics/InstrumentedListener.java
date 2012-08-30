@@ -10,9 +10,9 @@ import com.google.inject.spi.TypeEncounter;
 import com.google.inject.spi.TypeListener;
 
 public class InstrumentedListener implements TypeListener {
-	final MetricsSystem metricsSystem;
+	final MetricRegistry metricsSystem;
 
-	public InstrumentedListener(MetricsSystem metricsSystem) {
+	public InstrumentedListener(MetricRegistry metricsSystem) {
 		this.metricsSystem = metricsSystem;
 	}
 

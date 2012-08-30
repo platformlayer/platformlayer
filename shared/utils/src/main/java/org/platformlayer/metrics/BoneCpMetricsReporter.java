@@ -8,7 +8,7 @@ import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPDataSource;
 import com.jolbox.bonecp.Statistics;
 
-public class BoneCpMetricsReporter implements MetricsReporter {
+public class BoneCpMetricsReporter implements MetricsSource {
 	@SuppressWarnings("unused")
 	private static final Logger log = Logger.getLogger(BoneCpMetricsReporter.class);
 

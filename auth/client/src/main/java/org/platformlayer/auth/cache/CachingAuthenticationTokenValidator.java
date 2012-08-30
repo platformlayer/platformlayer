@@ -11,7 +11,7 @@ import org.platformlayer.crypto.CertificateUtils;
 import org.platformlayer.metrics.CacheMetricsReporter;
 import org.platformlayer.metrics.HasMetrics;
 import org.platformlayer.metrics.MetricKey;
-import org.platformlayer.metrics.MetricsSystem;
+import org.platformlayer.metrics.MetricRegistry;
 import org.platformlayer.model.AuthenticationToken;
 import org.platformlayer.model.ProjectAuthorization;
 
@@ -203,7 +203,7 @@ public class CachingAuthenticationTokenValidator implements AuthenticationTokenV
 	}
 
 	@Override
-	public void discoverMetrics(MetricsSystem system) {
+	public void discoverMetrics(MetricRegistry system) {
 		MetricKey key = MetricKey.build(getClass(), "cache");
 		system.add(new CacheMetricsReporter(key, cache));
 		system.discoverMetrics(inner);

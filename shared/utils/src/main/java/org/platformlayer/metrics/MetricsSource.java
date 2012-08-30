@@ -1,7 +1,5 @@
 package org.platformlayer.metrics;
 
-public interface MetricsReporter {
-
+public interface MetricsSource {
 	void addMetrics(MetricTreeObject tree);
-
 }

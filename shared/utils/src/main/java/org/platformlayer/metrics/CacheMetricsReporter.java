@@ -5,7 +5,7 @@ import org.apache.log4j.Logger;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheStats;
 
-public class CacheMetricsReporter implements MetricsReporter {
+public class CacheMetricsReporter implements MetricsSource {
 	@SuppressWarnings("unused")
 	private static final Logger log = Logger.getLogger(CacheMetricsReporter.class);
 

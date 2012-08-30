@@ -2,7 +2,8 @@ package org.platformlayer.metrics.client.codahale;
 
 import org.platformlayer.metrics.InstrumentedListener;
 import org.platformlayer.metrics.JerseyMetricsHook;
-import org.platformlayer.metrics.MetricsSystem;
+import org.platformlayer.metrics.MetricRegistry;
+import org.platformlayer.metrics.MetricReporter;
 import org.platformlayer.web.InstrumentedJettyWebServerBuilder;
 import org.platformlayer.web.WebServerBuilder;
 
@@ -33,9 +34,10 @@ public class CodahaleMetricsModule extends AbstractModule {
 	protected void configure() {
 		final MetricsRegistry metricsRegistry = createMetricsRegistry();
 
-		CodahaleMetricsSystem metricsSystem = new CodahaleMetricsSystem(metricsRegistry);
-		requestInjection(metricsSystem);
-		bind(MetricsSystem.class).toInstance(metricsSystem);
+		CodahaleMetricRegistry registry = new CodahaleMetricRegistry(metricsRegistry);
+		bind(MetricRegistry.class).toInstance(registry);
+
+		bind(MetricReporter.class).to(CodahaleMetricsReporter.class).asEagerSingleton();
 
 		bind(MetricsRegistry.class).toInstance(metricsRegistry);
 		bind(HealthCheckRegistry.class).toInstance(createHealthCheckRegistry());
@@ -54,7 +56,7 @@ public class CodahaleMetricsModule extends AbstractModule {
 		// bindListener(Matchers.any(), new GaugeListener(metricsRegistry));
 		// bindListener(Matchers.any(), new ExceptionMeteredListener(metricsRegistry));
 
-		bindListener(Matchers.any(), new InstrumentedListener(metricsSystem));
+		bindListener(Matchers.any(), new InstrumentedListener(registry));
 
 		if (ClasspathHelpers.isJettyOnClasspath()) {
 			bind(WebServerBuilder.class).to(InstrumentedJettyWebServerBuilder.class);

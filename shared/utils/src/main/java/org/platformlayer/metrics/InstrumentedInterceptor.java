@@ -10,7 +10,7 @@ import org.aopalliance.intercept.MethodInvocation;
  * was provided), and which times the execution of the annotated method.
  */
 class InstrumentedInterceptor implements MethodInterceptor {
-	static MethodInterceptor forMethod(MetricsSystem metricsSystem, Class<?> clazz, Method method) {
+	static MethodInterceptor forMethod(MetricRegistry metricsSystem, Class<?> clazz, Method method) {
 		Instrumented annotation = method.getAnnotation(Instrumented.class);
 		if (annotation == null) {
 			annotation = clazz.getAnnotation(Instrumented.class);

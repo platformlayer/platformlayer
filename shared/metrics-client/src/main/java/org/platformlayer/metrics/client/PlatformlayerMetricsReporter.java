@@ -2,17 +2,16 @@ package org.platformlayer.metrics.client;
 
 import java.io.IOException;
 import java.lang.Thread.State;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.concurrent.TimeUnit;
 
+import org.platformlayer.metrics.MetricRegistry;
 import org.platformlayer.metrics.MetricTreeObject;
-import org.platformlayer.metrics.MetricsReporter;
+import org.platformlayer.metrics.MetricsSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
 import com.yammer.metrics.Metrics;
 import com.yammer.metrics.core.Clock;
 import com.yammer.metrics.core.Counter;
@@ -43,33 +42,27 @@ public class PlatformlayerMetricsReporter extends AbstractPollingReporter implem
 
 	Long previousRun = null;
 
-	final List<MetricsReporter> reporters = Lists.newArrayList();
+	private final MetricRegistry registry;
 
-	public static PlatformlayerMetricsReporter enable(long period, TimeUnit unit, MetricClient metricSender) {
-		return enable(Metrics.defaultRegistry(), period, unit, metricSender);
+	public static class Builder {
+		public MetricsRegistry metricsRegistry = Metrics.defaultRegistry();
+		public String prefix = null;
+		public MetricPredicate predicate = MetricPredicate.ALL;
+		public MetricClient metricSender;
+		public Clock clock = Clock.defaultClock();
+		public VirtualMachineMetrics vm = VirtualMachineMetrics.getInstance();
+		public String name = "platformlayer-reporter";
+		public MetricRegistry registry;
+
+		public int period = 60;
+		public TimeUnit periodUnit = TimeUnit.SECONDS;
+
 	}
 
-	public static PlatformlayerMetricsReporter enable(MetricsRegistry metricsRegistry, long period, TimeUnit unit,
-			MetricClient metricSender) {
-		return enable(metricsRegistry, period, unit, metricSender, null);
-	}
-
-	public static PlatformlayerMetricsReporter enable(long period, TimeUnit unit, MetricClient metricSender,
-			String prefix) {
-		return enable(Metrics.defaultRegistry(), period, unit, metricSender, prefix);
-	}
-
-	public static PlatformlayerMetricsReporter enable(MetricsRegistry metricsRegistry, long period, TimeUnit unit,
-			MetricClient metricSender, String prefix) {
-		return enable(metricsRegistry, period, unit, metricSender, prefix, MetricPredicate.ALL);
-	}
-
-	public static PlatformlayerMetricsReporter enable(MetricsRegistry metricsRegistry, long period, TimeUnit unit,
-			MetricClient metricSender, String prefix, MetricPredicate predicate) {
+	public static PlatformlayerMetricsReporter start(Builder builder) {
 		try {
-			final PlatformlayerMetricsReporter reporter = new PlatformlayerMetricsReporter(metricsRegistry, prefix,
-					predicate, metricSender, Clock.defaultClock());
-			reporter.start(period, unit);
+			final PlatformlayerMetricsReporter reporter = new PlatformlayerMetricsReporter(builder);
+			reporter.start(builder.period, builder.periodUnit);
 			return reporter;
 		} catch (Exception e) {
 			LOG.error("Error creating/starting PlatformLayer reporter:", e);
@@ -77,34 +70,15 @@ public class PlatformlayerMetricsReporter extends AbstractPollingReporter implem
 		}
 	}
 
-	public PlatformlayerMetricsReporter(MetricClient metricSender, String prefix) throws IOException {
-		this(Metrics.defaultRegistry(), metricSender, prefix);
-	}
+	public PlatformlayerMetricsReporter(Builder builder) throws IOException {
+		super(builder.metricsRegistry, builder.name);
+		this.metricSender = builder.metricSender;
+		this.vm = builder.vm;
 
-	public PlatformlayerMetricsReporter(MetricsRegistry metricsRegistry, MetricClient metricSender, String prefix)
-			throws IOException {
-		this(metricsRegistry, prefix, MetricPredicate.ALL, metricSender, Clock.defaultClock());
-	}
+		this.clock = builder.clock;
 
-	public PlatformlayerMetricsReporter(MetricsRegistry metricsRegistry, String prefix, MetricPredicate predicate,
-			MetricClient metricSender, Clock clock) throws IOException {
-		this(metricsRegistry, prefix, predicate, metricSender, clock, VirtualMachineMetrics.getInstance());
-	}
-
-	public PlatformlayerMetricsReporter(MetricsRegistry metricsRegistry, String prefix, MetricPredicate predicate,
-			MetricClient metricSender, Clock clock, VirtualMachineMetrics vm) throws IOException {
-		this(metricsRegistry, prefix, predicate, metricSender, clock, vm, "platformlayer-reporter");
-	}
-
-	public PlatformlayerMetricsReporter(MetricsRegistry metricsRegistry, String prefix, MetricPredicate predicate,
-			MetricClient metricSender, Clock clock, VirtualMachineMetrics vm, String name) throws IOException {
-		super(metricsRegistry, name);
-		this.metricSender = metricSender;
-		this.vm = vm;
-
-		this.clock = clock;
-
-		this.predicate = predicate;
+		this.predicate = builder.predicate;
+		this.registry = builder.registry;
 	}
 
 	@Override
@@ -126,7 +100,7 @@ public class PlatformlayerMetricsReporter extends AbstractPollingReporter implem
 		}
 		addCodahaleMetrics(tree);
 
-		for (MetricsReporter reporter : reporters) {
+		for (MetricsSource reporter : registry.getAdditionalSources()) {
 			reporter.addMetrics(tree);
 		}
 
@@ -307,7 +281,4 @@ public class PlatformlayerMetricsReporter extends AbstractPollingReporter implem
 		}
 	}
 
-	public void addReporter(MetricsReporter metricsReporter) {
-		reporters.add(metricsReporter);
-	}
 }
