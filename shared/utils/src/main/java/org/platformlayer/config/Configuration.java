@@ -116,7 +116,7 @@ public class Configuration {
 		}
 	}
 
-	private File getBasePath() {
+	public File getBasePath() {
 		return basePath;
 	}
 

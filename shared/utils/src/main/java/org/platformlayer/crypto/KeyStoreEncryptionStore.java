@@ -108,7 +108,7 @@ public class KeyStoreEncryptionStore implements EncryptionStore {
 		File keystoreFile = configuration.lookupFile("keystore", null);
 
 		if (keystoreFile == null) {
-			keystoreFile = new File("keystore.jks");
+			keystoreFile = new File(configuration.getBasePath(), "keystore.jks");
 			if (!keystoreFile.exists()) {
 				log.warn("No keystore specified (or found); starting with an empty keystore");
 
