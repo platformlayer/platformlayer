@@ -108,6 +108,10 @@ public abstract class StandardTemplateData implements TemplateDataSource {
 		metricsManager.addConfigurationProperties(getModel().getKey(), properties);
 	}
 
+	public boolean shouldCreateKeystore() {
+		return true;
+	}
+
 	// public String getDatabaseName() {
 	// return "main";
 	// }

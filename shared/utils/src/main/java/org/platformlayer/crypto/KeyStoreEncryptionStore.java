@@ -87,26 +87,43 @@ public class KeyStoreEncryptionStore implements EncryptionStore {
 	}
 
 	private static KeyStoreEncryptionStore build(File keystoreFile, String keystoreSecret) {
+		KeyStore keyStore;
+
 		if (!keystoreFile.exists()) {
 			throw new IllegalStateException("Keystore not found: " + keystoreFile.getAbsolutePath());
-		}
-
-		KeyStore keyStore;
-		try {
-			keyStore = KeyStoreUtils.load(keystoreFile, keystoreSecret);
-		} catch (GeneralSecurityException e) {
-			throw new IllegalStateException("Error loading keystore", e);
-		} catch (IOException e) {
-			throw new IllegalStateException("Error loading keystore", e);
+		} else {
+			try {
+				keyStore = KeyStoreUtils.load(keystoreFile, keystoreSecret);
+			} catch (GeneralSecurityException e) {
+				throw new IllegalStateException("Error loading keystore", e);
+			} catch (IOException e) {
+				throw new IllegalStateException("Error loading keystore", e);
+			}
 		}
 
 		return new KeyStoreEncryptionStore(keyStore);
 	}
 
 	public static EncryptionStore build(Configuration configuration) {
-		File keystoreFile = configuration.lookupFile("keystore", "keystore.jks");
-		String secret = configuration.lookup("keystore.password", KeyStoreUtils.DEFAULT_KEYSTORE_SECRET);
+		File keystoreFile = configuration.lookupFile("keystore", null);
 
+		if (keystoreFile == null) {
+			keystoreFile = new File("keystore.jks");
+			if (!keystoreFile.exists()) {
+				log.warn("No keystore specified (or found); starting with an empty keystore");
+
+				try {
+					KeyStore keyStore = KeyStoreUtils.createEmpty(KeyStoreUtils.DEFAULT_KEYSTORE_SECRET);
+					return new KeyStoreEncryptionStore(keyStore);
+				} catch (GeneralSecurityException e) {
+					throw new IllegalStateException("Error creating keystore", e);
+				} catch (IOException e) {
+					throw new IllegalStateException("Error creating keystore", e);
+				}
+			}
+		}
+
+		String secret = configuration.lookup("keystore.password", KeyStoreUtils.DEFAULT_KEYSTORE_SECRET);
 		return build(keystoreFile, secret);
 	}
 }

@@ -65,12 +65,12 @@ public abstract class StandardServiceInstance extends OpsTreeBase {
 			service.matchExecutableName = template.getMatchExecutableName();
 		}
 
-		if (template.shouldCreateSslKey()) {
+		if (template.shouldCreateKeystore()) {
 			ManagedDirectory configDir = findDirectory(template.getConfigDir());
 
 			File keystoreFile = template.getKeystoreFile();
 
-			{
+			if (template.shouldCreateSslKey()) {
 				ManagedKeystore httpsKey = configDir.addChild(ManagedKeystore.class);
 				httpsKey.path = keystoreFile;
 				httpsKey.tagWithPublicKeys = template.getModel();
@@ -78,7 +78,6 @@ public abstract class StandardServiceInstance extends OpsTreeBase {
 				httpsKey.key = template.findSslKey();
 			}
 
-			// TODO: Should we always call addExtraKeys?
 			addExtraKeys(configDir, keystoreFile);
 		}
 	}

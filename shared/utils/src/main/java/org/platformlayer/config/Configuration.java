@@ -105,6 +105,10 @@ public class Configuration {
 
 	public File lookupFile(String key, String defaultPath) {
 		String value = lookup(key, defaultPath);
+		if (value == null) {
+			assert defaultPath == null;
+			return null;
+		}
 		if (value.startsWith("/")) {
 			return new File(value);
 		} else {

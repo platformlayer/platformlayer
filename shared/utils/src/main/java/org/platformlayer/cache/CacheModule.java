@@ -10,6 +10,5 @@ public class CacheModule extends AbstractModule {
 		CacheInterceptor cacheInterceptor = new CacheInterceptor();
 
 		bindInterceptor(Matchers.any(), Matchers.annotatedWith(Memoize.class), cacheInterceptor);
-
 	}
 }
