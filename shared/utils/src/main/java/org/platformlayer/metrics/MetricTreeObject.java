@@ -142,4 +142,8 @@ public class MetricTreeObject extends MetricTreeBase {
 		}
 	}
 
+	public boolean isEmpty() {
+		return children.isEmpty();
+	}
+
 }

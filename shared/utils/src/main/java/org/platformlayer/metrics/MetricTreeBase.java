@@ -83,6 +83,10 @@ public abstract class MetricTreeBase {
 				child.accept(visitor);
 			}
 		}
+
+		public void add(MetricTreeBase item) {
+			items.add(item);
+		}
 	}
 
 	protected String sanitizeName(MetricName name) {
