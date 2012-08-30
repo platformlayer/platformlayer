@@ -13,4 +13,8 @@ public class ClasspathHelpers {
 	public static boolean isJerseyOnClasspath() {
 		return isOnClasspath("com.sun.jersey.spi.container.ResourceMethodDispatchAdapter");
 	}
+
+	public static boolean isJettyOnClasspath() {
+		return isOnClasspath("org.eclipse.jetty.server.Server");
+	}
 }

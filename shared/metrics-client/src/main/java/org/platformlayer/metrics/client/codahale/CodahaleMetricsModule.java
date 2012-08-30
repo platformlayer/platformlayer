@@ -56,7 +56,9 @@ public class CodahaleMetricsModule extends AbstractModule {
 
 		bindListener(Matchers.any(), new InstrumentedListener(metricsSystem));
 
-		bind(WebServerBuilder.class).to(InstrumentedJettyWebServerBuilder.class);
+		if (ClasspathHelpers.isJettyOnClasspath()) {
+			bind(WebServerBuilder.class).to(InstrumentedJettyWebServerBuilder.class);
+		}
 	}
 
 	/**
