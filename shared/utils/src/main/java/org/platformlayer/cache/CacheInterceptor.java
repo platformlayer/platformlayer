@@ -18,6 +18,8 @@ public class CacheInterceptor implements MethodInterceptor {
 
 	final Cache<Method, CacheStore> caches = CacheBuilder.newBuilder().build();
 
+	static final Object CACHED_NULL = new Object();
+
 	static class CacheStore {
 		private final Method method;
 
@@ -55,11 +57,16 @@ public class CacheInterceptor implements MethodInterceptor {
 			log.info(" this = " + cacheKey + " equals=" + cacheKey.equals(entry.getKey()));
 		}
 
-		return cacheStore.cache.get(cacheKey, new Callable<Object>() {
+		Object v = cacheStore.cache.get(cacheKey, new Callable<Object>() {
 			@Override
 			public Object call() throws Exception {
 				try {
-					return invocation.proceed();
+					Object ret = invocation.proceed();
+					if (ret == null) {
+						// Guice cache can't cache nulls, so return a marker instead
+						return CACHED_NULL;
+					}
+					return ret;
 				} catch (Exception e) {
 					throw e;
 				} catch (Throwable e) {
@@ -67,5 +74,11 @@ public class CacheInterceptor implements MethodInterceptor {
 				}
 			}
 		});
+
+		if (v == CACHED_NULL) {
+			v = null;
+		}
+
+		return v;
 	}
 }
