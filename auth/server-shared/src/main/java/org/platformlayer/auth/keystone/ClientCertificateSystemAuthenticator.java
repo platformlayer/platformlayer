@@ -44,8 +44,7 @@ public class ClientCertificateSystemAuthenticator implements SystemAuthenticator
 			throw new AuthenticatorException("Error while authenticating user", e);
 		}
 
-		String publicKeyHex = head.publicKeyHash;
-		log.debug("Authentication failed - public key not recognized: " + publicKeyHex);
+		log.debug("Authentication failed - public key not recognized: " + publicKey);
 
 		return auth;
 	}

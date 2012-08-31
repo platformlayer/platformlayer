@@ -39,7 +39,7 @@ public class RootResource extends PlatformlayerAuthResourceBase {
 				return;
 			}
 
-			X509Certificate head = certChain[0];
+			CertificateInfo head = chain.certificates.get(0);
 			log.debug("Certificate authentication request failed for " + head);
 		}
 

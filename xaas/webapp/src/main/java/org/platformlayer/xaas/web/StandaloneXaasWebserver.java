@@ -75,6 +75,7 @@ class StandaloneXaasWebserver {
 
 			// Temporary hack
 			if (args.length != 0) {
+				log.warn("Insert WAR onto root: " + args[0]);
 				File rootWar = new File(args[0]);
 				server.wars.put("/", rootWar);
 			}

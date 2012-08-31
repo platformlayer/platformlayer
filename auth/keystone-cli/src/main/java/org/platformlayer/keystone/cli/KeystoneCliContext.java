@@ -20,6 +20,7 @@ import org.platformlayer.config.ConfigurationModule;
 import org.platformlayer.crypto.CertificateReader;
 import org.platformlayer.keystone.cli.commands.KeystoneCommandRegistry;
 import org.platformlayer.keystone.cli.formatters.KeystoneFormatterRegistry;
+import org.platformlayer.metrics.NullMetricsModule;
 import org.platformlayer.ops.OpsException;
 
 import com.fathomdb.cli.CliContextBase;
@@ -49,6 +50,7 @@ public class KeystoneCliContext extends CliContextBase {
 
 		modules.add(new ConfigurationModule(configuration));
 		modules.add(new KeystoneJdbcModule());
+		modules.add(new NullMetricsModule());
 
 		this.injector = Guice.createInjector(modules);
 	}
