@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.auth.keystone.KeystoneUserAuthenticator;
 import org.platformlayer.auth.services.RegistrationService;
+import org.platformlayer.web.HttpUtils;
 
 public class PlatformlayerAuthResourceBase {
 	static final Logger log = Logger.getLogger(PlatformlayerAuthResourceBase.class);
@@ -56,11 +57,7 @@ public class PlatformlayerAuthResourceBase {
 	}
 
 	protected X509Certificate[] getCertificateChain() {
-		X509Certificate[] certChain = (X509Certificate[]) request.getAttribute("javax.servlet.request.X509Certificate");
-		if (certChain == null || certChain.length == 0) {
-			return null;
-		}
-		return certChain;
+		return HttpUtils.getCertificateChain(request);
 	}
 
 }

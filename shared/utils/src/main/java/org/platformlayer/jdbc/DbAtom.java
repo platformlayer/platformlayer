@@ -15,7 +15,7 @@ public class DbAtom<T> {
 			Class<?> valueClass = value.getClass();
 			String tableName = getTableName(valueClass);
 			String key = ((StringWrapper) value).getKey();
-			code = AtomHelpers.getKey(connection, tableName, key);
+			code = AtomHelpers.getCode(connection, tableName, key);
 		}
 		return code;
 	}
@@ -40,7 +40,7 @@ public class DbAtom<T> {
 
 	protected static String mapCodeToKey(Connection connection, Class<?> clazz, int model) throws SQLException {
 		String tableName = getTableName(clazz);
-		return AtomHelpers.mapCodeToKey(connection, tableName, model);
+		return AtomHelpers.getValue(connection, tableName, model);
 	}
 
 	protected static <T> int mapKeyToCode(Connection connection, T t) throws SQLException {

@@ -7,7 +7,7 @@ import java.sql.SQLException;
 
 public class AtomHelpers {
 
-	public static int getKey(Connection connection, String tableName, String value) throws SQLException {
+	public static int getCode(Connection connection, String tableName, String value) throws SQLException {
 		// TODO: Caching (at least micro-caching)??
 		while (true) {
 			{
@@ -42,7 +42,7 @@ public class AtomHelpers {
 		}
 	}
 
-	public static String mapCodeToKey(Connection connection, String tableName, int id) throws SQLException {
+	public static String getValue(Connection connection, String tableName, int id) throws SQLException {
 		// TODO: Caching (at least micro-caching)??
 		String sql = "SELECT key FROM " + tableName + " WHERE id=?";
 

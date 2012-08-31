@@ -11,6 +11,10 @@
 
   <xs:element name="certificateChainInfo" type="tns:certificateChainInfo"/>
 
+  <xs:element name="checkServiceAccessRequest" type="tns:checkServiceAccessRequest"/>
+
+  <xs:element name="checkServiceAccessResponse" type="tns:checkServiceAccessResponse"/>
+
   <xs:element name="registrationRequest" type="tns:registrationRequest"/>
 
   <xs:element name="registrationResponse" type="tns:registrationResponse"/>
@@ -70,6 +74,26 @@
     </xs:sequence>
   </xs:complexType>
 
+  <xs:complexType name="checkServiceAccessRequest">
+    <xs:sequence>
+      <xs:element name="chain" type="tns:certificateChainInfo" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="certificateChainInfo">
+    <xs:sequence>
+      <xs:element name="certificates" type="tns:certificateInfo" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="certificateInfo">
+    <xs:sequence>
+      <xs:element name="publicKeyHash" type="xs:string" minOccurs="0"/>
+      <xs:element name="publicKey" type="xs:string" minOccurs="0"/>
+      <xs:element name="subjectDN" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
   <xs:complexType name="roleList">
     <xs:sequence>
       <xs:element name="role" type="tns:role" minOccurs="0" maxOccurs="unbounded"/>
@@ -83,21 +107,15 @@
     </xs:sequence>
   </xs:complexType>
 
+  <xs:complexType name="checkServiceAccessResponse">
+    <xs:sequence>
+      <xs:element name="serviceAccount" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
   <xs:complexType name="signCertificateResponse">
     <xs:sequence>
       <xs:element name="certificates" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
-    </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="certificateChainInfo">
-    <xs:sequence>
-      <xs:element name="certificates" type="tns:certificateInfo" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
-    </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="certificateInfo">
-    <xs:sequence>
-      <xs:element name="publicKeyHash" type="xs:string" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 

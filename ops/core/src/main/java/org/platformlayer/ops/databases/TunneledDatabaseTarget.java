@@ -124,6 +124,30 @@ public class TunneledDatabaseTarget extends DatabaseTarget {
 	@Override
 	public boolean createDatabase(String databaseName) throws OpsException {
 		try {
+			String sql = "SELECT 1";
+
+			execute((SshOpsTarget) target, username, password, databaseName, sql, sql);
+			return false;
+		} catch (SQLException e) {
+			String sqlState = e.getSQLState();
+			// if (execution.getExitCode() == 1 && execution.getStdErr().contains("already exists")) {
+			// log.info("Database already exists");
+			// return;
+			// }
+
+			if (Objects.equal(sqlState, "WHATISTHISCODE")) {
+				log.info("Database does not already exist");
+			} else {
+				// if (Objects.equal(sqlState, "42P04")) {
+				// log.info("Database already exists");
+				// return false;
+				// }
+				log.info("Unknown code: " + sqlState);
+				throw new OpsException("Error checking if database exists", e);
+			}
+		}
+
+		try {
 			String sql = "CREATE DATABASE " + databaseName;
 			String maskedSql = sql;
 
@@ -148,6 +172,7 @@ public class TunneledDatabaseTarget extends DatabaseTarget {
 				log.info("Database already exists");
 				return false;
 			}
+			log.info("Unknown code: " + sqlState);
 			throw new OpsException("Error creating database", e);
 		}
 	}

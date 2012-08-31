@@ -1,5 +1,7 @@
 package org.platformlayer.web;
 
+import java.security.cert.X509Certificate;
+
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
@@ -13,6 +15,9 @@ import org.platformlayer.model.AuthenticationCredentials;
 public class ResourceBase {
 	@Inject
 	protected ObjectInjector objectInjector;
+
+	@Context
+	protected HttpServletRequest request;
 
 	public static final String JSON = javax.ws.rs.core.MediaType.APPLICATION_JSON;
 	public static final String XML = javax.ws.rs.core.MediaType.APPLICATION_XML;
@@ -91,4 +96,8 @@ public class ResourceBase {
 	// HttpServletRequest request = getRequest();
 	// return TypedMap.get(request);
 	// }
+
+	protected X509Certificate[] getCertificateChain() {
+		return HttpUtils.getCertificateChain(request);
+	}
 }

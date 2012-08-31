@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import org.eclipse.jetty.server.Server;
 import org.openstack.keystone.resources.admin.KeychainResource;
 import org.openstack.keystone.resources.admin.PkiResource;
+import org.openstack.keystone.resources.admin.ServicesResource;
 import org.openstack.keystone.resources.admin.TokensResource;
 import org.platformlayer.WellKnownPorts;
 import org.platformlayer.auth.KeystoneJdbcModule;
@@ -56,6 +57,7 @@ public class KeystoneAdminServer {
 				bind(TokensResource.class);
 				bind(KeychainResource.class);
 				bind(PkiResource.class);
+				bind(ServicesResource.class);
 
 				Map<String, String> params = Maps.newHashMap();
 				params.put(PackagesResourceConfig.PROPERTY_PACKAGES,

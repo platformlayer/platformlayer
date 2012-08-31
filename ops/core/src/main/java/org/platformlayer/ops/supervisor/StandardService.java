@@ -12,15 +12,14 @@ import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.OpsProvider;
 import org.platformlayer.ops.tree.OpsTreeBase;
-
-import com.google.inject.util.Providers;
 
 public class StandardService extends OpsTreeBase {
 	public PlatformLayerKey owner;
 
 	public String key;
-	public Provider<Command> command;
+	public OpsProvider<Command> command;
 	public Provider<Map<String, String>> environment;
 	public File instanceDir;
 	public String user;
@@ -59,6 +58,6 @@ public class StandardService extends OpsTreeBase {
 	}
 
 	public void setCommand(Command command) {
-		this.command = Providers.of(command);
+		this.command = OpsProvider.of(command);
 	}
 }

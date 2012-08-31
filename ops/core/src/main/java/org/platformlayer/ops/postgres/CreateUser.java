@@ -32,6 +32,7 @@ public class CreateUser {
 					// if (execution.getExitCode() == 1 && execution.getStdErr().contains("already exists")) {
 					log.info("User already exists");
 				} else {
+					log.info("Unknown code: " + sqlState);
 					throw new OpsException("Error creating user", e);
 				}
 			}
@@ -39,10 +40,11 @@ public class CreateUser {
 			try {
 				db.execute(grant);
 			} catch (SQLException e) {
-				// String sqlState = e.getSQLState();
+				String sqlState = e.getSQLState();
 				// if (Objects.equal(sqlState, "12345")) {
 				// log.info("User already exists");
 				// } else {
+				log.info("Unknown code: " + sqlState);
 				throw new OpsException("Error granting privileges", e);
 				// }
 			}

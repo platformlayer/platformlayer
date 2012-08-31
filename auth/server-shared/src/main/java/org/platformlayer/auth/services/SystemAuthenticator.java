@@ -1,10 +1,9 @@
 package org.platformlayer.auth.services;
 
-import java.security.cert.X509Certificate;
-
 import org.platformlayer.auth.AuthenticatorException;
-import org.platformlayer.auth.ServiceAccount;
+import org.platformlayer.auth.ServiceAccountEntity;
+import org.platformlayer.auth.model.CertificateChainInfo;
 
 public interface SystemAuthenticator {
-	ServiceAccount authenticate(X509Certificate[] certChain) throws AuthenticatorException;
+	ServiceAccountEntity authenticate(CertificateChainInfo certChain) throws AuthenticatorException;
 }

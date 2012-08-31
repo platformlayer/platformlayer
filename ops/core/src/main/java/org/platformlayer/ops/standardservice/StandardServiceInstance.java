@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.OpsProvider;
 import org.platformlayer.ops.crypto.ManagedKeystore;
 import org.platformlayer.ops.filesystem.ManagedDirectory;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
@@ -52,7 +53,7 @@ public abstract class StandardServiceInstance extends OpsTreeBase {
 			StandardService service = addChild(StandardService.class);
 
 			Command command = template.getCommand();
-			service.command = Providers.of(command);
+			service.command = OpsProvider.of(command);
 
 			Map<String, String> env = template.getEnvironment();
 			service.environment = Providers.of(env);

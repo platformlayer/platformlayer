@@ -75,4 +75,8 @@ public class DbHelperBase implements Closeable {
 		ps.setInt(parameterIndex, getAtomValue(clazz));
 	}
 
+	public Connection getConnection() {
+		return connection;
+	}
+
 }

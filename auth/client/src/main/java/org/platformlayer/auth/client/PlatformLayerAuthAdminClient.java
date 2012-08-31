@@ -10,14 +10,14 @@ import javax.net.ssl.KeyManager;
 import javax.net.ssl.TrustManager;
 
 import org.openstack.crypto.CertificateAndKey;
-import org.openstack.crypto.Md5Hash;
 import org.platformlayer.WellKnownPorts;
 import org.platformlayer.auth.AuthenticationTokenValidator;
 import org.platformlayer.auth.PlatformlayerProjectAuthorization;
 import org.platformlayer.auth.PlatformlayerUserAuthentication;
 import org.platformlayer.auth.cache.CachingAuthenticationTokenValidator;
 import org.platformlayer.auth.v1.CertificateChainInfo;
-import org.platformlayer.auth.v1.CertificateInfo;
+import org.platformlayer.auth.v1.CheckServiceAccessRequest;
+import org.platformlayer.auth.v1.CheckServiceAccessResponse;
 import org.platformlayer.auth.v1.ProjectValidation;
 import org.platformlayer.auth.v1.SignCertificateRequest;
 import org.platformlayer.auth.v1.SignCertificateResponse;
@@ -29,7 +29,6 @@ import org.platformlayer.crypto.AcceptAllHostnameVerifier;
 import org.platformlayer.crypto.AesUtils;
 import org.platformlayer.crypto.CertificateUtils;
 import org.platformlayer.crypto.EncryptionStore;
-import org.platformlayer.crypto.OpenSshUtils;
 import org.platformlayer.crypto.PublicKeyTrustManager;
 import org.platformlayer.crypto.SimpleClientCertificateKeyManager;
 import org.platformlayer.http.HttpStrategy;
@@ -158,14 +157,7 @@ public class PlatformLayerAuthAdminClient implements AuthenticationTokenValidato
 
 		url += "?project=" + HttpUtils.urlEncode(projectKey);
 
-		CertificateChainInfo chainInfo = new CertificateChainInfo();
-		List<CertificateInfo> certificates = chainInfo.getCertificates();
-		for (X509Certificate cert : chain) {
-			CertificateInfo certificateInfo = new CertificateInfo();
-			Md5Hash hash = OpenSshUtils.getSignature(cert.getPublicKey());
-			certificateInfo.setPublicKeyHash(hash.toHex());
-			certificates.add(certificateInfo);
-		}
+		CertificateChainInfo chainInfo = CertificateChains.toModel(chain);
 
 		try {
 			ValidateTokenResponse response = doSimpleRequest("POST", url, chainInfo, ValidateTokenResponse.class);
@@ -219,6 +211,22 @@ public class PlatformLayerAuthAdminClient implements AuthenticationTokenValidato
 			return certificates;
 		} catch (RestClientException e) {
 			throw new IllegalArgumentException("Error while signing certificate", e);
+		}
+	}
+
+	public String checkServiceAccess(CertificateChainInfo chain) {
+		String url = "services/check";
+
+		CheckServiceAccessRequest request = new CheckServiceAccessRequest();
+		request.setChain(chain);
+
+		try {
+			CheckServiceAccessResponse response = doSimpleRequest("POST", url, request,
+					CheckServiceAccessResponse.class);
+
+			return response.getServiceAccount();
+		} catch (RestClientException e) {
+			throw new IllegalArgumentException("Error while checking service access", e);
 		}
 	}
 

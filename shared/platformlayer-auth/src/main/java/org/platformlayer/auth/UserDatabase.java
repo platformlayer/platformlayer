@@ -36,7 +36,7 @@ public interface UserDatabase extends UserRepository {
 
 	List<String> listAllProjectNames(String prefix) throws RepositoryException;
 
-	ServiceAccount findServiceAccount(String name, byte[] publicKey) throws RepositoryException;
+	ServiceAccountEntity findServiceAccount(String name, byte[] publicKey) throws RepositoryException;
 
 	ServiceAccount createServiceAccount(X509Certificate cert) throws RepositoryException;
 

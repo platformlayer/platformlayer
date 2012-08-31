@@ -1,19 +1,19 @@
 package org.platformlayer.auth.keystone;
 
-import java.security.Principal;
-import java.security.PublicKey;
-import java.security.cert.X509Certificate;
-
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
 import org.openstack.utils.Hex;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.auth.AuthenticatorException;
-import org.platformlayer.auth.ServiceAccount;
+import org.platformlayer.auth.ServiceAccountEntity;
 import org.platformlayer.auth.UserDatabase;
+import org.platformlayer.auth.model.CertificateChainInfo;
+import org.platformlayer.auth.model.CertificateInfo;
 import org.platformlayer.auth.services.SystemAuthenticator;
 import org.platformlayer.metrics.Instrumented;
+
+import com.google.common.base.Strings;
 
 @Instrumented
 public class ClientCertificateSystemAuthenticator implements SystemAuthenticator {
@@ -23,32 +23,30 @@ public class ClientCertificateSystemAuthenticator implements SystemAuthenticator
 	UserDatabase repository;
 
 	@Override
-	public ServiceAccount authenticate(X509Certificate[] certChain) throws AuthenticatorException {
-		if (certChain.length == 0) {
+	public ServiceAccountEntity authenticate(CertificateChainInfo certChainInfo) throws AuthenticatorException {
+		if (certChainInfo.certificates.size() == 0) {
 			log.debug("Chain empty; can't authenticate");
 			return null;
 		}
 
-		X509Certificate head = certChain[0];
+		CertificateInfo head = certChainInfo.certificates.get(0);
 
-		Principal subject = head.getSubjectDN();
-		PublicKey publicKey = head.getPublicKey();
+		String subject = head.subjectDN;
+		if (Strings.isNullOrEmpty(head.publicKey)) {
+			throw new IllegalArgumentException();
+		}
+		byte[] publicKey = Hex.fromHex(head.publicKey);
 
-		ServiceAccount auth;
+		ServiceAccountEntity auth;
 		try {
-			auth = repository.findServiceAccount(subject.getName(), publicKey.getEncoded());
+			auth = repository.findServiceAccount(subject, publicKey);
 		} catch (RepositoryException e) {
 			throw new AuthenticatorException("Error while authenticating user", e);
 		}
 
-		if (auth != null) {
-			return auth;
-		}
-
-		String publicKeyHex = Hex.toHex(publicKey.getEncoded());
-
+		String publicKeyHex = head.publicKeyHash;
 		log.debug("Authentication failed - public key not recognized: " + publicKeyHex);
 
-		return null;
+		return auth;
 	}
 }

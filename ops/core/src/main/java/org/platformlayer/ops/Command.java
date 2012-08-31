@@ -196,6 +196,10 @@ public class Command {
 		addArgument(Argument.buildQuoted(literalPrefix, value));
 	}
 
+	public void addInteger(String prefix, int value) {
+		addArgument(Argument.buildLiteral(prefix + String.valueOf(value)));
+	}
+
 	public void addArgument(Argument arg) {
 		args.add(arg);
 	}
