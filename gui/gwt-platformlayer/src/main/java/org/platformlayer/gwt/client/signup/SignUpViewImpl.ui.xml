@@ -4,8 +4,8 @@
 
 	<g:HTMLPanel>
 		<div class="row">
-			<div class="span4 offset4">
-				<form class="well form-vertical">
+			<div class="span6 offset3">
+				<form class="form-vertical">
 					<h1>Sign up</h1>
 
 					<pl:AlertContainer ui:field="alerts" />
@@ -19,7 +19,7 @@
 							<label class="control-label" for="password">Your email</label>
 							<div class="controls">
 								<input type="text" class="input-xlarge" id="email"
-									placeholder="email" />
+									placeholder="Email" />
 								<p class="help-block">Your email is used as your username</p>
 							</div>
 						</pl:ControlGroup>

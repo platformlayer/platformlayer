@@ -34,14 +34,14 @@ public class OpsProject {
 		return project;
 	}
 
-	public String getBillingBaseUrl() {
+	public String getBillingProjectBaseUrl() {
 		String billingUrl;
 
 		if (GWT.isProdMode()) {
 			// TODO: Derive from current path?
-			billingUrl = "https://billing.platformlayer.net/api/";
+			billingUrl = "https://billing.platformlayer.net/api/project/";
 		} else {
-			billingUrl = "http://dev.platformlayer.net:8085/api/";
+			billingUrl = "https://dev.platformlayer.net:8085/api/project/";
 		}
 		assert billingUrl.endsWith("/");
 

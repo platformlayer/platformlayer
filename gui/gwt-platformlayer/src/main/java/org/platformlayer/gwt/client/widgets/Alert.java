@@ -13,10 +13,30 @@ public class Alert {
 		return success(message, null);
 	}
 
+	public static Alert error(String message) {
+		return error(message, null);
+	}
+
+	public static Alert info(String message) {
+		return info(message, null);
+	}
+
+	public static Alert error(String message, ApplicationPlace placeLink) {
+		return build(AlertLevel.Error, message, placeLink);
+	}
+
+	public static Alert info(String message, ApplicationPlace placeLink) {
+		return build(AlertLevel.Info, message, placeLink);
+	}
+
 	public static Alert success(String message, ApplicationPlace placeLink) {
+		return build(AlertLevel.Success, message, placeLink);
+	}
+
+	public static Alert build(AlertLevel level, String message, ApplicationPlace placeLink) {
 		Alert alert = new Alert();
 		alert.message = message;
-		alert.level = AlertLevel.Success;
+		alert.level = level;
 		alert.placeLink = placeLink;
 		return alert;
 	}

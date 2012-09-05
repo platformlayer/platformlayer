@@ -12,13 +12,13 @@ public class CorsBillingService implements BillingService {
 
 	@Override
 	public void getProjectBillingInfo(OpsProject project, AsyncCallback<ProjectBillingInfo> callback) {
-		String url = project.getBillingBaseUrl();
+		String url = project.getBillingProjectBaseUrl();
 		AuthenticatedCorsRequest.get(project, url).execute(callback);
 	}
 
 	@Override
 	public void addCreditCard(OpsProject project, CreditCardDetails card, AsyncCallback<CreditCardRecord> callback) {
-		String url = project.getBillingBaseUrl() + "card";
+		String url = project.getBillingProjectBaseUrl() + "card";
 		String json = card.toJson();
 		AuthenticatedCorsRequest.post(project, url, json).execute(callback);
 	}

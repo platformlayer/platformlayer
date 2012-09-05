@@ -144,8 +144,4 @@ public class ApplicationState {
 		return userProject;
 	}
 
-	public void setUserProject(OpsProject userProject) {
-		this.userProject = userProject;
-	}
-
 }

@@ -9,6 +9,7 @@ import org.platformlayer.gwt.client.api.platformlayer.PlatformLayerService;
 import org.platformlayer.gwt.client.api.platformlayer.UntypedItem;
 import org.platformlayer.gwt.client.api.platformlayer.UntypedItemCollection;
 import org.platformlayer.gwt.client.signin.SignInPlace;
+import org.platformlayer.gwt.client.widgets.Alert;
 
 import com.google.gwt.place.shared.Place;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -38,6 +39,11 @@ public class HomeActivity extends ApplicationAbstractActivity {
 
 		if (project == null) {
 			// TODO: Async redirect??
+			if (app.getAuthentication() != null) {
+				app.flash(Alert.error("No project found"));
+			} else {
+				app.flash(Alert.info("Please log in"));
+			}
 			placeController.goTo(SignInPlace.INSTANCE);
 			return;
 		}
