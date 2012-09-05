@@ -39,7 +39,6 @@
         <module>ops</module>
         <module>services</module>
         <module>bindings</module>
-        <module>gui</module>
         <module>packages</module>
     </modules>
 
