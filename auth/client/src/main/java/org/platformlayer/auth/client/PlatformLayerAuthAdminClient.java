@@ -32,11 +32,11 @@ import org.platformlayer.crypto.EncryptionStore;
 import org.platformlayer.crypto.PublicKeyTrustManager;
 import org.platformlayer.crypto.SimpleClientCertificateKeyManager;
 import org.platformlayer.http.HttpStrategy;
+import org.platformlayer.http.UrlUtils;
 import org.platformlayer.http.SslConfiguration;
 import org.platformlayer.model.AuthenticationToken;
 import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.rest.HttpUtils;
 import org.platformlayer.rest.JreRestfulClient;
 import org.platformlayer.rest.RestClientException;
 import org.platformlayer.rest.RestfulClient;
@@ -100,7 +100,7 @@ public class PlatformLayerAuthAdminClient implements AuthenticationTokenValidato
 
 		String url = "v2.0/tokens/" + tokenId;
 
-		url += "?project=" + HttpUtils.urlEncode(projectId);
+		url += "?project=" + UrlUtils.urlEncode(projectId);
 
 		try {
 			ValidateTokenResponse response = doSimpleRequest("GET", url, null, ValidateTokenResponse.class);
@@ -155,7 +155,7 @@ public class PlatformLayerAuthAdminClient implements AuthenticationTokenValidato
 
 		String url = "v2.0/keychain";
 
-		url += "?project=" + HttpUtils.urlEncode(projectKey);
+		url += "?project=" + UrlUtils.urlEncode(projectKey);
 
 		CertificateChainInfo chainInfo = CertificateChains.toModel(chain);
 

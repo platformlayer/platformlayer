@@ -167,7 +167,7 @@ public class JreHttpRequest implements HttpRequest {
 	}
 
 	private void configureSslParameters() {
-		if (sslConfiguration != null) {
+		if (sslConfiguration != null && !sslConfiguration.isEmpty()) {
 			HttpsURLConnection https = (HttpsURLConnection) httpConn;
 			try {
 				https.setSSLSocketFactory(sslConfiguration.getSslSocketFactory());

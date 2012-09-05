@@ -2,7 +2,6 @@ package org.platformlayer.ops.instances;
 
 import java.io.File;
 
-import org.platformlayer.Strings;
 import org.platformlayer.ops.FileUpload;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.Injection;
@@ -13,6 +12,7 @@ import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.process.ProcessExecution;
 
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 
 public class ConfigureHostname {
 	public String hostname;
@@ -26,7 +26,7 @@ public class ConfigureHostname {
 	public void handle() throws OpsException {
 		OpsTarget target = OpsContext.get().getInstance(OpsTarget.class);
 
-		if (Strings.isEmpty(hostname)) {
+		if (Strings.isNullOrEmpty(hostname)) {
 			throw new IllegalArgumentException();
 		}
 

@@ -3,7 +3,6 @@ package org.platformlayer.service.dnsresolver.ops;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.platformlayer.Strings;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
@@ -15,6 +14,8 @@ import org.platformlayer.ops.packages.PackageDependency;
 import org.platformlayer.ops.service.ManagedService;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.dnsresolver.model.DnsResolverService;
+
+import com.google.common.base.Strings;
 
 public class DnsResolverServiceController extends OpsTreeBase {
 	static final Logger log = Logger.getLogger(DnsResolverServiceController.class);
@@ -29,7 +30,7 @@ public class DnsResolverServiceController extends OpsTreeBase {
 	@Override
 	protected void addChildren() throws OpsException {
 		DnsResolverService model = OpsContext.get().getInstance(DnsResolverService.class);
-		if (Strings.isEmpty(model.dnsName)) {
+		if (Strings.isNullOrEmpty(model.dnsName)) {
 			throw new IllegalArgumentException("dnsName must be specified");
 		}
 

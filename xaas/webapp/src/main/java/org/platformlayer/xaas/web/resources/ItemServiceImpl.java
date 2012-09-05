@@ -9,7 +9,6 @@ import org.platformlayer.CheckedCallable;
 import org.platformlayer.Filter;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.StateFilter;
-import org.platformlayer.Strings;
 import org.platformlayer.TagFilter;
 import org.platformlayer.auth.crypto.SecretProvider;
 import org.platformlayer.core.model.ItemBase;
@@ -33,6 +32,7 @@ import org.platformlayer.xml.JaxbHelper;
 import org.platformlayer.xml.JsonHelper;
 
 import com.google.common.base.Objects;
+import com.google.common.base.Strings;
 import com.google.inject.Injector;
 
 public class ItemServiceImpl implements ItemService {
@@ -204,7 +204,7 @@ public class ItemServiceImpl implements ItemService {
 		// JaxbHelper jaxbHelper = JaxbHelper.get(javaClass);
 
 		String id = item.getId();
-		if (Strings.isEmpty(id)) {
+		if (Strings.isNullOrEmpty(id)) {
 			// TODO: We could auto-generate this, but it seems better to require it,
 			// otherwise we end up with lots of randomly named items
 			throw new OpsException("Must specify item id");

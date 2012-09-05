@@ -3,7 +3,6 @@ package org.platformlayer.service.collectd.ops;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
-import org.platformlayer.Strings;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
@@ -15,6 +14,8 @@ import org.platformlayer.ops.service.ManagedService;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.collectd.model.CollectdService;
 
+import com.google.common.base.Strings;
+
 public class CollectdServiceController extends OpsTreeBase {
 	static final Logger log = Logger.getLogger(CollectdServiceController.class);
 
@@ -25,7 +26,7 @@ public class CollectdServiceController extends OpsTreeBase {
 	@Override
 	protected void addChildren() throws OpsException {
 		CollectdService model = OpsContext.get().getInstance(CollectdService.class);
-		if (Strings.isEmpty(model.dnsName)) {
+		if (Strings.isNullOrEmpty(model.dnsName)) {
 			throw new IllegalArgumentException("dnsName must be specified");
 		}
 

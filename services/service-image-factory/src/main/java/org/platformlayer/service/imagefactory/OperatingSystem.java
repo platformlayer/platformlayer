@@ -1,6 +1,5 @@
 package org.platformlayer.service.imagefactory;
 
-import org.platformlayer.Strings;
 
 public class OperatingSystem {
 	// Lenny not getting security updates
@@ -28,7 +27,7 @@ public class OperatingSystem {
 
 		public static Distribution parse(String s) {
 			for (Distribution d : Distribution.values()) {
-				if (Strings.equalsIgnoreCase(d.toString(), s)) {
+				if (d.toString().equalsIgnoreCase(s)) {
 					return d;
 				}
 			}

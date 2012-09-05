@@ -1,6 +1,5 @@
 package org.platformlayer.service.dns;
 
-import org.platformlayer.Strings;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.ServiceProviderBase;
@@ -8,6 +7,8 @@ import org.platformlayer.service.dns.model.DnsRecord;
 import org.platformlayer.service.dns.model.DnsServer;
 import org.platformlayer.service.dns.model.DnsZone;
 import org.platformlayer.xaas.Service;
+
+import com.google.common.base.Strings;
 
 @Service("dns")
 public class DnsService extends ServiceProviderBase {
@@ -18,7 +19,7 @@ public class DnsService extends ServiceProviderBase {
 			DnsServer model = (DnsServer) item;
 
 			model.dnsName = normalize(model.dnsName);
-			if (Strings.isEmpty(model.dnsName)) {
+			if (Strings.isNullOrEmpty(model.dnsName)) {
 				throw new IllegalArgumentException("dnsName must be specified");
 			}
 		}
@@ -27,11 +28,11 @@ public class DnsService extends ServiceProviderBase {
 			DnsRecord model = (DnsRecord) item;
 
 			model.dnsName = normalize(model.dnsName);
-			if (Strings.isEmpty(model.dnsName)) {
+			if (Strings.isNullOrEmpty(model.dnsName)) {
 				throw new IllegalArgumentException("dnsName must be specified");
 			}
 
-			if (Strings.isEmpty(model.recordType)) {
+			if (Strings.isNullOrEmpty(model.recordType)) {
 				model.recordType = "A";
 			}
 
@@ -46,7 +47,7 @@ public class DnsService extends ServiceProviderBase {
 			DnsZone model = (DnsZone) item;
 
 			model.dnsName = normalize(model.dnsName);
-			if (Strings.isEmpty(model.dnsName)) {
+			if (Strings.isNullOrEmpty(model.dnsName)) {
 				model.dnsName = normalize(model.getId());
 			}
 		}

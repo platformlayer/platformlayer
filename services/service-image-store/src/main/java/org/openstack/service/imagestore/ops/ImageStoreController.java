@@ -7,7 +7,6 @@ import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
 import org.openstack.service.imagestore.model.ImageStore;
-import org.platformlayer.Strings;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpaqueMachine;
@@ -24,6 +23,8 @@ import org.platformlayer.ops.packages.PackageDependency;
 import org.platformlayer.ops.service.ManagedService;
 import org.platformlayer.ops.ssh.SshAuthorizedKey;
 import org.platformlayer.ops.tree.OpsTreeBase;
+
+import com.google.common.base.Strings;
 
 public class ImageStoreController extends OpsTreeBase {
 	static final Logger log = Logger.getLogger(ImageStoreController.class);
@@ -54,7 +55,7 @@ public class ImageStoreController extends OpsTreeBase {
 		}
 
 		if (useGlance) {
-			if (Strings.isEmpty(model.dnsName)) {
+			if (Strings.isNullOrEmpty(model.dnsName)) {
 				throw new IllegalArgumentException("dnsName must be specified");
 			}
 

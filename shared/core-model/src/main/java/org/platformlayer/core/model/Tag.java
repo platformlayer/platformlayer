@@ -1,6 +1,9 @@
 package org.platformlayer.core.model;
 
 import java.net.InetAddress;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -149,6 +152,47 @@ public class Tag {
 
 		public Tag build(InetAddress t) {
 			return new Tag(key, t.getHostAddress());
+		}
+	}
+
+	@XmlTransient
+	public static class DateTagKey extends TagKey<Date> {
+		public DateTagKey(String key) {
+			super(key);
+		}
+
+		// Not static to avoid locking problems
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+
+		@Override
+		protected Date toT(String s) {
+			try {
+				return dateFormat.parse(s);
+			} catch (ParseException e) {
+				throw new IllegalArgumentException("Cannot parse value as date: " + s, e);
+			}
+		}
+
+		public Tag build(Date v) {
+			String s = dateFormat.format(v);
+			return new Tag(key, s);
+		}
+	}
+
+	@XmlTransient
+	public static class BooleanTagKey extends TagKey<Boolean> {
+		public BooleanTagKey(String key) {
+			super(key);
+		}
+
+		@Override
+		protected Boolean toT(String s) {
+			return Boolean.valueOf(s);
+		}
+
+		public Tag build(Boolean v) {
+			String s = v.toString();
+			return new Tag(key, s);
 		}
 	}
 

@@ -52,7 +52,6 @@ public class PlatformLayerDatabaseController extends OpsTreeBase {
 			} catch (IOException e) {
 				throw new OpsException("Error loading SQL script resource", e);
 			}
-
 		}
 	}
 }

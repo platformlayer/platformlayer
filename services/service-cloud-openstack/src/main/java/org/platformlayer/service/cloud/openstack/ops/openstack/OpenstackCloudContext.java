@@ -26,8 +26,8 @@ import org.openstack.model.compute.SecurityGroupRule;
 import org.openstack.model.compute.Server;
 import org.openstack.model.compute.ServerForCreate;
 import org.openstack.utils.Utf8;
+import org.platformlayer.Comparisons;
 import org.platformlayer.ExceptionUtils;
-import org.platformlayer.Strings;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.TimeoutPoll;
 import org.platformlayer.TimeoutPoll.PollFunction;
@@ -285,7 +285,8 @@ public class OpenstackCloudContext {
 
 							if (item.getKey().equals("os_distro")) {
 								if (operatingSystem != null && operatingSystem.getDistribution() != null) {
-									if (Strings.equalsIgnoreCase(operatingSystem.getDistribution(), item.getValue())) {
+									if (Comparisons
+											.equalsIgnoreCase(operatingSystem.getDistribution(), item.getValue())) {
 										matchesDistribution = true;
 									}
 								}
@@ -293,9 +294,10 @@ public class OpenstackCloudContext {
 
 							if (item.getKey().equals("os_version")) {
 								if (operatingSystem != null && operatingSystem.getVersion() != null) {
-									if (Strings.equalsIgnoreCase(operatingSystem.getVersion(), item.getValue())) {
+									if (Comparisons.equalsIgnoreCase(operatingSystem.getVersion(), item.getValue())) {
 										matchesVersion = true;
-									} else if (Strings.equalsIgnoreCase(operatingSystem.getDistribution(), "debian")) {
+									} else if (Comparisons
+											.equalsIgnoreCase(operatingSystem.getDistribution(), "debian")) {
 
 										// Lenny is no longer getting security updates
 										// if (Strings.equalsIgnoreCase(operatingSystem.getVersion(), "lenny") &&
@@ -303,15 +305,16 @@ public class OpenstackCloudContext {
 										// matchesVersion = true;
 										// } else
 
-										if (Strings.equalsIgnoreCase(operatingSystem.getVersion(), "squeeze")
-												&& Strings.equalsIgnoreCase(item.getValue(), "6")) {
+										if (Comparisons.equalsIgnoreCase(operatingSystem.getVersion(), "squeeze")
+												&& Comparisons.equalsIgnoreCase(item.getValue(), "6")) {
 											matchesVersion = true;
 										} else {
 											matchesVersion = false;
 										}
-									} else if (Strings.equalsIgnoreCase(operatingSystem.getDistribution(), "ubuntu")) {
-										if (Strings.equalsIgnoreCase(operatingSystem.getVersion(), "lucid")
-												&& Strings.equalsIgnoreCase(item.getValue(), "10.04LTS")) {
+									} else if (Comparisons
+											.equalsIgnoreCase(operatingSystem.getDistribution(), "ubuntu")) {
+										if (Comparisons.equalsIgnoreCase(operatingSystem.getVersion(), "lucid")
+												&& Comparisons.equalsIgnoreCase(item.getValue(), "10.04LTS")) {
 											matchesVersion = true;
 										} else {
 											matchesVersion = false;
@@ -341,7 +344,8 @@ public class OpenstackCloudContext {
 
 							if (item.getKey().equals(Tag.IMAGE_OS_DISTRIBUTION)) {
 								if (operatingSystem != null && operatingSystem.getDistribution() != null) {
-									if (!Strings.equalsIgnoreCase(operatingSystem.getDistribution(), item.getValue())) {
+									if (!Comparisons.equalsIgnoreCase(operatingSystem.getDistribution(),
+											item.getValue())) {
 										isMatch = false;
 									}
 								}
@@ -349,7 +353,7 @@ public class OpenstackCloudContext {
 
 							if (item.getKey().equals(Tag.IMAGE_OS_VERSION)) {
 								if (operatingSystem != null && operatingSystem.getVersion() != null) {
-									if (!Strings.equalsIgnoreCase(operatingSystem.getVersion(), item.getValue())) {
+									if (!Comparisons.equalsIgnoreCase(operatingSystem.getVersion(), item.getValue())) {
 										isMatch = false;
 									}
 								}

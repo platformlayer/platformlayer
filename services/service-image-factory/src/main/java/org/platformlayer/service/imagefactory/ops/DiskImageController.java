@@ -14,7 +14,6 @@ import org.apache.log4j.Logger;
 import org.platformlayer.EnumUtils;
 import org.platformlayer.ExceptionUtils;
 import org.platformlayer.ResourceUtils;
-import org.platformlayer.Strings;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.TimeoutPoll;
 import org.platformlayer.TimeoutPoll.PollFunction;
@@ -59,6 +58,7 @@ import org.platformlayer.service.imagefactory.model.RepositoryKey;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 public class DiskImageController {
@@ -94,14 +94,14 @@ public class DiskImageController {
 			operatingSystemRecipe = new OperatingSystemRecipe();
 		}
 
-		if (Strings.isEmpty(operatingSystemRecipe.distribution)) {
+		if (Strings.isNullOrEmpty(operatingSystemRecipe.distribution)) {
 			return OperatingSystem.DebianSqueeze;
 		}
 
 		Distribution distribution = Distribution.parse(operatingSystemRecipe.distribution);
 
 		String version = operatingSystemRecipe.version;
-		if (Strings.isEmpty(version)) {
+		if (Strings.isNullOrEmpty(version)) {
 			version = distribution.getDefaultOsVersion();
 		}
 

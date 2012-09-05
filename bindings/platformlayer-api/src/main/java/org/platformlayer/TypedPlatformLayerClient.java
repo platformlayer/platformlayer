@@ -1,6 +1,7 @@
 package org.platformlayer;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -159,12 +160,16 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 		return platformLayerClient.deleteItem(key);
 	}
 
-	public Tags addTag(PlatformLayerKey key, Tag tag) throws PlatformLayerClientException {
+	public Tags addTags(PlatformLayerKey key, List<Tag> tags) throws PlatformLayerClientException {
 		TagChanges changeTags = new TagChanges();
 
-		changeTags.addTags.add(tag);
+		changeTags.addTags.addAll(tags);
 
 		return changeTags(key, changeTags);
+	}
+
+	public Tags addTag(PlatformLayerKey key, Tag tag) throws PlatformLayerClientException {
+		return addTags(key, Collections.singletonList(tag));
 	}
 
 	public Tags addUniqueTag(PlatformLayerKey key, Tag tag) throws PlatformLayerClientException {
