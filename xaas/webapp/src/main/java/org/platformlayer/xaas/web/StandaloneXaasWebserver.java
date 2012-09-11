@@ -68,6 +68,7 @@ class StandaloneXaasWebserver {
 			modules.add(new CacheModule());
 			modules.add(new JdbcGuiceModule());
 			modules.add(new PlatformLayerServletModule());
+			modules.add(new PlatformlayerValidationModule());
 
 			Injector injector = Guice.createInjector(modules);
 

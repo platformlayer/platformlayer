@@ -26,11 +26,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 	@Override
 	public OpsUser registerUser(String username, String password) throws CustomerFacingException {
 		if (Strings.isNullOrEmpty(username)) {
-			throw new CustomerFacingException("Username is required");
+			throw CustomerFacingException.buildRequiredField("username");
 		}
 
 		if (Strings.isNullOrEmpty(password)) {
-			throw new CustomerFacingException("Password is required");
+			throw CustomerFacingException.buildRequiredField("password");
 		}
 
 		password = password.trim();
@@ -45,7 +45,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 			user = repository.findUser(username);
 			if (user != null) {
 				// TODO: Should we hide this fact?
-				throw new CustomerFacingException("Username is already registered");
+				throw CustomerFacingException
+						.buildFieldError("username", "duplicate", "Username is already registered");
 			}
 
 			user = repository.createUser(username, password, null);
@@ -56,7 +57,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			repository.createProject(projectKey, user);
 		} catch (RepositoryException e) {
 			log.warn("Repository error creating user", e);
-			throw new CustomerFacingException("Internal error - please try again later", e);
+			throw CustomerFacingException.wrap(e);
 		}
 
 		return user;
@@ -64,14 +65,15 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	private void checkUsername(String email) throws CustomerFacingException {
 		if (!email.contains("@")) {
-			throw new CustomerFacingException("Email address is invalid");
+			throw CustomerFacingException.buildFieldError("email", "invalid", "Email address is invalid");
 		}
 		// TODO: More verification
 	}
 
 	private void checkPassword(String password) throws CustomerFacingException {
 		if (password.length() < MIN_PASSWORD_LENGTH) {
-			throw new CustomerFacingException("Password must be at least " + MIN_PASSWORD_LENGTH + " characters");
+			throw CustomerFacingException.buildFieldError("password", "invalid", "Password must be at least "
+					+ MIN_PASSWORD_LENGTH + " characters");
 		}
 		// TODO: Minimum complexity?
 	}
