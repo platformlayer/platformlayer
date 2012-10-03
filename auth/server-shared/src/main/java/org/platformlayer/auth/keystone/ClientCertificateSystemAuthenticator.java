@@ -44,7 +44,9 @@ public class ClientCertificateSystemAuthenticator implements SystemAuthenticator
 			throw new AuthenticatorException("Error while authenticating user", e);
 		}
 
-		log.debug("Authentication failed - public key not recognized: " + publicKey);
+		if (auth == null) {
+			log.debug("Authentication failed - public key not recognized: " + publicKey);
+		}
 
 		return auth;
 	}

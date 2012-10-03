@@ -20,6 +20,7 @@ public class CertificateChains {
 		for (X509Certificate cert : chain) {
 			CertificateInfo certificateInfo = new CertificateInfo();
 
+			certificateInfo.setSubjectDN(cert.getSubjectX500Principal().getName());
 			Md5Hash hash = OpenSshUtils.getSignature(cert.getPublicKey());
 			certificateInfo.setPublicKeyHash(hash.toHex());
 
