@@ -27,15 +27,19 @@ import net.iharder.Base64;
 
 import org.openstack.crypto.Md5Hash;
 import org.openstack.utils.Utf8;
+import org.platformlayer.ByteSource;
 import org.platformlayer.IoUtils;
 
 public class CryptoUtils {
 	private static final String UTF8 = "UTF-8";
 	// private static final String ALGORITHM_3DES = "DES/ECB/PKCS5Padding";
 	private static final String HMAC_SHA1_ALGORITHM = "HmacSHA1";
+	private static final String HMAC_SHA256_ALGORITHM = "HmacSHA256";
 	private static final String SHA1_ALGORITHM = "SHA-1";
+	private static final String SHA256_ALGORITHM = "SHA-256";
 
-	public static final int HMAC_SHA1_BYTES = 20;
+	public static final int HMAC_SHA1_BYTES = 160 / 8;
+	public static final int HMAC_SHA256_BYTES = 256 / 8;
 
 	static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
@@ -44,6 +48,15 @@ public class CryptoUtils {
 			return new String(bytes, UTF8);
 		} catch (UnsupportedEncodingException e) {
 			throw new IllegalStateException("Error decoding utf-8 bytes", e);
+		}
+	}
+
+	public static Sha1Hash sha1(ByteSource byteSource) throws IOException {
+		InputStream is = byteSource.open();
+		try {
+			return sha1(is);
+		} finally {
+			IoUtils.safeClose(is);
 		}
 	}
 
@@ -136,6 +149,17 @@ public class CryptoUtils {
 		return new Sha1Hash(hash);
 	}
 
+	public static Sha256Hash sha256(byte[]... data) {
+		MessageDigest digest = getSha256();
+
+		for (int i = 0; i < data.length - 1; i++) {
+			digest.update(data[i]);
+		}
+
+		byte[] hash = digest.digest(data[data.length - 1]);
+		return new Sha256Hash(hash);
+	}
+
 	public static Mac buildHmacSha1(SecretKey key) {
 		Mac mac = getHmacSha1();
 		try {
@@ -146,8 +170,23 @@ public class CryptoUtils {
 		return mac;
 	}
 
+	public static Mac buildHmacSha256(SecretKey key) {
+		Mac mac = getHmacSha256();
+		try {
+			mac.init(key);
+		} catch (InvalidKeyException e) {
+			throw new IllegalStateException("Unexpected encryption error", e);
+		}
+		return mac;
+	}
+
 	public static SecretKeySpec buildHmacSha1Key(byte[] keyData) {
 		SecretKeySpec signingKey = new SecretKeySpec(keyData, HMAC_SHA1_ALGORITHM);
+		return signingKey;
+	}
+
+	public static SecretKeySpec buildHmacSha256Key(byte[] keyData) {
+		SecretKeySpec signingKey = new SecretKeySpec(keyData, HMAC_SHA256_ALGORITHM);
 		return signingKey;
 	}
 
@@ -163,10 +202,16 @@ public class CryptoUtils {
 	public static byte[] hmacSha1(SecretKeySpec signingKey, byte[]... data) {
 		Mac mac = buildHmacSha1(signingKey);
 
-		return hmacSha1(mac, data);
+		return computeMac(mac, data);
 	}
 
-	public static byte[] hmacSha1(Mac mac, byte[]... data) {
+	public static byte[] hmacSha256(SecretKeySpec signingKey, byte[]... data) {
+		Mac mac = buildHmacSha256(signingKey);
+
+		return computeMac(mac, data);
+	}
+
+	public static byte[] computeMac(Mac mac, byte[]... data) {
 		for (int i = 0; i < data.length - 1; i++) {
 			mac.update(data[i]);
 		}
@@ -207,8 +252,16 @@ public class CryptoUtils {
 		return getMessageDigest(SHA1_ALGORITHM);
 	}
 
+	public static MessageDigest getSha256() {
+		return getMessageDigest(SHA256_ALGORITHM);
+	}
+
 	private static Mac getHmacSha1() {
 		return getMac(HMAC_SHA1_ALGORITHM);
+	}
+
+	private static Mac getHmacSha256() {
+		return getMac(HMAC_SHA256_ALGORITHM);
 	}
 
 	// public static byte[] decrypt3Des(byte[] key, byte[] cipherText) throws CryptoException {
@@ -405,11 +458,7 @@ public class CryptoUtils {
 	}
 
 	public static byte[] decrypt(Cipher cipher, Key key, byte[] cipherText) {
-		try {
-			cipher.init(Cipher.DECRYPT_MODE, key);
-		} catch (InvalidKeyException e) {
-			throw new IllegalArgumentException("Invalid key", e);
-		}
+		initDecrypt(cipher, key);
 		byte[] plainText;
 		try {
 			plainText = cipher.doFinal(cipherText);
@@ -419,15 +468,26 @@ public class CryptoUtils {
 			throw new IllegalArgumentException("Error in decryption", e);
 		}
 		return plainText;
-
 	}
 
-	public static byte[] encrypt(Cipher cipher, Key key, byte[] plaintext) {
+	public static void initDecrypt(Cipher cipher, Key key) {
+		try {
+			cipher.init(Cipher.DECRYPT_MODE, key);
+		} catch (InvalidKeyException e) {
+			throw new IllegalArgumentException("Invalid key", e);
+		}
+	}
+
+	public static void initEncrypt(Cipher cipher, Key key) {
 		try {
 			cipher.init(Cipher.ENCRYPT_MODE, key);
 		} catch (InvalidKeyException e) {
 			throw new IllegalArgumentException("Invalid key", e);
 		}
+	}
+
+	public static byte[] encrypt(Cipher cipher, Key key, byte[] plaintext) {
+		initEncrypt(cipher, key);
 		byte[] encryptedBytes;
 		try {
 			encryptedBytes = cipher.doFinal(plaintext);
