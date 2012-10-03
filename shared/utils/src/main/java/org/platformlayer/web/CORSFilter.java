@@ -22,6 +22,7 @@ public class CORSFilter implements Filter {
 
 	private static final String HEADER_ALLOW_ORIGIN = "Access-Control-Allow-Origin";
 	private static final String HEADER_ALLOW_HEADERS = "Access-Control-Allow-Headers";
+	private static final String HEADER_ALLOW_METHODS = "Access-Control-Allow-Methods";
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
@@ -33,6 +34,7 @@ public class CORSFilter implements Filter {
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
 		httpResponse.addHeader(HEADER_ALLOW_ORIGIN, "*");
 		httpResponse.addHeader(HEADER_ALLOW_HEADERS, "Content-Type, X-Auth-Token");
+		httpResponse.addHeader(HEADER_ALLOW_METHODS, "GET, POST, HEAD, OPTIONS, PUT");
 
 		chain.doFilter(request, response);
 	}
