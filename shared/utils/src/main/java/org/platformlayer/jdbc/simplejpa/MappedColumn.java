@@ -6,6 +6,7 @@ import org.platformlayer.jdbc.EnumWithKey;
 import org.platformlayer.jdbc.EnumWithKeys;
 
 import com.google.common.base.Objects;
+import com.google.common.base.Strings;
 
 public class MappedColumn {
 	final Field field;
@@ -22,6 +23,19 @@ public class MappedColumn {
 
 		if (EnumWithKey.class.isAssignableFrom(fieldType)) {
 			value = EnumWithKeys.fromKey((Class<? extends EnumWithKey>) fieldType, (String) value);
+		}
+
+		if (char.class.isAssignableFrom(fieldType)) {
+			if (value instanceof String) {
+				String stringValue = (String) value;
+				if (Strings.isNullOrEmpty(stringValue)) {
+					value = 0;
+				} else if (stringValue.length() == 1) {
+					value = stringValue.charAt(0);
+				} else {
+					throw new IllegalArgumentException("Cannot map multi-character string to char type: " + field);
+				}
+			}
 		}
 
 		try {

@@ -71,7 +71,7 @@ public class JdbcProxyInvocationHandler<T> implements InvocationHandler {
 				Class<?> returnType = m.getReturnType();
 
 				int updateCount = ps.getUpdateCount();
-				if (returnType.equals(Void.class)) {
+				if (returnType.equals(Void.class) || returnType.equals(void.class)) {
 					return null;
 				} else if (returnType.equals(Integer.class) || returnType.equals(int.class)) {
 					return updateCount;
