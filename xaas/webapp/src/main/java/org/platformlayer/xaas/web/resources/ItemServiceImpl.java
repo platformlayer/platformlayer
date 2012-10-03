@@ -189,12 +189,13 @@ public class ItemServiceImpl implements ItemService {
 	}
 
 	@Override
-	public <T extends ItemBase> T createItem(final ProjectAuthorization auth, final T item) throws OpsException {
-		return ensureItem(auth, item, false, null);
+	public <T extends ItemBase> T createItem(final ProjectAuthorization auth, final T item, boolean generateUniqueName)
+			throws OpsException {
+		return ensureItem(auth, item, false, generateUniqueName, null);
 	}
 
 	<T extends ItemBase> T ensureItem(final ProjectAuthorization auth, final T item, final boolean canExist,
-			final String uniqueTagKey) throws OpsException {
+			final boolean generateUniqueName, final String uniqueTagKey) throws OpsException {
 		final ModelClass<T> modelClass = (ModelClass<T>) serviceProviderDirectory.getModelClass(item.getClass());
 		if (modelClass == null) {
 			throw new IllegalStateException("Unknown item type");
@@ -204,18 +205,24 @@ public class ItemServiceImpl implements ItemService {
 		// JaxbHelper jaxbHelper = JaxbHelper.get(javaClass);
 
 		String id = item.getId();
+
 		if (Strings.isNullOrEmpty(id)) {
-			// TODO: We could auto-generate this, but it seems better to require it,
-			// otherwise we end up with lots of randomly named items
-			throw new OpsException("Must specify item id");
-			// id = UUID.randomUUID().toString();
-			// item.setId(id);
+			if (generateUniqueName) {
+				// TODO: Try to build something based on the values??
+				id = modelClass.getItemType().getKey();
+			} else {
+				// TODO: We could auto-generate this, but it seems better to require it,
+				// otherwise we end up with lots of randomly named items
+				throw new OpsException("Must specify item id");
+				// id = UUID.randomUUID().toString();
+				// item.setId(id);
+			}
 		}
 
 		ProjectId project = getProjectId(auth);
-
-		final PlatformLayerKey modelKey = new PlatformLayerKey(null, project, modelClass.getServiceType(),
+		PlatformLayerKey itemKey = new PlatformLayerKey(null, project, modelClass.getServiceType(),
 				modelClass.getItemType(), new ManagedItemId(id));
+		item.setKey(itemKey);
 
 		item.state = ManagedItemState.CREATION_REQUESTED;
 
@@ -226,6 +233,8 @@ public class ItemServiceImpl implements ItemService {
 		T created = OpsContext.runInContext(opsContext, new CheckedCallable<T, Exception>() {
 			@Override
 			public T call() throws Exception {
+				PlatformLayerKey itemKey = item.getKey();
+
 				T existing;
 
 				SecretProvider secretProvider = SecretProvider.from(auth);
@@ -245,7 +254,7 @@ public class ItemServiceImpl implements ItemService {
 					filter = Filter.and(filter, StateFilter.exclude(ManagedItemState.DELETED));
 
 					existing = null;
-					List<T> existingList = repository.findAll(modelClass, modelKey.getProject(), fetchTags,
+					List<T> existingList = repository.findAll(modelClass, itemKey.getProject(), fetchTags,
 							secretProvider, filter);
 					if (!existingList.isEmpty()) {
 						if (existingList.size() != 1) {
@@ -255,26 +264,17 @@ public class ItemServiceImpl implements ItemService {
 					}
 
 					if (existing == null) {
-						int sequence = 0;
-						while (true) {
-							String tryId = item.getId();
-							if (sequence != 0) {
-								tryId += sequence;
-							}
-							final PlatformLayerKey tryKey = modelKey.withId(new ManagedItemId(tryId));
-							ItemBase found = repository.getManagedItem(tryKey, fetchTags, secretProvider);
-							if (found == null) {
-								item.setKey(tryKey);
-								break;
-							}
-							sequence++;
-						}
+						itemKey = findUniqueId(item, itemKey, secretProvider);
 					}
 				} else {
+					if (generateUniqueName) {
+						itemKey = findUniqueId(item, itemKey, secretProvider);
+					}
+
 					try {
 						boolean fetchTags = true;
-						existing = CastUtils.checkedCast(
-								repository.getManagedItem(modelKey, fetchTags, secretProvider), javaClass);
+						existing = CastUtils.checkedCast(repository.getManagedItem(itemKey, fetchTags, secretProvider),
+								javaClass);
 					} catch (RepositoryException e) {
 						throw new OpsException("Error fetching item from database", e);
 					}
@@ -301,10 +301,29 @@ public class ItemServiceImpl implements ItemService {
 					throw new OpsException("Error writing object to database", e);
 				}
 
-				PlatformLayerKey itemKey = newItem.getKey();
+				itemKey = newItem.getKey();
 				changeQueue.notifyChange(auth, itemKey, ManagedItemState.CREATION_REQUESTED);
 
 				return newItem;
+			}
+
+			private <T extends ItemBase> PlatformLayerKey findUniqueId(final T item, final PlatformLayerKey itemKey,
+					SecretProvider secretProvider) throws RepositoryException {
+				int sequence = 0;
+				while (true) {
+					String tryId = item.getId();
+					if (sequence != 0) {
+						tryId += sequence;
+					}
+					final PlatformLayerKey tryKey = itemKey.withId(new ManagedItemId(tryId));
+					boolean fetchTags = false;
+					ItemBase found = repository.getManagedItem(tryKey, fetchTags, secretProvider);
+					if (found == null) {
+						item.setKey(tryKey);
+						return tryKey;
+					}
+					sequence++;
+				}
 			}
 		});
 
@@ -314,7 +333,8 @@ public class ItemServiceImpl implements ItemService {
 	@Override
 	public <T extends ItemBase> T putItem(final ProjectAuthorization auth, final T item, String uniqueTag)
 			throws OpsException {
-		return ensureItem(auth, item, true, uniqueTag);
+		boolean generateUniqueName = false;
+		return ensureItem(auth, item, true, generateUniqueName, uniqueTag);
 	}
 
 	protected OpsContext buildTemporaryOpsContext(ServiceType serviceType, ProjectAuthorization auth)

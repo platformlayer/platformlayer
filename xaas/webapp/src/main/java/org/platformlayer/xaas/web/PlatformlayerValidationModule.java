@@ -1,5 +1,6 @@
 package org.platformlayer.xaas.web;
 
+import javax.validation.Configuration;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
@@ -10,10 +11,17 @@ public class PlatformlayerValidationModule extends AbstractModule {
 
 	@Override
 	protected void configure() {
-		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+		Configuration<?> config = Validation.byDefaultProvider().configure();
+		// config.messageInterpolator(new MyMessageInterpolator())
+		// .traversableResolver( new MyTraversableResolver())
+		// .constraintValidatorFactory(new MyConstraintValidatorFactory());
+
+		config.messageInterpolator(new ValidationMessageInterpolator());
+
+		ValidatorFactory factory = config.buildValidatorFactory();
+
+		// ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 		Validator validator = factory.getValidator();
-		// Set<ConstraintViolation<MyBean>> constraintViolations =
-		// validator.validate(bean);
 		bind(Validator.class).toInstance(validator);
 	}
 

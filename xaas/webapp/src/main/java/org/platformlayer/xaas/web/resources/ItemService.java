@@ -18,7 +18,8 @@ public interface ItemService {
 	// RepositoryException, OpsException;
 
 	// TODO: Get Authentication by injection
-	<T extends ItemBase> T createItem(ProjectAuthorization auth, T typedItem) throws OpsException;
+	<T extends ItemBase> T createItem(ProjectAuthorization auth, T typedItem, boolean generateUniqueName)
+			throws OpsException;
 
 	<T extends ItemBase> T putItem(ProjectAuthorization auth, T typedItem, String uniqueTag) throws OpsException;
 
