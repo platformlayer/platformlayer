@@ -14,6 +14,8 @@ import java.util.Map.Entry;
 import javax.net.ssl.HttpsURLConnection;
 
 import org.apache.log4j.Logger;
+import org.platformlayer.ByteSource;
+import org.platformlayer.IoUtils;
 import org.platformlayer.http.HttpRequest;
 import org.platformlayer.http.HttpResponse;
 import org.platformlayer.http.SslConfiguration;
@@ -182,9 +184,15 @@ public class JreHttpRequest implements HttpRequest {
 	}
 
 	@Override
-	public void setRequestContent(byte[] bytes) throws IOException {
+	public void setRequestContent(ByteSource data) throws IOException {
 		OutputStream os = httpConn.getOutputStream();
-		os.write(bytes);
+		InputStream is = data.open();
+
+		try {
+			IoUtils.copyToOutputStream(is, os);
+		} finally {
+			is.close();
+		}
 	}
 
 }
