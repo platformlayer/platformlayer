@@ -82,6 +82,9 @@ public class OpsContext implements Closeable {
 			return callable.call();
 		} catch (Exception e) {
 			log.warn("Error running operation", e);
+			if (e instanceof OpsException) {
+				throw ((OpsException) e);
+			}
 			throw new OpsException("Error during operation", e);
 		} finally {
 			try {

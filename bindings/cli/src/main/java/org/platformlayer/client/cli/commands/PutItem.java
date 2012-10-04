@@ -61,10 +61,16 @@ public class PutItem extends PlatformLayerCommandRunnerBase {
 
 		PlatformLayerKey key = path.resolve(getContext());
 
-		JSONObject wrapped = new JSONObject();
-		wrapped.put(key.getItemType().getKey(), jsonObject);
+		boolean wrap = false;
+		String data;
+		if (wrap) {
+			JSONObject wrapped = new JSONObject();
+			wrapped.put(key.getItemType().getKey(), jsonObject);
 
-		String data = wrapped.toString();
+			data = wrapped.toString();
+		} else {
+			data = jsonObject.toString();
+		}
 
 		UntypedItem retval = client.putItem(key, data, Format.JSON);
 

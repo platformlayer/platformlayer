@@ -13,6 +13,7 @@ import org.platformlayer.model.FieldModel;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 public class GwtCodegenFileVisitor extends FileVisitor {
 	private final ClassInspection classInspection;
@@ -178,7 +179,11 @@ public class GwtCodegenFileVisitor extends FileVisitor {
 				continue;
 			}
 
-			if (!isNativeType(type)) {
+			String mapped = mapSpecialType(type);
+
+			if (mapped != null) {
+
+			} else if (!isNativeType(type)) {
 				warnings.add("JSNI cannot map '" + type.getSimpleName() + " " + fieldName + "'");
 				continue;
 			}
@@ -189,8 +194,8 @@ public class GwtCodegenFileVisitor extends FileVisitor {
 			}
 			String beanName = Utils.capitalize(fieldName);
 
-			fieldModel.type = type.getName();
-			fieldModel.accessorType = accessorType.getName();
+			fieldModel.type = mapped != null ? mapped : type.getName();
+			fieldModel.accessorType = mapped != null ? mapped : accessorType.getName();
 			fieldModel.beanName = beanName;
 			fieldModel.name = fieldName;
 
@@ -224,28 +229,48 @@ public class GwtCodegenFileVisitor extends FileVisitor {
 		runTemplate("jso/JsoObject.ftl", model, new File(gwtOutDir, "client/model/" + jsoClassName + ".java"));
 	}
 
-	private boolean isNativeType(Class<?> type) {
-		if (type.isPrimitive())
-			return true;
-		if (type == String.class)
-			return true;
+	private String mapSpecialType(Class<?> type) {
+		String name = type.getName();
 
-		if (type == Boolean.class)
+		Map<String, String> whitelist = Maps.newHashMap();
+		whitelist.put("org.platformlayer.core.model.PlatformLayerKey",
+				"org.platformlayer.gwt.client.api.platformlayer.PlatformLayerKeyJs");
+		String translated = whitelist.get(name);
+		return translated;
+	}
+
+	private boolean isNativeType(Class<?> type) {
+		if (type.isPrimitive()) {
 			return true;
-		if (type == Byte.class)
+		}
+		if (type == String.class) {
 			return true;
-		if (type == Character.class)
+		}
+
+		if (type == Boolean.class) {
 			return true;
-		if (type == Short.class)
+		}
+		if (type == Byte.class) {
 			return true;
-		if (type == Integer.class)
+		}
+		if (type == Character.class) {
 			return true;
-		if (type == Long.class)
+		}
+		if (type == Short.class) {
 			return true;
-		if (type == Float.class)
+		}
+		if (type == Integer.class) {
 			return true;
-		if (type == Double.class)
+		}
+		if (type == Long.class) {
 			return true;
+		}
+		if (type == Float.class) {
+			return true;
+		}
+		if (type == Double.class) {
+			return true;
+		}
 
 		return false;
 	}

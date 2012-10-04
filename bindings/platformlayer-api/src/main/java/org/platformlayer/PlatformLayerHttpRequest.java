@@ -24,11 +24,14 @@ import org.platformlayer.crypto.PublicKeyTrustManager;
 import org.platformlayer.http.HttpRequest;
 import org.platformlayer.http.HttpResponse;
 import org.platformlayer.http.SslConfiguration;
+import org.platformlayer.rest.ByteStringByteSource;
 import org.platformlayer.xml.JaxbHelper;
 import org.platformlayer.xml.JsonHelper;
 import org.platformlayer.xml.UnmarshalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.protobuf.ByteString;
 
 class PlatformLayerHttpRequest implements Closeable {
 	static final Logger log = LoggerFactory.getLogger(PlatformLayerHttpRequest.class);
@@ -134,7 +137,7 @@ class PlatformLayerHttpRequest implements Closeable {
 					}
 
 					String sendDataString = (String) sendData;
-					httpRequest.setRequestContent(Utf8.getBytes(sendDataString));
+					httpRequest.setRequestContent(new ByteStringByteSource(ByteString.copyFromUtf8(sendDataString)));
 				} else {
 					switch (sendDataFormat) {
 					case XML:
@@ -144,7 +147,7 @@ class PlatformLayerHttpRequest implements Closeable {
 
 						JaxbHelper jaxbHelper = JaxbHelper.get(sendData.getClass());
 						String xml = jaxbHelper.marshal(sendData, false);
-						httpRequest.setRequestContent(Utf8.getBytes(xml));
+						httpRequest.setRequestContent(new ByteStringByteSource(ByteString.copyFromUtf8(xml)));
 						// jaxbHelper.marshal(sendData, false, getOutputStream());
 						break;
 					case JSON:
@@ -154,7 +157,7 @@ class PlatformLayerHttpRequest implements Closeable {
 
 						JsonHelper jsonHelper = JsonHelper.build(sendData.getClass());
 						String json = jsonHelper.marshal(sendData, false);
-						httpRequest.setRequestContent(Utf8.getBytes(json));
+						httpRequest.setRequestContent(new ByteStringByteSource(ByteString.copyFromUtf8(json)));
 						// jsonHelper.marshal(sendData, false, getOutputStream());
 						break;
 					default:

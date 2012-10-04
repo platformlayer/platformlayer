@@ -1,5 +1,6 @@
 package org.platformlayer.rest;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -10,7 +11,8 @@ import javax.net.ssl.KeyManager;
 import javax.xml.bind.JAXBException;
 
 import org.apache.log4j.Logger;
-import org.openstack.utils.Utf8;
+import org.json.JSONObject;
+import org.platformlayer.ByteSource;
 import org.platformlayer.CastUtils;
 import org.platformlayer.IoUtils;
 import org.platformlayer.http.HttpConfiguration;
@@ -20,6 +22,8 @@ import org.platformlayer.http.HttpStrategy;
 import org.platformlayer.http.SslConfiguration;
 import org.platformlayer.xml.JaxbHelper;
 import org.platformlayer.xml.UnmarshalException;
+
+import com.google.protobuf.ByteString;
 
 public class JreRestfulClient implements RestfulClient {
 	static final Logger log = Logger.getLogger(JreRestfulClient.class);
@@ -71,8 +75,7 @@ public class JreRestfulClient implements RestfulClient {
 
 				// We rely on httpStrategy implementing caching if it's needed
 				HttpConfiguration http = httpStrategy.buildConfiguration(getSslConfiguration());
-				HttpRequest httpRequest = http.buildRequest(method,
-						uri);
+				HttpRequest httpRequest = http.buildRequest(method, uri);
 				httpRequest.setRequestHeader("Accept", "application/xml");
 
 				if (debug != null) {
@@ -80,12 +83,27 @@ public class JreRestfulClient implements RestfulClient {
 				}
 
 				if (postObject != null) {
-					httpRequest.setRequestHeader("Content-Type", "application/xml");
-					String xml = serializeXml(postObject);
-					httpRequest.setRequestContent(Utf8.getBytes(xml));
+					String data = null;
 
-					if (debug != null) {
-						debug.println(xml);
+					if (postObject instanceof JSONObject) {
+						httpRequest.setRequestHeader("Content-Type", "application/json");
+						data = ((JSONObject) postObject).toString();
+					} else if (postObject instanceof byte[]) {
+						httpRequest.setRequestContent(new ArrayByteSource((byte[]) postObject));
+					} else if (postObject instanceof ByteSource) {
+						httpRequest.setRequestContent((ByteSource) postObject);
+					} else if (postObject instanceof File) {
+						httpRequest.setRequestContent(new FileByteSource((File) postObject));
+					} else {
+						httpRequest.setRequestHeader("Content-Type", "application/xml");
+						data = serializeXml(postObject);
+					}
+
+					if (data != null) {
+						httpRequest.setRequestContent(new ByteStringByteSource(ByteString.copyFromUtf8(data)));
+						if (debug != null) {
+							debug.println(data);
+						}
 					}
 				}
 
@@ -100,6 +118,10 @@ public class JreRestfulClient implements RestfulClient {
 				case 203: {
 					if (responseClass.equals(String.class)) {
 						return CastUtils.as(IoUtils.readAll(response.getInputStream()), responseClass);
+					} else if (responseClass.equals(HttpResponse.class)) {
+						HttpResponse ret = response;
+						response = null; // Don't close
+						return CastUtils.as(ret, responseClass);
 					} else {
 						return deserializeXml(response.getInputStream(), responseClass);
 					}
@@ -135,7 +157,7 @@ public class JreRestfulClient implements RestfulClient {
 		try {
 			return JaxbHelper.deserializeXmlObject(is, clazz, true);
 		} catch (UnmarshalException e) {
-			throw new RestClientException("Error reading authentication response data", e);
+			throw new RestClientException("Error reading XML response data", e);
 		}
 	}
 
@@ -166,6 +188,10 @@ public class JreRestfulClient implements RestfulClient {
 	@Override
 	public URI getBaseUri() {
 		return URI.create(this.baseUrl);
+	}
+
+	public HttpStrategy getHttpStrategy() {
+		return httpStrategy;
 	}
 
 }

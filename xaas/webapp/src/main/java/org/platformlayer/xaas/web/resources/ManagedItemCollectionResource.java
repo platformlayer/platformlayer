@@ -55,7 +55,8 @@ public class ManagedItemCollectionResource extends XaasResourceBase {
 		// ModelClass<T> modelClass = (ModelClass<T>) getModelClass();
 
 		// TODO: Does it matter that we're not checking the item type??
-		return itemService.createItem(getProjectAuthorization(), item);
+		boolean generateUniqueName = true;
+		return itemService.createItem(getProjectAuthorization(), item, generateUniqueName);
 	}
 
 	@POST
@@ -65,7 +66,8 @@ public class ManagedItemCollectionResource extends XaasResourceBase {
 			XMLStreamException {
 		T typedItem = readItem(json);
 
-		return itemService.createItem(getProjectAuthorization(), typedItem);
+		boolean generateUniqueName = true;
+		return itemService.createItem(getProjectAuthorization(), typedItem, generateUniqueName);
 	}
 
 	// private Tags deserializeTags(HttpHeaders hh) {

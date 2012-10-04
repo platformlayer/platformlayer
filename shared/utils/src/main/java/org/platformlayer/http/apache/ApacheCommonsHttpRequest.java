@@ -2,6 +2,7 @@ package org.platformlayer.http.apache;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
@@ -14,9 +15,11 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
+import org.platformlayer.ByteSource;
+import org.platformlayer.IoUtils;
 import org.platformlayer.http.HttpRequest;
 import org.platformlayer.http.HttpResponse;
 
@@ -120,9 +123,45 @@ public class ApacheCommonsHttpRequest implements HttpRequest {
 	}
 
 	@Override
-	public void setRequestContent(byte[] bytes) throws IOException {
+	public void setRequestContent(final ByteSource data) throws IOException {
 		HttpEntityEnclosingRequestBase post = (HttpEntityEnclosingRequestBase) request;
-		post.setEntity(new ByteArrayEntity(bytes));
+		post.setEntity(new AbstractHttpEntity() {
+
+			@Override
+			public boolean isRepeatable() {
+				return true;
+			}
+
+			@Override
+			public long getContentLength() {
+				try {
+					return data.getContentLength();
+				} catch (IOException e) {
+					throw new IllegalStateException("Error getting content length", e);
+				}
+			}
+
+			@Override
+			public InputStream getContent() throws IOException, IllegalStateException {
+				return data.open();
+			}
+
+			@Override
+			public void writeTo(OutputStream os) throws IOException {
+				InputStream is = data.open();
+				try {
+					IoUtils.copyToOutputStream(is, os);
+				} finally {
+					is.close();
+				}
+			}
+
+			@Override
+			public boolean isStreaming() {
+				return false;
+			}
+
+		});
 	}
 
 }

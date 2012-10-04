@@ -13,6 +13,8 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.log4j.Logger;
 import org.codehaus.jettison.mapped.Configuration;
 import org.eclipse.jetty.server.Response;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.platformlayer.CastUtils;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.auth.crypto.SecretProvider;
@@ -89,6 +91,7 @@ public class XaasResourceBase extends ResourceBase {
 	// return opsAuth;
 	// }
 
+	@Override
 	protected AuthenticationCredentials getAuthenticationCredentials() {
 		AuthenticationCredentials auth = getScopeParameter(AuthenticationCredentials.class, false);
 		if (auth == null) {
@@ -202,6 +205,20 @@ public class XaasResourceBase extends ResourceBase {
 		final HashMap<String, String> xmlNamespaceToJsonPrefix = Maps.newHashMap();
 		xmlNamespaceToJsonPrefix.put(elementInfo.namespace, "");
 		xmlNamespaceToJsonPrefix.put("http://platformlayer.org/core/v1.0", "core");
+
+		boolean wrap = true;
+		if (wrap) {
+			try {
+				JSONObject jsonObject = new JSONObject(json);
+
+				JSONObject wrapped = new JSONObject();
+				wrapped.put(elementInfo.elementName, jsonObject);
+
+				json = wrapped.toString();
+			} catch (JSONException e) {
+				throw new IllegalArgumentException("Error parsing JSON", e);
+			}
+		}
 
 		Configuration configuration = JsonHelper.buildConfiguration(xmlNamespaceToJsonPrefix);
 

@@ -3,6 +3,8 @@ package org.platformlayer.http;
 import java.io.IOException;
 import java.net.URI;
 
+import org.platformlayer.ByteSource;
+
 public interface HttpRequest {
 
 	void setRequestHeader(String key, String value);
@@ -13,6 +15,6 @@ public interface HttpRequest {
 
 	URI getUrl();
 
-	void setRequestContent(byte[] bytes) throws IOException;
+	void setRequestContent(ByteSource data) throws IOException;
 
 }

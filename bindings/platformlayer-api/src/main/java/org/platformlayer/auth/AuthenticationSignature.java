@@ -15,7 +15,7 @@ import com.google.common.collect.Maps;
 
 public class AuthenticationSignature {
 
-	public static byte[] calculateSignature(Mac signingKey, String timestamp, String method, String requestPath) {
+	public static byte[] calculateSignature(Mac mac, String timestamp, String method, String requestPath) {
 		// TODO: Add more parameters to strengthen this?
 		TreeMap<String, String> signValues = Maps.newTreeMap();
 		signValues.put("method", method);
@@ -38,8 +38,8 @@ public class AuthenticationSignature {
 
 		byte[] signature;
 
-		synchronized (signingKey) {
-			signature = CryptoUtils.hmacSha1(signingKey, signData);
+		synchronized (mac) {
+			signature = CryptoUtils.computeMac(mac, signData);
 		}
 		return signature;
 	}

@@ -5,10 +5,9 @@ import javax.crypto.SecretKey;
 import javax.crypto.interfaces.PBEKey;
 import javax.crypto.spec.SecretKeySpec;
 
-@Deprecated
-// Use AesCbcUtils
-public class AesUtils {
+public class AesCbcUtils {
 	private static final String ALGORITHM = "AES";
+	private static final String CIPHER = "AES/CBC/PKCS5Padding";
 	private static final int DEFAULT_KEYSIZE = 128;
 
 	public static SecretKey generateKey() {
@@ -24,7 +23,7 @@ public class AesUtils {
 	}
 
 	private static Cipher getCipher() {
-		return CryptoUtils.getCipher(ALGORITHM);
+		return CryptoUtils.getCipher(CIPHER);
 	}
 
 	public static byte[] decrypt(SecretKey key, byte[] cipherText) {
@@ -56,5 +55,10 @@ public class AesUtils {
 		PBEKey pbeKey = KeyDerivationFunctions.doPbkdf2(salt, password, DEFAULT_KEYSIZE);
 		SecretKey secretKey = new SecretKeySpec(pbeKey.getEncoded(), ALGORITHM);
 		return secretKey;
+	}
+
+	public static long computeEncryptedLength(long contentLength) {
+		long length = 16 * ((contentLength + 15) / 16);
+		return length;
 	}
 }
