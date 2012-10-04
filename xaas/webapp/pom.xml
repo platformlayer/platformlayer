@@ -17,6 +17,13 @@
             <artifactId>platformlayer-xaas-core</artifactId>
         </dependency>
 
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+        </dependency>
+
+
         <dependency>
             <groupId>org.platformlayer</groupId>
             <artifactId>platformlayer-ops-core</artifactId>
