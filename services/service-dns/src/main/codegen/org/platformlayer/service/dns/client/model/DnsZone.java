@@ -6,7 +6,6 @@ public class DnsZone extends JavaScriptObject {
 	protected DnsZone() {
 	}
 
-	// TODO: JSNI cannot map 'PlatformLayerKey key'
 	// TODO: JSNI cannot map 'long version'
 	// TODO: JSNI cannot map 'ManagedItemState state'
 	// TODO: JSNI cannot map 'Tags tags'
@@ -17,4 +16,9 @@ public class DnsZone extends JavaScriptObject {
 
 	public final native void setDnsName(java.lang.String newValue)
 	/*-{ this.dnsName = newValue; }-*/;
+	public final native org.platformlayer.gwt.client.api.platformlayer.PlatformLayerKeyJs getKey()
+	/*-{ return this.key; }-*/;
+
+	public final native void setKey(org.platformlayer.gwt.client.api.platformlayer.PlatformLayerKeyJs newValue)
+	/*-{ this.key = newValue; }-*/;
 }
