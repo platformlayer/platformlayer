@@ -3,21 +3,30 @@ package org.platformlayer.service.httpfrontend.ops;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 import java.util.Properties;
 
 import javax.inject.Inject;
 
 import org.openstack.utils.PropertyUtils;
 import org.openstack.utils.Utf8;
+import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.filesystem.SyntheticFile;
+import org.platformlayer.ops.helpers.ProviderHelper;
+import org.platformlayer.ops.helpers.ProviderHelper.ProviderOf;
+import org.platformlayer.ops.http.HttpBackend;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
+import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.service.httpfrontend.model.HttpServer;
 import org.platformlayer.service.httpfrontend.model.HttpSite;
 import org.platformlayer.service.machines.openstack.v1.OpenstackCloud;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 
 public class HostConfigFile extends SyntheticFile {
 
@@ -26,6 +35,9 @@ public class HostConfigFile extends SyntheticFile {
 
 	@Inject
 	HttpServerTemplateData template;
+
+	@Inject
+	ProviderHelper providers;
 
 	@Override
 	protected File getFilePath() {
@@ -53,11 +65,11 @@ public class HostConfigFile extends SyntheticFile {
 		HttpServer server = ops.getInstance(HttpServer.class);
 		HttpSite site = ops.getInstance(HttpSite.class);
 
-		URI backend = URI.create(site.backend);
-		if (backend.getScheme().equals("openstack")) {
-			OpenstackCloud cloud = platformLayer.findItem(backend.getHost(), OpenstackCloud.class);
+		URI backendUri = URI.create(site.backend);
+		if (backendUri.getScheme().equals("openstack")) {
+			OpenstackCloud cloud = platformLayer.findItem(backendUri.getHost(), OpenstackCloud.class);
 			if (cloud == null) {
-				throw new OpsException("Cannot find backend cloud: " + backend);
+				throw new OpsException("Cannot find backend cloud: " + backendUri);
 			}
 
 			properties.put("openstack.url", cloud.getEndpoint());
@@ -67,15 +79,33 @@ public class HostConfigFile extends SyntheticFile {
 				properties.put("openstack.tenant", cloud.getTenant());
 			}
 
-			String container = backend.getPath();
+			String container = backendUri.getPath();
 			if (container.startsWith("/")) {
 				container = container.substring(1);
 			}
 			properties.put("openstack.container", container);
 
 			properties.put("provider", "openstack");
+		} else if (backendUri.getScheme().equals(PlatformLayerKey.SCHEME)) {
+			PlatformLayerKey key = PlatformLayerKey.parse(site.backend);
+
+			OpsTarget target = OpsContext.get().getInstance(OpsTarget.class);
+			NetworkPoint src = NetworkPoint.forTarget(target);
+
+			List<String> backends = Lists.newArrayList();
+			for (ProviderOf<HttpBackend> httpBackend : providers.listChildrenProviding(key, HttpBackend.class)) {
+				backends.add(httpBackend.get().getUri(src).toString());
+			}
+
+			if (!backends.isEmpty()) {
+				properties.put("backend", Joiner.on(",").join(backends));
+			} else {
+				throw new OpsException("No backends found!");
+			}
+
+			// properties.put("provider", "openstack");
 		} else {
-			throw new IllegalArgumentException("Unknown scheme: " + backend.getScheme());
+			throw new IllegalArgumentException("Unknown scheme: " + backendUri.getScheme());
 		}
 
 		return properties;

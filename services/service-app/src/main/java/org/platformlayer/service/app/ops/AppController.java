@@ -9,10 +9,12 @@ import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.UniqueTag;
+import org.platformlayer.ops.firewall.Transport;
 import org.platformlayer.ops.networks.HasPorts;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.ops.tree.OwnedItem;
 import org.platformlayer.service.app.model.App;
+import org.platformlayer.service.httpfrontend.model.HttpSite;
 import org.platformlayer.service.jetty.model.JettyContext;
 import org.platformlayer.service.jetty.model.JettyService;
 
@@ -38,7 +40,9 @@ public class AppController extends OpsTreeBase implements HasPorts {
 
 			JettyService server = new JettyService();
 
-			server.dnsName = model.dnsName;
+			server.transport = Transport.Ipv6;
+
+			// server.dnsName = model.dnsName;
 			server.contexts = Lists.newArrayList();
 
 			JettyContext context = new JettyContext();
@@ -56,9 +60,32 @@ public class AppController extends OpsTreeBase implements HasPorts {
 		}
 	}
 
+	public static class ChildHttpSite extends OwnedItem<HttpSite> {
+		@Bound
+		App model;
+
+		@Override
+		protected HttpSite buildItemTemplate() throws OpsException {
+			Tag parentTag = Tag.buildParentTag(model.getKey());
+
+			HttpSite httpSite = new HttpSite();
+			httpSite.hostname = model.dnsName;
+			httpSite.backend = model.getKey().getUrl();
+
+			Tag uniqueTag = UniqueTag.build(model);
+			httpSite.getTags().add(uniqueTag);
+			httpSite.getTags().add(parentTag);
+
+			httpSite.key = PlatformLayerKey.fromId(model.getId());
+
+			return httpSite;
+		}
+	}
+
 	@Override
 	protected void addChildren() throws OpsException {
 		addChild(JettyChildServer.class);
+		addChild(ChildHttpSite.class);
 	}
 
 	@Override

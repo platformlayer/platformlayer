@@ -24,6 +24,7 @@ import org.platformlayer.service.dns.model.DnsServer;
 import org.platformlayer.service.dns.model.DnsZone;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.Lists;
 
 public class DnsHelpers {
 	static final Logger log = Logger.getLogger(DnsHelpers.class);
@@ -69,16 +70,6 @@ public class DnsHelpers {
 
 			target.mv(tempFile, path);
 		}
-	}
-
-	static String toZone(DnsRecord record) {
-		String dnsName = record.dnsName;
-		int firstDot = dnsName.indexOf('.');
-		if (firstDot != -1) {
-			return dnsName.substring(firstDot + 1);
-		}
-
-		throw new IllegalArgumentException("Unexpected name: " + dnsName);
 	}
 
 	public ZoneFile buildDnsFile(DnsZone dnsDomain) throws OpsException {
@@ -137,8 +128,20 @@ public class DnsHelpers {
 				break;
 			}
 
-			String zone = toZone(record);
-			if (!zone.equals(dnsZone)) {
+			boolean match = false;
+			String recordDnsName = record.dnsName;
+			if (recordDnsName.equals(dnsZone)) {
+				match = true;
+			} else if (recordDnsName.endsWith("." + dnsZone)) {
+				int firstDot = recordDnsName.indexOf('.');
+				if (firstDot != -1) {
+					if (dnsZone.equals(recordDnsName.substring(firstDot + 1))) {
+						match = true;
+					}
+				}
+			}
+
+			if (!match) {
 				continue;
 			}
 
@@ -149,15 +152,25 @@ public class DnsHelpers {
 	}
 
 	public ZoneFile buildDnsFile(DnsRecord dnsRecord) throws OpsException {
-		String zone = toZone(dnsRecord);
+		List<DnsZone> matches = Lists.newArrayList();
 
 		for (DnsZone dnsZone : platformLayer.listItems(DnsZone.class)) {
-			if (dnsZone.dnsName.equals(zone)) {
-				return buildDnsFile(dnsZone);
+			if (dnsRecord.dnsName.endsWith(dnsZone.dnsName)) {
+				matches.add(dnsZone);
 			}
 		}
 
-		throw new OpsException("Cannot find zone for record: " + dnsRecord.dnsName);
+		if (matches.size() == 0) {
+			throw new OpsException("Cannot find zone for record: " + dnsRecord.dnsName);
+		}
+
+		if (matches.size() != 1) {
+			throw new OpsException("Picking between multiple matching zones not yet implemented");
+		}
+
+		DnsZone dnsZone = matches.get(0);
+
+		return buildDnsFile(dnsZone);
 	}
 
 	class TargetServer implements AutoCloseable {

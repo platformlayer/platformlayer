@@ -26,7 +26,7 @@ import com.google.common.collect.Lists;
 public class PlatformLayerKey {
 	static final Logger log = Logger.getLogger(PlatformLayerKey.class);
 
-	private static final String SCHEME = "platform";
+	public static final String SCHEME = "platform";
 
 	/* final */FederationKey host;
 	/* final */ProjectId project;
