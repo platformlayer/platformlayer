@@ -21,9 +21,7 @@ public class JettyInstall extends StandardServiceInstall {
 	protected DownloadFileByHash buildDownload() {
 		DownloadFileByHash download = super.buildDownload();
 
-		String url = "http://download.eclipse.org/jetty/stable-7/dist/jetty-distribution-7.6.5.v20120716.tar.gz";
-
-		download.setUrl(url);
+		download.setUrl("http://download.eclipse.org/jetty/7.6.5.v20120716/dist/jetty-distribution-7.6.5.v20120716.tar.gz");
 		download.hash = new Md5Hash("1f09d1e2ddc029ae8c8ce2361a6800f8");
 
 		return download;
