@@ -72,6 +72,8 @@ public class HostConfigFile extends SyntheticFile {
 				container = container.substring(1);
 			}
 			properties.put("openstack.container", container);
+
+			properties.put("provider", "openstack");
 		} else {
 			throw new IllegalArgumentException("Unknown scheme: " + backend.getScheme());
 		}
