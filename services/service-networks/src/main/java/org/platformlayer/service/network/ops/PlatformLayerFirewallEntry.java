@@ -83,9 +83,7 @@ public class PlatformLayerFirewallEntry extends OpsTreeBase {
 				entry.protocol = protocol;
 				entry.transport = transport;
 				entry.ruleKey = uniqueId;
-			}
-
-			if (sourceItemKey != null) {
+			} else if (sourceItemKey != null) {
 				LateBound<IptablesFilterEntry> entry = new LateBound<IptablesFilterEntry>() {
 					@Override
 					public IptablesFilterEntry get() throws OpsException {
@@ -140,6 +138,14 @@ public class PlatformLayerFirewallEntry extends OpsTreeBase {
 				};
 
 				dest.addChild(entry);
+			} else {
+				// Both empty => wildcard
+
+				IptablesFilterEntry entry = dest.addChild(IptablesFilterEntry.class);
+				entry.port = port;
+				entry.protocol = protocol;
+				entry.transport = transport;
+				entry.ruleKey = uniqueId;
 			}
 		}
 
