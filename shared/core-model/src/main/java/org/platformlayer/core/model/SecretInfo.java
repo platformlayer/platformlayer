@@ -1,9 +1,10 @@
 package org.platformlayer.core.model;
 
-import javax.crypto.SecretKey;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlTransient;
+
+import com.fathomdb.crypto.CryptoKey;
 
 /**
  * This class is used to hold / pass the encryption keys. Currently all the fields are transient.
@@ -21,9 +22,9 @@ public class SecretInfo {
 	private byte[] data;
 
 	@XmlTransient
-	private SecretKey secret;
+	private CryptoKey secret;
 
-	public SecretKey getSecret() {
+	public CryptoKey getSecret() {
 		if (secret == null) {
 			throw new IllegalStateException();
 		}
@@ -34,7 +35,7 @@ public class SecretInfo {
 		return secret == null;
 	}
 
-	public void unlock(SecretKey itemSecret) {
+	public void unlock(CryptoKey itemSecret) {
 		this.secret = itemSecret;
 	}
 

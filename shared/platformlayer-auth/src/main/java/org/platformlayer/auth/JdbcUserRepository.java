@@ -25,7 +25,6 @@ import org.platformlayer.RepositoryException;
 import org.platformlayer.auth.crypto.SecretStore;
 import org.platformlayer.auth.crypto.SecretStore.Writer;
 import org.platformlayer.cache.Memoize;
-import org.platformlayer.crypto.AesUtils;
 import org.platformlayer.crypto.CertificateUtils;
 import org.platformlayer.crypto.CryptoUtils;
 import org.platformlayer.crypto.OpenSshUtils;
@@ -41,6 +40,8 @@ import org.platformlayer.metrics.Instrumented;
 import org.platformlayer.model.RoleId;
 import org.platformlayer.ops.OpsException;
 
+import com.fathomdb.crypto.CryptoKey;
+import com.fathomdb.crypto.FathomdbCrypto;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
@@ -53,7 +54,7 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 
 	@Override
 	@JdbcTransaction
-	public void addUserToProject(String username, String projectKey, SecretKey projectSecret, List<RoleId> roles)
+	public void addUserToProject(String username, String projectKey, CryptoKey projectSecret, List<RoleId> roles)
 			throws RepositoryException {
 		DbHelper db = new DbHelper();
 		try {
@@ -67,7 +68,7 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 				throw new RepositoryException("Project not found");
 			}
 
-			byte[] projectSecretData = projectSecret.getEncoded();
+			byte[] projectSecretData = FathomdbCrypto.serialize(projectSecret);
 
 			PublicKey userPublicKey = user.getPublicKey();
 
@@ -166,10 +167,10 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 			byte[] secretData;
 			byte[] publicKeyHash = null;
 
-			SecretKey userSecretKey = AesUtils.generateKey();
+			CryptoKey userSecretKey = FathomdbCrypto.generateKey();
 
 			try {
-				byte[] userSecret = AesUtils.serialize(userSecretKey);
+				byte[] userSecret = FathomdbCrypto.serialize(userSecretKey);
 
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 				SecretStore.Writer writer = new SecretStore.Writer(baos);
@@ -210,7 +211,7 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 			// This keypair is for grants etc. The client doesn't (currently) get access to the private key
 			KeyPair userRsaKeyPair = RsaUtils.generateRsaKeyPair(RsaUtils.SMALL_KEYSIZE);
 			byte[] privateKeyData = RsaUtils.serialize(userRsaKeyPair.getPrivate());
-			privateKeyData = AesUtils.encrypt(userSecretKey, privateKeyData);
+			privateKeyData = FathomdbCrypto.encrypt(userSecretKey, privateKeyData);
 			byte[] publicKeyData = RsaUtils.serialize(userRsaKeyPair.getPublic());
 
 			db.insertUser(userName, hashedPassword, secretData, publicKeyData, privateKeyData);
@@ -593,8 +594,8 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 			byte[] secretData;
 			byte[] metadata;
 			try {
-				SecretKey projectSecret = AesUtils.generateKey();
-				byte[] plaintext = AesUtils.serialize(projectSecret);
+				CryptoKey projectSecret = FathomdbCrypto.generateKey();
+				byte[] plaintext = FathomdbCrypto.serialize(projectSecret);
 
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 				SecretStore.Writer writer = new SecretStore.Writer(baos);
@@ -606,7 +607,7 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 
 				String metadataString = key + "\0";
 				byte[] metadataPlaintext = Utf8.getBytes(metadataString);
-				metadata = AesUtils.encrypt(projectSecret, metadataPlaintext);
+				metadata = FathomdbCrypto.encrypt(projectSecret, metadataPlaintext);
 
 				project = new ProjectEntity();
 				project.setProjectSecret(projectSecret);
@@ -824,7 +825,7 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 		}
 
 		if (request.challengeResponse != null) {
-			user.unlock(AesUtils.deserializeKey(request.challengeResponse));
+			user.unlock(FathomdbCrypto.deserializeKey(request.challengeResponse));
 
 			response.user = user;
 

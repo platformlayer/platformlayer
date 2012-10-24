@@ -2,33 +2,33 @@ package org.platformlayer.auth.crypto;
 
 import java.security.PrivateKey;
 
-import javax.crypto.SecretKey;
-
-import org.platformlayer.crypto.AesUtils;
 import org.platformlayer.crypto.RsaUtils;
 
+import com.fathomdb.crypto.CryptoKey;
+import com.fathomdb.crypto.FathomdbCrypto;
+
 public class SecretStoreDecoder extends SecretStoreVisitor {
-	SecretKey secretKey;
+	CryptoKey secretKey;
 
 	public Object result;
 
-	protected SecretKey toSecretKey(byte[] data) {
-		return AesUtils.deserializeKey(data);
+	protected CryptoKey toSecretKey(byte[] data) {
+		return FathomdbCrypto.deserializeKey(data);
 	}
 
-	protected SecretKey decryptAsymetricKey(PrivateKey privateKey, byte[] encrypted) {
+	protected CryptoKey decryptAsymetricKey(PrivateKey privateKey, byte[] encrypted) {
 		return toSecretKey(RsaUtils.decrypt(privateKey, encrypted));
 	}
 
-	protected SecretKey decryptSymetricKey(SecretKey userKey, byte[] encrypted) {
-		return toSecretKey(AesUtils.decrypt(userKey, encrypted));
+	protected CryptoKey decryptSymetricKey(CryptoKey userKey, byte[] encrypted) {
+		return toSecretKey(FathomdbCrypto.decrypt(userKey, encrypted));
 	}
 
-	public SecretKey getSecretKey() {
+	public CryptoKey getSecretKey() {
 		return secretKey;
 	}
 
-	public void setSecretKey(SecretKey key) {
+	public void setSecretKey(CryptoKey key) {
 		if (this.secretKey != null) {
 			if (!this.secretKey.equals(key)) {
 				throw new IllegalStateException();

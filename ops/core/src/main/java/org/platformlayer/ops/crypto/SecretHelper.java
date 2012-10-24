@@ -4,13 +4,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.PublicKey;
 
-import javax.crypto.SecretKey;
 import javax.inject.Inject;
 
 import org.platformlayer.auth.crypto.SecretStore;
-import org.platformlayer.crypto.AesUtils;
 import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.ops.OpsContext;
+
+import com.fathomdb.crypto.CryptoKey;
+import com.fathomdb.crypto.FathomdbCrypto;
 
 public class SecretHelper {
 	@Inject
@@ -18,12 +19,12 @@ public class SecretHelper {
 
 	// TODO: We need to use the project secret, not the item secret
 
-	public byte[] encodeItemSecret(SecretKey itemSecret) {
+	public byte[] encodeItemSecret(CryptoKey itemSecret) {
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			SecretStore.Writer writer = new SecretStore.Writer(baos);
 
-			byte[] plaintext = AesUtils.serialize(itemSecret);
+			byte[] plaintext = FathomdbCrypto.serialize(itemSecret);
 
 			for (int backend : keyStore.getBackends()) {
 				PublicKey publicKey = keyStore.findPublicKey(backend);
@@ -115,7 +116,7 @@ public class SecretHelper {
 	public byte[] decryptSecret(byte[] data, byte[] secret) {
 		SecretStore secretStore = new SecretStore(secret);
 
-		SecretKey secretKey = null;
+		CryptoKey secretKey = null;
 
 		for (ProjectAuthorization project : OpsContext.get().getEncryptingProjects()) {
 			secretKey = secretStore.getSecretFromProject(project);
@@ -125,7 +126,7 @@ public class SecretHelper {
 			throw new SecurityException();
 		}
 
-		return AesUtils.decrypt(secretKey, data);
+		return FathomdbCrypto.decrypt(secretKey, data);
 	}
 
 }

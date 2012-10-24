@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimerTask;
 
-import javax.crypto.SecretKey;
-
 import org.apache.log4j.Logger;
 import org.openstack.utils.Hex;
 import org.platformlayer.HttpPlatformLayerClient;
@@ -21,11 +19,12 @@ import org.platformlayer.auth.DirectAuthenticationToken;
 import org.platformlayer.auth.DirectAuthenticator;
 import org.platformlayer.core.model.JobSchedule;
 import org.platformlayer.core.model.PlatformLayerKey;
-import org.platformlayer.crypto.AesUtils;
 import org.platformlayer.http.HttpStrategy;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ops.OpsException;
 
+import com.fathomdb.crypto.CryptoKey;
+import com.fathomdb.crypto.FathomdbCrypto;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -223,7 +222,7 @@ public class SchedulerImpl implements Scheduler {
 		}
 		{
 			String token = in.token;
-			SecretKey secret = AesUtils.deserializeKey(Hex.fromHex(in.secret.plaintext()));
+			CryptoKey secret = FathomdbCrypto.deserializeKey(Hex.fromHex(in.secret.plaintext()));
 			DirectAuthenticationToken authenticationToken = new DirectAuthenticationToken(token, secret);
 			authenticator = new DirectAuthenticator(authenticationToken);
 		}

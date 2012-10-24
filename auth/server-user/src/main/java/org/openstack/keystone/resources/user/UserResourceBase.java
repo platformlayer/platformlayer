@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.auth.ProjectEntity;
 import org.platformlayer.auth.UserEntity;
+import org.platformlayer.auth.keystone.AuthenticationSecrets;
 import org.platformlayer.auth.model.Access;
 import org.platformlayer.auth.model.Token;
 import org.platformlayer.auth.resources.PlatformlayerAuthResourceBase;
@@ -22,8 +23,13 @@ public class UserResourceBase extends PlatformlayerAuthResourceBase {
 	@Inject
 	TokenService tokenService;
 
+	@Inject
+	AuthenticationSecrets authSecrets;
+
 	protected Access buildAccess(UserEntity user) {
-		TokenInfo token = buildToken("" + user.getId(), user.getTokenSecret());
+		byte[] tokenSecret = authSecrets.buildToken(user.getUserSecret());
+
+		TokenInfo token = buildToken("" + user.getId(), tokenSecret);
 
 		Access access = new Access();
 		// response.access.serviceCatalog = serviceMapper.getServices(userInfo, project);

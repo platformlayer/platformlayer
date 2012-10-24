@@ -1,13 +1,13 @@
 package org.platformlayer.auth;
 
-import javax.crypto.SecretKey;
+import com.fathomdb.crypto.CryptoKey;
 
 public interface ProjectInfo {
 	boolean isLocked();
 
-	SecretKey getProjectSecret();
+	CryptoKey getProjectSecret();
 
 	int getId();
 
 	String getName();
- }
+}

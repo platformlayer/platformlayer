@@ -4,7 +4,6 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 
-import javax.crypto.SecretKey;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -14,11 +13,13 @@ import javax.persistence.Transient;
 import org.apache.log4j.Logger;
 import org.openstack.utils.Utf8;
 import org.platformlayer.auth.crypto.SecretStore;
-import org.platformlayer.crypto.AesUtils;
 import org.platformlayer.crypto.CertificateUtils;
 import org.platformlayer.crypto.RsaUtils;
 import org.platformlayer.crypto.SecureComparison;
 import org.platformlayer.ops.OpsException;
+
+import com.fathomdb.crypto.CryptoKey;
+import com.fathomdb.crypto.FathomdbCrypto;
 
 @Entity
 @Table(name = "projects")
@@ -39,7 +40,7 @@ public class ProjectEntity implements ProjectInfo {
 	public byte[] metadata;
 
 	@Transient
-	public SecretKey projectSecret;
+	public CryptoKey projectSecret;
 
 	@Column(name = "private_key")
 	public byte[] privateKeyData;
@@ -59,7 +60,7 @@ public class ProjectEntity implements ProjectInfo {
 	}
 
 	@Override
-	public SecretKey getProjectSecret() {
+	public CryptoKey getProjectSecret() {
 		if (projectSecret == null) {
 			throw new IllegalStateException();
 		}
@@ -82,13 +83,13 @@ public class ProjectEntity implements ProjectInfo {
 		}
 	}
 
-	public void setProjectSecret(SecretKey secret) {
+	public void setProjectSecret(CryptoKey secret) {
 		this.projectSecret = secret;
 	}
 
 	public boolean isSecretValid() {
 		try {
-			byte[] plaintext = AesUtils.decrypt(getProjectSecret(), metadata);
+			byte[] plaintext = FathomdbCrypto.decrypt(getProjectSecret(), metadata);
 			String prefix = name + "\0";
 			byte[] prefixBytes = Utf8.getBytes(prefix);
 			if (!SecureComparison.startsWith(plaintext, prefixBytes)) {
@@ -109,7 +110,7 @@ public class ProjectEntity implements ProjectInfo {
 			if (privateKeyData == null) {
 				throw new IllegalStateException();
 			}
-			byte[] plaintext = AesUtils.decrypt(getProjectSecret(), privateKeyData);
+			byte[] plaintext = FathomdbCrypto.decrypt(getProjectSecret(), privateKeyData);
 			privateKey = RsaUtils.deserializePrivateKey(plaintext);
 		}
 		return privateKey;
@@ -117,7 +118,7 @@ public class ProjectEntity implements ProjectInfo {
 
 	public void setPrivateKey(PrivateKey privateKey) {
 		byte[] privateKeyData = RsaUtils.serialize(privateKey);
-		privateKeyData = AesUtils.encrypt(getProjectSecret(), privateKeyData);
+		privateKeyData = FathomdbCrypto.encrypt(getProjectSecret(), privateKeyData);
 		this.privateKeyData = privateKeyData;
 		this.privateKey = privateKey;
 	}
@@ -145,7 +146,7 @@ public class ProjectEntity implements ProjectInfo {
 			if (pkiPrivateKeyData == null) {
 				return null;
 			}
-			byte[] plaintext = AesUtils.decrypt(getProjectSecret(), pkiPrivateKeyData);
+			byte[] plaintext = FathomdbCrypto.decrypt(getProjectSecret(), pkiPrivateKeyData);
 			pkiPrivateKey = RsaUtils.deserializePrivateKey(plaintext);
 		}
 		return pkiPrivateKey;
@@ -153,7 +154,7 @@ public class ProjectEntity implements ProjectInfo {
 
 	public void setPkiPrivateKey(PrivateKey pkiPrivateKey) {
 		byte[] pkiPrivateKeyData = RsaUtils.serialize(pkiPrivateKey);
-		pkiPrivateKeyData = AesUtils.encrypt(getProjectSecret(), pkiPrivateKeyData);
+		pkiPrivateKeyData = FathomdbCrypto.encrypt(getProjectSecret(), pkiPrivateKeyData);
 		this.pkiPrivateKeyData = privateKeyData;
 		this.pkiPrivateKey = pkiPrivateKey;
 	}

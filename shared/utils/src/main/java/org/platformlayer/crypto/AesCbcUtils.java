@@ -5,6 +5,8 @@ import javax.crypto.SecretKey;
 import javax.crypto.interfaces.PBEKey;
 import javax.crypto.spec.SecretKeySpec;
 
+import com.fathomdb.crypto.KeyDerivationFunctions;
+
 public class AesCbcUtils {
 	private static final String ALGORITHM = "AES";
 	private static final String CIPHER = "AES/CBC/PKCS5Padding";
@@ -52,7 +54,8 @@ public class AesCbcUtils {
 	}
 
 	public static SecretKey deriveKey(byte[] salt, String password) {
-		PBEKey pbeKey = KeyDerivationFunctions.doPbkdf2(salt, password, DEFAULT_KEYSIZE);
+		int iterationCount = 1000;
+		PBEKey pbeKey = KeyDerivationFunctions.doPbkdf2(iterationCount, salt, password, DEFAULT_KEYSIZE);
 		SecretKey secretKey = new SecretKeySpec(pbeKey.getEncoded(), ALGORITHM);
 		return secretKey;
 	}

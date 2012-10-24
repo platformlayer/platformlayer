@@ -1,14 +1,14 @@
 package org.platformlayer.auth.crypto;
 
-import javax.crypto.SecretKey;
-
 import org.platformlayer.auth.ProjectInfo;
 import org.platformlayer.core.model.SecretInfo;
 import org.platformlayer.model.ProjectAuthorization;
 
+import com.fathomdb.crypto.CryptoKey;
+
 public abstract class SecretProvider {
 
-	public abstract SecretKey getItemSecret(SecretInfo secret);
+	public abstract CryptoKey getItemSecret(SecretInfo secret);
 
 	public static SecretProvider from(final ProjectInfo project) {
 		if (project == null) {
@@ -17,10 +17,10 @@ public abstract class SecretProvider {
 
 		return new SecretProvider() {
 			@Override
-			public SecretKey getItemSecret(SecretInfo secret) {
+			public CryptoKey getItemSecret(SecretInfo secret) {
 				SecretStore secretStore = new SecretStore(secret.getEncoded());
 
-				SecretKey secretKey = secretStore.getSecretFromProject(project);
+				CryptoKey secretKey = secretStore.getSecretFromProject(project);
 				return secretKey;
 			}
 		};
@@ -33,10 +33,10 @@ public abstract class SecretProvider {
 
 		return new SecretProvider() {
 			@Override
-			public SecretKey getItemSecret(SecretInfo secret) {
+			public CryptoKey getItemSecret(SecretInfo secret) {
 				SecretStore secretStore = new SecretStore(secret.getEncoded());
 
-				SecretKey secretKey = secretStore.getSecretFromProject(project);
+				CryptoKey secretKey = secretStore.getSecretFromProject(project);
 				return secretKey;
 			}
 		};
@@ -46,10 +46,10 @@ public abstract class SecretProvider {
 	// return withProject(auth.getProject());
 	// }
 
-	public static SecretProvider forKey(final SecretKey itemSecret) {
+	public static SecretProvider forKey(final CryptoKey itemSecret) {
 		return new SecretProvider() {
 			@Override
-			public SecretKey getItemSecret(SecretInfo secret) {
+			public CryptoKey getItemSecret(SecretInfo secret) {
 				return itemSecret;
 			}
 		};

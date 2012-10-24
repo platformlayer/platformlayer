@@ -4,7 +4,6 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 
-import javax.crypto.SecretKey;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -12,9 +11,11 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.platformlayer.auth.crypto.SecretStore;
-import org.platformlayer.crypto.AesUtils;
 import org.platformlayer.crypto.PasswordHash;
 import org.platformlayer.crypto.RsaUtils;
+
+import com.fathomdb.crypto.CryptoKey;
+import com.fathomdb.crypto.FathomdbCrypto;
 
 @Entity
 @Table(name = "users")
@@ -52,7 +53,7 @@ public class UserEntity implements OpsUser {
 			if (privateKeyData == null) {
 				throw new IllegalStateException();
 			}
-			byte[] plaintext = AesUtils.decrypt(getUserSecret(), privateKeyData);
+			byte[] plaintext = FathomdbCrypto.decrypt(getUserSecret(), privateKeyData);
 			privateKey = RsaUtils.deserializePrivateKey(plaintext);
 		}
 		return privateKey;
@@ -69,16 +70,16 @@ public class UserEntity implements OpsUser {
 	}
 
 	@Transient
-	private SecretKey userSecret;
+	private CryptoKey userSecret;
 
-	public SecretKey getUserSecret() {
+	public CryptoKey getUserSecret() {
 		if (userSecret == null) {
 			throw new IllegalStateException();
 		}
 		return userSecret;
 	}
 
-	public SecretKey unlockWithPassword(String password) {
+	public CryptoKey unlockWithPassword(String password) {
 		SecretStore secretStore = new SecretStore(secret);
 		this.userSecret = secretStore.getSecretFromPassword(id, password);
 		if (this.userSecret == null) {
@@ -87,39 +88,39 @@ public class UserEntity implements OpsUser {
 		return this.userSecret;
 	}
 
-	@Transient
-	private byte[] tokenSecret;
-
-	public byte[] getTokenSecret() {
-		if (tokenSecret == null) {
-			if (userSecret == null) {
-				throw new IllegalStateException();
-			}
-
-			SecretStore secretStore = new SecretStore(secret);
-			this.tokenSecret = secretStore.getTokenSecretWithUserSecret(TOKEN_ID_DEFAULT, userSecret);
-			if (this.tokenSecret == null) {
-				throw new SecurityException();
-			}
-		}
-		return this.tokenSecret;
-	}
+	// @Transient
+	// private byte[] tokenSecret;
+	//
+	// public byte[] getTokenSecret() {
+	// if (tokenSecret == null) {
+	// if (userSecret == null) {
+	// throw new IllegalStateException();
+	// }
+	//
+	// SecretStore secretStore = new SecretStore(secret);
+	// this.tokenSecret = secretStore.getTokenSecretWithUserSecret(TOKEN_ID_DEFAULT, userSecret);
+	// if (this.tokenSecret == null) {
+	// throw new SecurityException();
+	// }
+	// }
+	// return this.tokenSecret;
+	// }
 
 	public boolean isPasswordMatch(String checkPassword) {
 		byte[] hashed = this.password;
 		return PasswordHash.checkPasswordHash(hashed, checkPassword);
 	}
 
-	public SecretKey unlockWithToken(int tokenId, final byte[] tokenSecret) {
-		SecretStore secretStore = new SecretStore(secret);
-		this.userSecret = secretStore.getSecretFromToken(tokenId, tokenSecret);
-		if (this.userSecret == null) {
-			throw new SecurityException();
-		}
-		return this.userSecret;
-	}
+	// public CryptoKey unlockWithToken(int tokenId, final byte[] tokenSecret) {
+	// SecretStore secretStore = new SecretStore(secret);
+	// this.userSecret = secretStore.getSecretFromToken(tokenId, tokenSecret);
+	// if (this.userSecret == null) {
+	// throw new SecurityException();
+	// }
+	// return this.userSecret;
+	// }
 
-	public void unlock(SecretKey userSecret) {
+	public void unlock(CryptoKey userSecret) {
 		this.userSecret = userSecret;
 	}
 

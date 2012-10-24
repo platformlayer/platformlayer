@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
+import javax.crypto.interfaces.PBEKey;
 import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
 
@@ -18,6 +19,8 @@ import org.platformlayer.config.Configuration;
 import org.platformlayer.crypto.CryptoUtils;
 import org.platformlayer.crypto.SecureComparison;
 import org.platformlayer.metrics.Instrumented;
+
+import com.fathomdb.crypto.KeyDerivationFunctions;
 
 @Instrumented
 public class SharedSecretTokenService implements TokenService {
@@ -43,8 +46,18 @@ public class SharedSecretTokenService implements TokenService {
 		}
 	}
 
+	static SecretKeySpec deriveHmacSha1Key(String keyData) {
+		// We want a consistent salt; it can't be empty
+		byte[] salt = Utf8.getBytes(keyData);
+		int keySize = 128; // ??
+		int iterationCount = 1000;
+		PBEKey pbeKey = KeyDerivationFunctions.doPbkdf2(iterationCount, salt, keyData, keySize);
+
+		return CryptoUtils.buildHmacSha1Key(pbeKey.getEncoded());
+	}
+
 	public SharedSecretTokenService(String secret) {
-		this.userSecretKeySpec = CryptoUtils.deriveHmacSha1Key(secret);
+		this.userSecretKeySpec = deriveHmacSha1Key(secret);
 	}
 
 	@Override

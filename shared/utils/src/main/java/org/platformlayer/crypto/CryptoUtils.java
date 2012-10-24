@@ -20,13 +20,11 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.Mac;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
-import javax.crypto.interfaces.PBEKey;
 import javax.crypto.spec.SecretKeySpec;
 
 import net.iharder.Base64;
 
 import org.openstack.crypto.Md5Hash;
-import org.openstack.utils.Utf8;
 import org.platformlayer.ByteSource;
 import org.platformlayer.IoUtils;
 
@@ -188,15 +186,6 @@ public class CryptoUtils {
 	public static SecretKeySpec buildHmacSha256Key(byte[] keyData) {
 		SecretKeySpec signingKey = new SecretKeySpec(keyData, HMAC_SHA256_ALGORITHM);
 		return signingKey;
-	}
-
-	public static SecretKeySpec deriveHmacSha1Key(String keyData) {
-		// We want a consistent salt; it can't be empty
-		byte[] salt = Utf8.getBytes(keyData);
-		int keySize = 128; // ??
-		PBEKey pbeKey = KeyDerivationFunctions.doPbkdf2(salt, keyData, keySize);
-
-		return buildHmacSha1Key(pbeKey.getEncoded());
 	}
 
 	public static byte[] hmacSha1(SecretKeySpec signingKey, byte[]... data) {

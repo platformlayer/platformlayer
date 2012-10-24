@@ -3,8 +3,6 @@ package org.platformlayer.keystone.cli.commands;
 import java.io.IOException;
 import java.util.Collections;
 
-import javax.crypto.SecretKey;
-
 import org.kohsuke.args4j.Argument;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.auth.ProjectEntity;
@@ -16,6 +14,7 @@ import org.platformlayer.keystone.cli.model.UserName;
 import org.platformlayer.model.RoleId;
 
 import com.fathomdb.cli.CliException;
+import com.fathomdb.crypto.CryptoKey;
 import com.google.common.base.Strings;
 
 public class JoinProject extends KeystoneCommandRunnerBase {
@@ -43,7 +42,7 @@ public class JoinProject extends KeystoneCommandRunnerBase {
 		}
 
 		SecretStore secretStore = new SecretStore(project.secretData);
-		SecretKey projectSecret = secretStore.getSecretFromUser(me);
+		CryptoKey projectSecret = secretStore.getSecretFromUser(me);
 		if (projectSecret == null) {
 			String msg = "Cannot retrieve project secret.";
 			msg += " Is " + me.key + " a member of " + project.getName() + "?";

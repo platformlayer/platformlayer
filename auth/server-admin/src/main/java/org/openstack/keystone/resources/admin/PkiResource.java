@@ -13,10 +13,10 @@ import org.platformlayer.auth.ProjectEntity;
 import org.platformlayer.auth.model.SignCertificateRequest;
 import org.platformlayer.auth.model.SignCertificateResponse;
 import org.platformlayer.auth.services.PkiService;
-import org.platformlayer.crypto.AesUtils;
 import org.platformlayer.crypto.CertificateUtils;
 import org.platformlayer.ops.OpsException;
 
+import com.fathomdb.crypto.FathomdbCrypto;
 import com.google.common.collect.Lists;
 
 @Path("/pki")
@@ -68,7 +68,7 @@ public class PkiResource extends RootResource {
 			throw404NotFound();
 		}
 
-		project.setProjectSecret(AesUtils.deserializeKey(request.projectSecret));
+		project.setProjectSecret(FathomdbCrypto.deserializeKey(request.projectSecret));
 
 		// Note that we do not unlock the user / project; we don't have any secret material
 		// TODO: We could return stuff encrypted with the user's public key

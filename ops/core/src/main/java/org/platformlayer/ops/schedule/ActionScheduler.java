@@ -14,9 +14,9 @@ import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.JobSchedule;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Secret;
-import org.platformlayer.crypto.AesUtils;
 import org.platformlayer.ops.OpsException;
 
+import com.fathomdb.crypto.FathomdbCrypto;
 import com.google.common.base.Joiner;
 
 public class ActionScheduler {
@@ -54,7 +54,7 @@ public class ActionScheduler {
 		if (authenticator instanceof DirectAuthenticator) {
 			DirectAuthenticator directAuthenticator = (DirectAuthenticator) authenticator;
 			DirectAuthenticationToken token = directAuthenticator.getAuthenticationToken();
-			out.secret = Secret.build(Hex.toHex(AesUtils.serialize(token.getSecret())));
+			out.secret = Secret.build(Hex.toHex(FathomdbCrypto.serialize(token.getSecret())));
 			out.token = token.getToken();
 		} else {
 			throw new UnsupportedOperationException();

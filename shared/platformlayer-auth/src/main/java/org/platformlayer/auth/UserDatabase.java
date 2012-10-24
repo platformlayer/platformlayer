@@ -11,6 +11,8 @@ import org.platformlayer.RepositoryException;
 import org.platformlayer.model.RoleId;
 import org.platformlayer.ops.OpsException;
 
+import com.fathomdb.crypto.CryptoKey;
+
 public interface UserDatabase extends UserRepository {
 	UserEntity createUser(String userName, String password, Certificate[] certificateChain) throws RepositoryException;
 
@@ -22,7 +24,7 @@ public interface UserDatabase extends UserRepository {
 
 	List<ProjectEntity> listProjectsByUserId(int userId) throws RepositoryException;
 
-	void addUserToProject(String username, String projectKey, SecretKey projectSecret, List<RoleId> roles)
+	void addUserToProject(String username, String projectKey, CryptoKey projectSecret, List<RoleId> roles)
 			throws RepositoryException;
 
 	void grantProjectToProject(String grantToProjectKey, String onProjectKey, SecretKey onProjectSecret)

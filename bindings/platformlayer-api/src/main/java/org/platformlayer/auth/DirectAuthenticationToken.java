@@ -1,18 +1,19 @@
 package org.platformlayer.auth;
 
-import javax.crypto.SecretKey;
-
 import org.platformlayer.crypto.CryptoUtils;
 import org.platformlayer.http.HttpRequest;
 import org.platformlayer.model.AuthenticationToken;
+
+import com.fathomdb.crypto.CryptoKey;
+import com.fathomdb.crypto.FathomdbCrypto;
 
 public class DirectAuthenticationToken implements AuthenticationToken {
 	public static final String PREFIX = "project:";
 
 	private final String token;
-	private final SecretKey secret;
+	private final CryptoKey secret;
 
-	public DirectAuthenticationToken(String token, SecretKey secret) {
+	public DirectAuthenticationToken(String token, CryptoKey secret) {
 		this.token = token;
 		this.secret = secret;
 	}
@@ -33,14 +34,14 @@ public class DirectAuthenticationToken implements AuthenticationToken {
 	@Override
 	public void populateRequest(HttpRequest httpRequest) {
 		httpRequest.setRequestHeader("X-Auth-Key", token);
-		httpRequest.setRequestHeader("X-Auth-Secret", CryptoUtils.toBase64(secret.getEncoded()));
+		httpRequest.setRequestHeader("X-Auth-Secret", CryptoUtils.toBase64(FathomdbCrypto.serialize(secret)));
 	}
 
 	public String getToken() {
 		return token;
 	}
 
-	public SecretKey getSecret() {
+	public CryptoKey getSecret() {
 		return secret;
 	}
 

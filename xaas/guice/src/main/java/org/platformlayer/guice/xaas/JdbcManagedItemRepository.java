@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import javax.crypto.SecretKey;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.xml.bind.JAXBException;
@@ -25,7 +24,6 @@ import org.platformlayer.core.model.SecretInfo;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.core.model.Tags;
-import org.platformlayer.crypto.AesUtils;
 import org.platformlayer.ids.ItemType;
 import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.ids.ModelKey;
@@ -45,6 +43,8 @@ import org.platformlayer.xaas.services.ServiceProvider;
 import org.platformlayer.xaas.services.ServiceProviderDictionary;
 import org.platformlayer.xml.JaxbHelper;
 
+import com.fathomdb.crypto.CryptoKey;
+import com.fathomdb.crypto.FathomdbCrypto;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -250,7 +250,7 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 			byte[] data = entity.data;
 
 			SecretInfo secret = new SecretInfo(entity.secret);
-			SecretKey itemSecret = secretProvider.getItemSecret(secret);
+			CryptoKey itemSecret = secretProvider.getItemSecret(secret);
 
 			if (itemSecret == null) {
 				throw new RepositoryException("Could not get secret to decrypt item");
@@ -258,7 +258,7 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 
 			secret.unlock(itemSecret);
 
-			byte[] plaintext = AesUtils.decrypt(itemSecret, data);
+			byte[] plaintext = FathomdbCrypto.decrypt(itemSecret, data);
 			String xml = new String(plaintext);
 
 			T model = (T) jaxb.unmarshal(plaintext);
@@ -570,7 +570,7 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 	public <T extends ItemBase> T createManagedItem(ProjectId project, T item) throws RepositoryException {
 		DbHelper db = new DbHelper(item.getClass(), project);
 		try {
-			SecretKey itemSecret = AesUtils.generateKey();
+			CryptoKey itemSecret = FathomdbCrypto.generateKey();
 
 			byte[] data = serialize(item, itemSecret);
 			byte[] secretData = itemSecrets.encodeItemSecret(itemSecret);
@@ -607,10 +607,10 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 
 			byte[] secretData = rs.secret;
 
-			SecretKey itemSecret;
+			CryptoKey itemSecret;
 
 			if (secretData == null) {
-				itemSecret = AesUtils.generateKey();
+				itemSecret = FathomdbCrypto.generateKey();
 				secretData = itemSecrets.encodeItemSecret(itemSecret);
 
 				db.updateSecret(itemId, secretData);
@@ -718,7 +718,7 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 		tags.addAll(addList);
 	}
 
-	byte[] serialize(ItemBase item, SecretKey itemSecret) {
+	byte[] serialize(ItemBase item, CryptoKey itemSecret) {
 
 		// Remove fields that are stored in other columns
 
@@ -747,7 +747,7 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 		}
 		String xml = writer.toString();
 
-		byte[] ciphertext = AesUtils.encrypt(itemSecret, Utf8.getBytes(xml));
+		byte[] ciphertext = FathomdbCrypto.encrypt(itemSecret, Utf8.getBytes(xml));
 		return ciphertext;
 	}
 }

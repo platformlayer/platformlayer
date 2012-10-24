@@ -17,6 +17,7 @@ import org.platformlayer.auth.UserProjectEntity;
 import org.platformlayer.auth.model.CertificateChainInfo;
 import org.platformlayer.metrics.Instrumented;
 
+import com.fathomdb.crypto.CryptoKey;
 import com.google.common.base.Strings;
 
 @Instrumented
@@ -25,6 +26,9 @@ public class KeystoneRepositoryAuthenticator implements KeystoneUserAuthenticato
 
 	@Inject
 	UserDatabase repository;
+
+	@Inject
+	AuthenticationSecrets authenticationSecrets;
 
 	@Override
 	public UserEntity authenticate(String username, String password) throws AuthenticatorException {
@@ -141,6 +145,15 @@ public class KeystoneRepositoryAuthenticator implements KeystoneUserAuthenticato
 			throw new AuthenticatorException("Invalid user id", e);
 		}
 
+		if (tokenSecret.length < 1) {
+			throw new IllegalArgumentException();
+		}
+
+		CryptoKey userSecret = authenticationSecrets.decryptSecretFromToken(tokenSecret);
+		if (userSecret == null) {
+			throw new AuthenticatorException("Authentication timed out");
+		}
+
 		UserEntity user;
 		try {
 			user = repository.findUserById(userId);
@@ -148,7 +161,9 @@ public class KeystoneRepositoryAuthenticator implements KeystoneUserAuthenticato
 			throw new AuthenticatorException("Error while authenticating user", e);
 		}
 
-		user.unlockWithToken(UserEntity.TOKEN_ID_DEFAULT, tokenSecret);
+		user.unlock(userSecret);
+
+		// user.unlockWithToken(UserEntity.TOKEN_ID_DEFAULT, tokenSecret);
 
 		if (user.isLocked()) {
 			return null;

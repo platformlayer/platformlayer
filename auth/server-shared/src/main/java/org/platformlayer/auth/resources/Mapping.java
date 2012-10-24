@@ -8,9 +8,9 @@ import org.platformlayer.auth.model.ProjectValidation;
 import org.platformlayer.auth.model.Role;
 import org.platformlayer.auth.model.User;
 import org.platformlayer.auth.model.UserValidation;
-import org.platformlayer.crypto.AesUtils;
 import org.platformlayer.model.RoleId;
 
+import com.fathomdb.crypto.FathomdbCrypto;
 import com.google.common.collect.Lists;
 
 public class Mapping {
@@ -53,7 +53,7 @@ public class Mapping {
 		mapped.id = "" + entity.id;
 		mapped.name = entity.name;
 		if (!entity.isLocked()) {
-			mapped.secret = AesUtils.serialize(entity.getProjectSecret());
+			mapped.secret = FathomdbCrypto.serialize(entity.getProjectSecret());
 		}
 		return mapped;
 	}

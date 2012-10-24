@@ -4,14 +4,16 @@ import java.util.Arrays;
 
 import javax.crypto.interfaces.PBEKey;
 
+import com.fathomdb.crypto.KeyDerivationFunctions;
+
 public class PasswordHash {
 	static final int SALT_LENGTH = 16;
 	static final int KEY_LENGTH = 128;
 
 	public static byte[] doPasswordHash(String password) {
 		byte[] salt = CryptoUtils.generateSecureRandom(SALT_LENGTH);
-
-		PBEKey key = KeyDerivationFunctions.doPbkdf2(salt, password, KEY_LENGTH);
+		int iterationCount = 1000;
+		PBEKey key = KeyDerivationFunctions.doPbkdf2(iterationCount, salt, password, KEY_LENGTH);
 
 		return CryptoUtils.concat(salt, key.getEncoded());
 	}
@@ -23,7 +25,8 @@ public class PasswordHash {
 
 		byte[] salt = Arrays.copyOfRange(hashed, 0, SALT_LENGTH);
 
-		PBEKey key = KeyDerivationFunctions.doPbkdf2(salt, password, KEY_LENGTH);
+		int iterationCount = 1000;
+		PBEKey key = KeyDerivationFunctions.doPbkdf2(iterationCount, salt, password, KEY_LENGTH);
 
 		byte[] data = key.getEncoded();
 

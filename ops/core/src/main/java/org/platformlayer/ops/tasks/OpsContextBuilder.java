@@ -2,7 +2,6 @@ package org.platformlayer.ops.tasks;
 
 import java.util.List;
 
-import javax.crypto.SecretKey;
 import javax.inject.Inject;
 
 import org.platformlayer.HttpPlatformLayerClient;
@@ -32,6 +31,7 @@ import org.platformlayer.ops.machines.ServiceProviderHelpers;
 import org.platformlayer.xaas.model.ServiceAuthorization;
 import org.platformlayer.xaas.repository.ServiceAuthorizationService;
 
+import com.fathomdb.crypto.CryptoKey;
 import com.google.common.collect.Lists;
 
 public class OpsContextBuilder {
@@ -165,7 +165,7 @@ public class OpsContextBuilder {
 
 	private DirectAuthenticator buildDirectAuthenticator(ProjectAuthorization project) {
 		String auth = DirectAuthenticationToken.encodeToken(project.getId(), project.getName());
-		SecretKey secret = project.getProjectSecret();
+		CryptoKey secret = project.getProjectSecret();
 
 		DirectAuthenticationToken token = new DirectAuthenticationToken(auth, secret);
 		DirectAuthenticator directAuthenticator = new DirectAuthenticator(token);

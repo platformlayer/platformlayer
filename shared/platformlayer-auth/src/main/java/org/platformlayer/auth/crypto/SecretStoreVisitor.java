@@ -11,8 +11,8 @@ public class SecretStoreVisitor {
 	public void visitProjectKey(int projectId, byte[] data) {
 	}
 
-	public void visitToken(int tokenId, byte[] data) {
-	}
+	// public void visitToken(int tokenId, byte[] data) {
+	// }
 
 	public void visitPassword(byte[] salt, byte[] data) {
 	}

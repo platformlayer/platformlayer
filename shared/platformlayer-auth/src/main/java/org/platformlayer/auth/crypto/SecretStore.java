@@ -21,11 +21,13 @@ import org.openstack.crypto.Md5Hash;
 import org.platformlayer.IoUtils;
 import org.platformlayer.auth.ProjectInfo;
 import org.platformlayer.auth.UserEntity;
-import org.platformlayer.crypto.AesUtils;
 import org.platformlayer.crypto.CryptoUtils;
 import org.platformlayer.crypto.OpenSshUtils;
 import org.platformlayer.crypto.RsaUtils;
 import org.platformlayer.model.ProjectAuthorization;
+
+import com.fathomdb.crypto.CryptoKey;
+import com.fathomdb.crypto.FathomdbCrypto;
 
 public class SecretStore {
 	static final Logger log = Logger.getLogger(SecretStore.class);
@@ -136,7 +138,8 @@ public class SecretStore {
 				case TOKEN: {
 					int tokenId = readEncoded(in);
 					byte[] data = readArray(in);
-					visitor.visitToken(tokenId, data);
+					// Ignore
+					// visitor.visitToken(tokenId, data);
 					break;
 				}
 
@@ -165,17 +168,17 @@ public class SecretStore {
 			dos.close();
 		}
 
-		public void writeLockedByProjectKey(byte[] plaintext, int projectId, SecretKey projectSecret)
+		public void writeLockedByProjectKey(byte[] plaintext, int projectId, CryptoKey projectSecret)
 				throws IOException {
 			dos.writeByte(PROJECT_KEY);
-			byte[] encrypted = AesUtils.encrypt(projectSecret, plaintext);
+			byte[] encrypted = FathomdbCrypto.encrypt(projectSecret, plaintext);
 			writeEncoded(dos, projectId);
 			writeArray(dos, encrypted);
 		}
 
-		public void writeLockedByUserKey(byte[] plaintext, int userId, SecretKey userSecret) throws IOException {
+		public void writeLockedByUserKey(byte[] plaintext, int userId, CryptoKey userSecret) throws IOException {
 			dos.writeByte(USER_KEY);
-			byte[] encrypted = AesUtils.encrypt(userSecret, plaintext);
+			byte[] encrypted = FathomdbCrypto.encrypt(userSecret, plaintext);
 			writeEncoded(dos, userId);
 			writeArray(dos, encrypted);
 		}
@@ -184,9 +187,9 @@ public class SecretStore {
 			dos.writeByte(USER_PASSWORD);
 
 			byte[] salt = CryptoUtils.generateSecureRandom(16);
-			SecretKey derivedKey = AesUtils.deriveKey(salt, password);
+			CryptoKey derivedKey = FathomdbCrypto.deriveKey(salt, password);
 
-			byte[] encrypted = AesUtils.encrypt(derivedKey, plaintext);
+			byte[] encrypted = FathomdbCrypto.encrypt(derivedKey, plaintext);
 			// writeEncoded(dos, userId);
 			writeArray(dos, salt);
 			writeArray(dos, encrypted);
@@ -295,7 +298,7 @@ public class SecretStore {
 
 	}
 
-	public SecretKey getSecretFromUser(final UserEntity user) {
+	public CryptoKey getSecretFromUser(final UserEntity user) {
 		SecretStoreDecoder visitor = new SecretStoreDecoder() {
 			@Override
 			public void visitUserKey(int userId, byte[] data) {
@@ -320,11 +323,11 @@ public class SecretStore {
 		return visitor.getSecretKey();
 	}
 
-	public SecretKey getSecretFromPassword(int userId, final String password) {
+	public CryptoKey getSecretFromPassword(int userId, final String password) {
 		SecretStoreDecoder visitor = new SecretStoreDecoder() {
 			@Override
 			public void visitPassword(byte[] salt, byte[] data) {
-				SecretKey secretKey = AesUtils.deriveKey(salt, password);
+				CryptoKey secretKey = FathomdbCrypto.deriveKey(salt, password);
 				setSecretKey(decryptSymetricKey(secretKey, data));
 			}
 		};
@@ -336,15 +339,15 @@ public class SecretStore {
 		return visitor.getSecretKey();
 	}
 
-	public SecretKey getSecretFromProject(final ProjectInfo project) {
+	public CryptoKey getSecretFromProject(final ProjectInfo project) {
 		return getSecretFromProject(project.getId(), project.getProjectSecret());
 	}
 
-	public SecretKey getSecretFromProject(final ProjectAuthorization project) {
+	public CryptoKey getSecretFromProject(final ProjectAuthorization project) {
 		return getSecretFromProject(project.getId(), project.getProjectSecret());
 	}
 
-	public SecretKey getSecretFromProject(final int projectId, final SecretKey projectSecret) {
+	public CryptoKey getSecretFromProject(final int projectId, final CryptoKey projectSecret) {
 		SecretStoreDecoder visitor = new SecretStoreDecoder() {
 			@Override
 			public void visitProjectKey(int itemProjectId, byte[] itemSecret) {
@@ -361,59 +364,59 @@ public class SecretStore {
 		return visitor.getSecretKey();
 	}
 
-	public SecretKey getSecretFromToken(final int tokenId, final byte[] tokenSecret) {
-		SecretStoreDecoder visitor = new SecretStoreDecoder() {
-			@Override
-			public void visitToken(int itemTokenId, byte[] itemData) {
-				if (itemTokenId == tokenId) {
-					// We want this to be reversible; so we XOR it.
-					// Both keys are random, so this is secure
-					if (tokenSecret.length == itemData.length) {
-						byte[] key = SecretStore.xorByteArrays(itemData, tokenSecret);
-						setSecretKey(AesUtils.deserializeKey(key));
-					}
-				}
-			}
-		};
+	// public CryptoKey getSecretFromToken(final int tokenId, final byte[] tokenSecret) {
+	// SecretStoreDecoder visitor = new SecretStoreDecoder() {
+	// @Override
+	// public void visitToken(int itemTokenId, byte[] itemData) {
+	// if (itemTokenId == tokenId) {
+	// // We want this to be reversible; so we XOR it.
+	// // Both keys are random, so this is secure
+	// if (tokenSecret.length == itemData.length) {
+	// byte[] key = SecretStore.xorByteArrays(itemData, tokenSecret);
+	// setSecretKey(FathomdbCrypto.deserializeKey(key));
+	// }
+	// }
+	// }
+	// };
+	//
+	// try {
+	// read(encoded, visitor);
+	// } catch (IOException e) {
+	// throw new IllegalArgumentException("Secret data is corrupted", e);
+	// }
+	// return visitor.getSecretKey();
+	// }
 
-		try {
-			read(encoded, visitor);
-		} catch (IOException e) {
-			throw new IllegalArgumentException("Secret data is corrupted", e);
-		}
-		return visitor.getSecretKey();
-	}
+	// static class TokenSecretFinder extends SecretStoreVisitor {
+	// final int tokenId;
+	// final CryptoKey userSecret;
+	//
+	// public TokenSecretFinder(int tokenId, CryptoKey userSecret) {
+	// this.tokenId = tokenId;
+	// this.userSecret = userSecret;
+	// }
+	//
+	// public byte[] tokenSecret;
+	//
+	// @Override
+	// public void visitToken(int tokenId, byte[] data) {
+	// if (tokenId == this.tokenId) {
+	// byte[] userSecretBytes = FathomdbCrypto.serialize(userSecret);
+	// this.tokenSecret = SecretStore.xorByteArrays(userSecretBytes, data);
+	// }
+	// }
+	// }
 
-	static class TokenSecretFinder extends SecretStoreVisitor {
-		final int tokenId;
-		final SecretKey userSecret;
-
-		public TokenSecretFinder(int tokenId, SecretKey userSecret) {
-			this.tokenId = tokenId;
-			this.userSecret = userSecret;
-		}
-
-		public byte[] tokenSecret;
-
-		@Override
-		public void visitToken(int tokenId, byte[] data) {
-			if (tokenId == this.tokenId) {
-				byte[] userSecretBytes = AesUtils.serialize(userSecret);
-				this.tokenSecret = SecretStore.xorByteArrays(userSecretBytes, data);
-			}
-		}
-	}
-
-	public byte[] getTokenSecretWithUserSecret(int tokenId, SecretKey userSecret) {
-		TokenSecretFinder visitor = new TokenSecretFinder(tokenId, userSecret);
-
-		try {
-			read(encoded, visitor);
-		} catch (IOException e) {
-			throw new IllegalArgumentException("Secret data is corrupted", e);
-		}
-		return visitor.tokenSecret;
-	}
+	// public byte[] getTokenSecretWithUserSecret(int tokenId, CryptoKey userSecret) {
+	// TokenSecretFinder visitor = new TokenSecretFinder(tokenId, userSecret);
+	//
+	// try {
+	// read(encoded, visitor);
+	// } catch (IOException e) {
+	// throw new IllegalArgumentException("Secret data is corrupted", e);
+	// }
+	// return visitor.tokenSecret;
+	// }
 
 	public byte[] findChallengeForCertificate(X509Certificate[] certificateChain) {
 		if (certificateChain.length == 0) {

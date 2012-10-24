@@ -3,7 +3,6 @@ package org.platformlayer.auth.client;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
-import javax.crypto.SecretKey;
 import javax.inject.Inject;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.KeyManager;
@@ -26,14 +25,13 @@ import org.platformlayer.auth.v1.ValidateAccess;
 import org.platformlayer.auth.v1.ValidateTokenResponse;
 import org.platformlayer.config.Configuration;
 import org.platformlayer.crypto.AcceptAllHostnameVerifier;
-import org.platformlayer.crypto.AesUtils;
 import org.platformlayer.crypto.CertificateUtils;
 import org.platformlayer.crypto.EncryptionStore;
 import org.platformlayer.crypto.PublicKeyTrustManager;
 import org.platformlayer.crypto.SimpleClientCertificateKeyManager;
 import org.platformlayer.http.HttpStrategy;
-import org.platformlayer.http.UrlUtils;
 import org.platformlayer.http.SslConfiguration;
+import org.platformlayer.http.UrlUtils;
 import org.platformlayer.model.AuthenticationToken;
 import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.ops.OpsException;
@@ -44,6 +42,8 @@ import org.platformlayer.rest.RestfulRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.crypto.CryptoKey;
+import com.fathomdb.crypto.FathomdbCrypto;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 
@@ -192,13 +192,13 @@ public class PlatformLayerAuthAdminClient implements AuthenticationTokenValidato
 	}
 
 	// This can actually be moved to the user-auth system
-	public List<X509Certificate> signCsr(String projectKey, SecretKey projectSecret, String csr) {
+	public List<X509Certificate> signCsr(String projectKey, CryptoKey projectSecret, String csr) {
 		String url = "pki/csr";
 
 		SignCertificateRequest request = new SignCertificateRequest();
 		request.setProject(projectKey);
 		request.setCsr(csr);
-		request.setProjectSecret(AesUtils.serialize(projectSecret));
+		request.setProjectSecret(FathomdbCrypto.serialize(projectSecret));
 
 		try {
 			SignCertificateResponse response = doSimpleRequest("POST", url, request, SignCertificateResponse.class);

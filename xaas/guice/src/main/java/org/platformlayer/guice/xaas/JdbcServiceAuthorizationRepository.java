@@ -6,13 +6,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import javax.crypto.SecretKey;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
 import org.openstack.utils.Utf8;
 import org.platformlayer.RepositoryException;
-import org.platformlayer.crypto.AesUtils;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceMetadataKey;
 import org.platformlayer.ids.ServiceType;
@@ -24,6 +22,8 @@ import org.platformlayer.ops.crypto.SecretHelper;
 import org.platformlayer.xaas.model.ServiceAuthorization;
 import org.platformlayer.xaas.repository.ServiceAuthorizationRepository;
 
+import com.fathomdb.crypto.CryptoKey;
+import com.fathomdb.crypto.FathomdbCrypto;
 import com.google.common.collect.Lists;
 
 public class JdbcServiceAuthorizationRepository implements ServiceAuthorizationRepository {
@@ -165,10 +165,10 @@ public class JdbcServiceAuthorizationRepository implements ServiceAuthorizationR
 		// TODO: Handle updates
 
 		try {
-			SecretKey secret = AesUtils.generateKey();
+			CryptoKey secret = FathomdbCrypto.generateKey();
 
 			byte[] plaintext = Utf8.getBytes(value);
-			byte[] ciphertext = AesUtils.encrypt(secret, plaintext);
+			byte[] ciphertext = FathomdbCrypto.encrypt(secret, plaintext);
 
 			// TODO: Encode this differently from items??
 			byte[] secretData = secretHelper.encodeItemSecret(secret);

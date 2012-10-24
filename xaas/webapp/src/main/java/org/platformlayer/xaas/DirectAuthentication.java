@@ -2,11 +2,8 @@ package org.platformlayer.xaas;
 
 import java.util.List;
 
-import javax.crypto.SecretKey;
-
 import org.apache.log4j.Logger;
 import org.platformlayer.auth.DirectAuthenticationToken;
-import org.platformlayer.crypto.AesUtils;
 import org.platformlayer.crypto.CryptoUtils;
 import org.platformlayer.model.Authentication;
 import org.platformlayer.model.AuthenticationCredentials;
@@ -14,6 +11,8 @@ import org.platformlayer.model.AuthenticationToken;
 import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.model.RoleId;
 
+import com.fathomdb.crypto.CryptoKey;
+import com.fathomdb.crypto.FathomdbCrypto;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 
@@ -52,7 +51,7 @@ public class DirectAuthentication implements AuthenticationCredentials, ProjectA
 	}
 
 	@Override
-	public SecretKey getProjectSecret() {
+	public CryptoKey getProjectSecret() {
 		return project.getProjectSecret();
 	}
 
@@ -86,9 +85,9 @@ public class DirectAuthentication implements AuthenticationCredentials, ProjectA
 				final String projectKey = projectTokens.get(2);
 				final int projectId = Integer.parseInt(projectTokens.get(1));
 
-				final SecretKey secret;
+				final CryptoKey secret;
 				try {
-					secret = AesUtils.deserializeKey(CryptoUtils.fromBase64(authSecret));
+					secret = FathomdbCrypto.deserializeKey(CryptoUtils.fromBase64(authSecret));
 				} catch (Exception e) {
 					log.debug("Error while deserializing user provided secret", e);
 					return null;
@@ -101,7 +100,7 @@ public class DirectAuthentication implements AuthenticationCredentials, ProjectA
 					}
 
 					@Override
-					public SecretKey getProjectSecret() {
+					public CryptoKey getProjectSecret() {
 						return secret;
 					}
 
