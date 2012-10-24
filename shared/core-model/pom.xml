@@ -28,6 +28,11 @@
         </dependency>
         
         <dependency>
+            <groupId>com.fathomdb</groupId>
+            <artifactId>fathomdb-crypto</artifactId>
+        </dependency>
+        
+        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
         </dependency>
