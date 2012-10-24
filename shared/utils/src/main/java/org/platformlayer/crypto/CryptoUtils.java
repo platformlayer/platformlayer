@@ -59,14 +59,14 @@ public class CryptoUtils {
 	}
 
 	public static Sha1Hash sha1(byte[] plainText) {
-		MessageDigest digest = getSha1();
+		MessageDigest digest = getThreadLocalSha1();
 
 		byte[] hash = digest.digest(plainText);
 		return new Sha1Hash(hash);
 	}
 
 	public static Sha1Hash sha1(String a) {
-		MessageDigest digest = getSha1();
+		MessageDigest digest = getThreadLocalSha1();
 
 		byte[] hash = digest.digest(toBytesUtf8(a));
 		return new Sha1Hash(hash);
@@ -101,7 +101,7 @@ public class CryptoUtils {
 	}
 
 	public static Sha1Hash sha1(byte[] buffer1, byte[] buffer2) {
-		MessageDigest digest = getSha1();
+		MessageDigest digest = getThreadLocalSha1();
 
 		digest.update(buffer1);
 		byte[] hash = digest.digest(buffer2);
@@ -109,7 +109,7 @@ public class CryptoUtils {
 	}
 
 	public static Sha1Hash sha1(String a, String b) {
-		MessageDigest digest = getSha1();
+		MessageDigest digest = getThreadLocalSha1();
 
 		digest.update(toBytesUtf8(a));
 		byte[] hash = digest.digest(toBytesUtf8(b));
@@ -117,7 +117,7 @@ public class CryptoUtils {
 	}
 
 	public static Sha1Hash sha1(String... data) {
-		MessageDigest digest = getSha1();
+		MessageDigest digest = getThreadLocalSha1();
 
 		for (int i = 0; i < data.length - 1; i++) {
 			digest.update(toBytesUtf8(data[i]));
@@ -127,8 +127,8 @@ public class CryptoUtils {
 		return new Sha1Hash(hash);
 	}
 
-	public Sha1Hash sha1(byte[] a, byte[] b, byte[] c) {
-		MessageDigest digest = getSha1();
+	public static Sha1Hash sha1(byte[] a, byte[] b, byte[] c) {
+		MessageDigest digest = getThreadLocalSha1();
 
 		digest.update(a);
 		digest.update(b);
@@ -136,8 +136,8 @@ public class CryptoUtils {
 		return new Sha1Hash(hash);
 	}
 
-	public Sha1Hash sha1(byte[]... data) {
-		MessageDigest digest = getSha1();
+	public static Sha1Hash sha1(byte[]... data) {
+		MessageDigest digest = getThreadLocalSha1();
 
 		for (int i = 0; i < data.length - 1; i++) {
 			digest.update(data[i]);
@@ -237,6 +237,24 @@ public class CryptoUtils {
 		}
 	}
 
+	static final boolean USE_THREAD_LOCAL_SHA1 = false;
+	static final ThreadLocal<MessageDigest> THREAD_LOCAL_SHA1 = new ThreadLocal<MessageDigest>();
+
+	private static MessageDigest getThreadLocalSha1() {
+		if (USE_THREAD_LOCAL_SHA1) {
+			MessageDigest messageDigest = THREAD_LOCAL_SHA1.get();
+			if (messageDigest == null) {
+				messageDigest = getSha1();
+				THREAD_LOCAL_SHA1.set(messageDigest);
+			} else {
+				messageDigest.reset();
+			}
+			return messageDigest;
+		} else {
+			return getSha1();
+		}
+	}
+
 	public static MessageDigest getSha1() {
 		return getMessageDigest(SHA1_ALGORITHM);
 	}
@@ -321,7 +339,7 @@ public class CryptoUtils {
 	}
 
 	public static Sha1Hash sha1(InputStream inputStream) throws IOException {
-		MessageDigest digest = getSha1();
+		MessageDigest digest = getThreadLocalSha1();
 		return new Sha1Hash(hash(digest, inputStream).hash);
 	}
 
@@ -393,7 +411,7 @@ public class CryptoUtils {
 	}
 
 	public static Sha1Hash sha1(File file) throws IOException {
-		MessageDigest digest = getSha1();
+		MessageDigest digest = getThreadLocalSha1();
 		return new Sha1Hash(hash(digest, file).hash);
 	}
 
