@@ -3,6 +3,7 @@ package org.platformlayer.ops;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.apache.log4j.Logger;
@@ -14,6 +15,7 @@ import org.platformlayer.ops.process.ProcessExecutionException;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 public abstract class OpsTargetBase implements OpsTarget {
 	static final Logger log = Logger.getLogger(OpsTargetBase.class);
@@ -310,5 +312,26 @@ public abstract class OpsTargetBase implements OpsTarget {
 		command.addFile(targetFile);
 		command.addFile(aliasFile);
 		executeCommand(command);
+	}
+
+	final Map<Object, Object> operationCache = Maps.newHashMap();
+
+	@Override
+	public <V> V runOperation(OpsTargetOperation<V> operation) throws OpsException {
+		// TODO: Caching if implements some interface...
+		boolean cacheable = operation.isCacheable();
+		V value = null;
+		if (cacheable) {
+			value = (V) operationCache.get(operation);
+		}
+		if (value == null) {
+			value = operation.apply(this);
+		}
+		if (cacheable) {
+			if (value != null) {
+				operationCache.put(operation, value);
+			}
+		}
+		return value;
 	}
 }

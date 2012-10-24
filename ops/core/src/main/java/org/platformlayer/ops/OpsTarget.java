@@ -51,4 +51,6 @@ public interface OpsTarget {
 	NetworkPoint getNetworkPoint();
 
 	boolean isMachineTerminated();
+
+	<V> V runOperation(OpsTargetOperation<V> function) throws OpsException;
 }

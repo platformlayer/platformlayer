@@ -2,6 +2,7 @@ package org.platformlayer.ops.instances;
 
 import java.io.File;
 
+import org.apache.log4j.Logger;
 import org.platformlayer.ops.FileUpload;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.Injection;
@@ -15,6 +16,8 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 
 public class ConfigureHostname {
+	private static final Logger log = Logger.getLogger(ConfigureHostname.class);
+
 	public String hostname;
 
 	@Handler({ OperationType.Delete })
@@ -55,9 +58,14 @@ public class ConfigureHostname {
 			ProcessExecution execution = target.executeCommand("hostname");
 			String currentHostname = execution.getStdOut().trim();
 			if (!currentHostname.equals(hostname)) {
-				// This actually can't be done within an LXC instance, which is why we go to extraordinary lengths to
-				// set it on creation
-				target.executeCommand("hostname {0}", hostname);
+				if (!DetectVirtualization.isLxc(target)) {
+					// This actually can't be done within an LXC instance, which is why we go to extraordinary lengths
+					// to
+					// set it on creation
+					target.executeCommand("hostname {0}", hostname);
+				} else {
+					log.warn("Unable to change hostname on LXC: " + currentHostname + " -> " + hostname);
+				}
 			}
 		}
 	}
