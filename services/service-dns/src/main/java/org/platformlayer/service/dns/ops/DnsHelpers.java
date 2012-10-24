@@ -72,10 +72,8 @@ public class DnsHelpers {
 		}
 	}
 
-	public ZoneFile buildDnsFile(DnsZone dnsDomain) throws OpsException {
-		ZoneFile dnsFile = new ZoneFile(dnsDomain.dnsName);
-
-		String dnsZone = dnsDomain.dnsName;
+	public ZoneFile buildDnsFile(DnsZone dnsZone) throws OpsException {
+		ZoneFile dnsFile = new ZoneFile(dnsZone.dnsName);
 
 		Iterable<DnsServer> dnsServers = platformLayer.listItems(DnsServer.class);
 		// We do two passes; first to collect up all the nameservers, and the second to configure the domain with the
@@ -113,7 +111,7 @@ public class DnsHelpers {
 			// TODO: This might not be the right address in complex networks
 			for (EndpointInfo dnsServerEndpoint : dnsServerEndpoints) {
 				String address = dnsServerEndpoint.publicIp;
-				dnsFile.addNS(dnsDomain.dnsName, address, dnsName);
+				dnsFile.addNS(dnsZone.dnsName, address, dnsName);
 			}
 		}
 
@@ -128,20 +126,7 @@ public class DnsHelpers {
 				break;
 			}
 
-			boolean match = false;
-			String recordDnsName = record.dnsName;
-			if (recordDnsName.equals(dnsZone)) {
-				match = true;
-			} else if (recordDnsName.endsWith("." + dnsZone)) {
-				int firstDot = recordDnsName.indexOf('.');
-				if (firstDot != -1) {
-					if (dnsZone.equals(recordDnsName.substring(firstDot + 1))) {
-						match = true;
-					}
-				}
-			}
-
-			if (!match) {
+			if (!isInZone(record, dnsZone)) {
 				continue;
 			}
 
@@ -155,7 +140,7 @@ public class DnsHelpers {
 		List<DnsZone> matches = Lists.newArrayList();
 
 		for (DnsZone dnsZone : platformLayer.listItems(DnsZone.class)) {
-			if (dnsRecord.dnsName.endsWith(dnsZone.dnsName)) {
+			if (isInZone(dnsRecord, dnsZone)) {
 				matches.add(dnsZone);
 			}
 		}
@@ -171,6 +156,22 @@ public class DnsHelpers {
 		DnsZone dnsZone = matches.get(0);
 
 		return buildDnsFile(dnsZone);
+	}
+
+	private boolean isInZone(DnsRecord dnsRecord, DnsZone dnsZone) {
+		String dnsRecordName = dnsRecord.dnsName;
+		String dnsZoneName = dnsZone.dnsName;
+		if (dnsRecordName.equals(dnsZoneName)) {
+			return true;
+		} else if (dnsRecordName.endsWith("." + dnsZoneName)) {
+			int firstDot = dnsRecordName.indexOf('.');
+			if (firstDot != -1) {
+				if (dnsZoneName.equals(dnsRecordName.substring(firstDot + 1))) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	class TargetServer implements AutoCloseable {
