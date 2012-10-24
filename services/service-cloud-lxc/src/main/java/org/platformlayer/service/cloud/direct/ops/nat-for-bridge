@@ -21,14 +21,15 @@ fi
 
 # We need to forward everything... (this takes place after inbound NAT rules?)
 #iptables -A FORWARD -i ${publicInterface} -o ${bridgeInterface} -m state --state RELATED,ESTABLISHED -j ACCEPT
+
 iptables -A FORWARD -i ${publicInterface} -o ${bridgeInterface} -j ACCEPT
 iptables -A FORWARD -i ${bridgeInterface} -o ${publicInterface} -j ACCEPT
 iptables -A FORWARD -i ${bridgeInterface} -o ${bridgeInterface} -j ACCEPT
+
 iptables -t nat -A POSTROUTING -o ${publicInterface} -j MASQUERADE
 
 ip6tables -A FORWARD -i ${publicInterface} -o ${bridgeInterface} -j ACCEPT
 ip6tables -A FORWARD -i ${bridgeInterface} -o ${publicInterface} -j ACCEPT
-
 ip6tables -A FORWARD -i ${bridgeInterface} -o ${bridgeInterface} -j ACCEPT
 
 exit 0

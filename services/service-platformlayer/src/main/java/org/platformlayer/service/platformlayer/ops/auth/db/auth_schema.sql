@@ -3,10 +3,12 @@ create unique index users_index_key on users (key);
 grant all on users to platformlayer_auth;
 grant all on users_id_seq to platformlayer_auth;
 
-create table projects (id serial, key text, secret bytea, metadata bytea, public_key bytea, private_key bytea, primary key (id));
+create table projects (id serial, key text, secret bytea, metadata bytea, public_key bytea, private_key bytea, pki_private bytea, pki_cert bytea, primary key (id));
+//alter table projects add column pki_private bytea, add column pki_cert bytea;
 create unique index projects_index_key on projects (key);
 grant all on projects to platformlayer_auth;
 grant all on projects_id_seq to platformlayer_auth;
+
 
 create table user_projects (user_id int, project_id int, roles varchar);
 // alter table user_projects add column roles varchar;
