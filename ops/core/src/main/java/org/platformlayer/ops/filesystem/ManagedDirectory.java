@@ -3,7 +3,6 @@ package org.platformlayer.ops.filesystem;
 import java.io.File;
 
 import org.platformlayer.ops.Handler;
-import org.platformlayer.ops.OperationType;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsTarget;
 
@@ -28,12 +27,12 @@ public class ManagedDirectory extends ManagedFilesystemItem {
 	// static final Logger log = Logger.getLogger(ManagedDirectoryOpsItem.class);
 	//
 	@Handler
-	public void doConfigureValidate(OperationType operationType, OpsTarget target) throws Exception {
+	public void doConfigureValidate(OpsTarget target) throws Exception {
 		File path = getFilePath();
 		FilesystemInfo fsInfo = target.getFilesystemInfoFile(path);
 		boolean exists = (fsInfo != null);
 
-		if (operationType.isConfigure()) {
+		if (OpsContext.isConfigure()) {
 			if (!exists) {
 				target.mkdir(path, fileMode);
 
@@ -43,7 +42,7 @@ public class ManagedDirectory extends ManagedFilesystemItem {
 			configureOwnerAndMode(target, fsInfo);
 		}
 
-		if (operationType.isValidate()) {
+		if (OpsContext.isValidate()) {
 			if (!exists) {
 				OpsContext.get().addWarning(this, "DoesNotExist", "Directory not found: " + getFilePath());
 				return;

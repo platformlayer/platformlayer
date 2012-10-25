@@ -7,6 +7,7 @@ import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.xml.bind.JAXBContext;
 
+import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.ManagedItemCollection;
 
@@ -43,6 +44,8 @@ public class JaxbContextResolver implements ContextResolver<JAXBContext> {
 		if (clazz.equals(ManagedItemCollection.class)) {
 			// OK
 		} else if (ItemBase.class.isAssignableFrom(clazz)) {
+			// OK
+		} else if (Action.class.isAssignableFrom(clazz)) {
 			// OK
 		} else {
 			return null;

@@ -9,8 +9,9 @@ import javax.inject.Inject;
 import org.apache.log4j.Logger;
 import org.platformlayer.SetUtils;
 import org.platformlayer.SetUtils.SetCompareResults;
+import org.platformlayer.core.model.ConfigureAction;
+import org.platformlayer.core.model.ValidateAction;
 import org.platformlayer.ops.Handler;
-import org.platformlayer.ops.OperationType;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
@@ -50,8 +51,8 @@ public abstract class LdapEntry {
 	protected void getObjectClasses(List<String> objectClasses) {
 	}
 
-	@Handler({ OperationType.Validate })
-	public void doValidate(OperationType operationType, OpsTarget target) throws OpsException {
+	@Handler(ValidateAction.class)
+	public void doValidate(OpsTarget target) throws OpsException {
 		LdifRecord current = queryCurrentRecord(target);
 		if (current == null) {
 			OpsContext.get().addWarning(this, "LdapNodeNotFound", "Ldap node not found: " + getLdapDN());
@@ -61,11 +62,11 @@ public abstract class LdapEntry {
 	}
 
 	@Handler
-	public void doOperation(OperationType operationType, OpsTarget target) throws OpsException {
-		log.warn("Operation not implemented: " + operationType);
+	public void doOperation(OpsTarget target) throws OpsException {
+		log.warn("Operation not implemented: " + OpsContext.get().getAction());
 	}
 
-	@Handler({ OperationType.Configure })
+	@Handler(ConfigureAction.class)
 	public void doConfigure(OpsTarget target) throws OpsException {
 		boolean shouldConfigure = OpsContext.isConfigure(); // operation.isForce() || !isOnlyConfigureOnForce();
 		if (shouldConfigure) {

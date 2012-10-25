@@ -5,7 +5,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.platformlayer.SetUtils;
 import org.platformlayer.SetUtils.SetCompareResults;
-import org.platformlayer.ops.OperationType;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
@@ -24,8 +23,7 @@ public abstract class FirewallManager {
 
 	private static final boolean DUMP_CONFIG = false;
 
-	public void configureRules(OpsTarget target, OperationType operationType, int port, List<FirewallRecord> desired)
-			throws OpsException {
+	public void configureRules(OpsTarget target, int port, List<FirewallRecord> desired) throws OpsException {
 		List<FirewallRecord> actual = getConfiguredRules(target, port);
 
 		if (DUMP_CONFIG || true) {
@@ -44,7 +42,7 @@ public abstract class FirewallManager {
 			List<FirewallRecord> deferredAdd = Lists.newArrayList();
 
 			for (FirewallRecord add : setCompareResults.leftNotRight) {
-				if (operationType.isConfigure()) {
+				if (OpsContext.isConfigure()) {
 					if (!add.isQuick()) {
 						// We add these default rules last, so that we can have all our non-default rules in place
 						// This is particularly important for block, with IpTables
@@ -54,22 +52,22 @@ public abstract class FirewallManager {
 						log.info("Adding firewall entry: " + add);
 						configureAddRule(target, add);
 					}
-				} else if (operationType.isValidate()) {
+				} else if (OpsContext.isValidate()) {
 					OpsContext.get().addWarning(this, "Firewall rule not found: {1}", add);
 				}
 			}
 
 			for (FirewallRecord remove : setCompareResults.rightNotLeft) {
-				if (operationType.isConfigure()) {
+				if (OpsContext.isConfigure()) {
 					log.info("Removing firewall entry: " + remove);
 					configureRemoveRule(target, remove);
-				} else if (operationType.isValidate()) {
+				} else if (OpsContext.isValidate()) {
 					OpsContext.get().addWarning(this, "Extra firewall rule found: {1}", remove);
 				}
 			}
 
 			for (FirewallRecord add : deferredAdd) {
-				if (operationType.isConfigure()) {
+				if (OpsContext.isConfigure()) {
 					log.info("Adding firewall entry: " + add);
 					configureAddRule(target, add);
 				}
@@ -82,13 +80,13 @@ public abstract class FirewallManager {
 
 		List<FirewallRecord> duplicates = findDuplicates(target);
 
-		if (operationType.isValidate()) {
+		if (OpsContext.isValidate()) {
 			for (FirewallRecord duplicate : duplicates) {
 				log.warn("Duplicate rule found: " + duplicate);
 			}
 		}
 
-		if (operationType.isForce()) {
+		if (OpsContext.isForce()) {
 			for (FirewallRecord duplicate : duplicates) {
 				configureRemoveRule(target, duplicate);
 			}

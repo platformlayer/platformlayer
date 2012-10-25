@@ -8,10 +8,10 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.platformlayer.RepositoryException;
+import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.model.ProjectAuthorization;
-import org.platformlayer.ops.OperationType;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.xaas.repository.JobRepository;
@@ -38,9 +38,7 @@ public class JobRegistry {
 	@Inject
 	OpsContextBuilder opsContextBuilder;
 
-	public PlatformLayerKey enqueueOperation(OperationType operationType, ProjectAuthorization auth,
-			PlatformLayerKey targetItem) {
-		JobKey key = new JobKey(targetItem, operationType);
+	public PlatformLayerKey enqueueOperation(Action action, ProjectAuthorization auth, PlatformLayerKey targetItem) {
 
 		ProjectId projectId;
 		try {
@@ -49,7 +47,7 @@ public class JobRegistry {
 			throw new IllegalStateException("Error getting projectId", e);
 		}
 
-		JobRecord jobRecord = new JobRecord(key, targetItem.getServiceType(), auth, projectId);
+		JobRecord jobRecord = new JobRecord(targetItem, action, targetItem.getServiceType(), auth, projectId);
 
 		return jobGraph.trigger(jobRecord);
 	}

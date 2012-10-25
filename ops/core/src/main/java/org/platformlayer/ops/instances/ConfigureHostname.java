@@ -3,10 +3,10 @@ package org.platformlayer.ops.instances;
 import java.io.File;
 
 import org.apache.log4j.Logger;
+import org.platformlayer.core.model.DeleteAction;
 import org.platformlayer.ops.FileUpload;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.Injection;
-import org.platformlayer.ops.OperationType;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
@@ -20,7 +20,7 @@ public class ConfigureHostname {
 
 	public String hostname;
 
-	@Handler({ OperationType.Delete })
+	@Handler(DeleteAction.class)
 	public void handleDelete() throws OpsException {
 		// Do nothing
 	}

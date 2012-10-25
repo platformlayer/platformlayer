@@ -6,13 +6,16 @@ import javax.inject.Inject;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
-import org.platformlayer.core.model.Action;
+import org.platformlayer.core.model.BackupAction;
+import org.platformlayer.core.model.ConfigureAction;
+import org.platformlayer.core.model.DeleteAction;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.JobSchedule;
 import org.platformlayer.core.model.ManagedItemCollection;
 import org.platformlayer.core.model.ServiceInfo;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.Tags;
+import org.platformlayer.core.model.ValidateAction;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.xaas.services.ModelClass;
 import org.platformlayer.xaas.services.ServiceProvider;
@@ -28,7 +31,7 @@ public class JaxbContextHelper {
 	// TODO: Separate JAXBContexts per service, to avoid namespace pollution
 	JAXBContext jaxbContext;
 
-	public synchronized JAXBContext getJaxbContext(Class<?> clazz) {
+	public synchronized JAXBContext getJaxbContext(Class<?> forClass) {
 		if (jaxbContext == null) {
 			List<Class<?>> javaClasses = Lists.newArrayList();
 
@@ -36,8 +39,13 @@ public class JaxbContextHelper {
 			javaClasses.add(Tag.class);
 			javaClasses.add(ItemBase.class);
 			javaClasses.add(ManagedItemCollection.class);
-			javaClasses.add(Action.class);
 			javaClasses.add(JobSchedule.class);
+
+			javaClasses.add(ConfigureAction.class);
+			javaClasses.add(ValidateAction.class);
+			javaClasses.add(DeleteAction.class);
+			javaClasses.add(ConfigureAction.class);
+			javaClasses.add(BackupAction.class);
 
 			for (ServiceInfo serviceInfo : serviceProviderDictionary.getAllServices()) {
 				ServiceType serviceType = new ServiceType(serviceInfo.serviceType);
@@ -51,6 +59,10 @@ public class JaxbContextHelper {
 					// } else if (!namespace.equals(modelNamespace)) {
 					// throw new IllegalStateException();
 					// }
+				}
+
+				for (Class<?> clazz : serviceProvider.getExtraJaxbClasses()) {
+					javaClasses.add(clazz);
 				}
 			}
 

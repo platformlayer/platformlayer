@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import javax.xml.bind.JAXBException;
 
 import org.apache.log4j.Logger;
 import org.openstack.utils.Hex;
@@ -18,11 +19,13 @@ import org.platformlayer.jdbc.JdbcConnection;
 import org.platformlayer.jdbc.JdbcTransaction;
 import org.platformlayer.jdbc.proxy.Query;
 import org.platformlayer.jdbc.proxy.QueryFactory;
+import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.schedule.ActionTask;
 import org.platformlayer.ops.schedule.EndpointRecord;
 import org.platformlayer.ops.schedule.JobExecution;
 import org.platformlayer.ops.schedule.SchedulerRecord;
 import org.platformlayer.ops.schedule.SchedulerRepository;
+import org.platformlayer.xml.JaxbHelper;
 
 import com.google.common.collect.Lists;
 
@@ -81,7 +84,7 @@ public class JdbcSchedulerRepository implements SchedulerRepository {
 		}
 	}
 
-	private SchedulerRecord fromDb(SchedulerRecordEntity in) {
+	private SchedulerRecord fromDb(SchedulerRecordEntity in) throws OpsException {
 		SchedulerRecord out = new SchedulerRecord();
 		out.key = in.key;
 
@@ -100,13 +103,31 @@ public class JdbcSchedulerRepository implements SchedulerRepository {
 		task.endpoint.token = in.taskEndpointToken;
 		task.endpoint.trustKeys = in.taskEndpointTrustKeys;
 
-		task.action = new Action();
-		task.action.name = in.taskActionName;
+		if (in.taskAction != null) {
+			task.action = deserializeAction(in.taskAction);
+		}
 
 		return out;
 	}
 
-	private SchedulerRecordEntity toDb(SchedulerRecord in) {
+	private Action deserializeAction(String xml) throws OpsException {
+		try {
+			JaxbHelper jaxbHelper = JaxbHelper.get(Action.class);
+			return (Action) jaxbHelper.unmarshal(xml);
+		} catch (JAXBException e) {
+			throw new OpsException("Error deserializing action", e);
+		}
+	}
+
+	private String serializeAction(Action action) throws OpsException {
+		try {
+			return JaxbHelper.toXml(action, false);
+		} catch (JAXBException e) {
+			throw new OpsException("Error serializing action", e);
+		}
+	}
+
+	private SchedulerRecordEntity toDb(SchedulerRecord in) throws OpsException {
 		SchedulerRecordEntity out = new SchedulerRecordEntity();
 		out.key = in.key;
 
@@ -129,7 +150,7 @@ public class JdbcSchedulerRepository implements SchedulerRepository {
 			}
 
 			if (task.action != null) {
-				out.taskActionName = task.action.name;
+				out.taskAction = serializeAction(task.action);
 			}
 		} else {
 			throw new UnsupportedOperationException();
@@ -171,8 +192,11 @@ public class JdbcSchedulerRepository implements SchedulerRepository {
 				return null;
 			}
 			return fromDb(entity);
+
 		} catch (SQLException e) {
 			throw new RepositoryException("Error running query", e);
+		} catch (OpsException e) {
+			throw new RepositoryException("Error deserializing from database", e);
 		} finally {
 			db.close();
 		}
@@ -195,6 +219,8 @@ public class JdbcSchedulerRepository implements SchedulerRepository {
 			}
 		} catch (SQLException e) {
 			throw new RepositoryException("Error running query", e);
+		} catch (OpsException e) {
+			throw new RepositoryException("Error serializing to database", e);
 		} finally {
 			db.close();
 		}
@@ -213,6 +239,8 @@ public class JdbcSchedulerRepository implements SchedulerRepository {
 			return ret;
 		} catch (SQLException e) {
 			throw new RepositoryException("Error running query", e);
+		} catch (OpsException e) {
+			throw new RepositoryException("Error deserializing from database", e);
 		} finally {
 			db.close();
 		}

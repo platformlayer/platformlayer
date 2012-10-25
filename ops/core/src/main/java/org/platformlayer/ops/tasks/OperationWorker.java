@@ -13,16 +13,20 @@ import org.platformlayer.RepositoryException;
 import org.platformlayer.Scope;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.auth.crypto.SecretProvider;
+import org.platformlayer.core.model.Action;
+import org.platformlayer.core.model.BackupAction;
+import org.platformlayer.core.model.ConfigureAction;
+import org.platformlayer.core.model.DeleteAction;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.core.model.PlatformLayerKey;
+import org.platformlayer.core.model.ValidateAction;
 import org.platformlayer.exceptions.ExceptionHelpers;
 import org.platformlayer.exceptions.HasRetryInfo;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.jobs.model.JobState;
 import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.ops.BindingScope;
-import org.platformlayer.ops.OperationType;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsSystem;
@@ -46,9 +50,9 @@ public class OperationWorker implements Callable<Object> {
 	}
 
 	Object doOperation() throws OpsException {
-		final OperationType operationType = jobRecord.getOperationType();
+		final Action action = jobRecord.getAction();
 		final PlatformLayerKey targetItemKey = jobRecord.getTargetItemKey();
-		RenameThread rename = new RenameThread(operationType + " " + targetItemKey);
+		RenameThread rename = new RenameThread(action.getClass().getSimpleName() + " " + targetItemKey);
 		try {
 			OpsContextBuilder opsContextBuilder = opsSystem.getInjector().getInstance(OpsContextBuilder.class);
 
@@ -81,31 +85,12 @@ public class OperationWorker implements Callable<Object> {
 
 						List<Object> scopeItems = Lists.newArrayList();
 
-						switch (operationType) {
-						case Configure:
-							break;
-
-						case Validate:
-							break;
-
-						case Delete:
-							break;
-
-						case Backup: {
-							BackupContextFactory backupContextFactory = opsSystem.getBackupContextFactory();
-							BackupContext backupContext = backupContextFactory.build(item);
-							scopeItems.add(backupContext);
-						}
-							break;
-
-						default:
-							throw new IllegalStateException();
-						}
+						addActionScopeItems(action, item, scopeItems);
 
 						Object controller = serviceProvider.getController(item);
 
 						scopeItems.add(item);
-						scopeItems.add(operationType);
+						scopeItems.add(action);
 
 						BindingScope scope = BindingScope.push(scopeItems);
 						opsContext.recurseOperation(scope, controller);
@@ -113,34 +98,47 @@ public class OperationWorker implements Callable<Object> {
 						// TODO: Should we run a verify operation before -> ACTIVE??
 						// (we need to fix the states as well)
 
-						switch (operationType) {
-						case Configure:
-							repository.changeState(targetItemKey, ManagedItemState.ACTIVE);
-							item.state = ManagedItemState.ACTIVE;
-							break;
-
-						case Validate:
-							// TODO: Change state to healthy??
-							break;
-
-						case Delete:
-							repository.changeState(targetItemKey, ManagedItemState.DELETED);
-							item.state = ManagedItemState.DELETED;
-							break;
-
-						case Backup: {
-							BackupContext backupContext = scope.getInstance(BackupContext.class);
-							backupContext.writeDescriptor();
-							break;
-						}
-
-						default:
-							throw new IllegalStateException();
+						ManagedItemState newState = finishAction(action, scope);
+						if (newState != null) {
+							repository.changeState(targetItemKey, newState);
+							item.state = newState;
 						}
 
 						log.info("Job finished with SUCCESS");
 						jobRecord.setState(JobState.SUCCESS, true);
 						return null;
+					}
+
+					private ManagedItemState finishAction(Action action, BindingScope scope) throws OpsException {
+						ManagedItemState newState = null;
+						if (action instanceof ConfigureAction) {
+							newState = ManagedItemState.ACTIVE;
+						}
+
+						if (action instanceof ValidateAction) {
+							// TODO: Change state to healthy??
+						}
+
+						if (action instanceof DeleteAction) {
+							newState = ManagedItemState.DELETED;
+						}
+
+						if (action instanceof BackupAction) {
+							BackupContext backupContext = scope.getInstance(BackupContext.class);
+							backupContext.writeDescriptor();
+						}
+
+						return newState;
+					}
+
+					private void addActionScopeItems(Action action, ItemBase item, List<Object> scopeItems)
+							throws OpsException {
+						if (action instanceof BackupAction) {
+							// TODO: Don't hard-code this
+							BackupContextFactory backupContextFactory = opsSystem.getBackupContextFactory();
+							BackupContext backupContext = backupContextFactory.build(item);
+							scopeItems.add(backupContext);
+						}
 					}
 				});
 			} catch (Throwable e) {

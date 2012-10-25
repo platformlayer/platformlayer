@@ -2,7 +2,7 @@ import javax.xml.bind.JAXBException;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
-import org.platformlayer.core.model.Action;
+import org.platformlayer.core.model.ConfigureAction;
 import org.platformlayer.service.schedule.model.ScheduledTask;
 import org.platformlayer.xml.JaxbHelper;
 
@@ -13,8 +13,8 @@ public class WtfIsXml {
 	@Test
 	public void test() throws JAXBException {
 		ScheduledTask task = new ScheduledTask();
-		task.action = new Action();
-		task.action.name = "actionname";
+		task.action = new ConfigureAction();
+		// task.action.name = "actionname";
 
 		System.out.println(JaxbHelper.toXml(task, true));
 	}

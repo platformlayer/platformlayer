@@ -4,7 +4,6 @@ import java.io.File;
 
 import org.apache.log4j.Logger;
 import org.platformlayer.ops.Handler;
-import org.platformlayer.ops.OperationType;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsTarget;
 
@@ -29,7 +28,7 @@ public class ManagedSymlink extends ManagedFilesystemItem {
 	}
 
 	@Handler
-	public void doConfigureValidate(OperationType operationType, OpsTarget target) throws Exception {
+	public void doConfigureValidate(OpsTarget target) throws Exception {
 		File filePath = getFilePath();
 		FilesystemInfo fsInfo = target.getFilesystemInfoFile(filePath);
 		boolean exists = (fsInfo != null);
@@ -41,7 +40,7 @@ public class ManagedSymlink extends ManagedFilesystemItem {
 			symlinkTargetMatch = Objects.equal(fsInfo.symlinkTarget, symlinkTarget.toString());
 		}
 
-		if (operationType.isConfigure()) {
+		if (OpsContext.isConfigure()) {
 			if (!exists) {
 				target.symlink(symlinkTarget, filePath, false);
 				doUpdateAction(target);
@@ -57,7 +56,7 @@ public class ManagedSymlink extends ManagedFilesystemItem {
 			// configureOwnerAndMode(agent, targetInfo, getSymlinkTarget());
 		}
 
-		if (operationType.isValidate()) {
+		if (OpsContext.isValidate()) {
 			if (!exists) {
 				OpsContext.get().addWarning(this, "DoesNotExist", "Symlink not found: " + filePath);
 			} else if (!symlinkTargetMatch) {
@@ -70,7 +69,7 @@ public class ManagedSymlink extends ManagedFilesystemItem {
 			}
 		}
 
-		if (operationType.isDelete()) {
+		if (OpsContext.isDelete()) {
 			if (exists) {
 				target.rm(filePath);
 				doUpdateAction(target);
