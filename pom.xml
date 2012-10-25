@@ -172,6 +172,11 @@
                 <version>${version.project}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>service-httpfrontend</artifactId>
+                <version>${version.project}</version>
+            </dependency>
 
 
             <dependency>
