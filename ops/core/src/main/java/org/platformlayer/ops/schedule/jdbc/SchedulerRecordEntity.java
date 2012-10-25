@@ -38,6 +38,6 @@ public class SchedulerRecordEntity {
 	@Column(name = "task_endpoint_keys")
 	public String taskEndpointTrustKeys;
 
-	@Column(name = "task_action_name")
-	public String taskActionName;
+	@Column(name = "task_action")
+	public String taskAction;
 }

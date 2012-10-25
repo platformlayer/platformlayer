@@ -15,6 +15,10 @@ import org.platformlayer.CheckedCallable;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.Scope;
 import org.platformlayer.config.Configuration;
+import org.platformlayer.core.model.Action;
+import org.platformlayer.core.model.ConfigureAction;
+import org.platformlayer.core.model.DeleteAction;
+import org.platformlayer.core.model.ValidateAction;
 import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.ops.log.JobLogger;
 import org.platformlayer.ops.model.metrics.MetricConfig;
@@ -199,8 +203,8 @@ public class OpsContext implements Closeable {
 		return jobRecord;
 	}
 
-	public OperationType getOperationType() {
-		return getInstance(OperationType.class);
+	public Action getAction() {
+		return getInstance(Action.class);
 	}
 
 	public JobLogger getJobLogger() {
@@ -208,20 +212,20 @@ public class OpsContext implements Closeable {
 	}
 
 	public static boolean isDelete() {
-		return isOperationType(OperationType.Delete);
+		return isOperationType(DeleteAction.class);
 	}
 
-	public static boolean isOperationType(OperationType operationType) {
-		OperationType thisOperationType = OpsContext.get().getOperationType();
-		return thisOperationType == operationType;
+	public static boolean isOperationType(Class<? extends Action> actionClass) {
+		Action action = OpsContext.get().getAction();
+		return actionClass.isInstance(action);
 	}
 
 	public static boolean isConfigure() {
-		return isOperationType(OperationType.Configure);
+		return isOperationType(ConfigureAction.class);
 	}
 
 	public static boolean isValidate() {
-		return isOperationType(OperationType.Validate);
+		return isOperationType(ValidateAction.class);
 	}
 
 	public Map<Object, Object> getCacheMap() {
@@ -234,6 +238,11 @@ public class OpsContext implements Closeable {
 
 	public List<ProjectAuthorization> getEncryptingProjects() {
 		return projects;
+	}
+
+	public static boolean isForce() {
+		// TODO: Support force actions??
+		return false;
 	}
 
 	// public OpsProject getProject() {

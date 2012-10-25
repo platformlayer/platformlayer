@@ -2,7 +2,7 @@ package org.platformlayer.ops.service;
 
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.Injection;
-import org.platformlayer.ops.OperationType;
+import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 
@@ -11,8 +11,8 @@ public class ManagedService {
 	boolean enabled = true;
 
 	@Handler
-	public void doOperation(OperationType operationType, OpsTarget target) throws OpsException {
-		if (operationType.isConfigure()) {
+	public void doOperation(OpsTarget target) throws OpsException {
+		if (OpsContext.isConfigure()) {
 			if (enabled) {
 				// TODO: Be much smarter here...
 				target.executeCommand("service {0} restart", getServiceKey());

@@ -3,7 +3,9 @@ package org.platformlayer.ops;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import org.platformlayer.core.model.Action;
+
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Handler {
-	OperationType[] value() default {};
+	Class<? extends Action>[] value() default {};
 }

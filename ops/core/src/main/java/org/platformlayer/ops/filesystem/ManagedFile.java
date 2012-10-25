@@ -8,7 +8,6 @@ import javax.inject.Inject;
 import org.apache.log4j.Logger;
 import org.openstack.crypto.Md5Hash;
 import org.platformlayer.ops.Handler;
-import org.platformlayer.ops.OperationType;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
@@ -41,14 +40,14 @@ public abstract class ManagedFile extends ManagedFilesystemItem {
 	protected abstract Md5Hash getSourceMd5(OpsTarget target) throws OpsException;
 
 	@Handler
-	public void handler(OperationType operation, OpsTarget target) throws Exception {
+	public void handler(OpsTarget target) throws Exception {
 		// OpsServer server = smartGetServer(true);
 		// Agent agent = server.getAgent();
 
 		File filePath = getFilePath();
 
 		Md5Hash sourceMd5 = null;
-		if (!operation.isDelete()) {
+		if (!OpsContext.isDelete()) {
 			sourceMd5 = getSourceMd5(target);
 		}
 
@@ -61,14 +60,14 @@ public abstract class ManagedFile extends ManagedFilesystemItem {
 
 		boolean isUpToDate = Objects.equal(sourceMd5, remoteMd5);
 
-		if (operation.isDelete()) {
+		if (OpsContext.isDelete()) {
 			if (remoteMd5 != null) {
 				target.rm(filePath);
 				doDeleteAction(target);
 			}
 		}
 
-		if (operation.isConfigure()) {
+		if (OpsContext.isConfigure()) {
 			boolean changed = false;
 
 			if (mkdirs != null) {
@@ -96,7 +95,7 @@ public abstract class ManagedFile extends ManagedFilesystemItem {
 				}
 			}
 
-			if (operation.isForce()) {
+			if (OpsContext.isForce()) {
 				doUpload = true;
 			}
 
@@ -151,7 +150,7 @@ public abstract class ManagedFile extends ManagedFilesystemItem {
 			}
 		}
 
-		if (operation.isValidate()) {
+		if (OpsContext.isValidate()) {
 			if (remoteMd5 == null) {
 				ops.addWarning(this, "File does not exist: " + filePath);
 				return;

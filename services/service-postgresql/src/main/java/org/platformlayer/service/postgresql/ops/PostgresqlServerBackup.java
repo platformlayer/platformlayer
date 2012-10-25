@@ -7,9 +7,9 @@ import java.util.UUID;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
+import org.platformlayer.core.model.BackupAction;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Handler;
-import org.platformlayer.ops.OperationType;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
@@ -38,7 +38,7 @@ public class PostgresqlServerBackup extends OpsTreeBase {
 	public void doOperation() throws OpsException, IOException {
 	}
 
-	@Handler(OperationType.Backup)
+	@Handler(BackupAction.class)
 	public void doBackup() throws OpsException, IOException {
 		OpsContext opsContext = OpsContext.get();
 

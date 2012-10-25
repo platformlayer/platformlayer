@@ -12,10 +12,8 @@ import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobLog;
 import org.platformlayer.jobs.model.JobState;
 import org.platformlayer.model.ProjectAuthorization;
-import org.platformlayer.ops.OperationType;
 
 public class JobRecord {
-	final JobKey key;
 	final ProjectAuthorization auth;
 
 	final String jobId;
@@ -32,13 +30,19 @@ public class JobRecord {
 
 	boolean isDone;
 
-	public JobRecord(PlatformLayerKey targetItemKey, OperationType operationType, ProjectAuthorization auth,
-			ProjectId jobProjectId) {
-		this(new JobKey(targetItemKey, operationType), targetItemKey.getServiceType(), auth, jobProjectId);
+	final PlatformLayerKey targetItemKey;
+
+	final Action action;
+
+	public JobRecord(PlatformLayerKey targetItemKey, Action action, ProjectAuthorization auth, ProjectId jobProjectId) {
+		this(targetItemKey, action, targetItemKey.getServiceType(), auth, jobProjectId);
 	}
 
-	JobRecord(JobKey key, ServiceType serviceType, ProjectAuthorization auth, ProjectId jobProjectId) {
-		this.key = key;
+	JobRecord(PlatformLayerKey targetItemKey, Action action, ServiceType serviceType, ProjectAuthorization auth,
+			ProjectId jobProjectId) {
+		this.targetItemKey = targetItemKey;
+		this.action = action;
+
 		this.serviceType = serviceType;
 		this.auth = auth;
 		this.jobProjectId = jobProjectId;
@@ -49,7 +53,7 @@ public class JobRecord {
 	}
 
 	public JobRecord(ServiceType serviceType, ProjectAuthorization auth, ProjectId jobProjectId) {
-		this(null, serviceType, auth, jobProjectId);
+		this(null, null, serviceType, auth, jobProjectId);
 	}
 
 	public PlatformLayerKey getJobKey() {
@@ -57,12 +61,12 @@ public class JobRecord {
 		return jobKey;
 	}
 
-	public OperationType getOperationType() {
-		if (key == null) {
-			return null;
-		}
-		return key.operationType;
-	}
+	// public OperationType getOperationType() {
+	// if (key == null) {
+	// return null;
+	// }
+	// return key.operationType;
+	// }
 
 	public JobLog getLog() {
 		return log;
@@ -73,11 +77,7 @@ public class JobRecord {
 	}
 
 	public PlatformLayerKey getTargetItemKey() {
-		if (key == null) {
-			return null;
-		}
-
-		return key.getTargetItemKey();
+		return targetItemKey;
 	}
 
 	public ServiceType getServiceType() {
@@ -92,18 +92,8 @@ public class JobRecord {
 
 		jobData.startedAt = this.startedAt;
 		jobData.endedAt = this.endedAt;
-
-		OperationType operationType = getOperationType();
-		if (operationType != null) {
-			// TODO: We'll need to store the action when there's more than just an operationType
-			Action action = new Action();
-			action.name = operationType.toString();
-			jobData.action = action;
-		}
-
-		if (key != null) {
-			jobData.targetId = key.getTargetItemKey();
-		}
+		jobData.action = action;
+		jobData.targetId = targetItemKey;
 
 		if (getLog) {
 			jobData.log = this.log;
@@ -137,6 +127,10 @@ public class JobRecord {
 
 	public boolean willExecute() {
 		return !isDone;
+	}
+
+	public Action getAction() {
+		return action;
 	}
 
 }

@@ -7,9 +7,9 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
+import org.platformlayer.core.model.BackupAction;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.Handler;
-import org.platformlayer.ops.OperationType;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
@@ -34,7 +34,7 @@ public class BackupDirectory extends OpsTreeBase {
 	@Inject
 	PlatformLayerCloudHelpers cloudHelpers;
 
-	@Handler(OperationType.Backup)
+	@Handler(BackupAction.class)
 	public void doBackup() throws OpsException, IOException {
 		OpsContext opsContext = OpsContext.get();
 

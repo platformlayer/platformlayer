@@ -23,6 +23,7 @@ import org.platformlayer.TimeSpan;
 import org.platformlayer.TypedItemMapper;
 import org.platformlayer.TypedPlatformLayerClient;
 import org.platformlayer.core.model.Action;
+import org.platformlayer.core.model.ConfigureAction;
 import org.platformlayer.core.model.EndpointInfo;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.ManagedItemState;
@@ -164,7 +165,7 @@ public class PlatformLayerTestContext {
 	}
 
 	public <T extends ItemBase> JobData doConfigure(T item) throws OpsException, IOException {
-		return doAction(item, new Action("configure"));
+		return doAction(item, new ConfigureAction());
 	}
 
 	public <T extends ItemBase> T waitForHealthy(T item) throws OpsException, IOException {

@@ -2,17 +2,16 @@ package org.platformlayer.ops.tasks;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 
 import org.apache.log4j.Logger;
+import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.ops.BindingScope;
 import org.platformlayer.ops.Handler;
-import org.platformlayer.ops.OperationType;
 import org.platformlayer.ops.reflection.MethodInvoker;
 
 import com.google.common.base.Function;
@@ -74,13 +73,11 @@ public class OperationInvoker {
 	}
 
 	private boolean isCandidate(Method method, BindingScope scope) {
-		OperationType operationType = scope.getInstance(OperationType.class);
+		Action action = scope.getInstance(Action.class);
 
 		Handler handler = method.getAnnotation(Handler.class);
 		if (handler != null) {
-			List<OperationType> operations = getOperations(handler);
-
-			if (!operations.isEmpty() && !operations.contains(operationType)) {
+			if (!canHandleAction(handler, action, true)) {
 				return false;
 			}
 
@@ -107,6 +104,20 @@ public class OperationInvoker {
 		return true;
 	}
 
+	private boolean canHandleAction(Handler handler, Action action, boolean useWildcard) {
+		Class<? extends Action>[] operations = handler.value();
+		if (operations == null || operations.length == 0) {
+			return useWildcard;
+		}
+
+		for (Class<? extends Action> actionClass : operations) {
+			if (actionClass.isInstance(action)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private Method findBetter(Method l, Method r, BindingScope scope) {
 		Handler lHandler = l.getAnnotation(Handler.class);
 		Handler rHandler = r.getAnnotation(Handler.class);
@@ -120,30 +131,29 @@ public class OperationInvoker {
 		}
 
 		if (rHandler != null && lHandler != null) {
-			OperationType operationType = scope.getInstance(OperationType.class);
-			if (operationType != null) {
-				List<OperationType> lOperations = getOperations(lHandler);
-				List<OperationType> rOperations = getOperations(rHandler);
+			Action action = scope.getInstance(Action.class);
+			if (action != null) {
+				boolean lExplicit = canHandleAction(lHandler, action, false);
+				boolean rExplicit = canHandleAction(lHandler, action, false);
 
-				boolean lContains = lOperations.contains(operationType);
-				boolean rContains = rOperations.contains(operationType);
-
-				if (lContains && !rContains) {
+				if (lExplicit && !rExplicit) {
 					return l;
 				}
 
-				if (rContains && !lContains) {
+				if (rExplicit && !lExplicit) {
 					return r;
 				}
 
-				// Treat empty as wildcards
-				if (rOperations.isEmpty() && !lOperations.isEmpty()) {
-					return r;
-				}
+				// TODO: How do we get here??
+				boolean lWildcard = canHandleAction(lHandler, action, true);
+				boolean rWildcard = canHandleAction(lHandler, action, true);
 
-				// Treat empty as wildcards
-				if (lOperations.isEmpty() && !rOperations.isEmpty()) {
+				if (lWildcard && !rWildcard) {
 					return l;
+				}
+
+				if (rWildcard && !lWildcard) {
+					return r;
 				}
 			} else {
 				log.warn("No OperationType in scope");
@@ -153,12 +163,12 @@ public class OperationInvoker {
 		throw new IllegalArgumentException("Cannot compare " + l + " with " + r);
 	}
 
-	private List<OperationType> getOperations(Handler handler) {
-		OperationType[] operations = handler.value();
-		if (operations == null) {
-			return Lists.newArrayList();
-		}
-		return Arrays.asList(operations);
-	}
+	// private List<Class<? extends Action>> getOperations(Handler handler) {
+	// Class<? extends Action>[] operations = handler.value();
+	// if (operations == null) {
+	// return Lists.newArrayList();
+	// }
+	// return Arrays.asList(operations);
+	// }
 
 }

@@ -2,6 +2,7 @@ package org.platformlayer.ops;
 
 import java.lang.reflect.Field;
 import java.security.PublicKey;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -331,4 +332,8 @@ public abstract class ServiceProviderBase implements ServiceProvider {
 		}
 	}
 
+	@Override
+	public List<Class<?>> getExtraJaxbClasses() {
+		return Collections.emptyList();
+	}
 }

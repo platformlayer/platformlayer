@@ -11,5 +11,4 @@ public class ActionTask extends Task {
 	public EndpointRecord endpoint;
 	public PlatformLayerKey target;
 	public Action action;
-
 }

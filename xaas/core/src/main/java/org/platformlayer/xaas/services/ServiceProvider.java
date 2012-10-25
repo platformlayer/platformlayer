@@ -1,6 +1,7 @@
 package org.platformlayer.xaas.services;
 
 import java.security.PublicKey;
+import java.util.List;
 
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.ServiceInfo;
@@ -43,4 +44,6 @@ public interface ServiceProvider {
 	Object getController(Class<?> itemClass) throws OpsException;
 
 	Object getController(Object item) throws OpsException;
+
+	List<Class<?>> getExtraJaxbClasses();
 }
