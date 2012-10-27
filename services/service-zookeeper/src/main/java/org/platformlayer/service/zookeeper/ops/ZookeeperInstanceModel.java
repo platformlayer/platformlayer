@@ -73,13 +73,14 @@ public class ZookeeperInstanceModel extends StandardTemplateData {
 	public List<ZookeeperServer> getClusterServers() throws OpsException {
 		ZookeeperServer model = getModel();
 
-		Tag parentTag = Tag.PARENT.findUniqueTag(model);
-		if (parentTag == null) {
+		PlatformLayerKey parent = Tag.PARENT.findUnique(model);
+		if (parent == null) {
 			log.warn("Parent tag not set on Zookeeper server; assuming standalone server");
 			return Lists.newArrayList(model);
 		}
 
-		List<ZookeeperServer> servers = platformLayer.listItems(ZookeeperServer.class, TagFilter.byTag(parentTag));
+		List<ZookeeperServer> servers = platformLayer.listItems(ZookeeperServer.class,
+				TagFilter.byTag(Tag.PARENT.build(parent)));
 		return servers;
 	}
 

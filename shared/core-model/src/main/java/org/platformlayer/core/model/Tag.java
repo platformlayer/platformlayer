@@ -1,17 +1,13 @@
 package org.platformlayer.core.model;
 
-import java.net.InetAddress;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlTransient;
 
-import com.google.common.collect.Lists;
-import com.google.common.net.InetAddresses;
+import org.platformlayer.common.AddressTagKey;
+import org.platformlayer.common.EndpointTagKey;
+import org.platformlayer.common.KeyTagKey;
+import org.platformlayer.common.StringTagKey;
+import org.platformlayer.common.UuidTagKey;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Tag {
@@ -21,180 +17,6 @@ public class Tag {
 	public static final String OWNER_ID = "owner";
 
 	// public static final String PLATFORM_LAYER_ID = "platformlayerid";
-
-	@XmlTransient
-	public abstract static class TagKey<T> {
-		final String key;
-
-		public TagKey(String key) {
-			this.key = key;
-		}
-
-		public String getKey() {
-			return key;
-		}
-
-		public T findUnique(ItemBase item) {
-			return findUnique(item.getTags());
-		}
-
-		public List<T> find(ItemBase item) {
-			return find(item.getTags());
-		}
-
-		public T findUnique(Tags tags) {
-			String s = tags.findUnique(key);
-			if (s == null) {
-				return null;
-			}
-			return toT(s);
-		}
-
-		public Tag findUniqueTag(Tags tags) {
-			return tags.findUniqueTag(key);
-		}
-
-		public Tag findUniqueTag(ItemBase item) {
-			return findUniqueTag(item.getTags());
-		}
-
-		public List<T> find(Tags tags) {
-			List<T> ret = Lists.newArrayList();
-			for (String s : tags.find(key)) {
-				ret.add(toT(s));
-			}
-			return ret;
-		}
-
-		protected abstract T toT(String s);
-
-		public boolean isTag(Tag tag) {
-			return key.equals(tag.getKey());
-		}
-	}
-
-	@XmlTransient
-	public static class KeyTagKey extends TagKey<PlatformLayerKey> {
-		public KeyTagKey(String key) {
-			super(key);
-		}
-
-		@Override
-		protected PlatformLayerKey toT(String s) {
-			return PlatformLayerKey.parse(s);
-		}
-
-		public Tag build(PlatformLayerKey t) {
-			return new Tag(key, t.getUrl());
-		}
-
-	}
-
-	@XmlTransient
-	public static class StringTagKey extends TagKey<String> {
-		public StringTagKey(String key) {
-			super(key);
-		}
-
-		@Override
-		protected String toT(String s) {
-			return s;
-		}
-
-		public Tag build(String t) {
-			return new Tag(key, t);
-		}
-	}
-
-	@XmlTransient
-	public static class EndpointTagKey extends TagKey<EndpointInfo> {
-		public EndpointTagKey(String key) {
-			super(key);
-		}
-
-		@Override
-		protected EndpointInfo toT(String s) {
-			return EndpointInfo.parseTagValue(s);
-		}
-
-		public Tag build(EndpointInfo t) {
-			return new Tag(key, t.getTagValue());
-		}
-	}
-
-	@XmlTransient
-	public static class UuidTagKey extends TagKey<java.util.UUID> {
-		public UuidTagKey(String key) {
-			super(key);
-		}
-
-		@Override
-		protected java.util.UUID toT(String s) {
-			return java.util.UUID.fromString(s);
-		}
-
-		public Tag build(java.util.UUID t) {
-			return new Tag(key, t.toString());
-		}
-
-	}
-
-	@XmlTransient
-	public static class AddressTagKey extends TagKey<InetAddress> {
-		public AddressTagKey(String key) {
-			super(key);
-		}
-
-		@Override
-		protected InetAddress toT(String s) {
-			return InetAddresses.forString(s);
-		}
-
-		public Tag build(InetAddress t) {
-			return new Tag(key, t.getHostAddress());
-		}
-	}
-
-	@XmlTransient
-	public static class DateTagKey extends TagKey<Date> {
-		public DateTagKey(String key) {
-			super(key);
-		}
-
-		// Not static to avoid locking problems
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-
-		@Override
-		protected Date toT(String s) {
-			try {
-				return dateFormat.parse(s);
-			} catch (ParseException e) {
-				throw new IllegalArgumentException("Cannot parse value as date: " + s, e);
-			}
-		}
-
-		public Tag build(Date v) {
-			String s = v != null ? dateFormat.format(v) : null;
-			return new Tag(key, s);
-		}
-	}
-
-	@XmlTransient
-	public static class BooleanTagKey extends TagKey<Boolean> {
-		public BooleanTagKey(String key) {
-			super(key);
-		}
-
-		@Override
-		protected Boolean toT(String s) {
-			return Boolean.valueOf(s);
-		}
-
-		public Tag build(Boolean v) {
-			String s = v.toString();
-			return new Tag(key, s);
-		}
-	}
 
 	public static final KeyTagKey PARENT = new KeyTagKey("parent");
 	// public static final String RELATED = "linked";

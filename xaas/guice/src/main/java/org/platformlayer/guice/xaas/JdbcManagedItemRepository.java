@@ -138,7 +138,7 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 
 				boolean isRoot = true;
 				for (Tag tag : itemTags.get(itemId)) {
-					boolean tagIsParent = Tag.PARENT.isTag(tag);
+					boolean tagIsParent = Tag.PARENT.getKey().equals(tag.getKey());
 					if (tagIsParent) {
 						isRoot = false;
 						break;
