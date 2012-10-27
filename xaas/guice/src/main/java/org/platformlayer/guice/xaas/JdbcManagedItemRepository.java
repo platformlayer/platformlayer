@@ -13,6 +13,7 @@ import javax.inject.Provider;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
+import org.apache.log4j.Logger;
 import org.openstack.utils.Utf8;
 import org.platformlayer.Filter;
 import org.platformlayer.RepositoryException;
@@ -45,12 +46,16 @@ import org.platformlayer.xml.JaxbHelper;
 
 import com.fathomdb.crypto.CryptoKey;
 import com.fathomdb.crypto.FathomdbCrypto;
+import com.google.common.base.Charsets;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 public class JdbcManagedItemRepository implements ManagedItemRepository {
+
+	private static final Logger log = Logger.getLogger(JdbcManagedItemRepository.class);
+
 	/**
 	 * We originally weren't de-duplicating tags, but I think we want to
 	 */
@@ -259,9 +264,9 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 			secret.unlock(itemSecret);
 
 			byte[] plaintext = FathomdbCrypto.decrypt(itemSecret, data);
-			String xml = new String(plaintext);
+			String xml = new String(plaintext, Charsets.UTF_8);
 
-			T model = (T) jaxb.unmarshal(plaintext);
+			T model = (T) jaxb.unmarshal(xml);
 
 			model.state = ManagedItemState.fromCode(stateCode);
 

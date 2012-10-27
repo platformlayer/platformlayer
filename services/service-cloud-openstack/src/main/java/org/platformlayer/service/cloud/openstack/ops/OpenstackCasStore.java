@@ -1,4 +1,4 @@
-package org.platformlayer.ops.cas.openstack;
+package org.platformlayer.service.cloud.openstack.ops;
 
 import java.io.File;
 import java.util.List;
@@ -17,7 +17,6 @@ import org.platformlayer.cas.CasStoreObject;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.cas.OpsCasObjectBase;
-import org.platformlayer.ops.openstack.DirectOpenstackDownload;
 
 import com.google.common.collect.Lists;
 

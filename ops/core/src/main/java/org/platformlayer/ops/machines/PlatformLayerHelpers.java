@@ -1,5 +1,6 @@
 package org.platformlayer.ops.machines;
 
+import java.util.List;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -7,11 +8,16 @@ import javax.inject.Inject;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
 import org.platformlayer.TypedPlatformLayerClient;
+import org.platformlayer.UntypedItem;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.ManagedItemState;
+import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
+import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.core.model.Tags;
 import org.platformlayer.ops.OpsException;
+
+import com.google.common.base.Objects;
 
 public class PlatformLayerHelpers extends TypedPlatformLayerClient {
 	@Inject
@@ -57,6 +63,32 @@ public class PlatformLayerHelpers extends TypedPlatformLayerClient {
 			throw new OpsException("Item not yet deleted");
 		}
 		return item;
+	}
+
+	public void setUniqueTags(PlatformLayerKey key, Tag... setTags) throws OpsException {
+		UntypedItem itemUntyped = getItemUntyped(key);
+		Tags tags = itemUntyped.getTags();
+
+		TagChanges tagChanges = new TagChanges();
+		for (Tag setTag : setTags) {
+			List<Tag> existing = tags.findTags(setTag.key);
+			if (existing == null || existing.isEmpty()) {
+				tagChanges.addTags.add(setTag);
+			} else if (existing.size() == 1) {
+				Tag existingTag = existing.get(0);
+				if (!Objects.equal(existingTag.value, setTag.value)) {
+					tagChanges.addTags.add(setTag);
+					tagChanges.removeTags.add(existingTag);
+				}
+			} else {
+				// We probably should replace existing tags...
+				throw new OpsException("Found duplicate tag for: " + setTag.key);
+			}
+		}
+
+		if (!tagChanges.isEmpty()) {
+			changeTags(key, tagChanges);
+		}
 	}
 
 }

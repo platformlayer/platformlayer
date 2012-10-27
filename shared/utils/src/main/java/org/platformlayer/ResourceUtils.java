@@ -7,6 +7,8 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.xml.JaxbHelper;
 import org.platformlayer.xml.JsonHelper;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class ResourceUtils {
 	public static String get(Class<?> contextClass, String resourceName) throws IOException {
 		String value = find(contextClass, resourceName);
@@ -87,7 +89,9 @@ public class ResourceUtils {
 						json = jsonHelper.wrapJson(json);
 					}
 
-					return jsonHelper.unmarshal(json);
+					ObjectMapper objectMapper = JsonHelper.buildObjectMapper(null, false);
+					return (T) objectMapper.readValue(json, contextClass);
+					// return jsonHelper.unmarshal(json);
 				}
 			} catch (Exception e) {
 				throw new OpsException("Error reading resource: " + resourceName, e);

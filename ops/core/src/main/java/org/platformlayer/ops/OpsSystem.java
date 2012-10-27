@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.openstack.crypto.CertificateAndKey;
@@ -22,7 +21,6 @@ import org.platformlayer.http.HttpStrategy;
 import org.platformlayer.ids.ItemType;
 import org.platformlayer.ids.ModelKey;
 import org.platformlayer.ids.ServiceType;
-import org.platformlayer.ops.backups.BackupContextFactory;
 import org.platformlayer.ops.multitenant.SimpleMultitenantConfiguration;
 import org.platformlayer.ops.ssh.ISshContext;
 import org.platformlayer.ops.tasks.JobRegistry;
@@ -66,9 +64,6 @@ public class OpsSystem {
 
 	// @Inject
 	// Provider<OpsAuthentication> authenticationProvider;
-
-	@Inject
-	Provider<BackupContextFactory> backupContextFactory;
 
 	@Inject
 	AuthenticationService authenticationService;
@@ -252,10 +247,6 @@ public class OpsSystem {
 			Thread.currentThread().interrupt();
 			throw new OpsException("Interrupted", e);
 		}
-	}
-
-	public BackupContextFactory getBackupContextFactory() {
-		return backupContextFactory.get();
 	}
 
 	Optional<MultitenantConfiguration> multitenantConfiguration;

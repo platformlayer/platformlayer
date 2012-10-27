@@ -9,4 +9,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class TagChanges {
 	public Tags addTags = new Tags();
 	public Tags removeTags = new Tags();
+
+	public boolean isEmpty() {
+		return addTags.isEmpty() && removeTags.isEmpty();
+	}
 }

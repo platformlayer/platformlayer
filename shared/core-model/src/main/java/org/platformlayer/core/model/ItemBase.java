@@ -3,6 +3,7 @@ package org.platformlayer.core.model;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.platformlayer.ids.ManagedItemId;
 
@@ -18,6 +19,7 @@ public class ItemBase {
 
 	public Tags tags;
 
+	@XmlTransient
 	public SecretInfo secret;
 
 	public long getVersion() {

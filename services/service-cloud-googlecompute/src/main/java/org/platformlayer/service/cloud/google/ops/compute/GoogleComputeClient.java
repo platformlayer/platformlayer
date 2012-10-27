@@ -10,7 +10,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
-import org.openstack.client.OpenstackException;
 import org.platformlayer.ExceptionUtils;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.crypto.OpenSshUtils;
@@ -69,7 +68,7 @@ public class GoogleComputeClient {
 			log.debug("Listing firewall rules");
 			firewalls = compute.firewalls().list(projectId).execute();
 		} catch (IOException e) {
-			throw new OpenstackException("Error listing firewalls", e);
+			throw new OpsException("Error listing firewalls", e);
 		}
 
 		// TODO: Use filter
@@ -285,8 +284,6 @@ public class GoogleComputeClient {
 			return created;
 		} catch (InterruptedException e) {
 			ExceptionUtils.handleInterrupted(e);
-			throw new OpsException("Error building server", e);
-		} catch (OpenstackException e) {
 			throw new OpsException("Error building server", e);
 		} catch (TimeoutException e) {
 			throw new OpsException("Timeout waiting for server build", e);

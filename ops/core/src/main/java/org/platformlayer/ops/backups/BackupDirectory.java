@@ -13,8 +13,6 @@ import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
-import org.platformlayer.ops.backups.ShellBackupClient.DirectoryBackup;
-import org.platformlayer.ops.machines.PlatformLayerCloudHelpers;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
 import com.google.common.collect.Lists;
@@ -32,7 +30,7 @@ public class BackupDirectory extends OpsTreeBase {
 	}
 
 	@Inject
-	PlatformLayerCloudHelpers cloudHelpers;
+	BackupHelpers backups;
 
 	@Handler(BackupAction.class)
 	public void doBackup() throws OpsException, IOException {
@@ -41,17 +39,16 @@ public class BackupDirectory extends OpsTreeBase {
 		// Machine machine = opsContext.getInstance(Machine.class);
 		OpsTarget target = opsContext.getInstance(OpsTarget.class);
 
-		ShellBackupClient client = ShellBackupClient.get();
+		BackupContext backup = backups.getContext();
 
-		ShellBackupClient.DirectoryBackup request = new DirectoryBackup();
+		DirectoryBackup request = new DirectoryBackup();
 		request.target = target;
 		request.rootDirectory = backupRoot;
 		request.exclude.addAll(this.excludes);
 
-		client.doBackup(request);
+		backup.doBackup(request);
 
-		BackupContext backupContext = client.context;
-		backupContext.add(new BackupItem(itemKey, FORMAT, request.objectName));
+		backup.add(new BackupItem(itemKey, FORMAT, request.objectName));
 	}
 
 	@Override

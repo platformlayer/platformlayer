@@ -36,7 +36,7 @@ public class MarshallerContextResolver implements ContextResolver<Marshaller> {
 
 		try {
 			Marshaller m = jaxbContext.createMarshaller();
-			m.setProperty("com.sun.xml.bind.namespacePrefixMapper", new NamespacePrefixMapperImpl());
+			m.setProperty("com.sun.xml.internal.bind.namespacePrefixMapper", new NamespacePrefixMapperImpl());
 			return m;
 		} catch (JAXBException e) {
 			throw new IllegalStateException("Error creating XML marshaller", e);

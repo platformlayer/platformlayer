@@ -9,7 +9,6 @@ import javax.inject.Inject;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
-import org.openstack.client.OpenstackCredentials;
 import org.platformlayer.cas.CasLocation;
 import org.platformlayer.cas.CasPickClosestStore;
 import org.platformlayer.cas.CasStore;
@@ -23,11 +22,11 @@ import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.cas.filesystem.FilesystemCasStore;
 import org.platformlayer.ops.cas.jenkins.JenkinsCasStore;
 import org.platformlayer.ops.cas.jenkins.JenkinsClient;
-import org.platformlayer.ops.cas.openstack.OpenstackCasStore;
+import org.platformlayer.ops.helpers.ProviderHelper;
+import org.platformlayer.ops.helpers.ProviderHelper.ProviderOf;
 import org.platformlayer.ops.helpers.SshKeys;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.networks.NetworkPoint;
-import org.platformlayer.ops.openstack.OpenstackCloudHelpers;
 import org.platformlayer.service.machines.direct.v1.DirectHost;
 
 public class CasStoreHelper {
@@ -36,18 +35,13 @@ public class CasStoreHelper {
 	// List<CasStore> casStores;
 
 	@Inject
-	OpenstackCloudHelpers openstackClouds;
-
-	@Inject
 	PlatformLayerHelpers platformLayer;
 
 	@Inject
 	SshKeys sshKeys;
 
-	private static OpenstackCasStore buildOpenstack(OpenstackCredentials credentials) {
-		String containerName = "platformlayer-artifacts";
-		return new OpenstackCasStore(credentials, containerName);
-	}
+	@Inject
+	ProviderHelper providers;
 
 	private static JenkinsCasStore buildJenkins(String baseUrl) {
 		HttpClient httpClient = new DefaultHttpClient();
@@ -72,8 +66,9 @@ public class CasStoreHelper {
 		casStores.addSecondary(buildJenkins("http://192.168.131.14:8080/"));
 		// casStores.add(buildJenkins("http://192.168.192.36:8080/"));
 
-		for (OpenstackCredentials credentials : openstackClouds.findOpenstackClouds()) {
-			casStores.addSecondary(buildOpenstack(credentials));
+		for (ProviderOf<CasStoreProvider> casStoreProvider : providers.listItemsProviding(CasStoreProvider.class)) {
+			CasStore casStore = casStoreProvider.get().getCasStore();
+			casStores.addSecondary(casStore);
 		}
 
 		// TODO: This is evil

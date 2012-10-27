@@ -13,12 +13,11 @@ import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
+import org.platformlayer.ops.backups.Backup;
 import org.platformlayer.ops.backups.BackupContext;
 import org.platformlayer.ops.backups.BackupDirectory;
+import org.platformlayer.ops.backups.BackupHelpers;
 import org.platformlayer.ops.backups.BackupItem;
-import org.platformlayer.ops.backups.ShellBackupClient;
-import org.platformlayer.ops.backups.ShellBackupClient.Backup;
-import org.platformlayer.ops.machines.PlatformLayerCloudHelpers;
 import org.platformlayer.ops.process.ProcessExecution;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.postgresql.model.PostgresqlServer;
@@ -32,7 +31,7 @@ public class PostgresqlServerBackup extends OpsTreeBase {
 	static final Logger log = Logger.getLogger(BackupDirectory.class);
 
 	@Inject
-	PlatformLayerCloudHelpers cloudHelpers;
+	BackupHelpers backups;
 
 	@Handler
 	public void doOperation() throws OpsException, IOException {
@@ -51,21 +50,20 @@ public class PostgresqlServerBackup extends OpsTreeBase {
 
 		List<String> databases = listDatabases(target);
 
-		ShellBackupClient client = ShellBackupClient.get();
+		BackupContext backupContext = backups.getContext();
 
 		String baseName = UUID.randomUUID().toString();
 
 		PostgresqlServer server = OpsContext.get().getInstance(PostgresqlServer.class);
 
-		BackupContext backupContext = OpsContext.get().getInstance(BackupContext.class);
 		backupContext.add(new BackupItem(server.getKey(), FORMAT, baseName));
 
 		{
 			Command dumpAll = Command.build("su postgres -c \"pg_dumpall --globals-only\"");
-			ShellBackupClient.Backup request = new Backup();
+			Backup request = new Backup();
 			request.target = target;
 			request.objectName = baseName + "/pgdump_meta";
-			client.uploadStream(request, dumpAll);
+			backupContext.uploadStream(request, dumpAll);
 		}
 
 		for (String database : databases) {
@@ -77,12 +75,12 @@ public class PostgresqlServerBackup extends OpsTreeBase {
 			// template1 can be backed up, even though it isn't typically very useful
 
 			String fileName = "pgdump_db_" + database;
-			ShellBackupClient.Backup request = new Backup();
+			Backup request = new Backup();
 			request.target = target;
 			request.objectName = baseName + "/" + fileName;
 
 			Command dumpDatabase = Command.build("su postgres -c \"pg_dump --oids -Fc --verbose {0}\"", database);
-			client.uploadStream(request, dumpDatabase);
+			backupContext.uploadStream(request, dumpDatabase);
 		}
 	}
 

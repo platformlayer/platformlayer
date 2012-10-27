@@ -1,4 +1,4 @@
-package org.platformlayer.ops.backups;
+package org.platformlayer.service.cloud.openstack.ops;
 
 import java.util.Map.Entry;
 
@@ -87,7 +87,7 @@ public class RemoteCurlOpenstackSession extends OpenstackSession {
 			}
 		}
 
-		CurlRequest toCurlRequest() {
+		public CurlRequest toCurlRequest() {
 			CurlRequest request = new CurlRequest(resourceUrl);
 			if (body != null) {
 				JaxbHelper jaxb = JaxbHelper.get(body.getClass());

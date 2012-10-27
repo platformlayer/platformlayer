@@ -174,7 +174,7 @@ public class Tag {
 		}
 
 		public Tag build(Date v) {
-			String s = dateFormat.format(v);
+			String s = v != null ? dateFormat.format(v) : null;
 			return new Tag(key, s);
 		}
 	}

@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.Generate;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
@@ -333,7 +334,8 @@ public abstract class ServiceProviderBase implements ServiceProvider {
 	}
 
 	@Override
-	public List<Class<?>> getExtraJaxbClasses() {
+	public List<Class<? extends Action>> getActions() {
 		return Collections.emptyList();
 	}
+
 }

@@ -52,11 +52,8 @@ public class SimpleAuthenticationSecrets implements AuthenticationSecrets {
 			return null;
 		}
 
-		int ivLength = (tokenSecret[1] & 0xff);
-		byte[] iv = Arrays.copyOfRange(tokenSecret, 2, 2 + ivLength);
-		byte[] tail = Arrays.copyOfRange(tokenSecret, 2 + ivLength, tokenSecret.length);
-
-		byte[] plaintext = secret.decrypt(iv, tail);
+		byte[] ciphertext = Arrays.copyOfRange(tokenSecret, 1, tokenSecret.length);
+		byte[] plaintext = secret.decrypt(ciphertext);
 		return FathomdbCrypto.deserializeKey(plaintext);
 	}
 
@@ -68,15 +65,11 @@ public class SimpleAuthenticationSecrets implements AuthenticationSecrets {
 			throw new IllegalStateException();
 		}
 
-		byte ivLength = 16;
-		byte[] iv = FathomdbCrypto.generateSecureRandom(ivLength);
-
 		byte[] plaintext = FathomdbCrypto.serialize(userSecret);
-		byte[] ciphertext = secret.encrypt(iv, plaintext);
+		byte[] ciphertext = secret.encrypt(plaintext);
 
-		byte[] header = new byte[2];
+		byte[] header = new byte[1];
 		header[0] = tokenId;
-		header[1] = ivLength;
-		return Bytes.concat(header, iv, ciphertext);
+		return Bytes.concat(header, ciphertext);
 	}
 }
