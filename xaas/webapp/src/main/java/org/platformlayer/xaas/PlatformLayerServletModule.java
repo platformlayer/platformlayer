@@ -1,5 +1,6 @@
 package org.platformlayer.xaas;
 
+import java.util.List;
 import java.util.Map;
 
 import org.platformlayer.Scope;
@@ -8,8 +9,14 @@ import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.web.CORSFilter;
 import org.platformlayer.xaas.web.jaxrs.MetricDataSourceWriter;
 import org.platformlayer.xaas.web.resources.RootResource;
+import org.platformlayer.xml.JsonHelper;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.inject.Scopes;
 import com.sun.jersey.api.core.PackagesResourceConfig;
 import com.sun.jersey.guice.JerseyServletModule;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
@@ -53,15 +60,30 @@ public class PlatformLayerServletModule extends JerseyServletModule {
 		// bind(ServiceResource.class);
 		// bind(ServicesCollectionResource.class);
 
-		// /* bind jackson converters for JAXB/JSON serialization */
-		// bind(MessageBodyReader.class).to(JacksonJsonProvider.class);
-		// bind(MessageBodyWriter.class).to(JacksonJsonProvider.class);
-
 		filter("/v0/*").through(OpsAuthenticationFilter.class);
 
 		Map<String, String> params = Maps.newHashMap();
-		params.put(PackagesResourceConfig.PROPERTY_PACKAGES,
-				"org.platformlayer.xaas.web.jaxrs;org.platformlayer.xaas.web.resources;org.codehaus.jackson.jaxrs");
+		List<String> packages = Lists.newArrayList();
+		packages.add("org.platformlayer.xaas.web.jaxrs");
+		packages.add("org.platformlayer.xaas.web.resources");
+		// packages.add("org.codehaus.jackson.jaxrs");
+
+		TypeFactory typeFactory = TypeFactory.defaultInstance();
+		ObjectMapper objectMapper = JsonHelper.buildObjectMapper(typeFactory, false);
+
+		// TypeResolverBuilder<?> typer = new PlatformLayerTypeResolverBuilder();
+		// TypeIdResolver typeIdResolver = new PlatformLayerTypeIdResolver(null, typeFactory);
+		// this.requestInjection(typeIdResolver);
+		// typer = typer.init(JsonTypeInfo.Id.CLASS, typeIdResolver);
+		// typer = typer.inclusion(JsonTypeInfo.As.PROPERTY);
+		// typer = typer.typeProperty("type");
+		// objectMapper.setDefaultTyping(typer);
+
+		bind(ObjectMapper.class).toInstance(objectMapper);
+
+		bind(PlatformLayerJsonProvider.class).in(Scopes.SINGLETON);
+
+		params.put(PackagesResourceConfig.PROPERTY_PACKAGES, Joiner.on(';').join(packages));
 		serve("/v0/*").with(GuiceContainer.class, params);
 		// ImmutableMap.of(JSONConfiguration.FEATURE_POJO_MAPPING, "true"));
 

@@ -2,6 +2,7 @@ package org.platformlayer.xaas.web.resources;
 
 import static com.google.common.base.Objects.equal;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -13,7 +14,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
 
 import org.platformlayer.Filter;
 import org.platformlayer.RepositoryException;
@@ -32,6 +32,9 @@ import org.platformlayer.ops.OpsException;
 public class ManagedItemResource extends XaasResourceBase {
 	@Inject
 	ItemService itemService;
+
+	@Inject
+	JsonMapper jsonMapper;
 
 	@GET
 	@Produces({ XML, JSON })
@@ -58,8 +61,11 @@ public class ManagedItemResource extends XaasResourceBase {
 	@Consumes({ JSON })
 	@Produces({ XML, JSON })
 	public <T extends ItemBase> T createItemJson(String json, @QueryParam("unique") String uniqueTag)
-			throws RepositoryException, OpsException, JAXBException, XMLStreamException {
-		T item = readItem(json);
+			throws RepositoryException, OpsException, JAXBException, IOException {
+		// String json2 = json.replace("{\"value\":\"pl", "{\"value\":\"pl");
+
+		Class<T> javaClass = (Class<T>) getModelClass().getJavaClass();
+		T item = jsonMapper.readItem(javaClass, json);
 
 		checkItemKey(item);
 

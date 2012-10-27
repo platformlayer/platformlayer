@@ -120,4 +120,5 @@ public class ChrootOpsTarget extends OpsTargetBase {
 	public boolean isMachineTerminated() {
 		return parentTarget.isMachineTerminated();
 	}
+
 }

@@ -12,6 +12,7 @@ import org.platformlayer.core.model.DeleteAction;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.JobSchedule;
 import org.platformlayer.core.model.ManagedItemCollection;
+import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ServiceInfo;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.Tags;
@@ -40,11 +41,11 @@ public class JaxbContextHelper {
 			javaClasses.add(ItemBase.class);
 			javaClasses.add(ManagedItemCollection.class);
 			javaClasses.add(JobSchedule.class);
+			javaClasses.add(PlatformLayerKey.class);
 
 			javaClasses.add(ConfigureAction.class);
 			javaClasses.add(ValidateAction.class);
 			javaClasses.add(DeleteAction.class);
-			javaClasses.add(ConfigureAction.class);
 			javaClasses.add(BackupAction.class);
 
 			for (ServiceInfo serviceInfo : serviceProviderDictionary.getAllServices()) {
@@ -61,7 +62,7 @@ public class JaxbContextHelper {
 					// }
 				}
 
-				for (Class<?> clazz : serviceProvider.getExtraJaxbClasses()) {
+				for (Class<?> clazz : serviceProvider.getActions()) {
 					javaClasses.add(clazz);
 				}
 			}

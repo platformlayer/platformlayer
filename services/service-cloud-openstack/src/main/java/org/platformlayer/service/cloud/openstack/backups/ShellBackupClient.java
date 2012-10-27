@@ -1,7 +1,6 @@
-package org.platformlayer.ops.backups;
+package org.platformlayer.service.cloud.openstack.backups;
 
 import java.io.File;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -11,45 +10,26 @@ import org.openstack.client.storage.OpenstackStorageClient;
 import org.openstack.model.storage.ObjectProperties;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.FileUpload;
-import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
-import org.platformlayer.ops.backups.RemoteCurlOpenstackSession.RemoteCurlOpenstackRequest;
+import org.platformlayer.ops.backups.Backup;
+import org.platformlayer.ops.backups.DirectoryBackup;
 import org.platformlayer.ops.helpers.CurlRequest;
 import org.platformlayer.ops.helpers.CurlResult;
 import org.platformlayer.ops.process.ProcessExecution;
+import org.platformlayer.service.cloud.openstack.ops.RemoteCurlOpenstackSession;
+import org.platformlayer.service.cloud.openstack.ops.RemoteCurlOpenstackSession.RemoteCurlOpenstackRequest;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 public class ShellBackupClient {
 	static final Logger log = Logger.getLogger(ShellBackupClient.class);
 
-	public final BackupContext context;
+	public final OpenstackBackupContext context;
 
-	public static ShellBackupClient get() {
-		BackupContext context = OpsContext.get().getInstance(BackupContext.class);
-		if (context == null) {
-			throw new IllegalStateException();
-		}
-		return new ShellBackupClient(context);
-	}
-
-	private ShellBackupClient(BackupContext context) {
+	ShellBackupClient(OpenstackBackupContext context) {
 		super();
 		this.context = context;
-	}
-
-	public static class Backup {
-		public OpsTarget target;
-		public String objectName;
-		public Map<String, String> objectProperties = Maps.newHashMap();
-	}
-
-	public static class DirectoryBackup extends Backup {
-		public File rootDirectory;
-		public List<File> exclude = Lists.newArrayList();
 	}
 
 	// private RemoteCurlOpenstackSession openstackSession = null;

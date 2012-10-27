@@ -1,4 +1,4 @@
-package org.platformlayer.ops.openstack;
+package org.platformlayer.service.cloud.openstack.ops;
 
 import java.io.File;
 
@@ -8,7 +8,6 @@ import org.openstack.client.storage.OpenstackStorageClient;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
-import org.platformlayer.ops.backups.RemoteCurlOpenstackSession;
 import org.platformlayer.ops.helpers.CurlRequest;
 import org.platformlayer.ops.process.ProcessExecution;
 

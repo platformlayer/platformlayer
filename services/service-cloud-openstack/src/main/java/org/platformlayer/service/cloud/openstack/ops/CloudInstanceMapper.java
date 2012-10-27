@@ -76,7 +76,7 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
 
 		getRecursionState().pushChildScope(cloud);
 
-		List<String> assignedInstanceIds = instanceTags.find(Tag.ASSIGNED);
+		List<String> assignedInstanceIds = instanceTags.findAll(Tag.ASSIGNED);
 		if (assignedInstanceIds.isEmpty()) {
 			if (createInstance && !OpsContext.isDelete()) {
 				MachineCreationRequest request = buildMachineCreationRequest();

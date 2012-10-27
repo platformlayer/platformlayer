@@ -1,21 +1,11 @@
 package org.platformlayer.xaas.web.resources;
 
-import java.util.HashMap;
-
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 
 import org.apache.log4j.Logger;
-import org.codehaus.jettison.mapped.Configuration;
 import org.eclipse.jetty.server.Response;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.platformlayer.CastUtils;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.auth.crypto.SecretProvider;
 import org.platformlayer.core.model.ItemBase;
@@ -36,11 +26,6 @@ import org.platformlayer.xaas.services.ModelClass;
 import org.platformlayer.xaas.services.ServiceProvider;
 import org.platformlayer.xaas.services.ServiceProviderDictionary;
 import org.platformlayer.xaas.web.jaxrs.JaxbContextHelper;
-import org.platformlayer.xml.JsonHelper;
-import org.platformlayer.xml.XmlHelper;
-import org.platformlayer.xml.XmlHelper.ElementInfo;
-
-import com.google.common.collect.Maps;
 
 public class XaasResourceBase extends ResourceBase {
 	static final Logger log = Logger.getLogger(XaasResourceBase.class);
@@ -192,47 +177,4 @@ public class XaasResourceBase extends ResourceBase {
 		return new PlatformLayerKey(null, getProject(), getServiceType(), getItemType(), getItemId());
 	}
 
-	protected <T extends ItemBase> T readItem(String json) throws XMLStreamException, JAXBException {
-		Class<T> itemClass = (Class<T>) getModelClass().getJavaClass();
-
-		JAXBContext jaxbContext = jaxbContextHelper.getJaxbContext(itemClass);
-
-		ElementInfo elementInfo = XmlHelper.getXmlElementInfo(itemClass);
-		if (elementInfo == null) {
-			throw new IllegalStateException("Cannot determine XML info for: " + itemClass);
-		}
-
-		final HashMap<String, String> xmlNamespaceToJsonPrefix = Maps.newHashMap();
-		xmlNamespaceToJsonPrefix.put(elementInfo.namespace, "");
-		xmlNamespaceToJsonPrefix.put("http://platformlayer.org/core/v1.0", "core");
-
-		boolean wrap = true;
-		if (wrap) {
-			try {
-				JSONObject jsonObject = new JSONObject(json);
-
-				JSONObject wrapped = new JSONObject();
-				wrapped.put(elementInfo.elementName, jsonObject);
-
-				json = wrapped.toString();
-			} catch (JSONException e) {
-				throw new IllegalArgumentException("Error parsing JSON", e);
-			}
-		}
-
-		Configuration configuration = JsonHelper.buildConfiguration(xmlNamespaceToJsonPrefix);
-
-		XMLStreamReader xmlStreamReader = JsonHelper.buildStreamReader(json, configuration);
-
-		// if (log.isDebugEnabled()) {
-		// String xml = XmlHelper.toXml(xmlStreamReader);
-		// log.debug("XML = " + xml);
-		// xmlStreamReader = XmlHelper.buildXmlStreamReader(xml);
-		// }
-
-		Object item = XmlHelper.unmarshal(jaxbContext, xmlStreamReader);
-
-		T typedItem = CastUtils.checkedCast(item, itemClass);
-		return typedItem;
-	}
 }

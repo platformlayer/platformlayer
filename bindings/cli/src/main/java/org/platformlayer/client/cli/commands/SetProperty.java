@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.List;
 
-import org.codehaus.jettison.json.JSONException;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
 import org.openstack.utils.NoCloseInputStream;
@@ -45,7 +44,7 @@ public class SetProperty extends PlatformLayerCommandRunnerBase {
 	}
 
 	@Override
-	public Object runCommand() throws PlatformLayerClientException, JSONException, IOException {
+	public Object runCommand() throws PlatformLayerClientException, IOException {
 		PlatformLayerClient client = getPlatformLayerClient();
 
 		if (stdin) {

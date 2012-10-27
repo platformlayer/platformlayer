@@ -1,6 +1,6 @@
 package org.platformlayer.xaas.web.jaxrs;
 
-public class NamespacePrefixMapperImpl extends com.sun.xml.bind.marshaller.NamespacePrefixMapper {
+public class NamespacePrefixMapperImpl extends com.sun.xml.internal.bind.marshaller.NamespacePrefixMapper {
 
 	@Override
 	public String getPreferredPrefix(String namespaceUri, String suggestion, boolean requirePrefix) {

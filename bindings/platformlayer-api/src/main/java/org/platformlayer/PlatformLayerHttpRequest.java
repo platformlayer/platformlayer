@@ -14,10 +14,7 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.TrustManager;
 import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.transform.TransformerException;
 
-import org.codehaus.jettison.json.JSONException;
 import org.openstack.utils.Utf8;
 import org.platformlayer.crypto.AcceptAllHostnameVerifier;
 import org.platformlayer.crypto.PublicKeyTrustManager;
@@ -169,13 +166,14 @@ class PlatformLayerHttpRequest implements Closeable {
 			throw new PlatformLayerClientException("Error while building request", e);
 		} catch (IOException e) {
 			throw new PlatformLayerClientException("Error while building request", e);
-		} catch (XMLStreamException e) {
-			throw new PlatformLayerClientException("Error while building request", e);
-		} catch (TransformerException e) {
-			throw new PlatformLayerClientException("Error while building request", e);
-		} catch (JSONException e) {
-			throw new PlatformLayerClientException("Error while building request", e);
 		}
+		// catch (XMLStreamException e) {
+		// throw new PlatformLayerClientException("Error while building request", e);
+		// } catch (TransformerException e) {
+		// throw new PlatformLayerClientException("Error while building request", e);
+		// } catch (JSONException e) {
+		// throw new PlatformLayerClientException("Error while building request", e);
+		// }
 
 		try {
 			processHttpResponseCode(getResponse());

@@ -1,5 +1,6 @@
 package org.platformlayer;
 
+
 public class PrimitiveComparators {
 	public static int compare(long l, long r) {
 		return (l < r ? -1 : (l == r ? 0 : 1));
@@ -20,4 +21,5 @@ public class PrimitiveComparators {
 	public static int compare(double l, double r) {
 		return (l < r ? -1 : (l == r ? 0 : 1));
 	}
+
 }

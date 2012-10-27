@@ -67,7 +67,7 @@ public class EndpointInfo {
 		return Tag.PUBLIC_ENDPOINT.build(this);
 	}
 
-	String getTagValue() {
+	public String getTagValue() {
 		if (publicIp.contains(":")) {
 			return "[" + publicIp + "]:" + port;
 		} else {

@@ -9,9 +9,11 @@ import org.openstack.client.OpenstackCredentials;
 import org.platformlayer.core.model.InstanceBase;
 import org.platformlayer.core.model.MachineCloudBase;
 import org.platformlayer.core.model.PublicEndpointBase;
+import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.MachineCreationRequest;
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.cas.CasStoreProvider;
 import org.platformlayer.ops.images.ImageStore;
 import org.platformlayer.ops.machines.CloudController;
 import org.platformlayer.ops.machines.StorageConfiguration;
@@ -21,8 +23,11 @@ import org.platformlayer.service.cloud.openstack.model.OpenstackInstance;
 import org.platformlayer.service.cloud.openstack.model.OpenstackPublicEndpoint;
 import org.platformlayer.service.cloud.openstack.ops.openstack.OpenstackCloudContext;
 
-public class OpenstackCloudController extends OpsTreeBase implements CloudController {
+public class OpenstackCloudController extends OpsTreeBase implements CloudController, CasStoreProvider {
 	static final Logger log = Logger.getLogger(OpenstackCloudController.class);
+
+	@Bound
+	OpenstackCloud model;
 
 	@Handler
 	public void handler() throws OpsException, IOException {
@@ -33,9 +38,7 @@ public class OpenstackCloudController extends OpsTreeBase implements CloudContro
 
 	@Override
 	public ImageStore getImageStore(MachineCloudBase cloudObject) throws OpsException {
-		OpenstackCloud cloud = (OpenstackCloud) cloudObject;
-
-		return cloudContext.getImageStore(cloud);
+		return cloudContext.getImageStore(model);
 	}
 
 	@Override
@@ -50,7 +53,7 @@ public class OpenstackCloudController extends OpsTreeBase implements CloudContro
 
 		OpenstackCredentials credentials = new OpenstackCredentials(authUrl, cloud.username,
 				cloud.password.plaintext(), cloud.tenant);
-		StorageConfiguration config = new StorageConfiguration(credentials);
+		StorageConfiguration config = new OpenstackStorageConfiguration(credentials);
 		return config;
 	}
 
@@ -69,4 +72,13 @@ public class OpenstackCloudController extends OpsTreeBase implements CloudContro
 		return new OpenstackPublicEndpoint();
 	}
 
+	@Override
+	public OpenstackCasStore getCasStore() {
+		OpenstackCredentials credential = new OpenstackCredentials(model.endpoint, model.username,
+				model.password.plaintext(), model.tenant);
+
+		String containerName = "platformlayer-artifacts";
+		return new OpenstackCasStore(credential, containerName);
+
+	}
 }

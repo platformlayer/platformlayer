@@ -1,5 +1,6 @@
 package org.platformlayer.xaas.web.resources;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -9,7 +10,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.log4j.Logger;
@@ -25,6 +25,9 @@ public class ManagedItemCollectionResource extends XaasResourceBase {
 
 	@Inject
 	ItemService itemService;
+
+	@Inject
+	JsonMapper jsonHelper;
 
 	@Path("{id}")
 	@Produces({ XML, JSON })
@@ -62,9 +65,10 @@ public class ManagedItemCollectionResource extends XaasResourceBase {
 	@POST
 	@Consumes({ JSON })
 	@Produces({ JSON })
-	public <T extends ItemBase> T createItemJson(String json) throws RepositoryException, OpsException, JAXBException,
+	public <T extends ItemBase> T createItemJson(String json) throws RepositoryException, OpsException, IOException,
 			XMLStreamException {
-		T typedItem = readItem(json);
+		Class<T> javaClass = (Class<T>) getModelClass().getJavaClass();
+		T typedItem = jsonHelper.readItem(javaClass, json);
 
 		boolean generateUniqueName = true;
 		return itemService.createItem(getProjectAuthorization(), typedItem, generateUniqueName);

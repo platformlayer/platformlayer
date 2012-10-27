@@ -18,6 +18,13 @@ public class JobLog implements Iterable<JobLogLine> {
 		return lines;
 	}
 
+	public void setLines(Iterable<JobLogLine> lines) {
+		this.lines.clear();
+		for (JobLogLine line : lines) {
+			this.lines.add(line);
+		}
+	}
+
 	@Override
 	public Iterator<JobLogLine> iterator() {
 		return lines.iterator();

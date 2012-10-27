@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchema;
@@ -19,6 +20,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -207,6 +209,11 @@ public class XmlHelper {
 	public static Object unmarshal(JAXBContext jaxbContext, XMLStreamReader xmlStreamReader) throws JAXBException {
 		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 		return unmarshaller.unmarshal(xmlStreamReader);
+	}
+
+	public static void marshal(JAXBContext jaxbContext, Object item, XMLStreamWriter xmlWriter) throws JAXBException {
+		Marshaller marshaller = jaxbContext.createMarshaller();
+		marshaller.marshal(item, xmlWriter);
 	}
 
 	public static class ElementInfo {

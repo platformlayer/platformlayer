@@ -14,6 +14,47 @@ public class JsonMetricDataStream implements MetricDataStream {
 	@SuppressWarnings("unused")
 	private static final Logger log = Logger.getLogger(JsonMetricDataStream.class);
 
+	/*
+	 * final JsonReader jsonParser;
+	 * 
+	 * JsonMetricDataStream(Reader reader) throws IOException { this.jsonParser = new JsonReader(reader); }
+	 * 
+	 * @Override public void close() throws IOException { jsonParser.close(); }
+	 * 
+	 * public static MetricDataStream build(Reader reader) throws IOException { return new JsonMetricDataStream(reader);
+	 * }
+	 * 
+	 * public static MetricDataStream build(InputStream is) throws IOException { InputStreamReader reader = new
+	 * InputStreamReader(is, Charsets.UTF_8); return new JsonMetricDataStream(reader); }
+	 * 
+	 * @Override public void accept(MetricDataVisitor visitor) throws IOException { while (true) { JsonToken token =
+	 * jsonParser.peek(); if (token == null) { break; }
+	 * 
+	 * switch (token) { case BEGIN_OBJECT: jsonParser.beginObject(); visitor.startObject(); break;
+	 * 
+	 * case END_OBJECT: jsonParser.endObject(); visitor.endObject(); break;
+	 * 
+	 * case STRING: { String s = jsonParser.nextString(); visitor.gotValueString(s); break; } case NAME: { String key =
+	 * jsonParser.nextName(); visitor.gotKey(key); break; }
+	 * 
+	 * case BEGIN_ARRAY: jsonParser.beginArray(); visitor.startArray(); break;
+	 * 
+	 * case END_ARRAY: jsonParser.endArray(); visitor.endArray(); break;
+	 * 
+	 * case BOOLEAN: visitor.gotValueBoolean(jsonParser.nextBoolean()); break;
+	 * 
+	 * case NULL: jsonParser.nextNull(); visitor.gotValueNull(); break;
+	 * 
+	 * case NUMBER: // Avoid precision problems String v = jsonParser.nextString(); int digits = 0; for (int i = 0; i <
+	 * v.length(); i++) { char c = v.charAt(i); if (i == 0 && (c == '-' || c == '+')) { // Ignore the sign continue; }
+	 * if (c >= '0' && c <= '9') { digits++; } else { digits = -1; break; } } if (digits == -1) { double value =
+	 * jsonParser.nextDouble(); visitor.gotValueDouble(value); } else { if (digits <= 9) { int value =
+	 * jsonParser.nextInt(); visitor.gotValueInt(value); } else { long value = jsonParser.nextLong();
+	 * visitor.gotValueLong(value); } } break;
+	 * 
+	 * default: throw new IllegalStateException("Unexpected token: " + token); } } }
+	 */
+
 	final JsonParser jsonParser;
 
 	JsonMetricDataStream(InputStream is) throws IOException {

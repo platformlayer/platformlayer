@@ -134,7 +134,7 @@ public class OperationInvoker {
 			Action action = scope.getInstance(Action.class);
 			if (action != null) {
 				boolean lExplicit = canHandleAction(lHandler, action, false);
-				boolean rExplicit = canHandleAction(lHandler, action, false);
+				boolean rExplicit = canHandleAction(rHandler, action, false);
 
 				if (lExplicit && !rExplicit) {
 					return l;

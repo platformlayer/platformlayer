@@ -2,7 +2,6 @@ package org.platformlayer.client.cli.commands;
 
 import java.io.PrintWriter;
 
-import org.codehaus.jettison.json.JSONException;
 import org.kohsuke.args4j.Argument;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
@@ -26,7 +25,7 @@ public class AddTag extends PlatformLayerCommandRunnerBase {
 	}
 
 	@Override
-	public Object runCommand() throws PlatformLayerClientException, JSONException {
+	public Object runCommand() throws PlatformLayerClientException {
 		PlatformLayerClient client = getPlatformLayerClient();
 
 		PlatformLayerKey resolved = path.resolve(getContext());

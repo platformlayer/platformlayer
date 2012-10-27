@@ -87,8 +87,6 @@
             <artifactId>jackson-jaxrs-json-provider</artifactId>
         </dependency>
 
-
-
         <!-- Guice dependencies -->
         <dependency>
             <groupId>com.google.inject.extensions</groupId>
@@ -114,14 +112,6 @@
                     <artifactId>jersey-client</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-
-        <!-- We add jersey-json explicitly, because otherwise it tends not 
-            to get included -->
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-json</artifactId>
-            <version>${jersey.version}</version>
         </dependency>
 
         <!-- Dependencies that some services need, and otherwise don't get 

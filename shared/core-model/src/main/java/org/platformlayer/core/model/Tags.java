@@ -8,13 +8,14 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.log4j.Logger;
+import org.platformlayer.common.HasTags;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
-public class Tags implements Iterable<Tag> {
+public class Tags implements Iterable<Tag>, HasTags {
 	static final Logger log = Logger.getLogger(Tags.class);
 
 	public List<Tag> tags = Lists.newArrayList();
@@ -39,7 +40,8 @@ public class Tags implements Iterable<Tag> {
 		return tags.iterator();
 	}
 
-	public List<String> find(String key) {
+	@Override
+	public List<String> findAll(String key) {
 		List<String> matches = Lists.newArrayList();
 		for (Tag tag : tags) {
 			if (key.equals(tag.getKey())) {
@@ -63,6 +65,7 @@ public class Tags implements Iterable<Tag> {
 		return tags.remove(removeTag);
 	}
 
+	@Override
 	public String findUnique(String key) {
 		Tag tag = findUniqueTag(key);
 		if (tag == null) {
@@ -108,4 +111,15 @@ public class Tags implements Iterable<Tag> {
 	public String toString() {
 		return "Tags [tags=" + tags + "]";
 	}
+
+	@Override
+	public String findFirst(String key) {
+		for (Tag tag : tags) {
+			if (key.equals(tag.getKey())) {
+				return tag.value;
+			}
+		}
+		return null;
+	}
+
 }

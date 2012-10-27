@@ -1,8 +1,9 @@
 package org.platformlayer.service.cloud.google.ops.compute;
 
-import org.openstack.model.image.Image;
 import org.platformlayer.ops.images.CloudImage;
 import org.platformlayer.ops.images.ImageFormat;
+
+import com.google.api.services.compute.model.Image;
 
 public class GoogleComputeImage implements CloudImage {
 
@@ -14,7 +15,7 @@ public class GoogleComputeImage implements CloudImage {
 
 	@Override
 	public String getId() {
-		return image.getId();
+		return image.getName();
 	}
 
 	@Override

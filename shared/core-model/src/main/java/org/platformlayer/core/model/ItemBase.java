@@ -3,13 +3,15 @@ package org.platformlayer.core.model;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
+import org.platformlayer.common.HasTags;
 import org.platformlayer.ids.ManagedItemId;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 // It's not really a root element (?), but this helps jersey
 @XmlRootElement
-public class ItemBase {
+public class ItemBase implements HasTags {
 	public PlatformLayerKey key;
 
 	public long version;
@@ -18,6 +20,7 @@ public class ItemBase {
 
 	public Tags tags;
 
+	@XmlTransient
 	public SecretInfo secret;
 
 	public long getVersion() {
@@ -66,6 +69,21 @@ public class ItemBase {
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + " [key=" + key + "]";
+	}
+
+	@Override
+	public String findFirst(String key) {
+		return getTags().findFirst(key);
+	}
+
+	@Override
+	public String findUnique(String key) {
+		return getTags().findUnique(key);
+	}
+
+	@Override
+	public Iterable<String> findAll(String key) {
+		return getTags().findAll(key);
 	}
 
 }
