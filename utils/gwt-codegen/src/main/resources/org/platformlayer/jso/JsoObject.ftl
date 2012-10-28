@@ -2,7 +2,7 @@ package ${gwtPackage}.client.model;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
-public class ${jsoClassName} extends JavaScriptObject {
+public class ${jsoClassName} extends org.platformlayer.core.model.ItemBaseJs {
 	protected ${jsoClassName}() {
 	}
 
@@ -11,10 +11,21 @@ public class ${jsoClassName} extends JavaScriptObject {
 	</#list>  
     
     <#list fields as field>
+    <#if field.custom>
+    public final ${field.type} get${field.beanName}() {
+		return ${field.type}Js.get(this, "${field.name}");
+	}
+
+	public final void set${field.beanName}(${field.type} newValue) {
+		${field.type}Js.set(this, "${field.name}", newValue);
+	}
+    <#else>
 	public final native ${field.type} get${field.beanName}()
 	/*-{ return this.${field.name}; }-*/;
 
 	public final native void set${field.beanName}(${field.type} newValue)
 	/*-{ this.${field.name} = newValue; }-*/;
+	</#if>
+	
 	</#list>  
 }

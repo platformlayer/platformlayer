@@ -174,6 +174,11 @@ public class GwtCodegenFileVisitor extends FileVisitor {
 
 			String fieldName = field.getName();
 
+			if (fieldName.equals("key") || fieldName.equals("tags")) {
+				// These come in from the base class
+				continue;
+			}
+
 			if (type == Long.class || type.equals(long.class)) {
 				warnings.add("JSNI cannot map 'long " + fieldName + "'");
 				continue;
@@ -198,6 +203,8 @@ public class GwtCodegenFileVisitor extends FileVisitor {
 			fieldModel.accessorType = mapped != null ? mapped : accessorType.getName();
 			fieldModel.beanName = beanName;
 			fieldModel.name = fieldName;
+
+			fieldModel.custom = mapped != null;
 
 			fields.add(fieldModel);
 		}
@@ -233,9 +240,8 @@ public class GwtCodegenFileVisitor extends FileVisitor {
 		String name = type.getName();
 
 		Map<String, String> whitelist = Maps.newHashMap();
-		whitelist.put("org.platformlayer.core.model.PlatformLayerKey",
-				"org.platformlayer.gwt.client.api.platformlayer.PlatformLayerKeyJs");
-		whitelist.put("org.platformlayer.core.model.Tags", "org.platformlayer.gwt.client.api.platformlayer.TagsJs");
+		whitelist.put("org.platformlayer.core.model.PlatformLayerKey", "org.platformlayer.core.model.PlatformLayerKey");
+		whitelist.put("org.platformlayer.core.model.Tags", "org.platformlayer.core.model.Tags");
 		String translated = whitelist.get(name);
 		return translated;
 	}
