@@ -6,6 +6,7 @@ import org.kohsuke.args4j.Argument;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
 import org.platformlayer.client.cli.model.ItemPath;
+import org.platformlayer.common.IsTag;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
@@ -40,7 +41,7 @@ public class AddTag extends PlatformLayerCommandRunnerBase {
 	@Override
 	public void formatRaw(Object o, PrintWriter writer) {
 		Tags tags = (Tags) o;
-		for (Tag tag : tags.tags) {
+		for (IsTag tag : tags.tags) {
 			writer.println(tag.getKey() + "\t" + tag.getValue());
 		}
 	}

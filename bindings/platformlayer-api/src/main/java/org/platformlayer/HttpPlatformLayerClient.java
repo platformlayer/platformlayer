@@ -10,11 +10,13 @@ import java.util.Properties;
 import org.openstack.utils.PropertyUtils;
 import org.platformlayer.auth.Authenticator;
 import org.platformlayer.auth.client.PlatformlayerAuthenticator;
+import org.platformlayer.common.IsTag;
+import org.platformlayer.common.UntypedItem;
+import org.platformlayer.common.UntypedItemCollection;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ServiceInfo;
 import org.platformlayer.core.model.ServiceInfoCollection;
-import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.core.model.Tags;
 import org.platformlayer.federation.model.PlatformLayerConnectionConfiguration;
@@ -164,11 +166,11 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 		String relativePath = buildRelativePath(serviceType, itemType, id);
 
 		String xml = doRequest("PUT", relativePath, String.class, Format.XML, data, dataFormat);
-		return UntypedItem.build(xml);
+		return UntypedItemXml.build(xml);
 	}
 
 	@Override
-	public UntypedItem putItemByTag(PlatformLayerKey key, Tag uniqueTag, String data, Format dataFormat)
+	public UntypedItem putItemByTag(PlatformLayerKey key, IsTag uniqueTag, String data, Format dataFormat)
 			throws PlatformLayerClientException {
 		if (key.getItemId() == null) {
 			throw new IllegalArgumentException("id is required on a put");
@@ -181,7 +183,7 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 		}
 
 		String xml = doRequest("PUT", relativePath, String.class, Format.XML, data, dataFormat);
-		UntypedItem item = UntypedItem.build(xml);
+		UntypedItem item = UntypedItemXml.build(xml);
 
 		// PlatformLayerKey platformLayerKey = item.getPlatformLayerKey();
 		// platformLayerKey = platformLayerKey.withId(new ManagedItemId(item.getId()));
@@ -335,7 +337,7 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 	public UntypedItemCollection listItemsUntyped(PlatformLayerKey path) throws PlatformLayerClientException {
 		String xml = doListItemsRequest(path);
 
-		return UntypedItemCollection.build(xml);
+		return UntypedItemXmlCollection.build(xml);
 	}
 
 	private String doListRootsRequest() throws PlatformLayerClientException {
@@ -348,7 +350,7 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 	public UntypedItemCollection listRoots() throws PlatformLayerClientException {
 		String xml = doListRootsRequest();
 
-		return UntypedItemCollection.build(xml);
+		return UntypedItemXmlCollection.build(xml);
 	}
 
 	@Override
@@ -356,7 +358,7 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 		String relativePath = buildRelativePath(parent) + "/children";
 		String xml = doRequest("GET", relativePath, String.class, Format.XML, null, null);
 
-		return UntypedItemCollection.build(xml);
+		return UntypedItemXmlCollection.build(xml);
 	}
 
 	@Override
@@ -365,7 +367,7 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 
 		String xml = doRequest("GET", relativePath, String.class, Format.XML, null, null);
 
-		UntypedItem item = UntypedItem.build(xml);
+		UntypedItem item = UntypedItemXml.build(xml);
 
 		return item;
 	}

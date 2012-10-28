@@ -3,6 +3,8 @@ package org.platformlayer;
 import java.util.Iterator;
 import java.util.List;
 
+import org.platformlayer.common.UntypedItem;
+import org.platformlayer.common.UntypedItemCollection;
 import org.platformlayer.xml.XmlHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -11,19 +13,17 @@ import org.w3c.dom.NodeList;
 
 import com.google.common.collect.Lists;
 
-public class UntypedItemCollection implements Iterable<UntypedItem> {
+public class UntypedItemXmlCollection implements UntypedItemCollection, Iterable<UntypedItem> {
 	final Element root;
-	final List<UntypedItem> items;
+	final List<UntypedItem> items = Lists.newArrayList();
 
-	public UntypedItemCollection(Element root) {
+	public UntypedItemXmlCollection(Element root) {
 		this.root = root;
 
-		this.items = findItems();
+		findItems();
 	}
 
-	private List<UntypedItem> findItems() {
-		List<UntypedItem> items = Lists.newArrayList();
-
+	private void findItems() {
 		Node itemsElement = XmlHelper.findUniqueChild(root, "items", false);
 		if (itemsElement != null) {
 			NodeList childNodes = itemsElement.getChildNodes();
@@ -34,17 +34,16 @@ public class UntypedItemCollection implements Iterable<UntypedItem> {
 					// String namespaceURI = childElement.getNamespaceURI();
 					String nodeName = childElement.getLocalName();
 					if (nodeName.equals("item")) {
-						UntypedItem untypedItem = new UntypedItem(childElement);
+						UntypedItem untypedItem = new UntypedItemXml(childElement);
 
 						items.add(untypedItem);
 					}
 				}
 			}
 		}
-		return items;
 	}
 
-	public static UntypedItemCollection build(String xml) {
+	public static UntypedItemXmlCollection build(String xml) {
 		Element documentElement;
 
 		try {
@@ -54,7 +53,7 @@ public class UntypedItemCollection implements Iterable<UntypedItem> {
 			throw new IllegalArgumentException("Error parsing XML", e);
 		}
 
-		UntypedItemCollection items = new UntypedItemCollection(documentElement);
+		UntypedItemXmlCollection items = new UntypedItemXmlCollection(documentElement);
 		// for (UntypedItem item : items) {
 		// PlatformLayerKey platformLayerKey = new PlatformLayerKey(host, project, serviceType, itemType, id);
 		// item.setPlatformLayerKey(platformLayerKey );
@@ -65,6 +64,11 @@ public class UntypedItemCollection implements Iterable<UntypedItem> {
 	@Override
 	public Iterator<UntypedItem> iterator() {
 		return items.iterator();
+	}
+
+	@Override
+	public List<UntypedItem> getItems() {
+		return items;
 	}
 
 }

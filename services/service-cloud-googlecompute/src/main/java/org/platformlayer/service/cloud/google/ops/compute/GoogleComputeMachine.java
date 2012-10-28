@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
+import org.platformlayer.common.IsTag;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.MachineBase;
@@ -116,8 +117,8 @@ public class GoogleComputeMachine extends MachineBase {
 		return addresses;
 	}
 
-	public List<Tag> buildAddressTags() {
-		List<Tag> tags = Lists.newArrayList();
+	public List<IsTag> buildAddressTags() {
+		List<IsTag> tags = Lists.newArrayList();
 
 		List<String> publicIps = GoogleComputeClient.findPublicIps(instance);
 		for (String ip : publicIps) {

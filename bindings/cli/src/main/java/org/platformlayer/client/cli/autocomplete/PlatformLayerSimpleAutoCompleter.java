@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
-import org.platformlayer.UntypedItem;
 import org.platformlayer.client.cli.PlatformLayerCliContext;
 import org.platformlayer.client.cli.commands.PlatformLayerCommandRunnerBase;
+import org.platformlayer.common.UntypedItem;
 import org.platformlayer.core.model.PlatformLayerKey;
 
 import com.fathomdb.cli.CliContext;
@@ -24,8 +24,8 @@ public abstract class PlatformLayerSimpleAutoCompleter extends SimpleArgumentAut
 		PlatformLayerKey key = PlatformLayerCommandRunnerBase.pathToKey(client, itemType);
 
 		List<String> items = Lists.newArrayList();
-		for (UntypedItem item : client.listItemsUntyped(key)) {
-			items.add(item.getPlatformLayerKey().getItemId().getKey());
+		for (UntypedItem item : client.listItemsUntyped(key).getItems()) {
+			items.add(item.getKey().getItemId().getKey());
 		}
 		return items;
 	}

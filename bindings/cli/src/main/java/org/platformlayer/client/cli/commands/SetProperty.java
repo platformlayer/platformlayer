@@ -12,8 +12,9 @@ import org.platformlayer.Format;
 import org.platformlayer.IoUtils;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
-import org.platformlayer.UntypedItem;
+import org.platformlayer.UntypedItemXml;
 import org.platformlayer.client.cli.model.ItemPath;
+import org.platformlayer.common.UntypedItem;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.crypto.CryptoUtils;
 import org.platformlayer.xml.XmlHelper;
@@ -66,7 +67,7 @@ public class SetProperty extends PlatformLayerCommandRunnerBase {
 
 		PlatformLayerKey resolved = path.resolve(getContext());
 
-		UntypedItem item = client.getItemUntyped(resolved);
+		UntypedItemXml item = (UntypedItemXml) client.getItemUntyped(resolved);
 
 		Element element = item.getRoot();
 		List<String> tokens = Lists.newArrayList(Splitter.on(".").split(key));
@@ -96,7 +97,7 @@ public class SetProperty extends PlatformLayerCommandRunnerBase {
 	@Override
 	public void formatRaw(Object o, PrintWriter writer) {
 		UntypedItem item = (UntypedItem) o;
-		writer.println(item.getPlatformLayerKey());
+		writer.println(item.getKey());
 	}
 
 }

@@ -6,7 +6,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.platformlayer.CastUtils;
-import org.platformlayer.UntypedItem;
+import org.platformlayer.common.UntypedItem;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ServiceInfo;
@@ -92,7 +92,7 @@ public class ProviderHelper {
 			modelClasses.put(model.getJavaClass(), model);
 		}
 
-		for (UntypedItem untypedItem : platformLayer.listChildren(parent)) {
+		for (UntypedItem untypedItem : platformLayer.listChildren(parent).getItems()) {
 			Object item = platformLayer.promoteToTyped(untypedItem);
 			ModelClass<?> modelClass = modelClasses.get(item.getClass());
 

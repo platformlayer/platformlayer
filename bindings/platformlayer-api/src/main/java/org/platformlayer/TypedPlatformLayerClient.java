@@ -7,6 +7,9 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
+import org.platformlayer.common.IsTag;
+import org.platformlayer.common.UntypedItem;
+import org.platformlayer.common.UntypedItemCollection;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.ManagedItemCollection;
@@ -122,7 +125,7 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 	 * If using directly, consider using OwnedItem instead
 	 */
 	@Deprecated
-	public <T extends ItemBase> T putItemByTag(T item, Tag uniqueTag) throws OpsException {
+	public <T extends ItemBase> T putItemByTag(T item, IsTag uniqueTag) throws OpsException {
 		JaxbHelper jaxbHelper = PlatformLayerClientBase.toJaxbHelper(item);
 
 		String xml = PlatformLayerClientBase.serialize(jaxbHelper, item);
@@ -203,11 +206,11 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 		JaxbHelper jaxbHelper = PlatformLayerClientBase.toJaxbHelper(clazz, ManagedItemCollection.class);
 		PlatformLayerKey path = PlatformLayerClientBase.toKey(jaxbHelper, null, platformLayerClient.listServices(true));
 
-		Iterable<UntypedItem> untypedItems = this.platformLayerClient.listItemsUntyped(path);
+		UntypedItemCollection untypedItems = this.platformLayerClient.listItemsUntyped(path);
 
 		List<T> items = Lists.newArrayList();
 
-		for (UntypedItem untypedItem : untypedItems) {
+		for (UntypedItem untypedItem : untypedItems.getItems()) {
 			T item = promoteToTyped(untypedItem, clazz);
 			items.add(item);
 		}
@@ -256,7 +259,7 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 	 */
 	@Deprecated
 	@Override
-	public UntypedItem putItemByTag(PlatformLayerKey key, Tag uniqueTag, String data, Format dataFormat)
+	public UntypedItem putItemByTag(PlatformLayerKey key, IsTag uniqueTag, String data, Format dataFormat)
 			throws PlatformLayerClientException {
 		return platformLayerClient.putItemByTag(key, uniqueTag, data, dataFormat);
 	}
@@ -267,17 +270,17 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 	}
 
 	@Override
-	public Iterable<UntypedItem> listItemsUntyped(PlatformLayerKey path) throws PlatformLayerClientException {
+	public UntypedItemCollection listItemsUntyped(PlatformLayerKey path) throws PlatformLayerClientException {
 		return platformLayerClient.listItemsUntyped(path);
 	}
 
 	@Override
-	public Iterable<UntypedItem> listRoots() throws PlatformLayerClientException {
+	public UntypedItemCollection listRoots() throws PlatformLayerClientException {
 		return platformLayerClient.listRoots();
 	}
 
 	@Override
-	public Iterable<UntypedItem> listChildren(PlatformLayerKey parent) throws PlatformLayerClientException {
+	public UntypedItemCollection listChildren(PlatformLayerKey parent) throws PlatformLayerClientException {
 		return platformLayerClient.listChildren(parent);
 	}
 

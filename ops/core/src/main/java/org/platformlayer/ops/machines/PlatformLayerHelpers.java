@@ -8,13 +8,13 @@ import javax.inject.Inject;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
 import org.platformlayer.TypedPlatformLayerClient;
-import org.platformlayer.UntypedItem;
+import org.platformlayer.common.Tagset;
+import org.platformlayer.common.UntypedItem;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
-import org.platformlayer.core.model.Tags;
 import org.platformlayer.ops.OpsException;
 
 import com.google.common.base.Objects;
@@ -24,7 +24,7 @@ public class PlatformLayerHelpers extends TypedPlatformLayerClient {
 	ServiceProviderHelpers serviceProviderHelpers;
 
 	public UUID getOrCreateUuid(ItemBase model) throws PlatformLayerClientException {
-		Tags tags = model.getTags();
+		Tagset tags = model.getTags();
 		UUID uuid = Tag.UUID.findUnique(tags);
 		if (uuid != null) {
 			return uuid;
@@ -67,18 +67,20 @@ public class PlatformLayerHelpers extends TypedPlatformLayerClient {
 
 	public void setUniqueTags(PlatformLayerKey key, Tag... setTags) throws OpsException {
 		UntypedItem itemUntyped = getItemUntyped(key);
-		Tags tags = itemUntyped.getTags();
+		Tagset tags = itemUntyped.getTags();
 
 		TagChanges tagChanges = new TagChanges();
 		for (Tag setTag : setTags) {
-			List<Tag> existing = tags.findTags(setTag.key);
+			String tagKey = setTag.getKey();
+
+			List<String> existing = tags.findAll(tagKey);
 			if (existing == null || existing.isEmpty()) {
 				tagChanges.addTags.add(setTag);
 			} else if (existing.size() == 1) {
-				Tag existingTag = existing.get(0);
-				if (!Objects.equal(existingTag.value, setTag.value)) {
+				String existingValue = existing.get(0);
+				if (!Objects.equal(existingValue, setTag.value)) {
 					tagChanges.addTags.add(setTag);
-					tagChanges.removeTags.add(existingTag);
+					tagChanges.removeTags.add(Tag.build(tagKey, existingValue));
 				}
 			} else {
 				// We probably should replace existing tags...

@@ -2,6 +2,7 @@ package org.platformlayer;
 
 import javax.xml.bind.JAXBException;
 
+import org.platformlayer.common.UntypedItem;
 import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tags;
@@ -14,18 +15,18 @@ import org.w3c.dom.Node;
 
 import com.google.common.base.Strings;
 
-public class UntypedItem {
+public class UntypedItemXml implements UntypedItem {
 
 	private final Element root;
 	private Tags tags;
 
 	private PlatformLayerKey platformLayerKey;
 
-	public UntypedItem(Element root) {
+	public UntypedItemXml(Element root) {
 		this.root = root;
 	}
 
-	public static UntypedItem build(String xml) {
+	public static UntypedItemXml build(String xml) {
 		Element documentElement;
 
 		try {
@@ -35,7 +36,7 @@ public class UntypedItem {
 			throw new IllegalArgumentException("Error parsing XML", e);
 		}
 
-		return new UntypedItem(documentElement);
+		return new UntypedItemXml(documentElement);
 	}
 
 	public Element getDataElement() {
@@ -59,6 +60,7 @@ public class UntypedItem {
 	// public Object getState() {
 	// }
 
+	@Override
 	public Tags getTags() {
 		if (tags == null) {
 			Node tagsElement = XmlHelper.findUniqueChild(root, "tags", false);
@@ -129,6 +131,7 @@ public class UntypedItem {
 		return element;
 	}
 
+	@Override
 	public ManagedItemState getState() {
 		Node element = XmlHelper.findUniqueChild(root, "state", false);
 		if (element == null) {
@@ -263,7 +266,8 @@ public class UntypedItem {
 		return XmlHelper.toXml(this.root);
 	}
 
-	public PlatformLayerKey getPlatformLayerKey() {
+	@Override
+	public PlatformLayerKey getKey() {
 		if (platformLayerKey == null) {
 			Node element = findKeyElement(false);
 			if (element != null) {
@@ -290,7 +294,7 @@ public class UntypedItem {
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + ":" + getPlatformLayerKey();
+		return getClass().getSimpleName() + ":" + getKey();
 	}
 
 }

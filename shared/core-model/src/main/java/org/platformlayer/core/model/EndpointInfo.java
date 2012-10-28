@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.platformlayer.common.Tagset;
+
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.common.net.InetAddresses;
@@ -29,7 +31,7 @@ public class EndpointInfo {
 		this(socketAddress.getAddress(), socketAddress.getPort());
 	}
 
-	public static List<EndpointInfo> getEndpoints(Tags tags) {
+	public static List<EndpointInfo> getEndpoints(Tagset tags) {
 		List<EndpointInfo> endpoints = Lists.newArrayList();
 
 		for (EndpointInfo endpoint : Tag.PUBLIC_ENDPOINT.find(tags)) {
@@ -39,7 +41,7 @@ public class EndpointInfo {
 
 	}
 
-	public static List<EndpointInfo> findEndpoints(Tags tags, Integer port) {
+	public static List<EndpointInfo> findEndpoints(Tagset tags, Integer port) {
 		List<EndpointInfo> endpoints = Lists.newArrayList();
 
 		for (EndpointInfo publicEndpoint : getEndpoints(tags)) {

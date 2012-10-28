@@ -10,8 +10,8 @@ import org.kohsuke.args4j.Option;
 import org.platformlayer.Format;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
-import org.platformlayer.UntypedItem;
 import org.platformlayer.client.cli.model.ItemPath;
+import org.platformlayer.common.UntypedItem;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 
@@ -80,7 +80,7 @@ public class PutItem extends PlatformLayerCommandRunnerBase {
 	@Override
 	public void formatRaw(Object o, PrintWriter writer) {
 		UntypedItem item = (UntypedItem) o;
-		writer.println(item.getPlatformLayerKey());
+		writer.println(item.getKey());
 	}
 
 }

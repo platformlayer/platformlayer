@@ -17,8 +17,6 @@ public class Action {
 	public Action() {
 	}
 
-	public String uniqueId;
-
 	// public String name;
 	//
 	// public String getName() {

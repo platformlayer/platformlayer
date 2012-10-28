@@ -1,18 +1,19 @@
 package org.platformlayer;
 
+import org.platformlayer.common.IsTag;
+import org.platformlayer.common.Tagset;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
-import org.platformlayer.core.model.Tags;
 
 public class TagFilter extends Filter {
-	final Tag requiredTag;
+	final IsTag requiredTag;
 
-	public TagFilter(Tag requiredTag) {
+	public TagFilter(IsTag requiredTag) {
 		this.requiredTag = requiredTag;
 	}
 
-	public static Filter byTag(Tag requiredTag) {
+	public static Filter byTag(IsTag requiredTag) {
 		TagFilter filter = new TagFilter(requiredTag);
 		return filter;
 	}
@@ -25,15 +26,20 @@ public class TagFilter extends Filter {
 		return byTag(Tag.buildParentTag(parentKey));
 	}
 
-	public boolean matchesTags(Iterable<Tag> tags) {
+	public boolean matchesTags(Iterable<IsTag> tags) {
 		if (requiredTag == null) {
 			throw new IllegalStateException();
 		}
 
-		for (Tag tag : tags) {
-			if (tag.equals(requiredTag)) {
-				return true;
+		for (IsTag tag : tags) {
+			if (!tag.getKey().equals(requiredTag.getKey())) {
+				continue;
 			}
+			if (!tag.getValue().equals(requiredTag.getValue())) {
+				continue;
+			}
+
+			return true;
 		}
 		return false;
 	}
@@ -44,7 +50,7 @@ public class TagFilter extends Filter {
 			throw new IllegalStateException();
 		}
 
-		Tags tags = item.getTags();
+		Tagset tags = item.getTags();
 		return matchesTags(tags);
 	}
 

@@ -25,7 +25,7 @@ public class InstanceFinder extends TreeWalker {
 			instances.add((InstanceBase) child);
 		}
 
-		PlatformLayerKey assignedTo = Tag.ASSIGNED_TO.findUnique(child);
+		PlatformLayerKey assignedTo = Tag.ASSIGNED_TO.findUnique(child.getTags());
 		if (assignedTo != null) {
 			scheduleVisit(assignedTo);
 		}

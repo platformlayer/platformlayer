@@ -6,7 +6,8 @@ import java.util.Set;
 
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
-import org.platformlayer.UntypedItem;
+import org.platformlayer.UntypedItemXml;
+import org.platformlayer.common.UntypedItem;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.Tags;
 import org.platformlayer.xml.XmlHelper.ElementInfo;
@@ -24,7 +25,9 @@ public class SshAddressFinder {
 		this.client = client;
 	}
 
-	public void visit(UntypedItem untypedItem) throws PlatformLayerClientException {
+	public void visit(UntypedItem item) throws PlatformLayerClientException {
+		UntypedItemXml untypedItem = (UntypedItemXml) item;
+
 		ElementInfo rootElementInfo = untypedItem.getRootElementInfo();
 
 		boolean consider = true;
@@ -52,7 +55,7 @@ public class SshAddressFinder {
 			}
 		}
 
-		for (UntypedItem child : client.listChildren(untypedItem.getPlatformLayerKey())) {
+		for (UntypedItem child : client.listChildren(untypedItem.getKey()).getItems()) {
 			visit(child);
 		}
 

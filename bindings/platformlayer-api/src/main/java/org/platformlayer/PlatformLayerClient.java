@@ -2,10 +2,12 @@ package org.platformlayer;
 
 import java.util.Collection;
 
+import org.platformlayer.common.IsTag;
+import org.platformlayer.common.UntypedItem;
+import org.platformlayer.common.UntypedItemCollection;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ServiceInfo;
-import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.core.model.Tags;
 import org.platformlayer.ids.ProjectId;
@@ -38,7 +40,7 @@ public interface PlatformLayerClient {
 	public UntypedItem putItem(PlatformLayerKey key, String data, Format dataFormat)
 			throws PlatformLayerClientException;
 
-	public UntypedItem putItemByTag(PlatformLayerKey key, Tag uniqueTag, String data, Format dataFormat)
+	public UntypedItem putItemByTag(PlatformLayerKey key, IsTag uniqueTag, String data, Format dataFormat)
 			throws PlatformLayerClientException;
 
 	// public <T> T putItem(T item) throws PlatformLayerClientException;
@@ -48,11 +50,11 @@ public interface PlatformLayerClient {
 	// Item Crud - Untyped
 	public UntypedItem getItemUntyped(PlatformLayerKey key) throws PlatformLayerClientException;
 
-	public Iterable<UntypedItem> listItemsUntyped(PlatformLayerKey path) throws PlatformLayerClientException;
+	public UntypedItemCollection listItemsUntyped(PlatformLayerKey path) throws PlatformLayerClientException;
 
-	public Iterable<UntypedItem> listRoots() throws PlatformLayerClientException;
+	public UntypedItemCollection listRoots() throws PlatformLayerClientException;
 
-	public Iterable<UntypedItem> listChildren(PlatformLayerKey parent) throws PlatformLayerClientException;
+	public UntypedItemCollection listChildren(PlatformLayerKey parent) throws PlatformLayerClientException;
 
 	// Tags
 	public Tags changeTags(PlatformLayerKey key, TagChanges tagChanges) throws PlatformLayerClientException;

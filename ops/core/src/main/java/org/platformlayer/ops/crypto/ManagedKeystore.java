@@ -138,7 +138,7 @@ public class ManagedKeystore extends OpsTreeBase {
 				throw new OpsException("Error reading public keys", e);
 			}
 
-			List<String> existingSigs = Tag.PUBLIC_KEY_SIG.find(tagWithPublicKeys);
+			List<String> existingSigs = Tag.PUBLIC_KEY_SIG.find(tagWithPublicKeys.getTags());
 
 			List<String> missing = Lists.newArrayList();
 			for (String publicKeySig : publicKeySigs) {

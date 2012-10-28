@@ -3,7 +3,8 @@ package org.platformlayer.client.cli.output;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 
-import org.platformlayer.UntypedItem;
+import org.platformlayer.UntypedItemXml;
+import org.platformlayer.common.UntypedItem;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.xml.XmlHelper;
 import org.w3c.dom.Element;
@@ -25,7 +26,9 @@ public class UntypedItemFormatter extends SimpleFormatter<UntypedItem> {
 	public void visit(UntypedItem o, OutputSink sink) throws IOException {
 		LinkedHashMap<String, Object> values = Maps.newLinkedHashMap();
 
-		Element dataElement = o.getDataElement();
+		UntypedItemXml item = (UntypedItemXml) o;
+
+		Element dataElement = item.getDataElement();
 
 		// String xml = o.getModelData();
 		//
@@ -38,13 +41,13 @@ public class UntypedItemFormatter extends SimpleFormatter<UntypedItem> {
 		// throw new IllegalArgumentException("Error parsing XML", e);
 		// }
 
-		values.put("key", o.getPlatformLayerKey().getUrl());
-		values.put("state", o.getState());
+		values.put("key", item.getKey().getUrl());
+		values.put("state", item.getState());
 
 		NodeList childNodes = dataElement.getChildNodes();
 		for (int i = 0; i < childNodes.getLength(); i++) {
-			Node item = childNodes.item(i);
-			values.put(item.getNodeName(), formatCell(item));
+			Node node = childNodes.item(i);
+			values.put(node.getNodeName(), formatCell(node));
 		}
 
 		sink.outputRow(values);
@@ -80,7 +83,9 @@ public class UntypedItemFormatter extends SimpleFormatter<UntypedItem> {
 		return XmlHelper.toXml(node);
 	}
 
-	public static void formatItem(UntypedItem item, Ansi ansi, boolean fullPath) {
+	public static void formatItem(UntypedItem o, Ansi ansi, boolean fullPath) {
+		UntypedItemXml item = (UntypedItemXml) o;
+
 		Ansi.Action action = null;
 
 		switch (item.getState()) {
@@ -108,7 +113,7 @@ public class UntypedItemFormatter extends SimpleFormatter<UntypedItem> {
 		}
 
 		try {
-			PlatformLayerKey plk = item.getPlatformLayerKey();
+			PlatformLayerKey plk = item.getKey();
 
 			if (fullPath) {
 				ansi.println(plk.getUrl());

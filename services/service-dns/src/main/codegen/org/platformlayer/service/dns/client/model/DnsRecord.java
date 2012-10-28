@@ -2,7 +2,7 @@ package org.platformlayer.service.dns.client.model;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
-public class DnsRecord extends JavaScriptObject {
+public class DnsRecord extends org.platformlayer.core.model.ItemBaseJs {
 	protected DnsRecord() {
 	}
 
@@ -16,19 +16,15 @@ public class DnsRecord extends JavaScriptObject {
 
 	public final native void setDnsName(java.lang.String newValue)
 	/*-{ this.dnsName = newValue; }-*/;
+	
 	public final native java.lang.String getRecordType()
 	/*-{ return this.recordType; }-*/;
 
 	public final native void setRecordType(java.lang.String newValue)
 	/*-{ this.recordType = newValue; }-*/;
-	public final native org.platformlayer.gwt.client.api.platformlayer.PlatformLayerKeyJs getKey()
-	/*-{ return this.key; }-*/;
-
-	public final native void setKey(org.platformlayer.gwt.client.api.platformlayer.PlatformLayerKeyJs newValue)
-	/*-{ this.key = newValue; }-*/;
-	public final native org.platformlayer.gwt.client.api.platformlayer.TagsJs getTags()
-	/*-{ return this.tags; }-*/;
-
-	public final native void setTags(org.platformlayer.gwt.client.api.platformlayer.TagsJs newValue)
-	/*-{ this.tags = newValue; }-*/;
+	
+	
+	
+	
+	
 }

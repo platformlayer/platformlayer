@@ -3,6 +3,7 @@ package org.platformlayer;
 import javax.xml.bind.JAXBException;
 
 import org.openstack.utils.Casts;
+import org.platformlayer.common.UntypedItem;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.xml.JaxbHelper;
 import org.platformlayer.xml.XmlHelper.ElementInfo;
@@ -13,7 +14,7 @@ import com.google.common.base.Objects;
 public abstract class TypedItemMapper {
 
 	public <T> T promoteToTyped(UntypedItem untypedItem) throws OpsException {
-		ElementInfo elementInfo = untypedItem.getRootElementInfo();
+		ElementInfo elementInfo = ((UntypedItemXml) untypedItem).getRootElementInfo();
 
 		Class<T> javaClass = mapToJavaClass(elementInfo);
 
@@ -26,7 +27,7 @@ public abstract class TypedItemMapper {
 		JaxbHelper jaxbHelper = JaxbHelper.get(itemClass);
 		T typedItem;
 		try {
-			Element element = untypedItem.getDataElement();
+			Element element = ((UntypedItemXml) untypedItem).getDataElement();
 
 			String xmlElementName = jaxbHelper.getXmlElementName();
 			String nodeName = element.getLocalName();
@@ -43,7 +44,7 @@ public abstract class TypedItemMapper {
 			T object = jaxbHelper.unmarshal(element, itemClass);
 
 			if (!(object.getClass().isAssignableFrom(itemClass))) {
-				System.out.println("XML = " + untypedItem.serialize());
+				System.out.println("XML = " + ((UntypedItemXml) untypedItem).serialize());
 			}
 
 			typedItem = Casts.checkedCast(object, itemClass);

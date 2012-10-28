@@ -255,9 +255,37 @@ public class PlatformLayerKey {
 		return new PlatformLayerKey(null, null, new ServiceType(serviceType), ItemType.wrap(itemType), null);
 	}
 
+	public static PlatformLayerKey build(String host, String project, String serviceType, String itemType, String itemId) {
+		FederationKey federationKey = host != null ? FederationKey.build(host) : null;
+		ProjectId projectKey = project != null ? new ProjectId(project) : null;
+		ServiceType serviceKey = serviceType != null ? new ServiceType(serviceType) : null;
+		ItemType itemKey = itemType != null ? new ItemType(itemType) : null;
+		ManagedItemId idKey = itemId != null ? new ManagedItemId(itemId) : null;
+
+		return new PlatformLayerKey(federationKey, projectKey, serviceKey, itemKey, idKey);
+	}
+
 	@Override
 	public String toString() {
 		return getUrl();
+	}
+
+	public String getServiceTypeString() {
+		if (serviceType == null)
+			return null;
+		return serviceType.getKey();
+	}
+
+	public String getItemTypeString() {
+		if (itemType == null)
+			return null;
+		return itemType.getKey();
+	}
+
+	public String getItemIdString() {
+		if (id == null)
+			return null;
+		return id.getKey();
 	}
 
 }

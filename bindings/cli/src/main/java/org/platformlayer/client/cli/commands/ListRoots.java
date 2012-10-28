@@ -4,8 +4,8 @@ import java.io.PrintWriter;
 
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
-import org.platformlayer.UntypedItem;
 import org.platformlayer.client.cli.output.UntypedItemFormatter;
+import org.platformlayer.common.UntypedItem;
 
 import com.fathomdb.cli.commands.Ansi;
 

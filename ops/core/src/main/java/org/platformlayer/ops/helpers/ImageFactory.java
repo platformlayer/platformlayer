@@ -167,7 +167,7 @@ public class ImageFactory {
 	}
 
 	private CloudImage getImageInfo(DiskImage recipe) throws OpsException {
-		final String imageId = Tag.IMAGE_ID.findUnique(recipe);
+		final String imageId = Tag.IMAGE_ID.findUnique(recipe.getTags());
 		if (imageId == null) {
 			throw new OpsException("Image is not yet built: " + recipe).setRetry(TimeSpan.ONE_MINUTE);
 		}

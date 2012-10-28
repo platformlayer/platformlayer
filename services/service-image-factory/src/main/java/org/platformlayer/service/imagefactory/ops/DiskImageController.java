@@ -110,7 +110,7 @@ public class DiskImageController {
 
 	@Handler
 	public void build(DiskImage image) throws OpsException, IOException {
-		String imageId = Tag.IMAGE_ID.findUnique(image);
+		String imageId = Tag.IMAGE_ID.findUnique(image.getTags());
 
 		if (imageId == null) {
 			// Check for existing image

@@ -1,7 +1,6 @@
 package org.platformlayer.federation;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -16,12 +15,15 @@ import org.platformlayer.PlatformLayerClientException;
 import org.platformlayer.PlatformLayerClientNotFoundException;
 import org.platformlayer.PlatformLayerEndpointInfo;
 import org.platformlayer.TypedPlatformLayerClient;
-import org.platformlayer.UntypedItem;
+import org.platformlayer.UntypedItemXml;
+import org.platformlayer.common.IsTag;
+import org.platformlayer.common.UntypedItem;
+import org.platformlayer.common.UntypedItemCollection;
+import org.platformlayer.common.UntypedItemCollectionBase;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ServiceInfo;
-import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.core.model.Tags;
 import org.platformlayer.federation.model.FederationConfiguration;
@@ -128,9 +130,9 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 			}
 		}
 
-		public UntypedItem setHost(UntypedItem item) {
+		public UntypedItem setHost(UntypedItemXml item) {
 			// if (!key.equals(FederationKey.LOCAL_FEDERATION_KEY)) {
-			PlatformLayerKey plk = item.getPlatformLayerKey();
+			PlatformLayerKey plk = item.getKey();
 			item.setPlatformLayerKey(changeHost(plk));
 			// }
 			return item;
@@ -194,7 +196,7 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 		public abstract V apply(final ChildClient child) throws PlatformLayerClientException;
 	}
 
-	static class ListItemsUntyped extends HostFunction<Iterable<UntypedItem>> {
+	static class ListItemsUntyped extends HostFunction<UntypedItemCollection> {
 		final PlatformLayerKey path;
 
 		public ListItemsUntyped(PlatformLayerKey path) {
@@ -202,12 +204,12 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 		}
 
 		@Override
-		public Iterable<UntypedItem> apply(final ChildClient child) throws PlatformLayerClientException {
+		public UntypedItemCollection apply(final ChildClient child) throws PlatformLayerClientException {
 			return child.client.listItemsUntyped(path);
 		}
 	}
 
-	static class ListChildren extends HostFunction<Iterable<UntypedItem>> {
+	static class ListChildren extends HostFunction<UntypedItemCollection> {
 		final PlatformLayerKey parent;
 
 		public ListChildren(PlatformLayerKey parent) {
@@ -215,12 +217,12 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 		}
 
 		@Override
-		public Iterable<UntypedItem> apply(final ChildClient child) throws PlatformLayerClientException {
+		public UntypedItemCollection apply(final ChildClient child) throws PlatformLayerClientException {
 			try {
 				return child.client.listChildren(parent);
 			} catch (PlatformLayerClientNotFoundException e) {
 				log.warn("Ignoring not found from federated client on: " + e.getUrl());
-				return Collections.emptyList();
+				return UntypedItemCollectionBase.empty();
 			}
 		}
 	}
@@ -252,9 +254,9 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 		}
 	}
 
-	static class ListRoots extends HostFunction<Iterable<UntypedItem>> {
+	static class ListRoots extends HostFunction<UntypedItemCollection> {
 		@Override
-		public Iterable<UntypedItem> apply(final ChildClient child) throws PlatformLayerClientException {
+		public UntypedItemCollection apply(final ChildClient child) throws PlatformLayerClientException {
 			return child.client.listRoots();
 		}
 	}
@@ -266,26 +268,29 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 		}
 	}
 
-	static class AddHostUntyped extends HostFunction<Iterable<UntypedItem>> {
-		final HostFunction<Iterable<UntypedItem>> inner;
+	static class AddHostUntyped extends HostFunction<UntypedItemCollection> {
+		final HostFunction<UntypedItemCollection> inner;
 
-		public AddHostUntyped(HostFunction<Iterable<UntypedItem>> inner) {
+		public AddHostUntyped(HostFunction<UntypedItemCollection> inner) {
 			this.inner = inner;
 		}
 
-		public static AddHostUntyped wrap(HostFunction<Iterable<UntypedItem>> inner) {
+		public static AddHostUntyped wrap(HostFunction<UntypedItemCollection> inner) {
 			return new AddHostUntyped(inner);
 		}
 
 		@Override
-		public Iterable<UntypedItem> apply(final ChildClient child) throws PlatformLayerClientException {
-			return Iterables.transform(inner.apply(child), new Function<UntypedItem, UntypedItem>() {
-				@Override
-				public UntypedItem apply(UntypedItem item) {
-					child.setHost(item);
-					return item;
-				}
-			});
+		public UntypedItemCollection apply(final ChildClient child) throws PlatformLayerClientException {
+			UntypedItemCollection innerItems = inner.apply(child);
+			Iterable<UntypedItem> items = Iterables.transform(innerItems.getItems(),
+					new Function<UntypedItem, UntypedItem>() {
+						@Override
+						public UntypedItem apply(UntypedItem item) {
+							child.setHost(item);
+							return item;
+						}
+					});
+			return new UntypedItemCollectionBase(items);
 		}
 	}
 
@@ -336,14 +341,23 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
-	public Iterable<UntypedItem> listItemsUntyped(final PlatformLayerKey path) throws PlatformLayerClientException {
-		return doListConcatenation(getChildClients(path), AddHostUntyped.wrap(new ListItemsUntyped(path)));
+	public UntypedItemCollection listItemsUntyped(final PlatformLayerKey path) throws PlatformLayerClientException {
+		return doListConcatenationUntyped(getChildClients(path), AddHostUntyped.wrap(new ListItemsUntyped(path)));
 	}
 
 	private <V> Iterable<V> doListConcatenation(Iterable<ChildClient> childClients, HostFunction<Iterable<V>> function)
 			throws PlatformLayerClientException {
 		try {
 			return ListConcatentation.joinLists(forkJoinPool, childClients, function);
+		} catch (ExecutionException e) {
+			throw new PlatformLayerClientException("Error while building item list", e);
+		}
+	}
+
+	private UntypedItemCollection doListConcatenationUntyped(Iterable<ChildClient> childClients,
+			HostFunction<UntypedItemCollection> function) throws PlatformLayerClientException {
+		try {
+			return ListConcatentation.joinListsUntypedItems(forkJoinPool, childClients, function);
 		} catch (ExecutionException e) {
 			throw new PlatformLayerClientException("Error while building item list", e);
 		}
@@ -381,7 +395,7 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 	public UntypedItem putItem(PlatformLayerKey key, String data, Format format) throws PlatformLayerClientException {
 		MappedPlatformLayerKey mapped = mapToChildForPut(key);
 
-		UntypedItem untypedItem = UntypedItem.build(data);
+		UntypedItemXml untypedItem = UntypedItemXml.build(data);
 		untypedItem.setPlatformLayerKey(mapped.key);
 
 		UntypedItem item = mapped.child.client.putItem(mapped.key, untypedItem.serialize(), format);
@@ -404,8 +418,8 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
-	public Iterable<UntypedItem> listRoots() throws PlatformLayerClientException {
-		return doListConcatenation(getChildClients(), AddHostUntyped.wrap(new ListRoots()));
+	public UntypedItemCollection listRoots() throws PlatformLayerClientException {
+		return doListConcatenationUntyped(getChildClients(), AddHostUntyped.wrap(new ListRoots()));
 	}
 
 	@Override
@@ -684,11 +698,11 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
-	public UntypedItem putItemByTag(PlatformLayerKey key, Tag uniqueTag, String data, Format format)
+	public UntypedItem putItemByTag(PlatformLayerKey key, IsTag uniqueTag, String data, Format format)
 			throws PlatformLayerClientException {
 		MappedPlatformLayerKey mapped = mapToChildForPut(key);
 
-		UntypedItem post = UntypedItem.build(data);
+		UntypedItemXml post = UntypedItemXml.build(data);
 		post.setPlatformLayerKey(mapped.key);
 
 		UntypedItem item = mapped.child.client.putItemByTag(mapped.key, uniqueTag, post.serialize(), format);
@@ -696,8 +710,8 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
-	public Iterable<UntypedItem> listChildren(PlatformLayerKey parent) throws PlatformLayerClientException {
-		return doListConcatenation(getChildClients(parent), AddHostUntyped.wrap(new ListChildren(parent)));
+	public UntypedItemCollection listChildren(PlatformLayerKey parent) throws PlatformLayerClientException {
+		return doListConcatenationUntyped(getChildClients(parent), AddHostUntyped.wrap(new ListChildren(parent)));
 	}
 
 	@Override

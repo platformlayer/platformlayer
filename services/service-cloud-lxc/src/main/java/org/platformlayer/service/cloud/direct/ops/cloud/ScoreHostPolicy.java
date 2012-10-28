@@ -87,8 +87,8 @@ public class ScoreHostPolicy implements Chooser<DirectCloudHost> {
 			}
 			records.add(record);
 
-			for (Tag tag : candidate.getModel().getTags().findTags(Tag.ASSIGNED)) {
-				PlatformLayerKey instanceKey = PlatformLayerKey.parse(tag.getValue());
+			for (String assigned : candidate.getModel().getTags().findAll(Tag.ASSIGNED)) {
+				PlatformLayerKey instanceKey = PlatformLayerKey.parse(assigned);
 
 				// TODO: Avoid 1+N
 				DirectInstance instance = platformLayer.getItem(instanceKey);

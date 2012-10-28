@@ -37,7 +37,7 @@ public class GitServerAssignment extends OpsTreeBase implements CustomRecursor {
 
 	@Handler
 	public void handler(GitRepository model) throws Exception {
-		PlatformLayerKey assignedTo = Tag.ASSIGNED_TO.findUnique(model);
+		PlatformLayerKey assignedTo = Tag.ASSIGNED_TO.findUnique(model.getTags());
 
 		if (OpsContext.isConfigure()) {
 			if (assignedTo == null) {

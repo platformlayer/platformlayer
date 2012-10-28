@@ -5,12 +5,13 @@ import javax.xml.bind.annotation.XmlAccessorType;
 
 import org.platformlayer.common.AddressTagKey;
 import org.platformlayer.common.EndpointTagKey;
+import org.platformlayer.common.IsTag;
 import org.platformlayer.common.KeyTagKey;
 import org.platformlayer.common.StringTagKey;
 import org.platformlayer.common.UuidTagKey;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Tag {
+public class Tag implements IsTag {
 	public String key;
 	public String value;
 
@@ -50,10 +51,12 @@ public class Tag {
 		return tag;
 	}
 
+	@Override
 	public String getKey() {
 		return key;
 	}
 
+	@Override
 	public String getValue() {
 		return value;
 	}

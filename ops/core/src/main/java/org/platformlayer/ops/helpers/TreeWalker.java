@@ -6,7 +6,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.platformlayer.UntypedItem;
+import org.platformlayer.common.UntypedItem;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.core.model.PlatformLayerKey;
@@ -26,7 +26,7 @@ public class TreeWalker {
 	Set<PlatformLayerKey> visited = Sets.newHashSet();
 
 	protected void visitChildren(PlatformLayerKey parentKey) throws OpsException, OpsException {
-		for (UntypedItem child : platformLayer.listChildren(parentKey)) {
+		for (UntypedItem child : platformLayer.listChildren(parentKey).getItems()) {
 			if (child.getState() == ManagedItemState.DELETED) {
 				// TODO: Push up into listChildren??
 				log.warn("Skipping deleted item: " + child);

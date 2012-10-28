@@ -8,7 +8,7 @@ import javax.xml.transform.dom.DOMSource;
 import org.kohsuke.args4j.Argument;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
-import org.platformlayer.UntypedItem;
+import org.platformlayer.UntypedItemXml;
 import org.platformlayer.client.cli.model.ItemPath;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.xml.XmlHelper;
@@ -35,7 +35,7 @@ public class GetItem extends PlatformLayerCommandRunnerBase {
 	public void formatRaw(Object o, PrintWriter writer) {
 		Ansi ansi = new Ansi(writer);
 
-		UntypedItem item = (UntypedItem) o;
+		UntypedItemXml item = (UntypedItemXml) o;
 
 		Source src = new DOMSource(item.getRoot());
 		String xml = XmlHelper.toXml(src, 4);
