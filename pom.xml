@@ -24,8 +24,8 @@
         <version.openstack>0.1-SNAPSHOT</version.openstack>
         <version.fileprovider>1.0-SNAPSHOT</version.fileprovider>
 
-        <maven.compiler.source>1.6</maven.compiler.source>
-        <maven.compiler.target>1.6</maven.compiler.target>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
 
         <!-- Don't let your Mac use a crazy non-standard encoding -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
