@@ -43,9 +43,11 @@ public class Tag {
 	public Tag() {
 	}
 
-	public Tag(String key, String value) {
-		this.key = key;
-		this.value = value;
+	public static Tag build(String key, String value) {
+		Tag tag = new Tag();
+		tag.key = key;
+		tag.value = value;
+		return tag;
 	}
 
 	public String getKey() {
@@ -104,7 +106,7 @@ public class Tag {
 	}
 
 	public static Tag buildTag(String tagKey, PlatformLayerKey itemKey) {
-		return new Tag(tagKey, itemKey.getUrl());
+		return Tag.build(tagKey, itemKey.getUrl());
 	}
 
 }

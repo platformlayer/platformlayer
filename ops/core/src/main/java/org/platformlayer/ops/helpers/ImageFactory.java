@@ -30,7 +30,7 @@ public class ImageFactory {
 
 	static final Logger log = LoggerFactory.getLogger(ImageFactory.class);
 
-	private static final Tag BOOTSTRAP_IMAGE_TAG = new Tag("system_id",
+	private static final Tag BOOTSTRAP_IMAGE_TAG = Tag.build("system_id",
 			"http://org.platformlayer/service/imagefactory/v1.0:bootstrap");
 
 	// public static final String FORMAT_TAR = "tar";
@@ -145,8 +145,8 @@ public class ImageFactory {
 		// return image;
 		// }
 
-		Tag osDebian = new Tag(Tag.IMAGE_OS_DISTRIBUTION, "debian.org");
-		Tag osSqueeze = new Tag(Tag.IMAGE_OS_VERSION, "6.0.4");
+		Tag osDebian = Tag.build(Tag.IMAGE_OS_DISTRIBUTION, "debian.org");
+		Tag osSqueeze = Tag.build(Tag.IMAGE_OS_VERSION, "6.0.4");
 
 		Tag diskFormatTag;
 		switch (format) {

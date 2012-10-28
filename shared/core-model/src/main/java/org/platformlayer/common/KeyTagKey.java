@@ -14,7 +14,7 @@ public class KeyTagKey extends TagKey<PlatformLayerKey> {
 	}
 
 	public Tag build(PlatformLayerKey t) {
-		return new Tag(key, t.getUrl());
+		return Tag.build(key, t.getUrl());
 	}
 
 }

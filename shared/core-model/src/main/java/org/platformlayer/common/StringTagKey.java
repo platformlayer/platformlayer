@@ -13,6 +13,6 @@ public class StringTagKey extends TagKey<String> {
 	}
 
 	public Tag build(String t) {
-		return new Tag(key, t);
+		return Tag.build(key, t);
 	}
 }

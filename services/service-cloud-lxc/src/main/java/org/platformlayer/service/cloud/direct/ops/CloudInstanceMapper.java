@@ -52,7 +52,7 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
 
 	@Handler
 	public void doOperation() throws OpsException, IOException {
-		Tag tag = new Tag(Tag.ASSIGNED, instance.getKey().getUrl());
+		Tag tag = Tag.build(Tag.ASSIGNED, instance.getKey().getUrl());
 		List<DirectHost> hosts = Lists.newArrayList(platformLayer.listItems(DirectHost.class, TagFilter.byTag(tag)));
 
 		if (hosts.size() > 1) {

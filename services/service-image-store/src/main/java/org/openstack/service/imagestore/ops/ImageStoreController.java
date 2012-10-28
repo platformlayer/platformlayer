@@ -60,10 +60,10 @@ public class ImageStoreController extends OpsTreeBase {
 			}
 
 			addChildrenGlance(model);
-			tag = new Tag("endpoint", "glance://" + host);
+			tag = Tag.build("endpoint", "glance://" + host);
 		} else {
 			addDirectStore(model);
-			tag = new Tag("endpoint", "ssh://imagestore@" + host);
+			tag = Tag.build("endpoint", "ssh://imagestore@" + host);
 		}
 
 		addChild(ItemTagger.build(tag));

@@ -87,7 +87,7 @@ public class Tags implements Iterable<Tag>, HasTags {
 	}
 
 	public boolean hasTag(String key, String value) {
-		return hasTag(new Tag(key, value));
+		return hasTag(Tag.build(key, value));
 	}
 
 	public boolean hasTag(Tag find) {
@@ -120,6 +120,10 @@ public class Tags implements Iterable<Tag>, HasTags {
 			}
 		}
 		return null;
+	}
+
+	public static Tags build() {
+		return new Tags();
 	}
 
 }

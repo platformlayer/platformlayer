@@ -89,7 +89,7 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
 				Server created = openstack.createInstance(cloud, serverName, request);
 
 				{
-					Tag instanceTag = new Tag(Tag.ASSIGNED, created.getId());
+					Tag instanceTag = Tag.build(Tag.ASSIGNED, created.getId());
 					platformLayer.addTag(instance.getKey(), instanceTag);
 				}
 

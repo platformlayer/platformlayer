@@ -9,7 +9,6 @@ public class DnsRecord extends JavaScriptObject {
 	// TODO: JSNI cannot map 'List address'
 	// TODO: JSNI cannot map 'long version'
 	// TODO: JSNI cannot map 'ManagedItemState state'
-	// TODO: JSNI cannot map 'Tags tags'
 	// TODO: JSNI cannot map 'SecretInfo secret'
     
 	public final native java.lang.String getDnsName()
@@ -27,4 +26,9 @@ public class DnsRecord extends JavaScriptObject {
 
 	public final native void setKey(org.platformlayer.gwt.client.api.platformlayer.PlatformLayerKeyJs newValue)
 	/*-{ this.key = newValue; }-*/;
+	public final native org.platformlayer.gwt.client.api.platformlayer.TagsJs getTags()
+	/*-{ return this.tags; }-*/;
+
+	public final native void setTags(org.platformlayer.gwt.client.api.platformlayer.TagsJs newValue)
+	/*-{ this.tags = newValue; }-*/;
 }

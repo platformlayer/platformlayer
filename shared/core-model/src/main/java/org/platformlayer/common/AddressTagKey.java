@@ -17,6 +17,6 @@ public class AddressTagKey extends TagKey<InetAddress> {
 	}
 
 	public Tag build(InetAddress t) {
-		return new Tag(key, t.getHostAddress());
+		return Tag.build(key, t.getHostAddress());
 	}
 }

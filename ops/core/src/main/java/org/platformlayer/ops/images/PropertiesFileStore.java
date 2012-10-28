@@ -149,7 +149,7 @@ public class PropertiesFileStore {
 			// if (key.startsWith(PROPERTY_PREFIX_TAG)) {
 			// String tagName = key.substring(PROPERTY_PREFIX_TAG.length());
 			String tagName = key;
-			Tag tag = new Tag(tagName, properties.getProperty(key));
+			Tag tag = Tag.build(tagName, properties.getProperty(key));
 			tags.add(tag);
 			// }
 		}

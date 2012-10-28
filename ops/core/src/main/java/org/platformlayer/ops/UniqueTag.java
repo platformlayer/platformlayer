@@ -10,7 +10,7 @@ public class UniqueTag {
 	public static Tag build(ItemBase item) {
 		String s = null;
 		s = append(s, item);
-		return new Tag(Tag.UNIQUE_ID, s);
+		return Tag.build(Tag.UNIQUE_ID, s);
 	}
 
 	public static Tag build(ItemBase item, ItemBase item2, String key) {
@@ -18,21 +18,21 @@ public class UniqueTag {
 		s = append(s, item);
 		s = append(s, item2);
 		s = join(s, key);
-		return new Tag(Tag.UNIQUE_ID, s);
+		return Tag.build(Tag.UNIQUE_ID, s);
 	}
 
 	public static Tag build(ItemBase item, ItemBase item2) {
 		String s = null;
 		s = append(s, item);
 		s = append(s, item2);
-		return new Tag(Tag.UNIQUE_ID, s);
+		return Tag.build(Tag.UNIQUE_ID, s);
 	}
 
 	public static Tag build(ItemBase item, String key) {
 		String s = null;
 		s = append(s, item);
 		s = join(s, key);
-		return new Tag(Tag.UNIQUE_ID, s);
+		return Tag.build(Tag.UNIQUE_ID, s);
 	}
 
 	private static String join(String s, String suffix) {

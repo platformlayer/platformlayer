@@ -31,7 +31,7 @@ public class AddTag extends PlatformLayerCommandRunnerBase {
 		PlatformLayerKey resolved = path.resolve(getContext());
 
 		TagChanges tagChanges = new TagChanges();
-		Tag tag = new Tag(tagKey, tagValue);
+		Tag tag = Tag.build(tagKey, tagValue);
 		tagChanges.addTags.add(tag);
 
 		return client.changeTags(resolved, tagChanges);

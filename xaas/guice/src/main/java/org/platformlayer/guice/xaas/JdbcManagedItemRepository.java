@@ -95,7 +95,7 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 					continue;
 				}
 				Tags tags = managed.getTags();
-				tags.add(new Tag(tag.key, tag.data));
+				tags.add(Tag.build(tag.key, tag.data));
 			}
 
 			List<T> ret = Lists.newArrayList();
@@ -127,7 +127,7 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 
 			Multimap<Integer, Tag> itemTags = HashMultimap.create();
 			for (TagEntity row : result.getAll(TagEntity.class)) {
-				Tag tag = new Tag(row.key, row.data);
+				Tag tag = Tag.build(row.key, row.data);
 				itemTags.put(row.item, tag);
 			}
 
@@ -193,7 +193,7 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 
 			Multimap<Integer, Tag> itemTags = HashMultimap.create();
 			for (TagEntity row : result.getAll(TagEntity.class)) {
-				Tag tag = new Tag(row.key, row.data);
+				Tag tag = Tag.build(row.key, row.data);
 				itemTags.put(row.item, tag);
 			}
 
@@ -705,7 +705,7 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 		List<Tag> addList = Lists.newArrayList();
 
 		for (TagEntity tag : tagEntities) {
-			addList.add(new Tag(tag.key, tag.data));
+			addList.add(Tag.build(tag.key, tag.data));
 		}
 
 		if (REMOVE_DUPLICATE_TAGS) {

@@ -7,8 +7,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
 public class TagChanges {
-	public Tags addTags = new Tags();
-	public Tags removeTags = new Tags();
+	public Tags addTags = Tags.build();
+	public Tags removeTags = Tags.build();
 
 	public boolean isEmpty() {
 		return addTags.isEmpty() && removeTags.isEmpty();

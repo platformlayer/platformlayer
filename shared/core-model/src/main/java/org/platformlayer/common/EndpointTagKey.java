@@ -14,6 +14,6 @@ public class EndpointTagKey extends TagKey<EndpointInfo> {
 	}
 
 	public Tag build(EndpointInfo t) {
-		return new Tag(key, t.getTagValue());
+		return Tag.build(key, t.getTagValue());
 	}
 }

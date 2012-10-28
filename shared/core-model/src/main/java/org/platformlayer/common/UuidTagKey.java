@@ -13,7 +13,7 @@ public class UuidTagKey extends TagKey<java.util.UUID> {
 	}
 
 	public Tag build(java.util.UUID t) {
-		return new Tag(key, t.toString());
+		return Tag.build(key, t.toString());
 	}
 
 }

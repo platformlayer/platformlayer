@@ -235,6 +235,7 @@ public class GwtCodegenFileVisitor extends FileVisitor {
 		Map<String, String> whitelist = Maps.newHashMap();
 		whitelist.put("org.platformlayer.core.model.PlatformLayerKey",
 				"org.platformlayer.gwt.client.api.platformlayer.PlatformLayerKeyJs");
+		whitelist.put("org.platformlayer.core.model.Tags", "org.platformlayer.gwt.client.api.platformlayer.TagsJs");
 		String translated = whitelist.get(name);
 		return translated;
 	}

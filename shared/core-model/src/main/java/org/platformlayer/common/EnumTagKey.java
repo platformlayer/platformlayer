@@ -27,7 +27,7 @@ public class EnumTagKey<E extends Enum<E>> extends TagKey<E> {
 	}
 
 	public Tag build(E t) {
-		return new Tag(key, t.name());
+		return Tag.build(key, t.name());
 	}
 
 	public static <E extends Enum<E>> EnumTagKey<E> build(String key, Class<E> enumClass) {

@@ -33,7 +33,7 @@ public class ItemBase implements HasTags {
 
 	public Tags getTags() {
 		if (tags == null) {
-			tags = new Tags();
+			tags = Tags.build();
 		}
 		return tags;
 	}

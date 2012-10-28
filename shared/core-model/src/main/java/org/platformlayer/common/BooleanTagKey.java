@@ -18,6 +18,6 @@ public class BooleanTagKey extends TagKey<Boolean> {
 
 	public Tag build(Boolean v) {
 		String s = v.toString();
-		return new Tag(key, s);
+		return Tag.build(key, s);
 	}
 }

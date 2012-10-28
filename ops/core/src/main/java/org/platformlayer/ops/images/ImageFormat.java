@@ -28,7 +28,7 @@ public enum ImageFormat {
 	}
 
 	public Tag toTag() {
-		return new Tag(TAG_PLATFORMLAYER_IMAGE_FORMAT, name().toLowerCase());
+		return Tag.build(TAG_PLATFORMLAYER_IMAGE_FORMAT, name().toLowerCase());
 	}
 
 	public static boolean isImageFormatTag(Tag tag) {
