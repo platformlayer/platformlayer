@@ -14,6 +14,11 @@ import com.google.common.collect.Lists;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
 public class Tags extends TagsetBase {
+	/**
+	 * Tags in this collection.
+	 * 
+	 * This should be List<IsTag>, but then JAXB can't serialize it.
+	 */
 	public List<Tag> tags = Lists.newArrayList();
 
 	@Override
