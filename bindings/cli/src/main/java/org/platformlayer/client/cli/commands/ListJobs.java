@@ -1,21 +1,22 @@
 package org.platformlayer.client.cli.commands;
 
 import java.io.PrintWriter;
-import java.util.List;
 
 import org.kohsuke.args4j.Argument;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
 import org.platformlayer.client.cli.model.ItemPath;
+import org.platformlayer.common.Job;
+import org.platformlayer.common.JobCollection;
+import org.platformlayer.common.JobState;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.jobs.model.JobData;
-import org.platformlayer.jobs.model.JobState;
+import org.platformlayer.jobs.model.JobDataList;
 
 import com.fathomdb.cli.autocomplete.AutoCompletor;
 import com.fathomdb.cli.autocomplete.SimpleAutoCompleter;
 import com.fathomdb.cli.commands.Ansi;
 import com.google.common.base.Objects;
-import com.google.common.collect.Lists;
 
 public class ListJobs extends PlatformLayerCommandRunnerBase {
 	@Argument(index = 0)
@@ -29,19 +30,19 @@ public class ListJobs extends PlatformLayerCommandRunnerBase {
 	public Object runCommand() throws PlatformLayerClientException {
 		PlatformLayerClient client = getPlatformLayerClient();
 
-		List<JobData> jobs = Lists.newArrayList(client.listJobs());
+		JobCollection jobs = client.listJobs();
 
 		if (path != null) {
 			PlatformLayerKey resolved = path.resolve(getContext());
 
-			List<JobData> matches = Lists.newArrayList();
+			JobDataList matches = JobDataList.create();
 
-			for (JobData job : jobs) {
-				if (!Objects.equal(job.targetId, resolved)) {
+			for (Job job : jobs.getJobs()) {
+				if (!Objects.equal(job.getTargetKey(), resolved)) {
 					continue;
 				}
 
-				matches.add(job);
+				matches.jobs.add(job);
 			}
 
 			jobs = matches;

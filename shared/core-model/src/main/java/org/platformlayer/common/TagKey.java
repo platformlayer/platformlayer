@@ -38,6 +38,10 @@ public abstract class TagKey<T> {
 		return toT(s);
 	}
 
+	public T findFirst(IsItem item) {
+		return findFirst(item.getTags());
+	}
+
 	// public Tag findUniqueTag(HasTags tags) {
 	// return tags.findUniqueTag(key);
 	// }

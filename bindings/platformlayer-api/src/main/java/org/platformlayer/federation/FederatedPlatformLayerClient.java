@@ -17,6 +17,8 @@ import org.platformlayer.PlatformLayerEndpointInfo;
 import org.platformlayer.TypedPlatformLayerClient;
 import org.platformlayer.UntypedItemXml;
 import org.platformlayer.common.IsTag;
+import org.platformlayer.common.Job;
+import org.platformlayer.common.JobCollection;
 import org.platformlayer.common.UntypedItem;
 import org.platformlayer.common.UntypedItemCollection;
 import org.platformlayer.common.UntypedItemCollectionBase;
@@ -36,6 +38,7 @@ import org.platformlayer.ids.FederationKey;
 import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.jobs.model.JobData;
+import org.platformlayer.jobs.model.JobDataList;
 import org.platformlayer.jobs.model.JobLog;
 import org.platformlayer.metrics.model.MetricDataStream;
 import org.platformlayer.metrics.model.MetricInfoCollection;
@@ -261,9 +264,9 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 		}
 	}
 
-	static class ListJobs extends HostFunction<Iterable<JobData>> {
+	static class ListJobs extends HostFunction<JobCollection> {
 		@Override
-		public Iterable<JobData> apply(final ChildClient child) throws PlatformLayerClientException {
+		public JobCollection apply(final ChildClient child) throws PlatformLayerClientException {
 			return child.client.listJobs();
 		}
 	}
@@ -317,26 +320,32 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 		}
 	}
 
-	static class AddHostToJob extends HostFunction<Iterable<JobData>> {
-		final HostFunction<Iterable<JobData>> inner;
+	static class AddHostToJob extends HostFunction<JobCollection> {
+		final HostFunction<JobCollection> inner;
 
-		public AddHostToJob(HostFunction<Iterable<JobData>> inner) {
+		public AddHostToJob(HostFunction<JobCollection> inner) {
 			this.inner = inner;
 		}
 
-		public static AddHostToJob wrap(HostFunction<Iterable<JobData>> inner) {
+		public static AddHostToJob wrap(HostFunction<JobCollection> inner) {
 			return new AddHostToJob(inner);
 		}
 
 		@Override
-		public Iterable<JobData> apply(final ChildClient child) throws PlatformLayerClientException {
-			return Iterables.transform(inner.apply(child), new Function<JobData, JobData>() {
+		public JobCollection apply(final ChildClient child) throws PlatformLayerClientException {
+			JobDataList ret = JobDataList.create();
+			JobCollection innerJobs = inner.apply(child);
+			Iterable<Job> outerJobs = Iterables.transform(innerJobs.getJobs(), new Function<Job, Job>() {
 				@Override
-				public JobData apply(JobData item) {
-					child.setHost(item);
+				public Job apply(Job item) {
+					child.setHost((JobData) item);
 					return item;
 				}
 			});
+
+			ret.jobs = Lists.newArrayList(outerJobs);
+
+			return ret;
 		}
 	}
 
@@ -358,6 +367,15 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 			HostFunction<UntypedItemCollection> function) throws PlatformLayerClientException {
 		try {
 			return ListConcatentation.joinListsUntypedItems(forkJoinPool, childClients, function);
+		} catch (ExecutionException e) {
+			throw new PlatformLayerClientException("Error while building item list", e);
+		}
+	}
+
+	private JobCollection doListConcatenationJobs(Iterable<ChildClient> childClients,
+			HostFunction<JobCollection> function) throws PlatformLayerClientException {
+		try {
+			return ListConcatentation.joinListsJobs(forkJoinPool, childClients, function);
 		} catch (ExecutionException e) {
 			throw new PlatformLayerClientException("Error while building item list", e);
 		}
@@ -423,8 +441,8 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
-	public Iterable<JobData> listJobs() throws PlatformLayerClientException {
-		return doListConcatenation(getChildClients(), AddHostToJob.wrap(new ListJobs()));
+	public JobCollection listJobs() throws PlatformLayerClientException {
+		return doListConcatenationJobs(getChildClients(), AddHostToJob.wrap(new ListJobs()));
 	}
 
 	@Override

@@ -288,4 +288,11 @@ public class PlatformLayerKey {
 		return id.getKey();
 	}
 
+	public String getProjectString() {
+		if (project == null) {
+			return null;
+		}
+		return project.getKey();
+	}
+
 }

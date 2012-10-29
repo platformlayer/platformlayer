@@ -22,6 +22,8 @@ import org.platformlayer.PlatformLayerClientBase;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.TypedItemMapper;
 import org.platformlayer.TypedPlatformLayerClient;
+import org.platformlayer.common.Job;
+import org.platformlayer.common.JobState;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.ConfigureAction;
 import org.platformlayer.core.model.EndpointInfo;
@@ -165,7 +167,7 @@ public class PlatformLayerTestContext {
 	}
 
 	public <T extends ItemBase> JobData doConfigure(T item) throws OpsException, IOException {
-		return doAction(item, new ConfigureAction());
+		return doAction(item, ConfigureAction.create());
 	}
 
 	public <T extends ItemBase> T waitForHealthy(T item) throws OpsException, IOException {
@@ -246,7 +248,7 @@ public class PlatformLayerTestContext {
 		return new InetSocketAddress(address, endpoint.port);
 	}
 
-	public JobData waitForJobComplete(JobData job, TimeSpan timeout) throws OpsException, IOException {
+	public Job waitForJobComplete(JobData job, TimeSpan timeout) throws OpsException, IOException {
 		TypedPlatformLayerClient client = getTypedClient();
 
 		PlatformLayerKey jobKey = job.key;
@@ -265,9 +267,9 @@ public class PlatformLayerTestContext {
 			}
 
 			// TODO: We really need a "get job status" function
-			JobData found = null;
-			for (JobData candidate : client.listJobs()) {
-				if (jobKey.equals(candidate.key)) {
+			Job found = null;
+			for (Job candidate : client.listJobs().getJobs()) {
+				if (jobKey.equals(candidate.getJobKey())) {
 					found = candidate;
 				}
 			}
@@ -277,18 +279,19 @@ public class PlatformLayerTestContext {
 				throw new IllegalStateException("Job not found in job list");
 			}
 
-			switch (found.state) {
+			JobState state = found.getState();
+			switch (state) {
 			case FAILED:
 			case SUCCESS:
-				System.out.println("Job completed; state=" + found.state);
+				System.out.println("Job completed; state=" + state);
 				return found;
 
 			case RUNNING:
-				System.out.println("Continuing to wait for " + job.key + "; state=" + found.state);
+				System.out.println("Continuing to wait for " + job.key + "; state=" + state);
 				break;
 
 			default:
-				throw new IllegalStateException("Unexpected state: " + found.state + " for " + job.key);
+				throw new IllegalStateException("Unexpected state: " + state + " for " + job.key);
 			}
 		}
 	}

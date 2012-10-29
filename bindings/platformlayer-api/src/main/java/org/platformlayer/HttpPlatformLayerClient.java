@@ -11,6 +11,7 @@ import org.openstack.utils.PropertyUtils;
 import org.platformlayer.auth.Authenticator;
 import org.platformlayer.auth.client.PlatformlayerAuthenticator;
 import org.platformlayer.common.IsTag;
+import org.platformlayer.common.JobCollection;
 import org.platformlayer.common.UntypedItem;
 import org.platformlayer.common.UntypedItemCollection;
 import org.platformlayer.core.model.Action;
@@ -373,7 +374,7 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
-	public JobDataList listJobs() throws PlatformLayerClientException {
+	public JobCollection listJobs() throws PlatformLayerClientException {
 		String relativePath = "jobs";
 		JobDataList jobs = doRequest("GET", relativePath, JobDataList.class, Format.XML, null, null);
 

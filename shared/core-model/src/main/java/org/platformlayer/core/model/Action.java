@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
-public class Action {
+public abstract class Action {
 	// public Action(String name) {
 	// this.name = name;
 	// if (Strings.isNullOrEmpty(name)) {
@@ -15,12 +15,11 @@ public class Action {
 	// }
 
 	public Action() {
+		this.type = getType();
 	}
 
 	public String type;
 
-	// public String name;
-	//
 	// public String getName() {
 	// return name;
 	// }
@@ -29,5 +28,9 @@ public class Action {
 	// public String toString() {
 	// return "Action [name=" + name + "]";
 	// }
+
+	public String getType() {
+		return getClass().getSimpleName();
+	}
 
 }

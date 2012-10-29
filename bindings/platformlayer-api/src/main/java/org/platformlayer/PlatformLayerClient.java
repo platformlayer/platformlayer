@@ -3,6 +3,7 @@ package org.platformlayer;
 import java.util.Collection;
 
 import org.platformlayer.common.IsTag;
+import org.platformlayer.common.JobCollection;
 import org.platformlayer.common.UntypedItem;
 import org.platformlayer.common.UntypedItemCollection;
 import org.platformlayer.core.model.Action;
@@ -60,7 +61,7 @@ public interface PlatformLayerClient {
 	public Tags changeTags(PlatformLayerKey key, TagChanges tagChanges) throws PlatformLayerClientException;
 
 	// Jobs
-	public Iterable<JobData> listJobs() throws PlatformLayerClientException;
+	public JobCollection listJobs() throws PlatformLayerClientException;
 
 	public JobLog getJobLog(String jobId) throws PlatformLayerClientException;
 
