@@ -3,6 +3,7 @@ package org.platformlayer.ops.tasks;
 import java.util.Date;
 import java.util.UUID;
 
+import org.platformlayer.common.JobState;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ids.ManagedItemId;
@@ -10,7 +11,6 @@ import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobLog;
-import org.platformlayer.jobs.model.JobState;
 import org.platformlayer.model.ProjectAuthorization;
 
 public class JobRecord {

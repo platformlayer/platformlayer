@@ -8,6 +8,7 @@ import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
 import org.platformlayer.common.IsTag;
+import org.platformlayer.common.JobCollection;
 import org.platformlayer.common.UntypedItem;
 import org.platformlayer.common.UntypedItemCollection;
 import org.platformlayer.core.model.Action;
@@ -285,7 +286,7 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 	}
 
 	@Override
-	public Iterable<JobData> listJobs() throws PlatformLayerClientException {
+	public JobCollection listJobs() throws PlatformLayerClientException {
 		return platformLayerClient.listJobs();
 	}
 

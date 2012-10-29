@@ -7,6 +7,7 @@ import javax.inject.Provider;
 import javax.xml.bind.JAXBException;
 
 import org.platformlayer.RepositoryException;
+import org.platformlayer.common.JobState;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ids.ItemType;
 import org.platformlayer.ids.ManagedItemId;
@@ -19,7 +20,6 @@ import org.platformlayer.jdbc.proxy.Query;
 import org.platformlayer.jdbc.proxy.QueryFactory;
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobLog;
-import org.platformlayer.jobs.model.JobState;
 import org.platformlayer.xaas.repository.JobRepository;
 import org.platformlayer.xaas.services.ServiceProviderDictionary;
 import org.platformlayer.xml.JaxbHelper;

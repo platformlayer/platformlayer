@@ -1,4 +1,4 @@
-package org.platformlayer.jobs.model;
+package org.platformlayer.common;
 
 public enum JobState {
 	RUNNING, FAILED, SUCCESS;

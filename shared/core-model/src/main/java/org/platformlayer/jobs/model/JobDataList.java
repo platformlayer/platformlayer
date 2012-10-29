@@ -1,24 +1,38 @@
 package org.platformlayer.jobs.model;
 
-import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.google.common.collect.Iterators;
+import org.platformlayer.common.Job;
+import org.platformlayer.common.JobCollection;
+
+import com.google.common.collect.Lists;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class JobDataList implements Iterable<JobData> {
-	public List<JobData> jobs;
+public class JobDataList implements JobCollection {
+	public List<Job> jobs = Lists.newArrayList();
+
+	public JobDataList() {
+	}
 
 	@Override
-	public Iterator<JobData> iterator() {
-		if (jobs == null) {
-			return Iterators.emptyIterator();
+	public List<Job> getJobs() {
+		return jobs;
+	}
+
+	public static JobDataList concat(Iterable<JobCollection> jobsList) {
+		JobDataList ret = new JobDataList();
+		for (JobCollection jobs : jobsList) {
+			ret.jobs.addAll(jobs.getJobs());
 		}
-		return jobs.iterator();
+		return ret;
+	}
+
+	public static JobDataList create() {
+		return new JobDataList();
 	}
 }
