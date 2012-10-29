@@ -17,6 +17,8 @@ public class Action {
 	public Action() {
 	}
 
+	public String type;
+
 	// public String name;
 	//
 	// public String getName() {
