@@ -7,4 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
 public class BackupAction extends Action {
+	public static BackupAction create() {
+		return new BackupAction();
+	}
 }

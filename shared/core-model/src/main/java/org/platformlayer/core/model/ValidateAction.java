@@ -7,4 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
 public class ValidateAction extends Action {
+	public static ValidateAction create() {
+		return new ValidateAction();
+	}
 }

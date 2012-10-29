@@ -36,6 +36,7 @@ public class JobData implements Job {
 		this.state = state;
 	}
 
+	@Override
 	public JobState getState() {
 		return state;
 	}
@@ -57,6 +58,11 @@ public class JobData implements Job {
 	@Override
 	public PlatformLayerKey getJobKey() {
 		return key;
+	}
+
+	@Override
+	public Action getAction() {
+		return action;
 	}
 
 }

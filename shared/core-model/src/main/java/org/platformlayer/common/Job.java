@@ -1,5 +1,6 @@
 package org.platformlayer.common;
 
+import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.PlatformLayerKey;
 
 public interface Job {
@@ -12,4 +13,5 @@ public interface Job {
 
 	JobState getState();
 
+	Action getAction();
 }

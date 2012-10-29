@@ -7,4 +7,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
 public class DeleteAction extends Action {
+	public static DeleteAction create() {
+		return new DeleteAction();
+	}
+
 }

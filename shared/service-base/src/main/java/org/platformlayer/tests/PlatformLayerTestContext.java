@@ -167,7 +167,7 @@ public class PlatformLayerTestContext {
 	}
 
 	public <T extends ItemBase> JobData doConfigure(T item) throws OpsException, IOException {
-		return doAction(item, new ConfigureAction());
+		return doAction(item, ConfigureAction.create());
 	}
 
 	public <T extends ItemBase> T waitForHealthy(T item) throws OpsException, IOException {
