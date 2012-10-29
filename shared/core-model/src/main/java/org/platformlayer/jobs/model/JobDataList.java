@@ -35,4 +35,9 @@ public class JobDataList implements JobCollection {
 	public static JobDataList create() {
 		return new JobDataList();
 	}
+
+	@Override
+	public void add(Job job) {
+		jobs.add(job);
+	}
 }
