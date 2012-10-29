@@ -8,6 +8,7 @@ import org.platformlayer.ScopeFilter;
 import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.web.CORSFilter;
 import org.platformlayer.xaas.web.jaxrs.MetricDataSourceWriter;
+import org.platformlayer.xaas.web.jaxrs.ObjectMapperProvider;
 import org.platformlayer.xaas.web.resources.RootResource;
 import org.platformlayer.xml.JsonHelper;
 
@@ -80,6 +81,8 @@ public class PlatformLayerServletModule extends JerseyServletModule {
 		// objectMapper.setDefaultTyping(typer);
 
 		bind(ObjectMapper.class).toInstance(objectMapper);
+
+		bind(ObjectMapperProvider.class).in(Scopes.SINGLETON);
 
 		bind(PlatformLayerJsonProvider.class).in(Scopes.SINGLETON);
 

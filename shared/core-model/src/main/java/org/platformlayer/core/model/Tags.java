@@ -14,10 +14,15 @@ import com.google.common.collect.Lists;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
 public class Tags extends TagsetBase {
-	public List<IsTag> tags = Lists.newArrayList();
+	public List<Tag> tags = Lists.newArrayList();
 
 	@Override
-	public List<IsTag> getTags() {
+	public List<? extends IsTag> getTags() {
 		return tags;
+	}
+
+	@Override
+	public void add(IsTag tag) {
+		tags.add((Tag) tag);
 	}
 }

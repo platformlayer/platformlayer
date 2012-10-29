@@ -10,19 +10,17 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 
 public abstract class TagsetBase implements Iterable<IsTag>, Tagset {
-	java.util.logging.Logger log = java.util.logging.Logger.getLogger(TagsetBase.class.getName());
+	static final java.util.logging.Logger log = java.util.logging.Logger.getLogger(TagsetBase.class.getName());
 
 	public void add(String key, String value) {
 		Tag tag = Tag.build(key, value);
-		getTags().add(tag);
+		add(tag);
 	}
 
-	public abstract List<IsTag> getTags();
+	public abstract List<? extends IsTag> getTags();
 
 	@Override
-	public void add(IsTag tag) {
-		getTags().add(tag);
-	}
+	public abstract void add(IsTag tag);
 
 	public boolean isEmpty() {
 		return getTags().isEmpty();
@@ -30,7 +28,7 @@ public abstract class TagsetBase implements Iterable<IsTag>, Tagset {
 
 	@Override
 	public Iterator<IsTag> iterator() {
-		return getTags().iterator();
+		return (Iterator<IsTag>) getTags().iterator();
 	}
 
 	@Override
@@ -120,11 +118,11 @@ public abstract class TagsetBase implements Iterable<IsTag>, Tagset {
 		return new Tags();
 	}
 
-	public static Tags build(List<IsTag> tags) {
-		Tags o = new Tags();
-		o.tags = tags;
-		return o;
-	}
+	// public static Tags build(List<? extends IsTag> tags) {
+	// Tags o = new Tags();
+	// o.tags = tags;
+	// return o;
+	// }
 
 	public static boolean equals(IsTag a, IsTag b) {
 		if (a == null || b == null) {
