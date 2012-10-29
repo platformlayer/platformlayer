@@ -2,14 +2,14 @@ package ${gwtPackage}.client.model;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
-public class ${jsoClassName} extends org.platformlayer.core.model.ItemBaseJs {
+public class ${jsoClassName} extends ${jsoBaseClassName} {
 	protected ${jsoClassName}() {
 	}
 
     <#list warnings as warning>
 	// TODO: ${warning}
 	</#list>  
-    
+
     <#list fields as field>
     <#if field.custom>
     public final ${field.type} get${field.beanName}() {
@@ -26,6 +26,10 @@ public class ${jsoClassName} extends org.platformlayer.core.model.ItemBaseJs {
 	public final native void set${field.beanName}(${field.type} newValue)
 	/*-{ this.${field.name} = newValue; }-*/;
 	</#if>
-	
-	</#list>  
+
+	</#list>
+
+	public static final ${jsoClassName} create() {
+		return ${jsoClassName}.createObject().cast();
+	}
 }

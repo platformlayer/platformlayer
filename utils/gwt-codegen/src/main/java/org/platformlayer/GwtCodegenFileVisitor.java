@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
@@ -14,6 +15,7 @@ import org.platformlayer.model.FieldModel;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 public class GwtCodegenFileVisitor extends FileVisitor {
 	private final ClassInspection classInspection;
@@ -167,14 +169,38 @@ public class GwtCodegenFileVisitor extends FileVisitor {
 		List<String> warnings = Lists.newArrayList();
 
 		String jsoClassName = clazz.getSimpleName();
+		String jsoBaseClassName = "com.google.gwt.core.client.JavaScriptObject";
+
+		Set<String> skipFields = Sets.newHashSet();
+
+		{
+			Class<?> c = clazz;
+			while (c != null) {
+				if (c.getName().equals("org.platformlayer.core.model.ItemBase")) {
+					jsoBaseClassName = "org.platformlayer.core.model.ItemBaseJs";
+					skipFields.add("key");
+					skipFields.add("tags");
+					break;
+				}
+				if (c.getName().equals("org.platformlayer.core.model.Action")) {
+					jsoBaseClassName = "org.platformlayer.core.model.ActionJs";
+					skipFields.add("type");
+					break;
+				}
+				if (c == Object.class) {
+					break;
+				} else {
+					c = c.getSuperclass();
+				}
+			}
+		}
 
 		for (Field field : clazz.getFields()) {
 			FieldModel fieldModel = new FieldModel();
 			Class<?> type = field.getType();
 
 			String fieldName = field.getName();
-
-			if (fieldName.equals("key") || fieldName.equals("tags")) {
+			if (skipFields.contains(fieldName)) {
 				// These come in from the base class
 				continue;
 			}
@@ -211,6 +237,7 @@ public class GwtCodegenFileVisitor extends FileVisitor {
 
 		// model.put("className", classModel.className);
 		model.put("jsoClassName", jsoClassName);
+		model.put("jsoBaseClassName", jsoBaseClassName);
 		// model.put("serviceClassName", classModel.serviceClassName);
 		// model.put("editorClassName", classModel.editorClassName);
 		model.put("fields", fields);

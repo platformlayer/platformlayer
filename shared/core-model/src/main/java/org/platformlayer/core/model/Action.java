@@ -4,9 +4,11 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.platformlayer.common.IsAction;
+
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
-public abstract class Action {
+public abstract class Action implements IsAction {
 	// public Action(String name) {
 	// this.name = name;
 	// if (Strings.isNullOrEmpty(name)) {
@@ -29,8 +31,13 @@ public abstract class Action {
 	// return "Action [name=" + name + "]";
 	// }
 
+	@Override
 	public String getType() {
 		return getClass().getSimpleName();
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 }
