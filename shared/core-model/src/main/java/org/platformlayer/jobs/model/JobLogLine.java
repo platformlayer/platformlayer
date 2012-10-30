@@ -28,4 +28,8 @@ public class JobLogLine {
 		return message;
 	}
 
+	public int getLevel() {
+		return level;
+	}
+
 }

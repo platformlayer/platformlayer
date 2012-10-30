@@ -65,4 +65,19 @@ public class JobData implements Job {
 		return action;
 	}
 
+	@Override
+	public Date getStartedAt() {
+		return startedAt;
+	}
+
+	@Override
+	public Date getEndedAt() {
+		return endedAt;
+	}
+
+	@Override
+	public JobLog getLog() {
+		return log;
+	}
+
 }
