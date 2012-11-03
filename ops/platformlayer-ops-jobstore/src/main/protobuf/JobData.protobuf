@@ -1,0 +1,12 @@
+option java_package="org.platformlayer.ops.jobstore.protobuf";
+
+message JobLogLine {
+	optional int64 timestamp = 1;
+	optional string message = 2;
+	optional int32 level = 3;
+	optional JobLogExceptionInfo exception = 4;
+}
+
+message JobLogExceptionInfo {
+	repeated string info = 1;
+}
