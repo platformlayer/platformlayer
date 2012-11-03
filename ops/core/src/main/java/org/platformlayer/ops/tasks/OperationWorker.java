@@ -43,10 +43,10 @@ public class OperationWorker implements Callable<Object> {
 
 	final OpsSystem opsSystem;
 
-	final JobRecord jobRecord;
+	final ActiveJobExecution activeJob;
 
-	public OperationWorker(OpsSystem opsSystem, JobRecord jobRecord) {
-		this.jobRecord = jobRecord;
+	public OperationWorker(OpsSystem opsSystem, ActiveJobExecution jobRecord) {
+		this.activeJob = jobRecord;
 		this.opsSystem = opsSystem;
 	}
 
@@ -54,17 +54,17 @@ public class OperationWorker implements Callable<Object> {
 	BackupHelpers backups;
 
 	Object doOperation() throws OpsException {
-		final Action action = jobRecord.getAction();
-		final PlatformLayerKey targetItemKey = jobRecord.getTargetItemKey();
+		final Action action = activeJob.getAction();
+		final PlatformLayerKey targetItemKey = activeJob.getTargetItemKey();
 		RenameThread rename = new RenameThread(action.getClass().getSimpleName() + " " + targetItemKey);
 		try {
 			OpsContextBuilder opsContextBuilder = opsSystem.getInjector().getInstance(OpsContextBuilder.class);
 
-			final ProjectAuthorization project = jobRecord.getProjectAuthorization();
+			final ProjectAuthorization project = activeJob.getProjectAuthorization();
 
-			final OpsContext opsContext = opsContextBuilder.buildOpsContext(jobRecord);
+			final OpsContext opsContext = opsContextBuilder.buildOpsContext(activeJob);
 
-			final ServiceType serviceType = jobRecord.getServiceType();
+			final ServiceType serviceType = activeJob.getServiceType();
 			final ServiceProvider serviceProvider = opsSystem.getServiceProvider(serviceType);
 
 			try {
@@ -72,7 +72,7 @@ public class OperationWorker implements Callable<Object> {
 					@Override
 					public Object call() throws Exception {
 						log.info("Starting job");
-						jobRecord.setState(JobState.RUNNING, false);
+						activeJob.setState(JobState.RUNNING);
 
 						ItemBase item;
 						ManagedItemRepository repository = opsSystem.getManagedItemRepository();
@@ -109,7 +109,7 @@ public class OperationWorker implements Callable<Object> {
 						}
 
 						log.info("Job finished with SUCCESS");
-						jobRecord.setState(JobState.SUCCESS, true);
+						activeJob.setState(JobState.SUCCESS);
 						return null;
 					}
 
@@ -148,8 +148,8 @@ public class OperationWorker implements Callable<Object> {
 				log.warn("Error running operation", e);
 				log.warn("Job finished with FAILED");
 
-				boolean isDone = false; // We will retry
-				jobRecord.setState(JobState.FAILED, isDone);
+				// boolean isDone = false; // We will retry
+				activeJob.setState(JobState.FAILED);
 
 				TimeSpan retry = null;
 
@@ -174,10 +174,8 @@ public class OperationWorker implements Callable<Object> {
 
 				return null;
 			} finally {
-				JobRegistry jobRegistry = opsSystem.getJobRegistry();
-
 				try {
-					jobRegistry.recordJobEnd(jobRecord);
+					activeJob.recordJobEnd();
 				} catch (OpsException e) {
 					log.error("Error recording job in registry", e);
 				}
@@ -190,7 +188,7 @@ public class OperationWorker implements Callable<Object> {
 	@Override
 	public Object call() throws OpsException {
 		Scope scope = Scope.empty();
-		scope.put(ProjectAuthorization.class, jobRecord.getProjectAuthorization());
+		scope.put(ProjectAuthorization.class, activeJob.getProjectAuthorization());
 		try {
 			scope.push();
 			return doOperation();

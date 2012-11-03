@@ -39,6 +39,7 @@ import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobDataList;
+import org.platformlayer.jobs.model.JobExecutionList;
 import org.platformlayer.jobs.model.JobLog;
 import org.platformlayer.metrics.model.MetricDataStream;
 import org.platformlayer.metrics.model.MetricInfoCollection;
@@ -133,13 +134,13 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 			}
 		}
 
-		public UntypedItem setHost(UntypedItemXml item) {
-			// if (!key.equals(FederationKey.LOCAL_FEDERATION_KEY)) {
-			PlatformLayerKey plk = item.getKey();
-			item.setPlatformLayerKey(changeHost(plk));
-			// }
-			return item;
-		}
+		// public UntypedItem setHost(UntypedItemXml item) {
+		// // if (!key.equals(FederationKey.LOCAL_FEDERATION_KEY)) {
+		// PlatformLayerKey plk = item.getKey();
+		// item.setPlatformLayerKey(changeHost(plk));
+		// // }
+		// return item;
+		// }
 
 		public JobData setHost(JobData item) {
 			// if (!key.equals(FederationKey.LOCAL_FEDERATION_KEY)) {
@@ -165,8 +166,12 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 				}
 				itemBase.setKey(changeHost(plk));
 				// }
+			} else if (item instanceof UntypedItemXml) {
+				UntypedItemXml untypedItemXml = (UntypedItemXml) item;
+				PlatformLayerKey plk = untypedItemXml.getKey();
+				untypedItemXml.setPlatformLayerKey(changeHost(plk));
 			} else {
-				throw new IllegalStateException();
+				throw new UnsupportedOperationException();
 			}
 			// }
 
@@ -459,11 +464,6 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
-	public JobLog getJobLog(String jobId) throws PlatformLayerClientException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
 	public MetricDataStream getMetric(MetricQuery query) throws PlatformLayerClientException {
 		MappedPlatformLayerKey mapped = mapToChild(query.item);
 		MetricQuery mappedQuery = query.copy();
@@ -743,6 +743,18 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 
 		return mapped.child.client.getEndpointInfo(mapped.key);
 
+	}
+
+	@Override
+	public JobLog getJobExecutionLog(String jobId, String executionId) throws PlatformLayerClientException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public JobExecutionList listJobExecutions(PlatformLayerKey jobKey) throws PlatformLayerClientException {
+		assert false; // This logic is suspect...
+		MappedPlatformLayerKey mapped = mapToChild(jobKey);
+		return mapped.child.client.listJobExecutions(jobKey);
 	}
 
 }

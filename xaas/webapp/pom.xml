@@ -38,6 +38,11 @@
             <groupId>org.platformlayer</groupId>
             <artifactId>platformlayer-ops-worker</artifactId>
         </dependency>
+        
+         <dependency>
+            <groupId>org.platformlayer</groupId>
+            <artifactId>platformlayer-ops-jobstore</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.platformlayer</groupId>

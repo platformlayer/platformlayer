@@ -2,8 +2,8 @@ package org.platformlayer.jdbc.simplejpa;
 
 import java.lang.reflect.Field;
 
-import org.platformlayer.jdbc.EnumWithKey;
-import org.platformlayer.jdbc.EnumWithKeys;
+import org.platformlayer.shared.EnumWithKey;
+import org.platformlayer.shared.EnumWithKeys;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;

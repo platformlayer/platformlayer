@@ -17,6 +17,8 @@ import com.fathomdb.cli.commands.Ansi;
 public class GetJobLog extends PlatformLayerCommandRunnerBase {
 	@Argument
 	String jobId;
+	@Argument
+	String executionId;
 
 	public GetJobLog() {
 		super("get", "log");
@@ -26,8 +28,7 @@ public class GetJobLog extends PlatformLayerCommandRunnerBase {
 	public Object runCommand() throws PlatformLayerClientException {
 		PlatformLayerClient client = getPlatformLayerClient();
 
-		JobLog jobLog = client.getJobLog(jobId);
-
+		JobLog jobLog = client.getJobExecutionLog(jobId, executionId);
 		return jobLog;
 	}
 

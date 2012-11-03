@@ -17,6 +17,7 @@
 		<module>core</module>
 		<module>worker</module>
 		<module>ssh</module>
+		<module>platformlayer-ops-jobstore</module>
 	<!--	<module>webapp</module>
 	-->
     </modules>

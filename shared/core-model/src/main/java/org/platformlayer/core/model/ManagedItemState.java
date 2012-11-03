@@ -2,6 +2,8 @@ package org.platformlayer.core.model;
 
 import java.io.Serializable;
 
+import java.io.Serializable;
+
 public enum ManagedItemState implements Serializable {
 
 	/**

@@ -8,21 +8,22 @@ import org.platformlayer.PlatformLayerClientException;
 import org.platformlayer.client.cli.model.ItemPath;
 import org.platformlayer.common.Job;
 import org.platformlayer.common.JobCollection;
+import org.platformlayer.common.JobState;
 import org.platformlayer.core.model.PlatformLayerKey;
-import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobDataList;
+import org.platformlayer.jobs.model.JobExecutionData;
 
 import com.fathomdb.cli.autocomplete.AutoCompletor;
 import com.fathomdb.cli.autocomplete.SimpleAutoCompleter;
 import com.fathomdb.cli.commands.Ansi;
 import com.google.common.base.Objects;
 
-public class ListJobs extends PlatformLayerCommandRunnerBase {
+public class ListJobExecutions extends PlatformLayerCommandRunnerBase {
 	@Argument(index = 0)
 	public ItemPath path;
 
-	public ListJobs() {
-		super("list", "jobs");
+	public ListJobExecutions() {
+		super("list", "runs");
 	}
 
 	@Override
@@ -57,34 +58,34 @@ public class ListJobs extends PlatformLayerCommandRunnerBase {
 
 	@Override
 	public void formatRaw(Object o, PrintWriter writer) {
-		Iterable<JobData> jobs = (Iterable<JobData>) o;
+		Iterable<JobExecutionData> jobs = (Iterable<JobExecutionData>) o;
 
 		Ansi ansi = new Ansi(writer);
 
-		for (JobData job : jobs) {
-			// JobState state = job.state;
-			// if (state != null) {
-			// ansi.setColorBlue();
-			// switch (job.state) {
-			// case FAILED:
-			// ansi.setColorRed();
-			// break;
-			//
-			// case SUCCESS:
-			// ansi.setColorGreen();
-			// break;
-			//
-			// case RUNNING:
-			// ansi.setColorBlue();
-			// break;
-			//
-			// default:
-			// ansi.setColorBlue();
-			// break;
-			// }
-			// }
+		for (JobExecutionData job : jobs) {
+			JobState state = job.state;
+			if (state != null) {
+				ansi.setColorBlue();
+				switch (job.state) {
+				case FAILED:
+					ansi.setColorRed();
+					break;
 
-			writer.println(job.key);
+				case SUCCESS:
+					ansi.setColorGreen();
+					break;
+
+				case RUNNING:
+					ansi.setColorBlue();
+					break;
+
+				default:
+					ansi.setColorBlue();
+					break;
+				}
+			}
+
+			writer.println(job.executionId);
 		}
 
 		ansi.reset();

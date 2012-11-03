@@ -14,7 +14,7 @@ import com.google.common.collect.Lists;
 public class JobLog implements Iterable<JobLogLine> {
 	public List<JobLogLine> lines = Lists.newArrayList();
 
-	public Iterable<JobLogLine> getLines() {
+	public List<JobLogLine> getLines() {
 		return lines;
 	}
 

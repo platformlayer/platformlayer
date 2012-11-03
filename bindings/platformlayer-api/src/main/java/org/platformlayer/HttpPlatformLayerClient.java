@@ -28,6 +28,7 @@ import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobDataList;
+import org.platformlayer.jobs.model.JobExecutionList;
 import org.platformlayer.jobs.model.JobLog;
 import org.platformlayer.metrics.model.JsonMetricDataStream;
 import org.platformlayer.metrics.model.MetricDataStream;
@@ -382,14 +383,6 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
-	public JobLog getJobLog(String jobId) throws PlatformLayerClientException {
-		String relativePath = "jobs/" + jobId + "?tree=log";
-		JobData jobData = doRequest("GET", relativePath, JobData.class, Format.XML, null, null);
-
-		return jobData.log;
-	}
-
-	@Override
 	public MetricInfoCollection listMetrics(PlatformLayerKey key) throws PlatformLayerClientException {
 		String relativePath = buildRelativePath(key) + "/metrics";
 
@@ -441,6 +434,20 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 	@Override
 	public PlatformLayerEndpointInfo getEndpointInfo(PlatformLayerKey item) {
 		return httpClient.getEndpointInfo(projectId);
+	}
+
+	@Override
+	public JobLog getJobExecutionLog(String jobId, String executionId) throws PlatformLayerClientException {
+		String relativePath = "jobs/" + jobId + "/runs/" + executionId + "/log";
+		JobLog jobLog = doRequest("GET", relativePath, JobLog.class, Format.XML, null, null);
+		return jobLog;
+	}
+
+	@Override
+	public JobExecutionList listJobExecutions(PlatformLayerKey jobKey) throws PlatformLayerClientException {
+		String relativePath = "jobs/" + jobKey.getItemIdString() + "/runs";
+		JobExecutionList executions = doRequest("GET", relativePath, JobExecutionList.class, Format.XML, null, null);
+		return executions;
 	}
 
 	// protected String buildRelativePath(ServiceType serviceType, ItemType itemType) {

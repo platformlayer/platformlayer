@@ -111,10 +111,15 @@
                 <version>${version.project}</version>
             </dependency>
 
-
             <dependency>
                 <groupId>org.platformlayer</groupId>
                 <artifactId>platformlayer-ops-core</artifactId>
+                <version>${version.project}</version>
+            </dependency>
+            
+             <dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>platformlayer-ops-jobstore</artifactId>
                 <version>${version.project}</version>
             </dependency>
 

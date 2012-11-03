@@ -13,6 +13,7 @@ import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.core.model.Tags;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.jobs.model.JobData;
+import org.platformlayer.jobs.model.JobExecutionList;
 import org.platformlayer.jobs.model.JobLog;
 import org.platformlayer.metrics.model.MetricDataStream;
 import org.platformlayer.metrics.model.MetricInfoCollection;
@@ -63,7 +64,7 @@ public interface PlatformLayerClient {
 	// Jobs
 	public JobCollection listJobs() throws PlatformLayerClientException;
 
-	public JobLog getJobLog(String jobId) throws PlatformLayerClientException;
+	public JobLog getJobExecutionLog(String jobId, String executionId) throws PlatformLayerClientException;
 
 	// Metrics
 	public MetricDataStream getMetric(MetricQuery query) throws PlatformLayerClientException;
@@ -89,5 +90,7 @@ public interface PlatformLayerClient {
 	public ProjectId getProject();
 
 	public PlatformLayerEndpointInfo getEndpointInfo(PlatformLayerKey item);
+
+	public JobExecutionList listJobExecutions(PlatformLayerKey jobKey) throws PlatformLayerClientException;
 
 }

@@ -22,7 +22,7 @@ public class JobDataFormatter extends SimpleFormatter<JobData> {
 		values.put("key", o.key);
 		values.put("target", o.targetId);
 		values.put("action", o.action);
-		values.put("state", o.state);
+		// values.put("state", o.state);
 
 		sink.outputRow(values);
 	}

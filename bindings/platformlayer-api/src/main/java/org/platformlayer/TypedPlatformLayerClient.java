@@ -23,6 +23,7 @@ import org.platformlayer.core.model.Tags;
 import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.jobs.model.JobData;
+import org.platformlayer.jobs.model.JobExecutionList;
 import org.platformlayer.jobs.model.JobLog;
 import org.platformlayer.metrics.model.MetricDataStream;
 import org.platformlayer.metrics.model.MetricInfoCollection;
@@ -291,11 +292,6 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 	}
 
 	@Override
-	public JobLog getJobLog(String jobId) throws PlatformLayerClientException {
-		return platformLayerClient.getJobLog(jobId);
-	}
-
-	@Override
 	public MetricDataStream getMetric(MetricQuery query) throws PlatformLayerClientException {
 		return platformLayerClient.getMetric(query);
 	}
@@ -338,6 +334,16 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 	@Override
 	public PlatformLayerEndpointInfo getEndpointInfo(PlatformLayerKey item) {
 		return platformLayerClient.getEndpointInfo(item);
+	}
+
+	@Override
+	public JobLog getJobExecutionLog(String jobId, String executionId) throws PlatformLayerClientException {
+		return platformLayerClient.getJobExecutionLog(jobId, executionId);
+	}
+
+	@Override
+	public JobExecutionList listJobExecutions(PlatformLayerKey jobKey) throws PlatformLayerClientException {
+		return platformLayerClient.listJobExecutions(jobKey);
 	}
 
 }

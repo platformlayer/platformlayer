@@ -8,9 +8,9 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 
-import org.platformlayer.jdbc.EnumWithKey;
 import org.platformlayer.jdbc.simplejpa.DatabaseNameMapping;
 import org.platformlayer.jdbc.simplejpa.FieldMap;
+import org.platformlayer.shared.EnumWithKey;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;

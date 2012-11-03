@@ -26,8 +26,8 @@ public class ServicesCollectionResource extends XaasResourceBase {
 	}
 
 	@Path("jobs")
-	public JobsResource getJobs() {
-		JobsResource child = objectInjector.getInstance(JobsResource.class);
+	public JobsCollectionResource getJobs() {
+		JobsCollectionResource child = objectInjector.getInstance(JobsCollectionResource.class);
 		return child;
 	}
 

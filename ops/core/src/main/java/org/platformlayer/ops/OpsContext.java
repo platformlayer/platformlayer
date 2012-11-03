@@ -23,7 +23,7 @@ import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.ops.log.JobLogger;
 import org.platformlayer.ops.model.metrics.MetricConfig;
 import org.platformlayer.ops.networks.NetworkPoint;
-import org.platformlayer.ops.tasks.JobRecord;
+import org.platformlayer.ops.tasks.ActiveJobExecution;
 import org.platformlayer.ops.tasks.OperationInvoker;
 
 import com.google.common.collect.Lists;
@@ -42,7 +42,7 @@ public class OpsContext implements Closeable {
 
 	final JobLogger jobLogger;
 
-	final JobRecord jobRecord;
+	final ActiveJobExecution jobRecord;
 
 	final Map<Object, Object> cacheMap = Maps.newHashMap();
 
@@ -50,13 +50,13 @@ public class OpsContext implements Closeable {
 
 	final List<ProjectAuthorization> projects;
 
-	public OpsContext(OpsSystem opsSystem, JobRecord jobRecord, ServiceConfiguration serviceConfiguration,
+	public OpsContext(OpsSystem opsSystem, ActiveJobExecution jobRecord, ServiceConfiguration serviceConfiguration,
 			PlatformLayerClient platformLayerClient, List<ProjectAuthorization> projects) {
 		super();
 		this.opsSystem = opsSystem;
 		this.jobRecord = jobRecord;
 		this.serviceConfiguration = serviceConfiguration;
-		this.jobLogger = new JobLogger(jobRecord.getLog());
+		this.jobLogger = jobRecord.getLogger();
 		this.platformLayerClient = platformLayerClient;
 		this.projects = projects;
 	}
@@ -199,7 +199,7 @@ public class OpsContext implements Closeable {
 		return opsSystem.getInjector();
 	}
 
-	public JobRecord getJobRecord() {
+	public ActiveJobExecution getJobRecord() {
 		return jobRecord;
 	}
 

@@ -1,4 +1,4 @@
-package org.platformlayer.jdbc;
+package org.platformlayer.shared;
 
 public interface EnumWithKey {
 	public String getKey();

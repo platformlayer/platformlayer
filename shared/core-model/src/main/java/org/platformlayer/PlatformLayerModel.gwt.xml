@@ -1,3 +1,5 @@
 <module>
+    <inherits name='org.platformlayer.ModelShared' />
+
     <source path="common" />
 </module>

@@ -1,10 +1,18 @@
 package org.platformlayer.common;
 
-public enum JobState {
-	RUNNING, FAILED, SUCCESS;
+import org.platformlayer.shared.EnumWithKey;
 
-	public int getCode() {
-		// TODO: Use stable value
-		return ordinal();
+public enum JobState implements EnumWithKey {
+	RUNNING("R"), FAILED("F"), SUCCESS("S");
+
+	final String key;
+
+	private JobState(String key) {
+		this.key = key;
+	}
+
+	@Override
+	public String getKey() {
+		return key;
 	}
 }

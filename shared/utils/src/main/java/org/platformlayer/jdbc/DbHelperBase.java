@@ -67,7 +67,7 @@ public class DbHelperBase implements Closeable {
 		return DbAtom.mapCodeToKey(connection, clazz, model);
 	}
 
-	protected <T> int mapToValue(T t) throws SQLException {
+	public <T> int mapToValue(T t) throws SQLException {
 		return DbAtom.mapKeyToCode(connection, t);
 	}
 

@@ -12,7 +12,7 @@ public class SimpleOperationQueue implements OperationQueue {
 	@Inject
 	ExecutorService executorService;
 
-	final Timer timer = new Timer();;
+	final Timer timer = new Timer();
 
 	@Override
 	public void submit(OperationWorker operationWorker) {

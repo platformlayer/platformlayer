@@ -50,6 +50,9 @@ public class OpsContextBuilder {
 	@Inject
 	HttpStrategy httpStrategy;
 
+	@Inject
+	JobRegistry jobRegistry;
+
 	public ProjectId getRunAsProjectId(ProjectAuthorization project) throws OpsException {
 		ProjectAuthorization runAsProject = project; // authentication.getProject();
 
@@ -62,9 +65,9 @@ public class OpsContextBuilder {
 		return runAsProjectId;
 	}
 
-	public OpsContext buildOpsContext(JobRecord jobRecord) throws OpsException {
-		ServiceType serviceType = jobRecord.getServiceType();
-		ProjectAuthorization projectAuthz = jobRecord.getProjectAuthorization();
+	public OpsContext buildOpsContext(ActiveJobExecution activeJob) throws OpsException {
+		ServiceType serviceType = activeJob.getServiceType();
+		ProjectAuthorization projectAuthz = activeJob.getProjectAuthorization();
 
 		List<ProjectAuthorization> projects = Lists.newArrayList();
 
@@ -132,18 +135,15 @@ public class OpsContextBuilder {
 		// OpsConfig opsConfig = OpsConfig.build(serviceAuthorization);
 		// UserInfo userInfo = new SimpleUserInfo(auth, opsConfig);
 
-		JobRegistry jobRegistry = opsSystem.getJobRegistry();
-		jobRegistry.startJob(jobRecord);
-
-		OpsContext opsContext = new OpsContext(opsSystem, jobRecord, serviceConfiguration, platformLayerClient,
+		OpsContext opsContext = new OpsContext(opsSystem, activeJob, serviceConfiguration, platformLayerClient,
 				projects);
 		return opsContext;
 	}
 
 	public OpsContext buildTemporaryOpsContext(ServiceType serviceType, ProjectAuthorization authentication)
 			throws OpsException {
-		JobRecord jobRecord = new JobRecord(serviceType, authentication, null);
-		return buildOpsContext(jobRecord);
+		ActiveJobExecution activeJob = jobRegistry.startSystemJob(serviceType, authentication);
+		return buildOpsContext(activeJob);
 	}
 
 	public Class<?> getJavaClass(PlatformLayerKey key) {

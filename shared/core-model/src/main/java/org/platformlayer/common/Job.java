@@ -1,10 +1,7 @@
 package org.platformlayer.common;
 
-import java.util.Date;
-
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.PlatformLayerKey;
-import org.platformlayer.jobs.model.JobLog;
 
 public interface Job {
 
@@ -12,15 +9,8 @@ public interface Job {
 
 	PlatformLayerKey getJobKey();
 
-	PlatformLayerKey getTargetKey();
-
-	JobState getState();
+	PlatformLayerKey getTargetItemKey();
 
 	Action getAction();
 
-	Date getStartedAt();
-
-	Date getEndedAt();
-
-	JobLog getLog();
 }

@@ -18,6 +18,7 @@ import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ValidateAction;
 import org.platformlayer.jobs.model.JobData;
+import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.tasks.JobRegistry;
 import org.platformlayer.xaas.services.ServiceProviderDictionary;
 
@@ -26,7 +27,7 @@ import com.google.common.collect.Maps;
 
 public class ActionsResource extends XaasResourceBase {
 	@Inject
-	JobRegistry operations;
+	JobRegistry jobRegistry;
 
 	@Inject
 	JsonMapper jsonMapper;
@@ -34,14 +35,14 @@ public class ActionsResource extends XaasResourceBase {
 	@POST
 	@Consumes({ XML })
 	@Produces({ XML, JSON })
-	public JobData doActionXml(Action action) throws RepositoryException {
+	public JobData doActionXml(Action action) throws RepositoryException, OpsException {
 		return doAction(action);
 	}
 
 	@POST
 	@Consumes({ JSON })
 	@Produces({ XML, JSON })
-	public JobData doActionJson(String json) throws IOException, RepositoryException {
+	public JobData doActionJson(String json) throws IOException, RepositoryException, OpsException {
 		JSONObject jsonObject;
 		String actionType = null;
 		try {
@@ -84,7 +85,7 @@ public class ActionsResource extends XaasResourceBase {
 	@Inject
 	ServiceProviderDictionary serviceProviderDictionary;
 
-	private JobData doAction(Action action) throws RepositoryException {
+	private JobData doAction(Action action) throws RepositoryException, OpsException {
 		boolean fetchTags = true;
 		// Check we can get the item
 		ItemBase managedItem = getManagedItem(fetchTags);
@@ -97,7 +98,7 @@ public class ActionsResource extends XaasResourceBase {
 		// }
 		// OperationType operationType = EnumUtils.valueOfCaseInsensitive(OperationType.class, actionName);
 		PlatformLayerKey itemKey = getPlatformLayerKey();
-		PlatformLayerKey jobKey = operations.enqueueOperation(action, getProjectAuthorization(), itemKey);
+		PlatformLayerKey jobKey = jobRegistry.enqueueOperation(action, getProjectAuthorization(), itemKey);
 
 		JobData jobData = new JobData();
 		jobData.key = jobKey;

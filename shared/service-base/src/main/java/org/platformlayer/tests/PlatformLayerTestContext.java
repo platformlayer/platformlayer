@@ -34,6 +34,8 @@ import org.platformlayer.http.HttpStrategy;
 import org.platformlayer.http.jre.JreHttpStrategy;
 import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.jobs.model.JobData;
+import org.platformlayer.jobs.model.JobExecutionData;
+import org.platformlayer.jobs.model.JobExecutionList;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.service.network.v1.NetworkConnection;
 import org.platformlayer.xml.JaxbHelper;
@@ -279,7 +281,19 @@ public class PlatformLayerTestContext {
 				throw new IllegalStateException("Job not found in job list");
 			}
 
-			JobState state = found.getState();
+			JobExecutionList executions = client.listJobExecutions(job.getJobKey());
+			JobExecutionData foundExecution = null;
+			for (JobExecutionData candidate : executions) {
+				if (jobKey.equals(candidate.getJobKey())) {
+					foundExecution = candidate;
+				}
+			}
+
+			if (foundExecution == null) {
+				throw new IllegalStateException("Execution not found in execution list");
+			}
+
+			JobState state = foundExecution.getState();
 			switch (state) {
 			case FAILED:
 			case SUCCESS:
