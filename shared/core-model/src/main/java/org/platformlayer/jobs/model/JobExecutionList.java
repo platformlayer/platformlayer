@@ -14,7 +14,7 @@ import com.google.common.collect.Lists;
 public class JobExecutionList implements Iterable<JobExecutionData> {
 	public List<JobExecutionData> runs = Lists.newArrayList();
 
-	public Iterable<JobExecutionData> getRuns() {
+	public List<JobExecutionData> getRuns() {
 		return runs;
 	}
 
