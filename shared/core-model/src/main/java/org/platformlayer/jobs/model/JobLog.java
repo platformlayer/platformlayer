@@ -14,6 +14,9 @@ import com.google.common.collect.Lists;
 public class JobLog implements Iterable<JobLogLine> {
 	public List<JobLogLine> lines = Lists.newArrayList();
 
+	// Optional
+	public JobExecutionData execution;
+
 	public List<JobLogLine> getLines() {
 		return lines;
 	}
@@ -28,5 +31,9 @@ public class JobLog implements Iterable<JobLogLine> {
 	@Override
 	public Iterator<JobLogLine> iterator() {
 		return lines.iterator();
+	}
+
+	public JobExecutionData getExecution() {
+		return execution;
 	}
 }
