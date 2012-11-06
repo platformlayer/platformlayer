@@ -13,7 +13,6 @@ import org.openstack.client.common.OpenstackImageClient;
 import org.openstack.model.identity.Access;
 import org.openstack.model.image.Image;
 import org.platformlayer.TimeSpan;
-import org.platformlayer.common.IsTag;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.Tags;
 import org.platformlayer.ops.Command;
@@ -43,7 +42,7 @@ public class GlanceImageStore implements ImageStore {
 		String diskFormat = null;
 		if (tags != null) {
 			assert false; // This logic looks suspicious...
-			for (IsTag tag : tags) {
+			for (Tag tag : tags.getTags()) {
 				ImageFormat imageFormat = ImageFormat.fromTags(tags);
 				diskFormat = mapToGlanceDiskFormat(imageFormat);
 			}
@@ -159,7 +158,7 @@ public class GlanceImageStore implements ImageStore {
 		boolean replace = false;
 		try {
 			Map<String, Object> tagMap = Maps.newHashMap();
-			for (IsTag tag : tags) {
+			for (Tag tag : tags.getTags()) {
 				tagMap.put(tag.getKey(), tag.getValue());
 			}
 			glanceClient.root().images().image(imageId).updateMetadata(tagMap, replace);

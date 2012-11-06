@@ -10,14 +10,13 @@ import java.util.Properties;
 import org.openstack.utils.PropertyUtils;
 import org.platformlayer.auth.Authenticator;
 import org.platformlayer.auth.client.PlatformlayerAuthenticator;
-import org.platformlayer.common.IsTag;
-import org.platformlayer.common.JobCollection;
 import org.platformlayer.common.UntypedItem;
 import org.platformlayer.common.UntypedItemCollection;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ServiceInfo;
 import org.platformlayer.core.model.ServiceInfoCollection;
+import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.core.model.Tags;
 import org.platformlayer.federation.model.PlatformLayerConnectionConfiguration;
@@ -172,7 +171,7 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
-	public UntypedItem putItemByTag(PlatformLayerKey key, IsTag uniqueTag, String data, Format dataFormat)
+	public UntypedItem putItemByTag(PlatformLayerKey key, Tag uniqueTag, String data, Format dataFormat)
 			throws PlatformLayerClientException {
 		if (key.getItemId() == null) {
 			throw new IllegalArgumentException("id is required on a put");
@@ -375,7 +374,7 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
-	public JobCollection listJobs() throws PlatformLayerClientException {
+	public JobDataList listJobs() throws PlatformLayerClientException {
 		String relativePath = "jobs";
 		JobDataList jobs = doRequest("GET", relativePath, JobDataList.class, Format.XML, null, null);
 

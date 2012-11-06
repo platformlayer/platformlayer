@@ -18,8 +18,6 @@ import org.openstack.utils.Utf8;
 import org.platformlayer.Filter;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.auth.crypto.SecretProvider;
-import org.platformlayer.common.IsTag;
-import org.platformlayer.common.Tagset;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.core.model.PlatformLayerKey;
@@ -96,7 +94,7 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 					// Looks like someone deleted an item without deleting a tag (this should be a foreign-key)
 					continue;
 				}
-				Tagset tags = managed.getTags();
+				Tags tags = managed.getTags();
 				tags.add(Tag.build(tag.key, tag.data));
 			}
 
@@ -393,12 +391,12 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 		}
 
 		public void insertTags(int itemId, Tags tags) throws SQLException {
-			for (IsTag tag : tags) {
+			for (Tag tag : tags.getTags()) {
 				insertTag(itemId, tag);
 			}
 		}
 
-		public void insertTag(int itemId, IsTag tag) throws SQLException {
+		public void insertTag(int itemId, Tag tag) throws SQLException {
 			final String sql = "INSERT INTO item_tags (service, model, project, item, key, data) VALUES (?, ?, ?, ?, ?, ?)";
 
 			PreparedStatement ps = prepareStatement(sql);
@@ -417,12 +415,12 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 		}
 
 		public void removeTags(int itemId, Tags tags) throws SQLException {
-			for (IsTag tag : tags) {
+			for (Tag tag : tags) {
 				removeTag(itemId, tag);
 			}
 		}
 
-		public void removeTag(int itemId, IsTag tag) throws SQLException {
+		public void removeTag(int itemId, Tag tag) throws SQLException {
 			PreparedStatement ps;
 			if (tag.getValue() != null) {
 				final String sql = "DELETE FROM item_tags WHERE service = ? and model=? and project=? and item=? and key=? and data=?";
@@ -675,7 +673,7 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 			mapToTags(db.listTagsForItem(itemId), tags);
 
 			if (changeTags.addTags != null) {
-				for (IsTag addTag : changeTags.addTags) {
+				for (Tag addTag : changeTags.addTags) {
 					if (tags.hasTag(addTag)) {
 						continue;
 					}
@@ -685,7 +683,7 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 			}
 
 			if (changeTags.removeTags != null) {
-				for (IsTag removeTag : changeTags.removeTags) {
+				for (Tag removeTag : changeTags.removeTags) {
 					boolean removed = tags.remove(removeTag);
 					if (!removed) {
 						continue;
@@ -702,7 +700,7 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 		}
 	}
 
-	private void mapToTags(List<TagEntity> tagEntities, Tagset tags) {
+	private void mapToTags(List<TagEntity> tagEntities, Tags tags) {
 		// Once REMOVE_DUPLICATE_TAGS is false, we can add direct to tags
 		List<Tag> addList = Lists.newArrayList();
 

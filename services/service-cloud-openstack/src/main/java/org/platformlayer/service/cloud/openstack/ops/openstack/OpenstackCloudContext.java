@@ -31,7 +31,6 @@ import org.platformlayer.ExceptionUtils;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.TimeoutPoll;
 import org.platformlayer.TimeoutPoll.PollFunction;
-import org.platformlayer.common.IsTag;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.MachineCreationRequest;
 import org.platformlayer.ops.OpsException;
@@ -509,7 +508,7 @@ public class OpenstackCloudContext {
 			if (request.tags != null) {
 				Server newServerInfo = new Server();
 				Metadata metadata = new Metadata();
-				for (IsTag tag : request.tags) {
+				for (Tag tag : request.tags) {
 					Metadata.Item meta = new Metadata.Item();
 					meta.setKey(tag.getKey());
 					meta.setValue(tag.getValue());

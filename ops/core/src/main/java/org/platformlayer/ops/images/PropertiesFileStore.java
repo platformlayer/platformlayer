@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Properties;
 
 import org.platformlayer.Comparisons;
-import org.platformlayer.common.IsTag;
-import org.platformlayer.common.Tagset;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.Tags;
 import org.platformlayer.ops.FileUpload;
@@ -158,9 +156,9 @@ public class PropertiesFileStore {
 		return tags;
 	}
 
-	public Properties toProperties(Tagset tags) {
+	public Properties toProperties(Tags tags) {
 		Properties properties = new Properties();
-		for (IsTag tag : tags) {
+		for (Tag tag : tags) {
 			// properties.put(PROPERTY_PREFIX_TAG + tag.getKey(), tag.getValue());
 			properties.put(tag.getKey(), tag.getValue());
 		}

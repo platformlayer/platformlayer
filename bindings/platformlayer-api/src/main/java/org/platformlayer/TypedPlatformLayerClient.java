@@ -7,8 +7,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.platformlayer.common.IsTag;
-import org.platformlayer.common.JobCollection;
 import org.platformlayer.common.UntypedItem;
 import org.platformlayer.common.UntypedItemCollection;
 import org.platformlayer.core.model.Action;
@@ -23,6 +21,7 @@ import org.platformlayer.core.model.Tags;
 import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.jobs.model.JobData;
+import org.platformlayer.jobs.model.JobDataList;
 import org.platformlayer.jobs.model.JobExecutionList;
 import org.platformlayer.jobs.model.JobLog;
 import org.platformlayer.metrics.model.MetricDataStream;
@@ -127,7 +126,7 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 	 * If using directly, consider using OwnedItem instead
 	 */
 	@Deprecated
-	public <T extends ItemBase> T putItemByTag(T item, IsTag uniqueTag) throws OpsException {
+	public <T extends ItemBase> T putItemByTag(T item, Tag uniqueTag) throws OpsException {
 		JaxbHelper jaxbHelper = PlatformLayerClientBase.toJaxbHelper(item);
 
 		String xml = PlatformLayerClientBase.serialize(jaxbHelper, item);
@@ -261,7 +260,7 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 	 */
 	@Deprecated
 	@Override
-	public UntypedItem putItemByTag(PlatformLayerKey key, IsTag uniqueTag, String data, Format dataFormat)
+	public UntypedItem putItemByTag(PlatformLayerKey key, Tag uniqueTag, String data, Format dataFormat)
 			throws PlatformLayerClientException {
 		return platformLayerClient.putItemByTag(key, uniqueTag, data, dataFormat);
 	}
@@ -287,7 +286,7 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 	}
 
 	@Override
-	public JobCollection listJobs() throws PlatformLayerClientException {
+	public JobDataList listJobs() throws PlatformLayerClientException {
 		return platformLayerClient.listJobs();
 	}
 

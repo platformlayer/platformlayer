@@ -4,7 +4,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.platformlayer.common.Job;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ids.ItemType;
@@ -14,7 +13,7 @@ import org.platformlayer.ids.ServiceType;
 
 @XmlRootElement(name = "job")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class JobData implements Job {
+public class JobData /* implements Job */{
 	public static final ServiceType SERVICE_TYPE = new ServiceType("jobs");
 	public static final ItemType ITEM_TYPE = new ItemType("job");
 
@@ -26,22 +25,18 @@ public class JobData implements Job {
 		return new PlatformLayerKey(null, projectId, JobData.SERVICE_TYPE, JobData.ITEM_TYPE, jobId);
 	}
 
-	@Override
 	public String getJobId() {
 		return key.getItemIdString();
 	}
 
-	@Override
 	public PlatformLayerKey getTargetItemKey() {
 		return targetId;
 	}
 
-	@Override
 	public PlatformLayerKey getJobKey() {
 		return key;
 	}
 
-	@Override
 	public Action getAction() {
 		return action;
 	}

@@ -3,11 +3,11 @@
 
   <xs:import namespace="http://platformlayer.org/core/v1.0" schemaLocation="platformlayer-core.xsd"/>
 
+  <xs:element name="ipsecPolicy" type="tns:ipsecPolicy"/>
+
   <xs:element name="networkConnection" type="tns:networkConnection"/>
 
   <xs:element name="privateNetwork" type="tns:privateNetwork"/>
-
-  <xs:element name="privateNetworkAllocation" type="tns:privateNetworkAllocation"/>
 
   <xs:element name="privateNetworkConnection" type="tns:privateNetworkConnection"/>
 
@@ -16,6 +16,16 @@
       <xs:extension base="ns1:itemBase">
         <xs:sequence>
           <xs:element name="cidr" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ipsecPolicy">
+    <xs:complexContent>
+      <xs:extension base="ns1:itemBase">
+        <xs:sequence>
+          <xs:element name="ipsecSecret" type="ns1:secret" minOccurs="0"/>
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
@@ -43,17 +53,6 @@
           <xs:element name="destItem" type="ns1:platformLayerKey" minOccurs="0"/>
           <xs:element name="port" type="xs:int"/>
           <xs:element name="protocol" type="xs:string" minOccurs="0"/>
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-
-  <xs:complexType name="privateNetworkAllocation">
-    <xs:complexContent>
-      <xs:extension base="ns1:itemBase">
-        <xs:sequence>
-          <xs:element name="cidr" type="xs:string" minOccurs="0"/>
-          <xs:element name="machine" type="ns1:platformLayerKey" minOccurs="0"/>
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>

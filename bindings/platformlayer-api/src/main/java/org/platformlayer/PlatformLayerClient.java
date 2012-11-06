@@ -2,17 +2,17 @@ package org.platformlayer;
 
 import java.util.Collection;
 
-import org.platformlayer.common.IsTag;
-import org.platformlayer.common.JobCollection;
 import org.platformlayer.common.UntypedItem;
 import org.platformlayer.common.UntypedItemCollection;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ServiceInfo;
+import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.core.model.Tags;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.jobs.model.JobData;
+import org.platformlayer.jobs.model.JobDataList;
 import org.platformlayer.jobs.model.JobExecutionList;
 import org.platformlayer.jobs.model.JobLog;
 import org.platformlayer.metrics.model.MetricDataStream;
@@ -42,7 +42,7 @@ public interface PlatformLayerClient {
 	public UntypedItem putItem(PlatformLayerKey key, String data, Format dataFormat)
 			throws PlatformLayerClientException;
 
-	public UntypedItem putItemByTag(PlatformLayerKey key, IsTag uniqueTag, String data, Format dataFormat)
+	public UntypedItem putItemByTag(PlatformLayerKey key, Tag uniqueTag, String data, Format dataFormat)
 			throws PlatformLayerClientException;
 
 	// public <T> T putItem(T item) throws PlatformLayerClientException;
@@ -62,7 +62,7 @@ public interface PlatformLayerClient {
 	public Tags changeTags(PlatformLayerKey key, TagChanges tagChanges) throws PlatformLayerClientException;
 
 	// Jobs
-	public JobCollection listJobs() throws PlatformLayerClientException;
+	public JobDataList listJobs() throws PlatformLayerClientException;
 
 	public JobLog getJobExecutionLog(String jobId, String executionId) throws PlatformLayerClientException;
 

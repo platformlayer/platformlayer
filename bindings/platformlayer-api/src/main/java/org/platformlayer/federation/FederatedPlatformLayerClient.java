@@ -16,9 +16,6 @@ import org.platformlayer.PlatformLayerClientNotFoundException;
 import org.platformlayer.PlatformLayerEndpointInfo;
 import org.platformlayer.TypedPlatformLayerClient;
 import org.platformlayer.UntypedItemXml;
-import org.platformlayer.common.IsTag;
-import org.platformlayer.common.Job;
-import org.platformlayer.common.JobCollection;
 import org.platformlayer.common.UntypedItem;
 import org.platformlayer.common.UntypedItemCollection;
 import org.platformlayer.common.UntypedItemCollectionBase;
@@ -26,6 +23,7 @@ import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ServiceInfo;
+import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.core.model.Tags;
 import org.platformlayer.federation.model.FederationConfiguration;
@@ -269,9 +267,9 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 		}
 	}
 
-	static class ListJobs extends HostFunction<JobCollection> {
+	static class ListJobs extends HostFunction<JobDataList> {
 		@Override
-		public JobCollection apply(final ChildClient child) throws PlatformLayerClientException {
+		public JobDataList apply(final ChildClient child) throws PlatformLayerClientException {
 			return child.client.listJobs();
 		}
 	}
@@ -325,25 +323,25 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 		}
 	}
 
-	static class AddHostToJob extends HostFunction<JobCollection> {
-		final HostFunction<JobCollection> inner;
+	static class AddHostToJob extends HostFunction<JobDataList> {
+		final HostFunction<JobDataList> inner;
 
-		public AddHostToJob(HostFunction<JobCollection> inner) {
+		public AddHostToJob(HostFunction<JobDataList> inner) {
 			this.inner = inner;
 		}
 
-		public static AddHostToJob wrap(HostFunction<JobCollection> inner) {
+		public static AddHostToJob wrap(HostFunction<JobDataList> inner) {
 			return new AddHostToJob(inner);
 		}
 
 		@Override
-		public JobCollection apply(final ChildClient child) throws PlatformLayerClientException {
+		public JobDataList apply(final ChildClient child) throws PlatformLayerClientException {
 			JobDataList ret = JobDataList.create();
-			JobCollection innerJobs = inner.apply(child);
-			Iterable<Job> outerJobs = Iterables.transform(innerJobs.getJobs(), new Function<Job, Job>() {
+			JobDataList innerJobs = inner.apply(child);
+			Iterable<JobData> outerJobs = Iterables.transform(innerJobs.getJobs(), new Function<JobData, JobData>() {
 				@Override
-				public Job apply(Job item) {
-					child.setHost((JobData) item);
+				public JobData apply(JobData item) {
+					child.setHost(item);
 					return item;
 				}
 			});
@@ -377,8 +375,8 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 		}
 	}
 
-	private JobCollection doListConcatenationJobs(Iterable<ChildClient> childClients,
-			HostFunction<JobCollection> function) throws PlatformLayerClientException {
+	private JobDataList doListConcatenationJobs(Iterable<ChildClient> childClients, HostFunction<JobDataList> function)
+			throws PlatformLayerClientException {
 		try {
 			return ListConcatentation.joinListsJobs(forkJoinPool, childClients, function);
 		} catch (ExecutionException e) {
@@ -446,7 +444,7 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
-	public JobCollection listJobs() throws PlatformLayerClientException {
+	public JobDataList listJobs() throws PlatformLayerClientException {
 		return doListConcatenationJobs(getChildClients(), AddHostToJob.wrap(new ListJobs()));
 	}
 
@@ -716,7 +714,7 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
-	public UntypedItem putItemByTag(PlatformLayerKey key, IsTag uniqueTag, String data, Format format)
+	public UntypedItem putItemByTag(PlatformLayerKey key, Tag uniqueTag, String data, Format format)
 			throws PlatformLayerClientException {
 		MappedPlatformLayerKey mapped = mapToChildForPut(key);
 

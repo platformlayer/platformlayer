@@ -14,7 +14,6 @@ import org.openstack.client.common.OpenstackComputeClient;
 import org.openstack.client.compute.AsyncServerOperation;
 import org.openstack.model.compute.SecurityGroup;
 import org.openstack.model.compute.Server;
-import org.platformlayer.common.Tagset;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.Tags;
@@ -67,7 +66,7 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
 
 	@Handler
 	public void doOperation() throws OpsException, IOException {
-		Tagset instanceTags = instance.getTags();
+		Tags instanceTags = instance.getTags();
 
 		OpenstackCloud cloud = findCloud();
 		if (cloud == null) {

@@ -32,6 +32,7 @@
           <xs:element name="ipv4Private" type="xs:string" minOccurs="0"/>
           <xs:element name="ipv6" type="xs:string" minOccurs="0"/>
           <xs:element name="bridge" type="xs:string" minOccurs="0"/>
+          <xs:element name="publicInterface" type="xs:string" minOccurs="0"/>
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>

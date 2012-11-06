@@ -6,8 +6,6 @@ import org.kohsuke.args4j.Argument;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
 import org.platformlayer.client.cli.model.ItemPath;
-import org.platformlayer.common.Job;
-import org.platformlayer.common.JobCollection;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobDataList;
@@ -29,14 +27,14 @@ public class ListJobs extends PlatformLayerCommandRunnerBase {
 	public Object runCommand() throws PlatformLayerClientException {
 		PlatformLayerClient client = getPlatformLayerClient();
 
-		JobCollection jobs = client.listJobs();
+		JobDataList jobs = client.listJobs();
 
 		if (path != null) {
 			PlatformLayerKey resolved = path.resolve(getContext());
 
 			JobDataList matches = JobDataList.create();
 
-			for (Job job : jobs.getJobs()) {
+			for (JobData job : jobs.getJobs()) {
 				if (!Objects.equal(job.getTargetItemKey(), resolved)) {
 					continue;
 				}

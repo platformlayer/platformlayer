@@ -11,7 +11,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
 import org.platformlayer.ExceptionUtils;
-import org.platformlayer.common.IsTag;
+import org.platformlayer.core.model.Tag;
 import org.platformlayer.crypto.OpenSshUtils;
 import org.platformlayer.ops.MachineCreationRequest;
 import org.platformlayer.ops.OpsException;
@@ -217,7 +217,7 @@ public class GoogleComputeClient {
 				create.setMetadata(metadata);
 
 				if (request.tags != null) {
-					for (IsTag tag : request.tags) {
+					for (Tag tag : request.tags) {
 						Metadata.Items meta = new Metadata.Items();
 						meta.setKey(tag.getKey());
 						meta.setValue(tag.getValue());

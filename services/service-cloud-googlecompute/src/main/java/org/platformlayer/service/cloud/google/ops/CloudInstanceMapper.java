@@ -9,7 +9,6 @@ import java.util.concurrent.TimeoutException;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.platformlayer.common.Tagset;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.Tags;
@@ -59,7 +58,7 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
 
 	@Handler
 	public void doOperation() throws OpsException, IOException {
-		Tagset instanceTags = instance.getTags();
+		Tags instanceTags = instance.getTags();
 
 		GoogleCloud cloud = findCloud();
 		if (cloud == null) {

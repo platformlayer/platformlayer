@@ -1,6 +1,5 @@
 package org.platformlayer.core.model;
 
-import org.platformlayer.common.Tagset;
 import org.platformlayer.common.UntypedItem;
 
 public class UntypedItemJson implements UntypedItem {
@@ -11,7 +10,7 @@ public class UntypedItemJson implements UntypedItem {
 	}
 
 	@Override
-	public Tagset getTags() {
+	public Tags getTags() {
 		throw new UnsupportedOperationException();
 	}
 

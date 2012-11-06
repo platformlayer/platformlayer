@@ -8,13 +8,13 @@ import javax.inject.Inject;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
 import org.platformlayer.TypedPlatformLayerClient;
-import org.platformlayer.common.Tagset;
 import org.platformlayer.common.UntypedItem;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
+import org.platformlayer.core.model.Tags;
 import org.platformlayer.ops.OpsException;
 
 import com.google.common.base.Objects;
@@ -24,7 +24,7 @@ public class PlatformLayerHelpers extends TypedPlatformLayerClient {
 	ServiceProviderHelpers serviceProviderHelpers;
 
 	public UUID getOrCreateUuid(ItemBase model) throws PlatformLayerClientException {
-		Tagset tags = model.getTags();
+		Tags tags = model.getTags();
 		UUID uuid = Tag.UUID.findUnique(tags);
 		if (uuid != null) {
 			return uuid;
@@ -67,7 +67,7 @@ public class PlatformLayerHelpers extends TypedPlatformLayerClient {
 
 	public void setUniqueTags(PlatformLayerKey key, Tag... setTags) throws OpsException {
 		UntypedItem itemUntyped = getItemUntyped(key);
-		Tagset tags = itemUntyped.getTags();
+		Tags tags = itemUntyped.getTags();
 
 		TagChanges tagChanges = new TagChanges();
 		for (Tag setTag : setTags) {

@@ -22,4 +22,16 @@ public class MetricQuery {
 		copy.filters = Lists.newArrayList(this.filters);
 		return copy;
 	}
+
+	public static MetricQuery create() {
+		return new MetricQuery();
+	}
+
+	public void setItem(PlatformLayerKey item) {
+		this.item = item;
+	}
+
+	public void setFilters(List<String> filters) {
+		this.filters = filters;
+	}
 }

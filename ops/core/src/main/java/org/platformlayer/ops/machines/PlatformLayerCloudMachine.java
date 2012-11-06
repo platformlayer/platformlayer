@@ -4,12 +4,12 @@ import java.net.InetAddress;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.platformlayer.common.Tagset;
 import org.platformlayer.core.model.EndpointInfo;
 import org.platformlayer.core.model.InstanceBase;
 import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
+import org.platformlayer.core.model.Tags;
 import org.platformlayer.ops.MachineBase;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.networks.NetworkPoint;
@@ -57,7 +57,7 @@ public class PlatformLayerCloudMachine extends MachineBase {
 
 		// String privateNetworkId = src.getPrivateNetworkId();
 		{
-			Tagset tags = machine.getTags();
+			Tags tags = machine.getTags();
 			List<InetAddress> addresses = Tag.NETWORK_ADDRESS.find(tags);
 
 			for (InetAddress address : addresses) {

@@ -2,6 +2,8 @@ package org.platformlayer.common;
 
 import java.util.List;
 
+import org.platformlayer.core.model.Tags;
+
 import com.google.common.collect.Lists;
 
 public abstract class TagKey<T> {
@@ -18,7 +20,7 @@ public abstract class TagKey<T> {
 		return key;
 	}
 
-	public T findUnique(Tagset tags) {
+	public T findUnique(Tags tags) {
 		String s = tags.findUnique(key);
 		if (s == null) {
 			return defaultValue;
@@ -30,7 +32,7 @@ public abstract class TagKey<T> {
 		return findUnique(tags.getTags());
 	}
 
-	public T findFirst(Tagset tags) {
+	public T findFirst(Tags tags) {
 		String s = tags.findFirst(key);
 		if (s == null) {
 			return defaultValue;
@@ -50,7 +52,7 @@ public abstract class TagKey<T> {
 	// return findUniqueTag(item.getTags());
 	// }
 
-	public List<T> find(Tagset tags) {
+	public List<T> find(Tags tags) {
 		List<T> ret = Lists.newArrayList();
 		for (String s : tags.findAll(key)) {
 			ret.add(toT(s));

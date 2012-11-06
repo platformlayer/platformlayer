@@ -6,7 +6,6 @@ import javax.inject.Inject;
 
 import org.platformlayer.PlatformLayerClientException;
 import org.platformlayer.TagFilter;
-import org.platformlayer.common.IsTag;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.Handler;
@@ -27,7 +26,7 @@ public abstract class OwnedItem<T extends ItemBase> {
 	@Handler
 	public void handler() throws OpsException {
 		T itemTemplate = buildItemTemplate();
-		IsTag uniqueTag = getUniqueTag(itemTemplate);
+		Tag uniqueTag = getUniqueTag(itemTemplate);
 
 		if (OpsContext.isConfigure()) {
 			try {
@@ -54,8 +53,8 @@ public abstract class OwnedItem<T extends ItemBase> {
 
 	protected abstract T buildItemTemplate() throws OpsException;
 
-	protected IsTag getUniqueTag(ItemBase item) throws OpsException {
-		for (IsTag tag : item.getTags()) {
+	protected Tag getUniqueTag(ItemBase item) throws OpsException {
+		for (Tag tag : item.getTags()) {
 			if (tag.getKey().equals(Tag.UNIQUE_ID)) {
 				return tag;
 			}

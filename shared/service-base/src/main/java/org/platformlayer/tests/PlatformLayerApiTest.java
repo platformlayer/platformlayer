@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 import org.platformlayer.TimeSpan;
-import org.platformlayer.common.Job;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.ops.OpsException;
@@ -62,7 +61,7 @@ public class PlatformLayerApiTest extends AbstractPlatformLayerTest {
 		return getContext().getFirstEndpoint(item);
 	}
 
-	protected Job waitForJobComplete(JobData job, TimeSpan timeout) throws OpsException, IOException {
+	protected JobData waitForJobComplete(JobData job, TimeSpan timeout) throws OpsException, IOException {
 		return getContext().waitForJobComplete(job, timeout);
 	}
 }

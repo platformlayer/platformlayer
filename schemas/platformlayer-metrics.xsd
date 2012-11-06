@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<xs:schema elementFormDefault="qualified" version="1.0" targetNamespace="http://platformlayer.org/metrics/v1.0" xmlns:tns="http://platformlayer.org/metrics/v1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema elementFormDefault="qualified" version="1.0" targetNamespace="http://platformlayer.org/metrics/v1.0" xmlns:ns1="http://platformlayer.org/core/v1.0" xmlns:tns="http://platformlayer.org/metrics/v1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:import namespace="http://platformlayer.org/core/v1.0" schemaLocation="platformlayer-core.xsd"/>
 
   <xs:element name="metricInfo" type="tns:metricInfo"/>
 
   <xs:element name="metricInfoCollection" type="tns:metricInfoCollection"/>
+
+  <xs:element name="metricQuery" type="tns:metricQuery"/>
 
   <xs:element name="metricValue" type="tns:metricValue"/>
 
@@ -23,19 +27,6 @@
           </xs:sequence>
         </xs:complexType>
       </xs:element>
-    </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="metricValues">
-    <xs:sequence>
-      <xs:element name="data" minOccurs="0">
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="row" type="tns:metricValue" minOccurs="0" maxOccurs="unbounded"/>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
-      <xs:element name="meta" type="tns:metricValuesMetadata" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -62,6 +53,26 @@
     <xs:sequence>
       <xs:element name="key" type="xs:string" minOccurs="0"/>
       <xs:element name="description" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="metricValues">
+    <xs:sequence>
+      <xs:element name="data" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="row" type="tns:metricValue" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="meta" type="tns:metricValuesMetadata" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="metricQuery">
+    <xs:sequence>
+      <xs:element name="filters" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="item" type="ns1:platformLayerKey" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 </xs:schema>

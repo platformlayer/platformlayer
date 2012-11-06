@@ -1,7 +1,6 @@
 package org.platformlayer.ops.images;
 
 import org.platformlayer.EnumUtils;
-import org.platformlayer.common.IsTag;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.Tags;
 
@@ -12,7 +11,7 @@ public enum ImageFormat {
 
 	// public static final String TAG_OPENSTACK_GLANCE_IMAGE_FORMAT = "disk_format";
 
-	public static ImageFormat fromTag(IsTag tag) {
+	public static ImageFormat fromTag(Tag tag) {
 		if (!isImageFormatTag(tag)) {
 			throw new IllegalArgumentException();
 		}
@@ -20,7 +19,7 @@ public enum ImageFormat {
 	}
 
 	public static ImageFormat fromTags(Tags tags) {
-		for (IsTag tag : tags) {
+		for (Tag tag : tags) {
 			if (isImageFormatTag(tag)) {
 				return fromTag(tag);
 			}
@@ -32,7 +31,7 @@ public enum ImageFormat {
 		return Tag.build(TAG_PLATFORMLAYER_IMAGE_FORMAT, name().toLowerCase());
 	}
 
-	public static boolean isImageFormatTag(IsTag tag) {
+	public static boolean isImageFormatTag(Tag tag) {
 		return tag.getKey().equals(TAG_PLATFORMLAYER_IMAGE_FORMAT);
 	}
 };

@@ -11,10 +11,10 @@ import org.platformlayer.RepositoryException;
 import org.platformlayer.StateFilter;
 import org.platformlayer.TagFilter;
 import org.platformlayer.auth.crypto.SecretProvider;
-import org.platformlayer.common.IsTag;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.core.model.PlatformLayerKey;
+import org.platformlayer.core.model.Tag;
 import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceType;
@@ -241,8 +241,8 @@ public class ItemServiceImpl implements ItemService {
 
 				if (uniqueTagKey != null) {
 					boolean fetchTags = true;
-					IsTag uniqueTag = null;
-					for (IsTag tag : item.getTags()) {
+					Tag uniqueTag = null;
+					for (Tag tag : item.getTags()) {
 						if (Objects.equal(tag.getKey(), uniqueTagKey)) {
 							uniqueTag = tag;
 						}

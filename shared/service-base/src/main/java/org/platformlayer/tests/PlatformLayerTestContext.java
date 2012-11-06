@@ -22,7 +22,6 @@ import org.platformlayer.PlatformLayerClientBase;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.TypedItemMapper;
 import org.platformlayer.TypedPlatformLayerClient;
-import org.platformlayer.common.Job;
 import org.platformlayer.common.JobState;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.ConfigureAction;
@@ -250,7 +249,7 @@ public class PlatformLayerTestContext {
 		return new InetSocketAddress(address, endpoint.port);
 	}
 
-	public Job waitForJobComplete(JobData job, TimeSpan timeout) throws OpsException, IOException {
+	public JobData waitForJobComplete(JobData job, TimeSpan timeout) throws OpsException, IOException {
 		TypedPlatformLayerClient client = getTypedClient();
 
 		PlatformLayerKey jobKey = job.key;
@@ -269,8 +268,8 @@ public class PlatformLayerTestContext {
 			}
 
 			// TODO: We really need a "get job status" function
-			Job found = null;
-			for (Job candidate : client.listJobs().getJobs()) {
+			JobData found = null;
+			for (JobData candidate : client.listJobs().getJobs()) {
 				if (jobKey.equals(candidate.getJobKey())) {
 					found = candidate;
 				}

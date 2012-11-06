@@ -6,7 +6,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.platformlayer.common.IsItem;
-import org.platformlayer.common.Tagset;
 import org.platformlayer.ids.ManagedItemId;
 
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -33,13 +32,14 @@ public class ItemBase implements IsItem {
 	}
 
 	@Override
-	public Tagset getTags() {
+	public Tags getTags() {
 		if (tags == null) {
 			tags = Tags.build();
 		}
 		return tags;
 	}
 
+	@Override
 	public ManagedItemState getState() {
 		return state;
 	}
