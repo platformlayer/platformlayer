@@ -15,17 +15,25 @@ import org.platformlayer.service.dns.client.splash.SplashPanel;
 import org.platformlayer.ui.shared.client.plugin.PlugInProvider;
 import org.platformlayer.ui.shared.client.plugin.PlugInRegistry;
 import org.platformlayer.ui.shared.client.plugin.PlugInView;
+import org.platformlayer.ui.shared.client.plugin.PluginItem;
+import org.platformlayer.ui.shared.client.plugin.PluginProviderBase;
 
 import com.google.gwt.activity.shared.Activity;
 import com.google.gwt.place.shared.Place;
 import com.google.inject.Inject;
 
 @Singleton
-public class DnsPlugin implements PlugInProvider {
+public class DnsPlugin extends PluginProviderBase {
+	public static final String KEY = "dns";
+
 	public static final String SERVICE_TYPE = "dns";
 	public static final String ITEM_TYPE_DNSRECORD = "dnsRecord";
 
-	public static final String KEY = "dns";
+	public DnsPlugin() {
+		super(KEY);
+
+		addItem(new PluginItem(ITEM_TYPE_DNSRECORD, "Record", DnsRecordListPlace.KEY));
+	}
 
 	@Inject
 	SplashPanel homeButton;
@@ -43,8 +51,6 @@ public class DnsPlugin implements PlugInProvider {
 
 		PlugInRegistry.add(KEY, this);
 	}
-
-	// private HomePlace root;
 
 	@Override
 	public PlugInView getWidget(String specifier) {
