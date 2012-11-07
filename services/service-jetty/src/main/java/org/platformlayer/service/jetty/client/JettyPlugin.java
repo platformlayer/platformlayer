@@ -4,11 +4,11 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.platformlayer.gwt.client.places.ShellPlace;
-import org.platformlayer.service.jetty.client.dnsrecordlist.JettyServiceListActivity;
-import org.platformlayer.service.jetty.client.dnsrecordlist.JettyServiceListPlace;
 import org.platformlayer.service.jetty.client.home.HomePlace;
 import org.platformlayer.service.jetty.client.jettyservice.JettyServiceActivity;
 import org.platformlayer.service.jetty.client.jettyservice.JettyServicePlace;
+import org.platformlayer.service.jetty.client.jettyservicelist.JettyServiceListActivity;
+import org.platformlayer.service.jetty.client.jettyservicelist.JettyServiceListPlace;
 import org.platformlayer.ui.shared.client.plugin.PlugInRegistry;
 import org.platformlayer.ui.shared.client.plugin.PlugInView;
 import org.platformlayer.ui.shared.client.plugin.PluginItem;

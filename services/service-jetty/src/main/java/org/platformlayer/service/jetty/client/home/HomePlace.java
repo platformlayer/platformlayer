@@ -3,7 +3,7 @@ package org.platformlayer.service.jetty.client.home;
 import org.platformlayer.gwt.client.places.ShellPlace;
 import org.platformlayer.service.jetty.client.JettyPlace;
 import org.platformlayer.service.jetty.client.JettyPlugin;
-import org.platformlayer.service.jetty.client.dnsrecordlist.JettyServiceListPlace;
+import org.platformlayer.service.jetty.client.jettyservicelist.JettyServiceListPlace;
 
 public class HomePlace extends JettyPlace {
 	public HomePlace(ShellPlace parent) {

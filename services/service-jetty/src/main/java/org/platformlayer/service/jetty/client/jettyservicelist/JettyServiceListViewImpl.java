@@ -1,4 +1,4 @@
-package org.platformlayer.service.jetty.client.dnsrecordlist;
+package org.platformlayer.service.jetty.client.jettyservicelist;
 
 import javax.inject.Singleton;
 

@@ -1,4 +1,4 @@
-package org.platformlayer.service.jetty.client.dnsrecordlist;
+package org.platformlayer.service.jetty.client.jettyservicelist;
 
 import org.platformlayer.gwt.client.places.ShellPlace;
 import org.platformlayer.service.jetty.client.JettyPlace;
