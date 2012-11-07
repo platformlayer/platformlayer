@@ -1,0 +1,45 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+    xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:c="urn:import:com.google.gwt.user.cellview.client"
+    xmlns:pl="urn:import:org.platformlayer.gwt.client.widgets"
+    xmlns:domain="urn:import:org.platformlayer.service.domains.client.domain">
+
+    <g:HTMLPanel>
+        <pl:Form ui:field="form">
+            <h1>DNS Record</h1>
+
+            <fieldset>
+                <pl:ControlGroup ui:field="dnsName">
+                    <label class="control-label" for="dnsName">
+                        DNS Name
+                    </label>
+                    <div class="controls">
+                        <input type="text" class="input-xlarge"
+                            id="dnsName" />
+                    </div>
+                </pl:ControlGroup>
+
+                <pl:ControlGroup ui:field="recordType">
+                    <label class="control-label" for="recordType">
+                        Record Type
+                    </label>
+                    <div class="controls">
+                        <input type="text" class="input-xlarge"
+                            id="recordType" />
+                    </div>
+                </pl:ControlGroup>
+            </fieldset>
+
+            <fieldset>
+                <div class="form-actions">
+                    <button ui:field="submitButton" type="submit"
+                        class="btn btn-primary">
+                        Save
+                    </button>
+                    <button ui:field="cancelButton" class="btn">Cancel
+                    </button>
+                </div>
+            </fieldset>
+
+        </pl:Form>
+    </g:HTMLPanel>
+</ui:UiBinder>

@@ -1,0 +1,13 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+    xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:c="urn:import:com.google.gwt.user.cellview.client"
+    xmlns:pl="urn:import:org.platformlayer.gwt.client.widgets">
+
+    <g:HTMLPanel>
+        <h1>DNS</h1>
+
+        <button class="btn" type="button" place="records">
+            <i class="icon-map-marker"></i>
+            DNS Records
+        </button>
+    </g:HTMLPanel>
+</ui:UiBinder>
