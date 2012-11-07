@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module>
+    <inherits name='com.google.gwt.user.User' />
+    <inherits name='org.platformlayer.ui.shared.PlatformLayerShared' />
+    <inherits name='org.platformlayer.PlatformLayerModel' />
+
+    <source path='client' />
+    <source path='shared' />
+
+    <entry-point
+        class='org.platformlayer.service.jetty.client.GwtEntryPoint' />
+</module>
