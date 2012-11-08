@@ -16,7 +16,7 @@ public class PlatformLayerServer {
 	private static URLClassLoader buildClassLoader(File base) {
 		List<URL> urls = new ArrayList<URL>();
 		// for Lists.newArrayList(classLoader.getURLs());
-		File servicesBase = new File(base, "../services");
+		File servicesBase = new File(base, "../../services");
 		for (File serviceDir : servicesBase.listFiles()) {
 			if (!serviceDir.isDirectory()) {
 				continue;

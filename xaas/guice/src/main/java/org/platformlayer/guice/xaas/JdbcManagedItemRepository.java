@@ -236,7 +236,7 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 
 		ServiceProvider serviceProvider = serviceProviderDirectory.getServiceProvider(serviceType);
 		if (serviceProvider == null) {
-			throw new IllegalStateException();
+			throw new IllegalStateException("Cannot find service provider: " + serviceType);
 		}
 
 		ModelClass<?> modelClass = serviceProvider.getModelClass(itemType);

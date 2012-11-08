@@ -39,13 +39,31 @@ class QueryDescriptor {
 		this.parameterMap = parameterMap;
 	}
 
+	private void setParameter(PreparedStatement ps, int i, Object param) throws SQLException {
+		if (param instanceof EnumWithKey) {
+			String key = ((EnumWithKey) param).getKey();
+			ps.setString(i + 1, key);
+		} else if (param instanceof java.util.Date) {
+			java.util.Date date = (java.util.Date) param;
+			Timestamp timestamp = new Timestamp(date.getTime());
+
+			ps.setTimestamp(i + 1, timestamp);
+			// if (!(param instanceof java.sql.Date)) {
+			// ps.setDate(i + 1, (java.util.Date) param);
+			// }
+		} else {
+			ps.setObject(i + 1, param);
+		}
+	}
+
 	public void setParameters(PreparedStatement ps, Object[] args) throws SQLException {
 		if (queryType == QueryType.Manual) {
 			assert parameterMap == null;
 
 			if (args != null) {
 				for (int i = 0; i < args.length; i++) {
-					ps.setObject(i + 1, args[i]);
+					Object arg = args[i];
+					setParameter(ps, i, args[i]);
 				}
 			}
 		} else {
@@ -57,20 +75,7 @@ class QueryDescriptor {
 				for (Field field : parameterMap) {
 					Object param = field.get(args[0]);
 
-					if (param instanceof EnumWithKey) {
-						String key = ((EnumWithKey) param).getKey();
-						ps.setString(i + 1, key);
-					} else if (param instanceof java.util.Date) {
-						java.util.Date date = (java.util.Date) param;
-						Timestamp timestamp = new Timestamp(date.getTime());
-
-						ps.setTimestamp(i + 1, timestamp);
-						// if (!(param instanceof java.sql.Date)) {
-						// ps.setDate(i + 1, (java.util.Date) param);
-						// }
-					} else {
-						ps.setObject(i + 1, param);
-					}
+					setParameter(ps, i, param);
 
 					i++;
 				}

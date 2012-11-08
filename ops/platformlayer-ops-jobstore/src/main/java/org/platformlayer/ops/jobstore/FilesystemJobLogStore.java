@@ -11,6 +11,8 @@ import java.util.Date;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import javax.inject.Singleton;
+
 import org.platformlayer.IoUtils;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.jobs.model.JobLog;
@@ -24,7 +26,8 @@ import com.google.common.io.Closeables;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
 
-public class FilesystemJobLogStore extends JobLogStore {
+@Singleton
+public class FilesystemJobLogStore implements JobLogStore {
 	final File baseDir;
 
 	public FilesystemJobLogStore(File baseDir) {
@@ -142,6 +145,7 @@ public class FilesystemJobLogStore extends JobLogStore {
 
 	private JobLogExceptionInfo mapFromProtobuf(JobDataProtobuf.JobLogExceptionInfo.Builder exceptionBuilder) {
 		JobLogExceptionInfo exception = new JobLogExceptionInfo();
+		exception.info = Lists.newArrayList();
 		for (String info : exceptionBuilder.getInfoList()) {
 			exception.info.add(info);
 		}
@@ -161,6 +165,9 @@ public class FilesystemJobLogStore extends JobLogStore {
 		String fileName = executionId;
 
 		File file = new File(baseDir, dir);
+		if (!file.exists()) {
+			file.mkdir();
+		}
 		file = new File(file, fileName);
 
 		return file;

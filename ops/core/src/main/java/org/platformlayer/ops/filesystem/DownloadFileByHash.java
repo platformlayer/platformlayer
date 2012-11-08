@@ -7,7 +7,6 @@ import java.net.URISyntaxException;
 
 import javax.inject.Inject;
 
-import org.openstack.crypto.ByteString;
 import org.openstack.crypto.Md5Hash;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.cas.CasStoreMap;
@@ -82,7 +81,7 @@ public class DownloadFileByHash extends ManagedFile {
 	protected void uploadFile(OpsTarget target, File remoteFilePath) throws IOException, OpsException {
 		target.mkdir(remoteFilePath.getParentFile());
 
-		ByteString resolved = getResolved(target);
+		Md5Hash resolved = getResolved(target);
 
 		CasStoreObject casObject;
 		CasStoreMap casStoreMap = cas.getCasStoreMap(target);

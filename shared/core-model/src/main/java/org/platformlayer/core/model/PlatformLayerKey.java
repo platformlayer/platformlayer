@@ -271,20 +271,23 @@ public class PlatformLayerKey {
 	}
 
 	public String getServiceTypeString() {
-		if (serviceType == null)
+		if (serviceType == null) {
 			return null;
+		}
 		return serviceType.getKey();
 	}
 
 	public String getItemTypeString() {
-		if (itemType == null)
+		if (itemType == null) {
 			return null;
+		}
 		return itemType.getKey();
 	}
 
 	public String getItemIdString() {
-		if (id == null)
+		if (id == null) {
 			return null;
+		}
 		return id.getKey();
 	}
 

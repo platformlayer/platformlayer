@@ -5,9 +5,11 @@ import java.io.InputStream;
 
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.xml.JaxbHelper;
-import org.platformlayer.xml.JsonHelper;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 
 public class ResourceUtils {
 	public static String get(Class<?> contextClass, String resourceName) throws IOException {
@@ -82,15 +84,23 @@ public class ResourceUtils {
 			try {
 				String json = ResourceUtils.find(contextClass, resourceName);
 				if (json != null) {
-					JsonHelper<T> jsonHelper = JsonHelper.build(clazz);
+					ObjectMapper mapper = new ObjectMapper();
+
+					// Use JAXB annotations
+					AnnotationIntrospector introspector = new JaxbAnnotationIntrospector();
+					mapper = mapper.setAnnotationIntrospector(introspector);
+
+					mapper = mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+					mapper = mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+					mapper = mapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
 
 					if (!json.startsWith("{")) {
 						// Be tolerant
-						json = jsonHelper.wrapJson(json);
+						json = "{ " + json + "}";
+						// json = jsonHelper.wrapJson(json);
 					}
 
-					ObjectMapper objectMapper = JsonHelper.buildObjectMapper(null, false);
-					return (T) objectMapper.readValue(json, contextClass);
+					return mapper.readValue(json, clazz);
 					// return jsonHelper.unmarshal(json);
 				}
 			} catch (Exception e) {

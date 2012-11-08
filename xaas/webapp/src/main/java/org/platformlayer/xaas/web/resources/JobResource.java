@@ -6,8 +6,8 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobExecutionData;
@@ -41,9 +41,13 @@ public class JobResource extends XaasResourceBase {
 	}
 
 	@GET
-	@Path("runs/{runId}")
 	@Produces({ XML, JSON })
-	public JobExecutionResource getRun(@QueryParam("runId") String runId) throws OpsException {
+	public JobData getRun() throws OpsException {
+		return job;
+	}
+
+	@Path("runs/{runId}")
+	public JobExecutionResource getRun(@PathParam("runId") String runId) throws OpsException {
 		JobExecutionData jobExecution = jobRegistry.findExecution(job.getJobKey(), runId);
 		if (jobExecution == null) {
 			raiseNotFound();

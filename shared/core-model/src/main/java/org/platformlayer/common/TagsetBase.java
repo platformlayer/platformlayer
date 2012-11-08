@@ -7,6 +7,7 @@ import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.Tags;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
 public abstract class TagsetBase implements Iterable<IsTag>, Tagset {
@@ -132,7 +133,7 @@ public abstract class TagsetBase implements Iterable<IsTag>, Tagset {
 		if (!a.getKey().equals(b.getKey())) {
 			return false;
 		}
-		if (!a.getValue().equals(b.getValue())) {
+		if (!Objects.equal(a.getValue(), b.getValue())) {
 			return false;
 		}
 
