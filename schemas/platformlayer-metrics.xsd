@@ -56,6 +56,13 @@
     </xs:sequence>
   </xs:complexType>
 
+  <xs:complexType name="metricQuery">
+    <xs:sequence>
+      <xs:element name="filters" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="item" type="ns1:platformLayerKey" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
   <xs:complexType name="metricValues">
     <xs:sequence>
       <xs:element name="data" minOccurs="0">
@@ -66,13 +73,6 @@
         </xs:complexType>
       </xs:element>
       <xs:element name="meta" type="tns:metricValuesMetadata" minOccurs="0"/>
-    </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="metricQuery">
-    <xs:sequence>
-      <xs:element name="filters" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:element name="item" type="ns1:platformLayerKey" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 </xs:schema>
