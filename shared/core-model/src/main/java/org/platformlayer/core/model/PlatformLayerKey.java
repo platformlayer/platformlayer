@@ -3,12 +3,12 @@ package org.platformlayer.core.model;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.logging.Level;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlValue;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.ids.FederationKey;
 import org.platformlayer.ids.ItemType;
 import org.platformlayer.ids.ManagedItemId;
@@ -24,7 +24,7 @@ import com.google.common.collect.Lists;
 //@XmlJavaTypeAdapter(PlatformLayerKeyAdapter.class)
 @XmlAccessorType(XmlAccessType.NONE)
 public class PlatformLayerKey {
-	static final Logger log = Logger.getLogger(PlatformLayerKey.class);
+	static final java.util.logging.Logger log = java.util.logging.Logger.getLogger(PlatformLayerKey.class.getName());
 
 	public static final String SCHEME = "platform";
 
@@ -58,7 +58,7 @@ public class PlatformLayerKey {
 			this.itemType = key.itemType;
 			this.id = key.id;
 		} catch (Exception e) {
-			log.warn("Error parsing value: " + url, e);
+			log.log(Level.WARNING, "Error parsing value: " + url, e);
 			throw new IllegalArgumentException("Cannot parse plaform layer key", e);
 		}
 	}
@@ -271,20 +271,23 @@ public class PlatformLayerKey {
 	}
 
 	public String getServiceTypeString() {
-		if (serviceType == null)
+		if (serviceType == null) {
 			return null;
+		}
 		return serviceType.getKey();
 	}
 
 	public String getItemTypeString() {
-		if (itemType == null)
+		if (itemType == null) {
 			return null;
+		}
 		return itemType.getKey();
 	}
 
 	public String getItemIdString() {
-		if (id == null)
+		if (id == null) {
 			return null;
+		}
 		return id.getKey();
 	}
 

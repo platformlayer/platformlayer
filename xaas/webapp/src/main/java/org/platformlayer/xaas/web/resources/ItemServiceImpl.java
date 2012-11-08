@@ -302,7 +302,8 @@ public class ItemServiceImpl implements ItemService {
 				}
 
 				itemKey = newItem.getKey();
-				changeQueue.notifyChange(auth, itemKey, ManagedItemState.CREATION_REQUESTED);
+				PlatformLayerKey jobKey = changeQueue.notifyChange(auth, itemKey, ManagedItemState.CREATION_REQUESTED);
+				// returnJobKey(jobKey);
 
 				return newItem;
 			}

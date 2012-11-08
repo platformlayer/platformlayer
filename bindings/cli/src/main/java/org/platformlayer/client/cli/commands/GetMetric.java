@@ -32,7 +32,9 @@ public class GetMetric extends PlatformLayerCommandRunnerBase {
 
 		MetricQuery query = new MetricQuery();
 		query.item = getContext().pathToItem(path);
-		query.filters.addAll(filters);
+		if (filters != null) {
+			query.filters.addAll(filters);
+		}
 
 		MetricDataStream dataStream = client.getMetric(query);
 

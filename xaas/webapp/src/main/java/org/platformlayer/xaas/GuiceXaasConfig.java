@@ -1,9 +1,11 @@
 package org.platformlayer.xaas;
 
+import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.sql.DataSource;
+import javax.xml.bind.JAXBContext;
 
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.auth.AuthenticationService;
@@ -29,9 +31,15 @@ import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.crypto.OpsKeyStore;
 import org.platformlayer.ops.crypto.SimpleOpsKeyStore;
 import org.platformlayer.ops.guice.OpsContextProvider;
+import org.platformlayer.ops.jobstore.FilesystemJobLogStore;
+import org.platformlayer.ops.jobstore.JobLogStore;
+import org.platformlayer.ops.jobstore.PersistentJobRegistry;
 import org.platformlayer.ops.jobstore.jdbc.JdbcJobRepository;
+import org.platformlayer.ops.jobstore.jdbc.JobEntity;
+import org.platformlayer.ops.jobstore.jdbc.JobExecutionEntity;
 import org.platformlayer.ops.schedule.jdbc.SchedulerRecordEntity;
 import org.platformlayer.ops.ssh.ISshContext;
+import org.platformlayer.ops.tasks.JobRegistry;
 import org.platformlayer.ops.tasks.OperationQueue;
 import org.platformlayer.ops.tasks.SimpleOperationQueue;
 import org.platformlayer.ssh.mina.MinaSshContext;
@@ -61,9 +69,16 @@ public class GuiceXaasConfig extends AbstractModule {
 
 		bind(OpsContext.class).toProvider(OpsContextProvider.class);
 
+		bind(JobRegistry.class).to(PersistentJobRegistry.class).asEagerSingleton();
+
+		File jobLogStoreBaseDir = new File("jobs");
+		jobLogStoreBaseDir.mkdirs();
+		bind(JobLogStore.class).toInstance(new FilesystemJobLogStore(jobLogStoreBaseDir));
+
 		// TODO: Split off scheduler
 		bind(ResultSetMappers.class).toProvider(
-				ResultSetMappersProvider.build(ItemEntity.class, TagEntity.class, SchedulerRecordEntity.class));
+				ResultSetMappersProvider.build(ItemEntity.class, TagEntity.class, SchedulerRecordEntity.class,
+						JobEntity.class, JobExecutionEntity.class));
 
 		bind(DataSource.class).toProvider(GuiceDataSourceProvider.bind("platformlayer.jdbc.")).asEagerSingleton();
 
@@ -90,6 +105,7 @@ public class GuiceXaasConfig extends AbstractModule {
 		bind(ServiceProviderDictionary.class).to(AnnotationServiceProviderDictionary.class).in(Scopes.SINGLETON);
 
 		bind(JaxbContextHelper.class).asEagerSingleton();
+		bind(JAXBContext.class).toProvider(JaxbContextHelper.class);
 
 		bind(OperationQueue.class).to(SimpleOperationQueue.class).asEagerSingleton();
 

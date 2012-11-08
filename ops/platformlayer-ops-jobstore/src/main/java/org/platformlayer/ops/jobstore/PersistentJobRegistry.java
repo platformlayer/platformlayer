@@ -90,6 +90,7 @@ public class PersistentJobRegistry implements JobRegistry {
 		execution.executionId = executionId;
 
 		PersistentActiveJob activeJob = new PersistentActiveJob(this, auth, execution);
+		activeJobs.put(execution.jobKey, activeJob);
 
 		OperationWorker operationWorker = new OperationWorker(opsSystem, activeJob);
 		operationQueue.submit(operationWorker);

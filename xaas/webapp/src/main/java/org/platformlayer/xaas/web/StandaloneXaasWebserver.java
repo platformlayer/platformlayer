@@ -27,7 +27,7 @@ import org.platformlayer.config.ConfigurationModule;
 import org.platformlayer.crypto.EncryptionStore;
 import org.platformlayer.jdbc.JdbcGuiceModule;
 import org.platformlayer.metrics.NullMetricsModule;
-import org.platformlayer.ops.log.PerJobAppender;
+import org.platformlayer.ops.log.LogbackHook;
 import org.platformlayer.ops.schedule.Scheduler;
 import org.platformlayer.web.GuiceServletConfig;
 import org.platformlayer.xaas.GuiceXaasConfig;
@@ -93,7 +93,7 @@ class StandaloneXaasWebserver {
 	}
 
 	public boolean start() throws Exception {
-		PerJobAppender.attachToRootLogger();
+		LogbackHook.attachToRootLogger();
 
 		this.server = new Server();
 

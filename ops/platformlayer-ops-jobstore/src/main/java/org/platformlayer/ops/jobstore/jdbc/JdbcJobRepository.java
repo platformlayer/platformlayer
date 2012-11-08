@@ -47,7 +47,7 @@ public class JdbcJobRepository implements JobRepository {
 		@Query("SELECT * FROM job_execution WHERE project=? and job_id=?")
 		List<JobExecutionEntity> listExecutions(int projectId, String jobId) throws SQLException;
 
-		@Query("SELECT * FROM jobs WHERE project=? and id=?")
+		@Query("SELECT * FROM job WHERE project=? and id=?")
 		JobEntity findJob(int projectId, String jobId) throws SQLException;
 
 		@Query("SELECT * FROM job_execution WHERE project=? and job_id=? and id=?")

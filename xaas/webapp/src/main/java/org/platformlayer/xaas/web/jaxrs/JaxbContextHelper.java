@@ -3,6 +3,8 @@ package org.platformlayer.xaas.web.jaxrs;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
+import javax.inject.Singleton;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
@@ -24,7 +26,8 @@ import org.platformlayer.xaas.services.ServiceProviderDictionary;
 
 import com.google.common.collect.Lists;
 
-public class JaxbContextHelper {
+@Singleton
+public class JaxbContextHelper implements Provider<JAXBContext> {
 
 	@Inject
 	ServiceProviderDictionary serviceProviderDictionary;
@@ -75,6 +78,11 @@ public class JaxbContextHelper {
 		}
 
 		return jaxbContext;
+	}
+
+	@Override
+	public JAXBContext get() {
+		return getJaxbContext(null);
 	}
 
 }

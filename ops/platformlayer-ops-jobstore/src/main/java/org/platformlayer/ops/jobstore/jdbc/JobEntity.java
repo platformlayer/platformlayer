@@ -2,8 +2,10 @@ package org.platformlayer.ops.jobstore.jdbc;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
-@Entity(name = "job")
+@Entity()
+@Table(name = "job")
 public class JobEntity {
 	@Column
 	public int project;

@@ -8,7 +8,7 @@ import org.platformlayer.common.IsAction;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
-public abstract class Action implements IsAction {
+public class Action implements IsAction {
 	// public Action(String name) {
 	// this.name = name;
 	// if (Strings.isNullOrEmpty(name)) {

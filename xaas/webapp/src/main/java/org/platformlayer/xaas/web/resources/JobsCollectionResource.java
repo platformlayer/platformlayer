@@ -26,7 +26,9 @@ public class JobsCollectionResource extends XaasResourceBase {
 	@Inject
 	Provider<JobResource> jobResourceProvider;
 
+	@GET
 	@Path("runs")
+	@Produces({ XML, JSON })
 	public JobExecutionList getExecutions() throws OpsException {
 		JobExecutionList executions = jobRegistry.listExecutions(getProject());
 		return executions;

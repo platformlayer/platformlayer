@@ -5,8 +5,6 @@ import java.io.InputStream;
 
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.apache.log4j.Logger;
-
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonParser.NumberType;
@@ -14,9 +12,6 @@ import com.fasterxml.jackson.core.JsonToken;
 
 @XmlTransient
 public class JsonMetricDataStream implements MetricDataStream {
-	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(JsonMetricDataStream.class);
-
 	/*
 	 * final JsonReader jsonParser;
 	 * 
