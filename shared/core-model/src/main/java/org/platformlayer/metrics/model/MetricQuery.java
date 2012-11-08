@@ -16,12 +16,14 @@ public class MetricQuery {
 	public List<String> filters = Lists.newArrayList();
 	public List<String> projections = Lists.newArrayList();
 	public PlatformLayerKey item;
+	public boolean flatten;
 
 	public MetricQuery copy() {
 		MetricQuery copy = new MetricQuery();
 		copy.item = this.item;
 		copy.filters = Lists.newArrayList(this.filters);
 		copy.projections = Lists.newArrayList(this.projections);
+		copy.flatten = flatten;
 		return copy;
 	}
 
@@ -39,5 +41,9 @@ public class MetricQuery {
 
 	public void setProjections(List<String> projections) {
 		this.projections = projections;
+	}
+
+	public void setFlatten(boolean flatten) {
+		this.flatten = flatten;
 	}
 }

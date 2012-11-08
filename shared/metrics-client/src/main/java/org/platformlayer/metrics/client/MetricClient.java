@@ -217,6 +217,10 @@ public class MetricClient implements Closeable {
 					throw new IllegalArgumentException();
 				}
 			}
+
+			if (query.flatten) {
+				uriBuilder.addParameter("flatten", "true");
+			}
 		}
 
 		try {

@@ -25,6 +25,9 @@ public class GetMetric extends PlatformLayerCommandRunnerBase {
 	@Option(name = "-select", usage = "'Columns' to select")
 	public List<String> projections;
 
+	@Option(name = "-flatten", usage = "Flatten results")
+	public boolean flatten = false;
+
 	public GetMetric() {
 		super("get", "metric");
 	}
@@ -42,6 +45,8 @@ public class GetMetric extends PlatformLayerCommandRunnerBase {
 		if (projections != null) {
 			query.projections.addAll(projections);
 		}
+
+		query.setFlatten(flatten);
 
 		MetricDataStream dataStream = client.getMetric(query);
 
