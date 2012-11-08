@@ -29,6 +29,8 @@
                     </button>
                 </div>
             </fieldset>
+            
+            <g:Button ui:field="metricButton">Metrics</g:Button>
 
         </pl:Form>
     </g:HTMLPanel>

@@ -3,6 +3,7 @@ package org.platformlayer.service.jetty.client.jettyservice;
 import javax.inject.Singleton;
 
 import org.platformlayer.gwt.client.alerts.Alert;
+import org.platformlayer.gwt.client.metrics.MetricPlace;
 import org.platformlayer.gwt.client.ui.ViewHandler;
 import org.platformlayer.gwt.client.widgets.ControlGroup;
 import org.platformlayer.gwt.client.widgets.Form;
@@ -17,6 +18,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.HTMLPanel;
 
 @Singleton
@@ -99,6 +101,12 @@ public class JettyServiceViewImpl extends AbstractApplicationView implements Jet
 	public void editItem(JettyService model) {
 		this.model = model;
 		driver.edit(model);
+	}
+
+	@UiHandler("metricButton")
+	public void onMetricButton(ClickEvent e) {
+		MetricPlace metricPlace = new MetricPlace(activity.getPlace(), "jvm");
+		activity.goTo(metricPlace);
 	}
 
 }
