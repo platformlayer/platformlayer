@@ -625,18 +625,9 @@
                 <groupId>com.google.gwt</groupId>
                 <artifactId>gwt-user</artifactId>
                 <version>${version.gwt}</version>
-                <!-- "provided" so that we don't deploy -->
-                <scope>provided</scope>
             </dependency>
 
-            <!-- RequestFactory server -->
-
-            <dependency>
-                <groupId>com.google.web.bindery</groupId>
-                <artifactId>requestfactory-server</artifactId>
-                <version>${version.gwt}</version>
-            </dependency>
-
+            <!-- Metrics -->
 
             <dependency>
                 <groupId>com.yammer.metrics</groupId>
