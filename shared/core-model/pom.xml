@@ -25,11 +25,6 @@
         </dependency>
 
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.platformlayer</groupId>
             <artifactId>model-shared</artifactId>
         </dependency>

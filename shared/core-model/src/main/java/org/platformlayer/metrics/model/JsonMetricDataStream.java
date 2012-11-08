@@ -3,17 +3,12 @@ package org.platformlayer.metrics.model;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.log4j.Logger;
-
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonParser.NumberType;
 import com.fasterxml.jackson.core.JsonToken;
 
 public class JsonMetricDataStream implements MetricDataStream {
-	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(JsonMetricDataStream.class);
-
 	/*
 	 * final JsonReader jsonParser;
 	 * 
