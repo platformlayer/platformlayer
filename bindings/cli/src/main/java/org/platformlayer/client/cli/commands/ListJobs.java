@@ -55,11 +55,11 @@ public class ListJobs extends PlatformLayerCommandRunnerBase {
 
 	@Override
 	public void formatRaw(Object o, PrintWriter writer) {
-		Iterable<JobData> jobs = (Iterable<JobData>) o;
+		JobDataList jobs = (JobDataList) o;
 
 		Ansi ansi = new Ansi(writer);
 
-		for (JobData job : jobs) {
+		for (JobData job : jobs.getJobs()) {
 			// JobState state = job.state;
 			// if (state != null) {
 			// ansi.setColorBlue();

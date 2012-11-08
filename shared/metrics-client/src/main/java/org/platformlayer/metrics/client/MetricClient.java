@@ -208,6 +208,15 @@ public class MetricClient implements Closeable {
 					uriBuilder.addParameter("filter." + key, value);
 				}
 			}
+
+			for (String projection : query.projections) {
+				int firstEquals = projection.indexOf('=');
+				if (firstEquals == -1) {
+					uriBuilder.addParameter("select." + projection, "");
+				} else {
+					throw new IllegalArgumentException();
+				}
+			}
 		}
 
 		try {

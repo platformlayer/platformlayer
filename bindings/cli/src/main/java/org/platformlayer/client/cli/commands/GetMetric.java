@@ -19,8 +19,11 @@ public class GetMetric extends PlatformLayerCommandRunnerBase {
 	// @Argument(index = 1, required = true, usage = "metric key")
 	// public String metricKey;
 
-	@Option(name = "-filter", usage = "Filter for query")
+	@Option(name = "-where", usage = "Filter for query")
 	public List<String> filters;
+
+	@Option(name = "-select", usage = "'Columns' to select")
+	public List<String> projections;
 
 	public GetMetric() {
 		super("get", "metric");
@@ -34,6 +37,10 @@ public class GetMetric extends PlatformLayerCommandRunnerBase {
 		query.item = getContext().pathToItem(path);
 		if (filters != null) {
 			query.filters.addAll(filters);
+		}
+
+		if (projections != null) {
+			query.projections.addAll(projections);
 		}
 
 		MetricDataStream dataStream = client.getMetric(query);

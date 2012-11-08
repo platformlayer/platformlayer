@@ -15,9 +15,9 @@ import com.fathomdb.cli.autocomplete.SimpleAutoCompleter;
 import com.fathomdb.cli.commands.Ansi;
 
 public class GetJobLog extends PlatformLayerCommandRunnerBase {
-	@Argument
+	@Argument(index = 0)
 	String jobId;
-	@Argument
+	@Argument(index = 1)
 	String executionId;
 
 	public GetJobLog() {
