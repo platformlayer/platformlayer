@@ -13,6 +13,7 @@ import org.platformlayer.core.model.Tags;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobDataList;
+import org.platformlayer.jobs.model.JobExecutionData;
 import org.platformlayer.jobs.model.JobExecutionList;
 import org.platformlayer.jobs.model.JobLog;
 import org.platformlayer.metrics.model.MetricDataStream;
@@ -47,7 +48,7 @@ public interface PlatformLayerClient {
 
 	// public <T> T putItem(T item) throws PlatformLayerClientException;
 
-	public JobData deleteItem(PlatformLayerKey key) throws PlatformLayerClientException;
+	public JobExecutionData deleteItem(PlatformLayerKey key) throws PlatformLayerClientException;
 
 	// Item Crud - Untyped
 	public UntypedItem getItemUntyped(PlatformLayerKey key) throws PlatformLayerClientException;

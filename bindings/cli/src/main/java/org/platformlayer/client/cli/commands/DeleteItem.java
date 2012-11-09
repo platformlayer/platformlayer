@@ -7,7 +7,7 @@ import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
 import org.platformlayer.client.cli.model.ItemPath;
 import org.platformlayer.core.model.PlatformLayerKey;
-import org.platformlayer.jobs.model.JobData;
+import org.platformlayer.jobs.model.JobExecutionData;
 
 public class DeleteItem extends PlatformLayerCommandRunnerBase {
 	@Argument(index = 0)
@@ -23,13 +23,13 @@ public class DeleteItem extends PlatformLayerCommandRunnerBase {
 
 		PlatformLayerKey key = path.resolve(getContext());
 
-		JobData jobData = client.deleteItem(key);
+		JobExecutionData jobData = client.deleteItem(key);
 		return jobData;
 	}
 
 	@Override
 	public void formatRaw(Object o, PrintWriter writer) {
-		JobData jobData = (JobData) o;
-		writer.println(jobData.key);
+		JobExecutionData jobData = (JobExecutionData) o;
+		writer.println(jobData.executionId);
 	}
 }

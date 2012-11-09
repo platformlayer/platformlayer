@@ -18,6 +18,7 @@ import org.platformlayer.core.model.Tag;
 import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceType;
+import org.platformlayer.jobs.model.JobExecutionData;
 import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
@@ -302,7 +303,7 @@ public class ItemServiceImpl implements ItemService {
 				}
 
 				itemKey = newItem.getKey();
-				PlatformLayerKey jobKey = changeQueue.notifyChange(auth, itemKey, ManagedItemState.CREATION_REQUESTED);
+				JobExecutionData jobKey = changeQueue.notifyChange(auth, itemKey, ManagedItemState.CREATION_REQUESTED);
 				// returnJobKey(jobKey);
 
 				return newItem;
@@ -345,7 +346,7 @@ public class ItemServiceImpl implements ItemService {
 	}
 
 	@Override
-	public PlatformLayerKey deleteItem(final ProjectAuthorization auth, final PlatformLayerKey targetItemKey)
+	public JobExecutionData deleteItem(final ProjectAuthorization auth, final PlatformLayerKey targetItemKey)
 			throws OpsException {
 		SecretProvider secretProvider = SecretProvider.from(auth);
 
@@ -371,10 +372,10 @@ public class ItemServiceImpl implements ItemService {
 
 		final OpsContext opsContext = buildTemporaryOpsContext(targetItemKey.getServiceType(), auth);
 
-		PlatformLayerKey jobKey = OpsContext.runInContext(opsContext,
-				new CheckedCallable<PlatformLayerKey, Exception>() {
+		JobExecutionData jobKey = OpsContext.runInContext(opsContext,
+				new CheckedCallable<JobExecutionData, Exception>() {
 					@Override
-					public PlatformLayerKey call() throws Exception {
+					public JobExecutionData call() throws Exception {
 						try {
 							repository.changeState(targetItemKey, ManagedItemState.DELETE_REQUESTED);
 						} catch (RepositoryException e) {

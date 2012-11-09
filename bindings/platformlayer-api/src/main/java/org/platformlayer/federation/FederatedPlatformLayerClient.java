@@ -37,6 +37,7 @@ import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobDataList;
+import org.platformlayer.jobs.model.JobExecutionData;
 import org.platformlayer.jobs.model.JobExecutionList;
 import org.platformlayer.jobs.model.JobLog;
 import org.platformlayer.metrics.model.MetricDataStream;
@@ -425,9 +426,9 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
-	public JobData deleteItem(PlatformLayerKey key) throws PlatformLayerClientException {
+	public JobExecutionData deleteItem(PlatformLayerKey key) throws PlatformLayerClientException {
 		MappedPlatformLayerKey mapped = mapToChild(key);
-		JobData jobData = mapped.child.client.deleteItem(key);
+		JobExecutionData jobData = mapped.child.client.deleteItem(key);
 		return mapped.child.setHost(jobData);
 	}
 

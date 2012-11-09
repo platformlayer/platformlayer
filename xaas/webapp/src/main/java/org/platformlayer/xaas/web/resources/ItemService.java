@@ -5,6 +5,7 @@ import java.util.List;
 import org.platformlayer.Filter;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
+import org.platformlayer.jobs.model.JobExecutionData;
 import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.ops.OpsException;
 
@@ -27,7 +28,7 @@ public interface ItemService {
 
 	<T extends ItemBase> List<T> findAll(ProjectAuthorization authentication, Class<T> itemClass) throws OpsException;
 
-	<T extends ItemBase> PlatformLayerKey deleteItem(ProjectAuthorization auth, PlatformLayerKey key)
+	<T extends ItemBase> JobExecutionData deleteItem(ProjectAuthorization auth, PlatformLayerKey key)
 			throws OpsException;
 
 	List<ItemBase> findRoots(ProjectAuthorization authentication) throws OpsException;

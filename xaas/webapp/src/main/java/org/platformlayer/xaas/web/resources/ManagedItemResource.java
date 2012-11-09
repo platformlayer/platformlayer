@@ -26,7 +26,7 @@ import org.platformlayer.ids.ItemType;
 import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceType;
-import org.platformlayer.jobs.model.JobData;
+import org.platformlayer.jobs.model.JobExecutionData;
 import org.platformlayer.ops.OpsException;
 
 public class ManagedItemResource extends XaasResourceBase {
@@ -101,15 +101,16 @@ public class ManagedItemResource extends XaasResourceBase {
 
 	@DELETE
 	@Produces({ XML, JSON })
-	public JobData deleteItem() throws RepositoryException, OpsException {
+	public JobExecutionData deleteItem() throws RepositoryException, OpsException {
 		PlatformLayerKey key = getPlatformLayerKey();
 
-		PlatformLayerKey jobKey = itemService.deleteItem(getProjectAuthorization(), key);
-
-		JobData jobData = new JobData();
-		jobData.key = jobKey;
-		jobData.targetId = key;
-		return jobData;
+		return itemService.deleteItem(getProjectAuthorization(), key);
+		// PlatformLayerKey jobKey = itemService.deleteItem(getProjectAuthorization(), key);
+		//
+		// JobData jobData = new JobData();
+		// jobData.key = jobKey;
+		// jobData.targetId = key;
+		// return jobData;
 	}
 
 	@GET

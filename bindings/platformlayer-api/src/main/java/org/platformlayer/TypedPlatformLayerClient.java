@@ -22,6 +22,7 @@ import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobDataList;
+import org.platformlayer.jobs.model.JobExecutionData;
 import org.platformlayer.jobs.model.JobExecutionList;
 import org.platformlayer.jobs.model.JobLog;
 import org.platformlayer.metrics.model.MetricDataStream;
@@ -160,7 +161,7 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 	// }
 
 	@Override
-	public JobData deleteItem(PlatformLayerKey key) throws PlatformLayerClientException {
+	public JobExecutionData deleteItem(PlatformLayerKey key) throws PlatformLayerClientException {
 		return platformLayerClient.deleteItem(key);
 	}
 

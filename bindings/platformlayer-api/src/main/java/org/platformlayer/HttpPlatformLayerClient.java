@@ -27,6 +27,7 @@ import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobDataList;
+import org.platformlayer.jobs.model.JobExecutionData;
 import org.platformlayer.jobs.model.JobExecutionList;
 import org.platformlayer.jobs.model.JobLog;
 import org.platformlayer.metrics.model.JsonMetricDataStream;
@@ -266,10 +267,10 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 	// }
 
 	@Override
-	public JobData deleteItem(PlatformLayerKey key) throws PlatformLayerClientException {
+	public JobExecutionData deleteItem(PlatformLayerKey key) throws PlatformLayerClientException {
 		String relativePath = buildRelativePath(key);
 
-		JobData retval = doRequest("DELETE", relativePath, JobData.class, Format.XML, null, null);
+		JobExecutionData retval = doRequest("DELETE", relativePath, JobExecutionData.class, Format.XML, null, null);
 		return retval;
 	}
 

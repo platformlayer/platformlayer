@@ -50,7 +50,7 @@ public class CasStoreMap {
 			if (uri != null) {
 				return uri;
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			log.warn("Error while resolving artifact in " + casStore, e);
 		}
 		return null;

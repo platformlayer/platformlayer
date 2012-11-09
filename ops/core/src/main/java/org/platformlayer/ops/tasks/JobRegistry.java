@@ -24,7 +24,7 @@ public interface JobRegistry {
 
 	List<JobData> listJobs(ProjectId project);
 
-	PlatformLayerKey enqueueOperation(Action action, ProjectAuthorization projectAuthorization, PlatformLayerKey itemKey)
+	JobExecutionData enqueueOperation(Action action, ProjectAuthorization projectAuthorization, PlatformLayerKey itemKey)
 			throws OpsException;
 
 	ActiveJobExecution startSystemJob(ServiceType serviceType, ProjectAuthorization authentication);

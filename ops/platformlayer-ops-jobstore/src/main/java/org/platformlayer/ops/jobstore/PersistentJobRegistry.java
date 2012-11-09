@@ -55,7 +55,7 @@ public class PersistentJobRegistry implements JobRegistry {
 	OperationQueue operationQueue;
 
 	@Override
-	public PlatformLayerKey enqueueOperation(Action action, ProjectAuthorization auth, PlatformLayerKey targetItem)
+	public JobExecutionData enqueueOperation(Action action, ProjectAuthorization auth, PlatformLayerKey targetItem)
 			throws OpsException {
 		ProjectId projectId;
 		try {
@@ -94,8 +94,7 @@ public class PersistentJobRegistry implements JobRegistry {
 
 		OperationWorker operationWorker = new OperationWorker(opsSystem, activeJob);
 		operationQueue.submit(operationWorker);
-		return jobData.key;
-
+		return execution;
 	}
 
 	private static final int RECENT_JOB_COUNT = 100;
