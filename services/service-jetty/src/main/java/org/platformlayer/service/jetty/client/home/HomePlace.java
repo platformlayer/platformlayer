@@ -12,7 +12,7 @@ public class HomePlace extends JettyPlace {
 
 	@Override
 	public String getLabel() {
-		return "DNS";
+		return "Jetty";
 	}
 
 	@Override

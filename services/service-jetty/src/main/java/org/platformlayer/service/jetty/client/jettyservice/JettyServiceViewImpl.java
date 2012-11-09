@@ -102,6 +102,8 @@ public class JettyServiceViewImpl extends ItemViewImpl<JettyService> implements 
 
 	@Override
 	public void editItem(JettyService model) {
+		super.editItem(model);
+
 		this.model = model;
 
 		driver.edit(model);

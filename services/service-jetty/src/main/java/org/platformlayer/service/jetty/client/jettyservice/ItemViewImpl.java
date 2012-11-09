@@ -1,21 +1,37 @@
 package org.platformlayer.service.jetty.client.jettyservice;
 
+import javax.inject.Inject;
+
 import org.platformlayer.common.IsItem;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.ConfigureAction;
+import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ValidateAction;
+import org.platformlayer.gwt.client.async.AsyncWidget;
+import org.platformlayer.gwt.client.events.JobExecutionEvent;
+import org.platformlayer.gwt.client.jobs.JobSummary;
 import org.platformlayer.gwt.client.ui.ItemActivity;
 import org.platformlayer.gwt.client.ui.ItemView;
 import org.platformlayer.gwt.client.ui.ViewHandler;
 import org.platformlayer.gwt.client.widgets.ActionsWidget;
+import org.platformlayer.jobs.model.JobData;
+import org.platformlayer.jobs.model.JobExecutionData;
 import org.platformlayer.ui.shared.client.views.AbstractApplicationView;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.web.bindery.event.shared.EventBus;
+import com.google.web.bindery.event.shared.HandlerRegistration;
 
 public abstract class ItemViewImpl<T extends IsItem> extends AbstractApplicationView implements ItemView<T>, Editor<T> {
 
 	protected ItemActivity<?, ?, T> activity;
+	private AsyncWidget jobSummary;
+	protected T model;
+
+	@Inject
+	EventBus eventBus;
 
 	// interface ViewUiBinder extends UiBinder<HTMLPanel, ItemViewImpl> {
 	// }
@@ -84,8 +100,16 @@ public abstract class ItemViewImpl<T extends IsItem> extends AbstractApplication
 	// form.addAlert(alert, field);
 	// }
 	//
+
+	private boolean initialized;
+	private HandlerRegistration jobListener;
+
 	@Override
 	public void start(ViewHandler activity) {
+		if (!initialized) {
+			initialize();
+			initialized = true;
+		}
 		this.activity = (ItemActivity<?, ?, T>) activity;
 		//
 		// form.clearAlerts();
@@ -93,6 +117,42 @@ public abstract class ItemViewImpl<T extends IsItem> extends AbstractApplication
 		// driver.edit(null);
 		// // TODO: Any way to use editor framework??
 		// actionsWidget.show(null);
+	}
+
+	private void initialize() {
+		// assert this.itemListener == null;
+		// this.itemListener = ManagedItemEvent.registerForEvents(eventBus, new ManagedItemEvent.Handler() {
+		// @Override
+		// public void onChange(ManagedItemEvent event) {
+		// IsItem item = event.getItem();
+		// PlatformLayerKey itemKey = item.getKey();
+		// onEvent(itemKey, item);
+		// }
+		// });
+
+		assert this.jobListener == null;
+		this.jobListener = JobExecutionEvent.registerForEvents(eventBus, new JobExecutionEvent.Handler() {
+			@Override
+			public void onChange(JobExecutionEvent event) {
+				JobExecutionData execution = event.getJobExecution();
+				JobData job = execution.getJob();
+				PlatformLayerKey itemKey = job.getTargetItemKey();
+				onEvent(itemKey, null);
+			}
+		});
+	}
+
+	protected void onEvent(PlatformLayerKey eventKey, IsItem newItem) {
+		if (model == null) {
+			return;
+		}
+
+		PlatformLayerKey modelKey = model.getKey();
+		if (!modelKey.equals(eventKey)) {
+			return;
+		}
+
+		refreshJobs();
 	}
 
 	// @Override
@@ -112,6 +172,15 @@ public abstract class ItemViewImpl<T extends IsItem> extends AbstractApplication
 	protected void fillStandardUi(FlowPanel container) {
 		ActionsWidget actions = buildActionsUi();
 		container.add(actions);
+
+		this.jobSummary = new AsyncWidget() {
+			@Override
+			protected void onAction(Element target, String action) {
+				String id = target.getAttribute("data-id");
+				activity.onAction(action, id);
+			}
+		};
+		container.add(jobSummary);
 	}
 
 	protected ActionsWidget buildActionsUi() {
@@ -135,5 +204,15 @@ public abstract class ItemViewImpl<T extends IsItem> extends AbstractApplication
 
 	protected void onAction(Action action) {
 		activity.doAction(action);
+	}
+
+	@Override
+	public void editItem(T model) {
+		this.model = model;
+		refreshJobs();
+	}
+
+	protected void refreshJobs() {
+		jobSummary.start(model != null ? new JobSummary(model) : null);
 	}
 }
