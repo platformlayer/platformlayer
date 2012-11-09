@@ -32,6 +32,7 @@
             
             <g:Button ui:field="metricButton">Metrics</g:Button>
 
+            <g:FlowPanel ui:field="actions" />
         </pl:Form>
     </g:HTMLPanel>
 </ui:UiBinder>

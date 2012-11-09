@@ -8,7 +8,6 @@ import org.platformlayer.gwt.client.ui.ViewHandler;
 import org.platformlayer.gwt.client.widgets.ControlGroup;
 import org.platformlayer.gwt.client.widgets.Form;
 import org.platformlayer.service.jetty.client.model.JettyService;
-import org.platformlayer.ui.shared.client.views.AbstractApplicationView;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.ButtonElement;
@@ -19,10 +18,11 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 
 @Singleton
-public class JettyServiceViewImpl extends AbstractApplicationView implements JettyServiceView, Editor<JettyService> {
+public class JettyServiceViewImpl extends ItemViewImpl<JettyService> implements JettyServiceView, Editor<JettyService> {
 
 	interface ViewUiBinder extends UiBinder<HTMLPanel, JettyServiceViewImpl> {
 	}
@@ -66,7 +66,12 @@ public class JettyServiceViewImpl extends AbstractApplicationView implements Jet
 		});
 
 		driver.initialize(this);
+
+		fillStandardUi(actions);
 	}
+
+	@UiField
+	FlowPanel actions;
 
 	@UiField
 	ButtonElement submitButton;
@@ -79,8 +84,6 @@ public class JettyServiceViewImpl extends AbstractApplicationView implements Jet
 	@UiField
 	ControlGroup dnsName;
 
-	private JettyServiceActivity activity;
-
 	private JettyService model;
 
 	@Override
@@ -90,7 +93,7 @@ public class JettyServiceViewImpl extends AbstractApplicationView implements Jet
 
 	@Override
 	public void start(ViewHandler activity) {
-		this.activity = (JettyServiceActivity) activity;
+		super.start(activity);
 
 		form.clearAlerts();
 
@@ -100,6 +103,7 @@ public class JettyServiceViewImpl extends AbstractApplicationView implements Jet
 	@Override
 	public void editItem(JettyService model) {
 		this.model = model;
+
 		driver.edit(model);
 	}
 
