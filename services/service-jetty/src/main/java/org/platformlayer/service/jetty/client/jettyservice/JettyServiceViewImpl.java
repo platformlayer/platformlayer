@@ -4,6 +4,7 @@ import javax.inject.Singleton;
 
 import org.platformlayer.gwt.client.alerts.Alert;
 import org.platformlayer.gwt.client.metrics.MetricPlace;
+import org.platformlayer.gwt.client.ui.ItemViewImpl;
 import org.platformlayer.gwt.client.ui.ViewHandler;
 import org.platformlayer.gwt.client.widgets.ControlGroup;
 import org.platformlayer.gwt.client.widgets.Form;
