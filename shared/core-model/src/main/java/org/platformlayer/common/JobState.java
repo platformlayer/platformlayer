@@ -3,7 +3,7 @@ package org.platformlayer.common;
 import org.platformlayer.shared.EnumWithKey;
 
 public enum JobState implements EnumWithKey {
-	RUNNING("R"), FAILED("F"), SUCCESS("S");
+	PRESTART("P"), RUNNING("R"), FAILED("F"), SUCCESS("S");
 
 	final String key;
 

@@ -23,7 +23,7 @@ public class PersistentActiveJob implements ActiveJobExecution {
 
 	final JobLogger logger;
 
-	JobState state;
+	JobState state = JobState.PRESTART;
 
 	private final ProjectAuthorization authentication;
 
