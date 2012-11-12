@@ -32,6 +32,7 @@ import org.platformlayer.ops.tasks.OpsContextBuilder;
 import org.platformlayer.xaas.repository.JobRepository;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -168,6 +169,15 @@ public class PersistentJobRegistry implements JobRegistry {
 
 	@Override
 	public JobLog getJobLog(PlatformLayerKey jobKey, String executionId, int logSkip) throws OpsException {
+		ActiveJobExecution activeJobExecution = activeJobs.get(jobKey);
+		if (activeJobExecution != null) {
+			SimpleJobLogger logger = (SimpleJobLogger) activeJobExecution.getLogger();
+			JobLog log = new JobLog();
+			log.lines = Lists.newArrayList(Iterables.skip(logger.getLogEntries(), logSkip));
+			log.execution = activeJobExecution.getJobExecution();
+			return log;
+		}
+
 		JobExecutionData execution = findExecution(jobKey, executionId);
 		Date startedAt = execution.getStartedAt();
 		try {
