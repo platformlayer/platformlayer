@@ -135,6 +135,11 @@ public class PlatformLayerFirewallEntry extends OpsTreeBase {
 
 						return entry;
 					}
+
+					@Override
+					public String getDescription() throws Exception {
+						return "Firewall rules";
+					}
 				};
 
 				dest.addChild(entry);

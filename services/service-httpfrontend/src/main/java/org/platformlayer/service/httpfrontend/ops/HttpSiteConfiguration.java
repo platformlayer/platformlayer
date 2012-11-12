@@ -26,7 +26,7 @@ public class HttpSiteConfiguration extends OpsTreeBase implements CustomRecursor
 
 	@Override
 	protected void addChildren() throws OpsException {
-		addChild(LateBound.of(HostConfigFile.class));
+		addChild(LateBound.of(HostConfigFile.class, "Frontend site configuration"));
 	}
 
 	@Override

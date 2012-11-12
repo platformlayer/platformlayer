@@ -35,6 +35,11 @@ public class DnsResolver extends OpsTreeBase {
 					return null;
 				}
 			}
+
+			@Override
+			public String getDescription() throws Exception {
+				return "DNS resolver configuration";
+			}
 		});
 	}
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.platformlayer.ops.Handler;
+import org.platformlayer.ops.HasDescription;
 import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
@@ -13,10 +14,14 @@ import org.platformlayer.service.imagefactory.v1.ConfigurePackage;
 import org.platformlayer.service.imagefactory.v1.DiskImageRecipe;
 import org.platformlayer.service.imagefactory.v1.Repository;
 import org.platformlayer.service.imagefactory.v1.RepositoryKey;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
-public class PackageDependency implements HasDiskImageRecipe {
+public class PackageDependency implements HasDiskImageRecipe, HasDescription {
+	private static final Logger log = LoggerFactory.getLogger(PackageDependency.class);
+
 	public String packageName;
 
 	@Inject
@@ -34,11 +39,17 @@ public class PackageDependency implements HasDiskImageRecipe {
 			// Should we delete the packages? Probably not, because others may also need them
 		}
 
-		if (OpsContext.isConfigure()) {
+		if (OpsContext.isConfigure() || OpsContext.isValidate()) {
 			OpsTarget target = OpsContext.get().getInstance(OpsTarget.class);
 			List<String> installedPackages = apt.getInstalledPackageInfo(target);
 
 			if (!installedPackages.contains(packageName)) {
+				log.info("Package not installed: " + packageName);
+
+				if (OpsContext.isValidate()) {
+					throw new OpsException("Package not installed: " + packageName);
+				}
+
 				if (repositoryKey != null) {
 					apt.addRepositoryKeyUrl(target, repositoryKey.getUrl());
 				}
@@ -59,6 +70,8 @@ public class PackageDependency implements HasDiskImageRecipe {
 				apt.update(target, false);
 
 				apt.install(target, packageName);
+			} else {
+				log.debug("Package is installed: " + packageName);
 			}
 		}
 	}
@@ -113,5 +126,10 @@ public class PackageDependency implements HasDiskImageRecipe {
 			packages.add(build(packageName));
 		}
 		return packages;
+	}
+
+	@Override
+	public String getDescription() {
+		return "APT package: " + packageName;
 	}
 }

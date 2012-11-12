@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import org.apache.log4j.Logger;
 import org.openstack.crypto.Md5Hash;
 import org.platformlayer.ops.Handler;
+import org.platformlayer.ops.HasDescription;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
@@ -15,7 +16,7 @@ import org.platformlayer.ops.OpsTarget;
 import com.google.common.base.Objects;
 
 //@Icon("document")
-public abstract class ManagedFile extends ManagedFilesystemItem {
+public abstract class ManagedFile extends ManagedFilesystemItem implements HasDescription {
 	static final Logger log = Logger.getLogger(ManagedFile.class);
 
 	@Inject
@@ -290,6 +291,11 @@ public abstract class ManagedFile extends ManagedFilesystemItem {
 	public ManagedFile setOnlyIfNotExists(boolean onlyIfNotExists) {
 		this.onlyIfNotExists = onlyIfNotExists;
 		return this;
+	}
+
+	@Override
+	public String getDescription() throws OpsException {
+		return "File: " + getFilePath();
 	}
 
 	// public boolean isSymlinkVersions() {

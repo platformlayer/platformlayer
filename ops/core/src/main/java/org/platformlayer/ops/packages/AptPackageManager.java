@@ -21,6 +21,7 @@ import org.platformlayer.ops.proxy.HttpProxyHelper.Usage;
 import org.platformlayer.service.imagefactory.v1.ConfigurePackage;
 
 import com.google.common.base.CharMatcher;
+import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -140,7 +141,13 @@ public class AptPackageManager {
 				}
 				String state = tokens.get(1);
 				if (state.equals("install")) {
-					packages.add(tokens.get(0));
+					String packageName = tokens.get(0);
+					int colonIndex = packageName.indexOf(':');
+					if (colonIndex != -1) {
+						// Architecture sometimes follows package name
+						packageName = packageName.substring(0, colonIndex);
+					}
+					packages.add(packageName);
 				} else if (state.equals("deinstall")) {
 					// Not installed (?)
 				} else {
@@ -231,6 +238,8 @@ public class AptPackageManager {
 		CommandEnvironment commandEnvironment = buildEnvironmentWithProxy(target);
 		commandEnvironment.put("DEBIAN_FRONTEND", "noninteractive");
 
+		log.info("Installing APT packages: " + Joiner.on(",").join(packageNames));
+
 		Command command = Command.build("apt-get install --yes");
 		for (String packageName : packageNames) {
 			command.addQuoted(packageName);
@@ -245,6 +254,9 @@ public class AptPackageManager {
 			log.info("apt-get update not needed; won't update");
 			return;
 		}
+
+		log.info("Updating apt repositories");
+
 		CommandEnvironment commandEnvironment = buildEnvironmentWithProxy(target);
 
 		Command command = Command.build("apt-get --yes update");

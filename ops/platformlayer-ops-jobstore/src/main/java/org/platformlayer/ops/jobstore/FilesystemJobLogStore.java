@@ -95,7 +95,7 @@ public class FilesystemJobLogStore implements JobLogStore {
 			throws IOException {
 		File file = toFile(endTime, jobKey, executionId);
 		if (file.exists()) {
-			throw new IllegalStateException();
+			throw new IllegalStateException("Job log file already exists");
 		}
 
 		boolean okay = false;

@@ -3,11 +3,12 @@ package org.platformlayer.ops.filesystem;
 import java.io.File;
 
 import org.platformlayer.ops.Handler;
+import org.platformlayer.ops.HasDescription;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsTarget;
 
 //@Icon("folder")
-public class ManagedDirectory extends ManagedFilesystemItem {
+public class ManagedDirectory extends ManagedFilesystemItem implements HasDescription {
 
 	public static ManagedDirectory build(String path, String mode) {
 		return build(new File(path), mode);
@@ -53,6 +54,11 @@ public class ManagedDirectory extends ManagedFilesystemItem {
 			validateMode(fsInfo);
 		}
 
+	}
+
+	@Override
+	public String getDescription() throws Exception {
+		return "Directory: " + getFilePath();
 	}
 
 }

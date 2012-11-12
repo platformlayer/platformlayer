@@ -5,12 +5,13 @@ import java.io.File;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Handler;
+import org.platformlayer.ops.HasDescription;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
-public class ExpandArchive extends OpsTreeBase {
+public class ExpandArchive extends OpsTreeBase implements HasDescription {
 	public File archiveFile;
 	public File extractPath;
 
@@ -37,5 +38,10 @@ public class ExpandArchive extends OpsTreeBase {
 
 	@Override
 	protected void addChildren() throws OpsException {
+	}
+
+	@Override
+	public String getDescription() throws Exception {
+		return "Expand archive: " + archiveFile + " -> " + extractPath;
 	}
 }

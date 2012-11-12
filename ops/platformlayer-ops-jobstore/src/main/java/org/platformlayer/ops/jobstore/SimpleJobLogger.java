@@ -82,7 +82,7 @@ public class SimpleJobLogger implements JobLogger {
 
 	@Override
 	public void enterScope(Object controller) {
-		String name = controller.getClass().getSimpleName();
+		String name = ControllerNameStrategy.getName(controller);
 		JobLogLine line = new JobLogLine();
 		line.type = JobLogLine.TYPE_ENTER_SCOPE;
 		line.message = name;

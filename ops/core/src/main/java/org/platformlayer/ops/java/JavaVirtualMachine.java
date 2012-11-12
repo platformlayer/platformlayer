@@ -1,6 +1,7 @@
 package org.platformlayer.ops.java;
 
 import org.platformlayer.ops.Handler;
+import org.platformlayer.ops.HasDescription;
 import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
@@ -11,7 +12,7 @@ import org.platformlayer.service.imagefactory.v1.DiskImageRecipe;
 import org.platformlayer.service.imagefactory.v1.OperatingSystemRecipe;
 import org.platformlayer.service.imagefactory.v1.Repository;
 
-public class JavaVirtualMachine extends OpsTreeBase implements HasDiskImageRecipe {
+public class JavaVirtualMachine extends OpsTreeBase implements HasDiskImageRecipe, HasDescription {
 	public String version;
 	public boolean addJdk = true;
 
@@ -135,6 +136,11 @@ public class JavaVirtualMachine extends OpsTreeBase implements HasDiskImageRecip
 
 	public static JavaVirtualMachine buildJdk7() {
 		return build("7", true);
+	}
+
+	@Override
+	public String getDescription() throws Exception {
+		return "Install Java";
 	}
 
 }
