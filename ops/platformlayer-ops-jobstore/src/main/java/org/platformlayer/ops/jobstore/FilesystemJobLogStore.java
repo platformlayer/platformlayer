@@ -111,9 +111,17 @@ public class FilesystemJobLogStore implements JobLogStore {
 			JobDataProtobuf.JobLogLine.Builder protobuf = JobDataProtobuf.JobLogLine.newBuilder();
 			for (JobLogLine line : lines) {
 				protobuf.setLevel(line.level);
-				protobuf.setMessage(line.message);
+				if (line.message != null) {
+					protobuf.setMessage(line.message);
+				} else {
+					protobuf.clearMessage();
+				}
 				protobuf.setTimestamp(line.timestamp);
-				protobuf.setType(line.type);
+				if (line.type != null) {
+					protobuf.setType(line.type);
+				} else {
+					protobuf.clearType();
+				}
 				if (line.exception != null) {
 					mapToProtobuf(line.exception, protobuf.getExceptionBuilder());
 				} else {
