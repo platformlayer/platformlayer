@@ -5,6 +5,7 @@ message JobLogLine {
 	optional string message = 2;
 	optional int32 level = 3;
 	optional JobLogExceptionInfo exception = 4;
+	optional string type = 5;
 }
 
 message JobLogExceptionInfo {

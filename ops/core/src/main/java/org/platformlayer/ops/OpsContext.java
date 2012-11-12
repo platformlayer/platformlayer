@@ -157,17 +157,40 @@ public class OpsContext implements Closeable {
 	public void recurseOperation(Object target) throws OpsException {
 		OperationInvoker operationInvoker = opsSystem.getInjector().getInstance(OperationInvoker.class);
 
+		enterLogScope(target);
 		try {
-			operationInvoker.invoke(target);
-		} catch (IllegalArgumentException e) {
-			throw new OpsException("Error invoking method on " + target.getClass(), e);
-		} catch (IllegalAccessException e) {
-			throw new OpsException("Error invoking method on " + target.getClass(), e);
-		} catch (InvocationTargetException e) {
-			throw new OpsException("Error invoking method on " + target.getClass(), e);
-		}
+			try {
+				operationInvoker.invoke(target);
+			} catch (IllegalArgumentException e) {
+				throw new OpsException("Error invoking method on " + target.getClass(), e);
+			} catch (IllegalAccessException e) {
+				throw new OpsException("Error invoking method on " + target.getClass(), e);
+			} catch (InvocationTargetException e) {
+				throw new OpsException("Error invoking method on " + target.getClass(), e);
+			}
 
-		OperationRecursor.doRecurseOperation(this, target);
+			OperationRecursor.doRecurseOperation(this, target);
+		} finally {
+			exitLogScope();
+		}
+	}
+
+	private void enterLogScope(Object controller) {
+		OpsContext opsContext = OpsContext.get();
+
+		if (opsContext != null) {
+			JobLogger jobLogger = opsContext.getJobLogger();
+			jobLogger.enterScope(controller);
+		}
+	}
+
+	private void exitLogScope() {
+		OpsContext opsContext = OpsContext.get();
+
+		if (opsContext != null) {
+			JobLogger jobLogger = opsContext.getJobLogger();
+			jobLogger.exitScope();
+		}
 	}
 
 	public MetricConfig getMetricInfo(Object target) throws OpsException {

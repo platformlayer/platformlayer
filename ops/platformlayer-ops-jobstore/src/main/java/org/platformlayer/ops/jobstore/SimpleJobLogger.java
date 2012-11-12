@@ -80,4 +80,20 @@ public class SimpleJobLogger implements JobLogger {
 		return sb.toString();
 	}
 
+	@Override
+	public void enterScope(Object controller) {
+		String name = controller.getClass().getSimpleName();
+		JobLogLine line = new JobLogLine();
+		line.type = JobLogLine.TYPE_ENTER_SCOPE;
+		line.message = name;
+		lines.add(line);
+	}
+
+	@Override
+	public void exitScope() {
+		JobLogLine line = new JobLogLine();
+		line.type = JobLogLine.TYPE_EXIT_SCOPE;
+		lines.add(line);
+	}
+
 }

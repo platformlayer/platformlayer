@@ -67,6 +67,7 @@ public class FilesystemJobLogStore implements JobLogStore {
 					line.level = protobuf.getLevel();
 					line.timestamp = protobuf.getTimestamp();
 					line.message = protobuf.getMessage();
+					line.type = protobuf.getType();
 					if (protobuf.hasException()) {
 						line.exception = mapFromProtobuf(protobuf.getExceptionBuilder());
 					}
@@ -112,6 +113,7 @@ public class FilesystemJobLogStore implements JobLogStore {
 				protobuf.setLevel(line.level);
 				protobuf.setMessage(line.message);
 				protobuf.setTimestamp(line.timestamp);
+				protobuf.setType(line.type);
 				if (line.exception != null) {
 					mapToProtobuf(line.exception, protobuf.getExceptionBuilder());
 				} else {

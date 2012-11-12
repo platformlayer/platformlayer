@@ -27,6 +27,10 @@ public final class JobDataProtobuf {
     boolean hasException();
     org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfo getException();
     org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfoOrBuilder getExceptionOrBuilder();
+    
+    // optional string type = 5;
+    boolean hasType();
+    String getType();
   }
   public static final class JobLogLine extends
       com.google.protobuf.GeneratedMessage
@@ -122,11 +126,44 @@ public final class JobDataProtobuf {
       return exception_;
     }
     
+    // optional string type = 5;
+    public static final int TYPE_FIELD_NUMBER = 5;
+    private java.lang.Object type_;
+    public boolean hasType() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    public String getType() {
+      java.lang.Object ref = type_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          type_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getTypeBytes() {
+      java.lang.Object ref = type_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        type_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
     private void initFields() {
       timestamp_ = 0L;
       message_ = "";
       level_ = 0;
       exception_ = org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfo.getDefaultInstance();
+      type_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -152,6 +189,9 @@ public final class JobDataProtobuf {
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         output.writeMessage(4, exception_);
       }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeBytes(5, getTypeBytes());
+      }
       getUnknownFields().writeTo(output);
     }
     
@@ -176,6 +216,10 @@ public final class JobDataProtobuf {
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(4, exception_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(5, getTypeBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -314,6 +358,8 @@ public final class JobDataProtobuf {
           exceptionBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000008);
+        type_ = "";
+        bitField0_ = (bitField0_ & ~0x00000010);
         return this;
       }
       
@@ -372,6 +418,10 @@ public final class JobDataProtobuf {
         } else {
           result.exception_ = exceptionBuilder_.build();
         }
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.type_ = type_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -399,6 +449,9 @@ public final class JobDataProtobuf {
         }
         if (other.hasException()) {
           mergeException(other.getException());
+        }
+        if (other.hasType()) {
+          setType(other.getType());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -453,6 +506,11 @@ public final class JobDataProtobuf {
               }
               input.readMessage(subBuilder, extensionRegistry);
               setException(subBuilder.buildPartial());
+              break;
+            }
+            case 42: {
+              bitField0_ |= 0x00000010;
+              type_ = input.readBytes();
               break;
             }
           }
@@ -627,6 +685,42 @@ public final class JobDataProtobuf {
           exception_ = null;
         }
         return exceptionBuilder_;
+      }
+      
+      // optional string type = 5;
+      private java.lang.Object type_ = "";
+      public boolean hasType() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      public String getType() {
+        java.lang.Object ref = type_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          type_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setType(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000010;
+        type_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearType() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        type_ = getDefaultInstance().getType();
+        onChanged();
+        return this;
+      }
+      void setType(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000010;
+        type_ = value;
+        onChanged();
       }
       
       // @@protoc_insertion_point(builder_scope:JobLogLine)
@@ -1048,12 +1142,12 @@ public final class JobDataProtobuf {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\020JobData.protobuf\"h\n\nJobLogLine\022\021\n\ttime" +
+      "\n\020JobData.protobuf\"v\n\nJobLogLine\022\021\n\ttime" +
       "stamp\030\001 \001(\003\022\017\n\007message\030\002 \001(\t\022\r\n\005level\030\003 " +
       "\001(\005\022\'\n\texception\030\004 \001(\0132\024.JobLogException" +
-      "Info\"#\n\023JobLogExceptionInfo\022\014\n\004info\030\001 \003(" +
-      "\tB)\n\'org.platformlayer.ops.jobstore.prot" +
-      "obuf"
+      "Info\022\014\n\004type\030\005 \001(\t\"#\n\023JobLogExceptionInf" +
+      "o\022\014\n\004info\030\001 \003(\tB)\n\'org.platformlayer.ops" +
+      ".jobstore.protobuf"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -1065,7 +1159,7 @@ public final class JobDataProtobuf {
           internal_static_JobLogLine_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_JobLogLine_descriptor,
-              new java.lang.String[] { "Timestamp", "Message", "Level", "Exception", },
+              new java.lang.String[] { "Timestamp", "Message", "Level", "Exception", "Type", },
               org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogLine.class,
               org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogLine.Builder.class);
           internal_static_JobLogExceptionInfo_descriptor =
