@@ -249,7 +249,7 @@ public class PersistentJobRegistry implements JobRegistry {
 			repository.recordJobEnd(jobKey, executionId, endTime, persistentActiveJob.getState());
 		} catch (RepositoryException e) {
 			throw new OpsException("Error writing job to repository", e);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			throw new OpsException("Error writing job log", e);
 		}
 
