@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.platformlayer.RepositoryException;
+import org.platformlayer.common.JobState;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ids.ManagedItemId;
@@ -88,6 +89,7 @@ public class PersistentJobRegistry implements JobRegistry {
 		execution.jobKey = jobData.getJobKey();
 		execution.startedAt = startedAt;
 		execution.executionId = executionId;
+		execution.state = JobState.PRESTART;
 
 		PersistentActiveJob activeJob = new PersistentActiveJob(this, auth, execution);
 		activeJobs.put(execution.jobKey, activeJob);

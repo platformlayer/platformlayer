@@ -23,7 +23,8 @@ public class PersistentActiveJob implements ActiveJobExecution {
 
 	final JobLogger logger;
 
-	JobState state = JobState.PRESTART;
+	// This is awkward; we want a state even though we don't always have a jobExecutionData
+	JobState state;
 
 	private final ProjectAuthorization authentication;
 
@@ -44,6 +45,8 @@ public class PersistentActiveJob implements ActiveJobExecution {
 		this.logger = new SimpleJobLogger();
 		this.serviceType = jobData.getTargetItemKey().getServiceType();
 		this.startedAt = jobExecution.getStartedAt();
+
+		this.state = jobExecution.state;
 	}
 
 	public PersistentActiveJob(ServiceType serviceType, ProjectAuthorization authentication, String executionId) {
@@ -56,6 +59,8 @@ public class PersistentActiveJob implements ActiveJobExecution {
 		this.executionId = executionId;
 		this.logger = new SimpleJobLogger();
 		this.startedAt = new Date();
+
+		this.state = JobState.PRESTART;
 	}
 
 	@Override
@@ -87,6 +92,7 @@ public class PersistentActiveJob implements ActiveJobExecution {
 	@Override
 	public void setState(JobState state) {
 		this.state = state;
+		this.jobExecution.state = state;
 	}
 
 	@Override
