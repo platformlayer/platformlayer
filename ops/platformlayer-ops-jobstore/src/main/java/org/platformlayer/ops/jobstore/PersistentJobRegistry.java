@@ -181,7 +181,11 @@ public class PersistentJobRegistry implements JobRegistry {
 		JobExecutionData execution = findExecution(jobKey, executionId);
 		Date startedAt = execution.getStartedAt();
 		try {
-			return jobLogStore.getJobLog(startedAt, jobKey, executionId, logSkip);
+			JobLog log = jobLogStore.getJobLog(startedAt, jobKey, executionId, logSkip);
+			if (log != null) {
+				log.execution = execution;
+			}
+			return log;
 		} catch (IOException e) {
 			throw new OpsException("Error reading job log", e);
 		}
