@@ -28,6 +28,8 @@ import org.platformlayer.jdbc.simplejpa.ResultSetMappers;
 import org.platformlayer.jdbc.simplejpa.ResultSetMappersProvider;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsSystem;
+import org.platformlayer.ops.backups.BackupContextFactory;
+import org.platformlayer.ops.backups.StubBackupContextFactory;
 import org.platformlayer.ops.crypto.OpsKeyStore;
 import org.platformlayer.ops.crypto.SimpleOpsKeyStore;
 import org.platformlayer.ops.guice.OpsContextProvider;
@@ -99,6 +101,8 @@ public class GuiceXaasConfig extends AbstractModule {
 
 			bind(AuthenticationService.class).to(PlatformlayerAuthenticationService.class).asEagerSingleton();
 		}
+
+		bind(BackupContextFactory.class).to(StubBackupContextFactory.class);
 
 		bind(ExecutorService.class).toInstance(Executors.newCachedThreadPool());
 
