@@ -33,6 +33,17 @@ grant all on item_tags to platformlayer_ops;
 grant all on item_tags_id_seq to platformlayer_ops;
 
 -- item is type text so that (1) we can see logs for deleted items and (2) so that we can split this db
-create table job_logs (service int, model int, account int, item text, jobstate int, data text);
-create index job_logs_index on job_logs (account, service, model, item);
-grant all on job_logs to platformlayer_ops;
+-- create table job_logs (service int, model int, account int, item text, jobstate int, data text);
+-- create index job_logs_index on job_logs (account, service, model, item);
+-- grant all on job_logs to platformlayer_ops;
+
+
+-- item is type text so that (1) we can see logs for deleted items and (2) so that we can split this db
+create table job (project int, id text, action text, target text, primary key (id));
+create index job_index on job (project);
+grant all on job to platformlayer_ops;
+
+create table job_execution (project int, job_id text, id text, state char, started_at timestamp, ended_at timestamp, primary key (id));
+create index job_execution_index on job (project);
+grant all on job_execution to platformlayer_ops;
+
