@@ -26,6 +26,8 @@ public class JavaCommandBuilder {
 	final List<ClasspathEntry> classpath = Lists.newArrayList();
 	final List<Argument> arguments = Lists.newArrayList();
 
+	private File jar;
+
 	public void addArgument(Argument argument) {
 		arguments.add(argument);
 	}
@@ -79,16 +81,28 @@ public class JavaCommandBuilder {
 		}
 
 		// TODO: This is not nice either
-		cp.append(":.");
+		if (cp.length() == 0) {
+			cp.append(".");
+		} else {
+			cp.append(":.");
+		}
 
 		command.addLiteral("-cp").addQuoted(cp.toString());
 
-		command.addQuoted(mainClass);
+		if (jar != null) {
+			command.addLiteral("-jar").addFile(jar);
+		} else {
+			command.addQuoted(mainClass);
+		}
 
 		for (Argument argument : arguments) {
 			command.addArgument(argument);
 		}
 
 		return command;
+	}
+
+	public void setJar(File jar) {
+		this.jar = jar;
 	}
 }

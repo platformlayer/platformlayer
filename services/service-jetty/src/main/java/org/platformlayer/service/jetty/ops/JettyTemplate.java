@@ -5,8 +5,10 @@ import java.util.Map;
 
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.Command;
+import org.platformlayer.ops.Command.Argument;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.java.JavaCommandBuilder;
 import org.platformlayer.ops.standardservice.StandardTemplateData;
 import org.platformlayer.service.jetty.model.JettyService;
 
@@ -44,8 +46,20 @@ public class JettyTemplate extends StandardTemplateData {
 
 	@Override
 	protected Command getCommand() {
-		File shellScript = new File(getInstanceDir(), "bin/jetty.sh");
-		return Command.build("{0} run", shellScript);
+		// We have problems with shell scripts that exec...
+		// File shellScript = new File(getInstanceDir(), "bin/jetty.sh");
+		// return Command.build("{0} run", shellScript);
+
+		// /usr/bin/java -Djetty.home=/var/jetty/default -Djava.io.tmpdir=/tmp -jar /var/jetty/default/start.jar
+		// --pre=etc/jetty-logging.xml
+
+		JavaCommandBuilder command = new JavaCommandBuilder();
+		command.addClasspathFolder(getInstallDir());
+		command.addDefine("jetty.home", getBaseDir());
+		command.addDefine("java.io.tmpdir", "/tmp");
+		command.setJar(new File(getBaseDir(), "start.jar"));
+		command.addArgument(Argument.buildLiteral("--pre=etc/jetty-logging.xml"));
+		return command.get();
 	}
 
 	@Override
