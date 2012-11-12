@@ -17,7 +17,6 @@ public class LogbackHook<E> extends AppenderBase<E> {
 		LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
 
 		LogbackHook appender = new LogbackHook();
-
 		// PatternLayoutEncoder encoder = new PatternLayoutEncoder();
 		// encoder.setContext(loggerContext);
 		// encoder.setPattern("%-4relative [%thread] %-5level %logger{35} - %msg%n");

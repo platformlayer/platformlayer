@@ -21,6 +21,10 @@ public class AptSourcesConfigurationFile extends SyntheticFile {
 	// apt-get update can't cope with one out of date mirror, even if there's another one that is... ?
 	private static final boolean USE_SOFTLAYER_MIRROR = false;
 
+	// Sometimes the country mirrors have sync failures...
+	// TODO: How to work around this??
+	private static final boolean USE_COUNTRY = false;
+
 	public static class AptSource {
 		public String url;
 		public String distro;
@@ -82,7 +86,11 @@ public class AptSourcesConfigurationFile extends SyntheticFile {
 				add(new AptSource("http://mirrors.service.softlayer.com/debian-security", "wheezy/updates", areas));
 			}
 
-			mainDebianMirror = "http://ftp." + country.getTld() + ".debian.org/debian/";
+			if (USE_COUNTRY) {
+				mainDebianMirror = "http://ftp." + country.getTld() + ".debian.org/debian/";
+			} else {
+				mainDebianMirror = "http://ftp.debian.org/debian/";
+			}
 		} else {
 			log.warn("Could not determine AS-Block for:" + target);
 
