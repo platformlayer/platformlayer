@@ -13,9 +13,10 @@
         <appender-ref ref="STDOUT" />
     </root>
 
-    <logger name="org.openstack.ssh.mina.bugfix" level="WARN" />
+    <logger name="org.platformlayer.ssh.mina.bugfix" level="WARN" />
     <logger name="org.apache.sshd" level="WARN" />
-    <logger name="org.apache.http.wire" level="INFO" />
+    <logger name="org.apache.http" level="WARN" />
     <logger name="org.eclipse.jetty" level="INFO" />
+    <logger name="com.yammer.metrics" level="WARN" />
 
 </configuration>
