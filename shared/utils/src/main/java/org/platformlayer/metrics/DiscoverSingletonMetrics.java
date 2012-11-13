@@ -4,7 +4,8 @@ import java.lang.annotation.Annotation;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Binding;
 import com.google.inject.Injector;
@@ -12,7 +13,7 @@ import com.google.inject.Scope;
 import com.google.inject.spi.BindingScopingVisitor;
 
 public class DiscoverSingletonMetrics {
-	private static final Logger log = Logger.getLogger(DiscoverSingletonMetrics.class);
+	private static final Logger log = LoggerFactory.getLogger(DiscoverSingletonMetrics.class);
 
 	@Inject
 	MetricRegistry metricsRegistry;

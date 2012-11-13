@@ -6,7 +6,6 @@ import java.net.InetAddress;
 import org.platformlayer.choice.ScoreChooser;
 
 public class InetAddressChooser extends ScoreChooser<InetAddress, Integer> {
-
 	int scoreIpv4;
 	int scoreIpv6;
 

@@ -14,18 +14,19 @@ import java.util.List;
 
 import javax.security.auth.x500.X500Principal;
 
-import org.apache.log4j.Logger;
 import org.bouncycastle.openssl.PEMReader;
 import org.bouncycastle.openssl.PEMWriter;
 import org.openstack.crypto.CertificateAndKey;
 import org.openstack.crypto.KeyStoreUtils;
 import org.platformlayer.IoUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
 public class CertificateUtils {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(CertificateUtils.class);
+	private static final Logger log = LoggerFactory.getLogger(CertificateUtils.class);
 
 	public static byte[] serialize(Certificate certificate) {
 		try {

@@ -1,10 +1,10 @@
 //package org.platformlayer.metrics;
 //
-//import org.apache.log4j.Logger;
+//import org.slf4j.Logger;
 //
 //public class NullMetricsSystem implements MetricsSystem {
 //	@SuppressWarnings("unused")
-//	private static final Logger log = Logger.getLogger(NullMetricsSystem.class);
+//	private static final Logger log = LoggerFactory.getLogger(NullMetricsSystem.class);
 //
 //	@Override
 //	public void addInjected(Class<?> injected) {

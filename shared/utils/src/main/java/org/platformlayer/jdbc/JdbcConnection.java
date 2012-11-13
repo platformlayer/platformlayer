@@ -2,12 +2,13 @@ package org.platformlayer.jdbc;
 
 import java.sql.Connection;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.jdbc.simplejpa.ConnectionMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JdbcConnection {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(JdbcConnection.class);
+	private static final Logger log = LoggerFactory.getLogger(JdbcConnection.class);
 
 	final ConnectionMetadata metadata;
 	final Connection connection;

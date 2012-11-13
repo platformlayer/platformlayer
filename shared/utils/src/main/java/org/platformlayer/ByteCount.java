@@ -1,9 +1,10 @@
 package org.platformlayer;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ByteCount implements Comparable<ByteCount> {
-	static final Logger log = Logger.getLogger(ByteCount.class);
+	static final Logger log = LoggerFactory.getLogger(ByteCount.class);
 
 	static final long BYTES_IN_KILOBYTE = 1024L;
 	static final long BYTES_IN_MEGABYTE = 1024L * 1024L;

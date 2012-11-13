@@ -8,11 +8,12 @@ import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 
-import org.apache.log4j.Logger;
 import org.openstack.utils.Utf8;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class KeyParser {
-	private static final Logger log = Logger.getLogger(KeyParser.class);
+	private static final Logger log = LoggerFactory.getLogger(KeyParser.class);
 
 	public KeyParser() {
 	}

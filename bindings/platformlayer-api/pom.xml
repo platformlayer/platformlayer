@@ -27,15 +27,30 @@
             <groupId>org.platformlayer</groupId>
             <artifactId>keystone-client</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
-			<!-- Build statically typed bindings to XSD -->
+            <!-- Build statically typed bindings to XSD -->
             <plugin>
                 <groupId>org.jvnet.jaxb2.maven2</groupId>
-<!--              <groupId>org.codehaus.mojo</groupId>
-      -->
+                <!-- <groupId>org.codehaus.mojo</groupId> -->
                 <artifactId>maven-jaxb2-plugin</artifactId>
                 <configuration>
                     <catalog>src/main/schemas/resolver.cat</catalog>
@@ -47,11 +62,8 @@
                     <args>
                         <args>-extension</args>
                     </args>
-                   <!--  <args>
-                        <arg>-epsiode</arg>
-                        <arg>${project.basedir}/src/main/schemas/core/core.episode</arg>
-                    </args>
-                     -->
+                    <!-- <args> <arg>-epsiode</arg> <arg>${project.basedir}/src/main/schemas/core/core.episode</arg> 
+                        </args> -->
                 </configuration>
                 <executions>
                     <execution>

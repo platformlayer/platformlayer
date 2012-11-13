@@ -12,7 +12,6 @@ import java.util.Map;
 
 import javax.inject.Provider;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.jdbc.JdbcConnection;
 import org.platformlayer.jdbc.JdbcUtils;
 import org.platformlayer.jdbc.simplejpa.JoinedQueryResult;
@@ -20,12 +19,14 @@ import org.platformlayer.jdbc.simplejpa.JoinedQueryResult.ObjectList;
 import org.platformlayer.jdbc.simplejpa.ResultSetMapper;
 import org.platformlayer.jdbc.simplejpa.ResultSetMappers;
 import org.platformlayer.metrics.MetricTimer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 public class JdbcProxyInvocationHandler<T> implements InvocationHandler {
-	private static final Logger log = Logger.getLogger(JdbcProxyInvocationHandler.class);
+	private static final Logger log = LoggerFactory.getLogger(JdbcProxyInvocationHandler.class);
 
 	private final Class<T> interfaceType;
 	private final JdbcConnection jdbcConnection;

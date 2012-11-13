@@ -2,15 +2,11 @@ package org.platformlayer.choice;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.ops.OpsException;
 
 import com.google.common.base.Function;
 
 public abstract class ScoreChooser<T, V extends Comparable<V>> implements Chooser<T> {
-	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(ScoreChooser.class);
-
 	public static final boolean FIND_MINIMUM = false;
 	public static final boolean FIND_MAXIMUM = true;
 

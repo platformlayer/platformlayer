@@ -9,12 +9,13 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
 public class XmlWriter {
-	static final Logger log = Logger.getLogger(XmlWriter.class);
+	static final Logger log = LoggerFactory.getLogger(XmlWriter.class);
 
 	final TransformerHandler hd;
 	final AttributesImpl atts = new AttributesImpl();

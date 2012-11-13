@@ -3,15 +3,16 @@ package org.platformlayer.rest;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.ByteSourceBase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.MessageLite;
 
 public class ByteStringByteSource extends ByteSourceBase {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(ByteStringByteSource.class);
+	private static final Logger log = LoggerFactory.getLogger(ByteStringByteSource.class);
 	public static final ByteStringByteSource EMPTY = new ByteStringByteSource(ByteString.EMPTY);
 	private final ByteString bytes;
 

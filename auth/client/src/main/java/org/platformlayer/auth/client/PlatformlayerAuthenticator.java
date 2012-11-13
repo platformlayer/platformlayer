@@ -10,6 +10,7 @@ import javax.net.ssl.TrustManager;
 
 import org.platformlayer.auth.Authenticator;
 import org.platformlayer.auth.PlatformlayerAuthenticationException;
+import org.platformlayer.auth.v1.AuthenticateResponse;
 import org.platformlayer.auth.v1.PasswordCredentials;
 import org.platformlayer.crypto.AcceptAllHostnameVerifier;
 import org.platformlayer.crypto.PublicKeyTrustManager;
@@ -54,7 +55,8 @@ public class PlatformlayerAuthenticator implements Authenticator {
 			passwordCredentials.setUsername(username);
 			passwordCredentials.setPassword(password);
 
-			token = client.authenticate(passwordCredentials);
+			AuthenticateResponse response = client.authenticate(passwordCredentials);
+			token = new PlatformlayerAuthenticationToken(response.getAccess());
 		}
 		return token;
 	}

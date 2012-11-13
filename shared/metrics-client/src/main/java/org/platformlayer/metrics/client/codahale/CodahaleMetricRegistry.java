@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.metrics.HasMetrics;
 import org.platformlayer.metrics.MetricHistogram;
 import org.platformlayer.metrics.MetricKey;
@@ -12,6 +11,8 @@ import org.platformlayer.metrics.MetricMeter;
 import org.platformlayer.metrics.MetricRegistry;
 import org.platformlayer.metrics.MetricTimer;
 import org.platformlayer.metrics.MetricsSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
@@ -19,8 +20,7 @@ import com.yammer.metrics.core.MetricName;
 import com.yammer.metrics.core.MetricsRegistry;
 
 public class CodahaleMetricRegistry implements MetricRegistry {
-	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(CodahaleMetricRegistry.class);
+	private static final Logger log = LoggerFactory.getLogger(CodahaleMetricRegistry.class);
 
 	final MetricsRegistry registry;
 

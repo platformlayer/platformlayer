@@ -13,7 +13,6 @@ import java.util.Date;
 
 import javax.security.auth.x500.X500Principal;
 
-import org.apache.log4j.Logger;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.Certificate;
@@ -31,11 +30,13 @@ import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
 import org.platformlayer.ops.OpsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SimpleCertificateAuthority {
 	private static final String SIGNATURE_ALGORITHM = "SHA256WithRSAEncryption";
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(SimpleCertificateAuthority.class);
+	private static final Logger log = LoggerFactory.getLogger(SimpleCertificateAuthority.class);
 	private static final long ONE_DAY = 24L * 60L * 60L * 1000L;
 
 	public X509Certificate[] caCertificate;

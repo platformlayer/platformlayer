@@ -2,14 +2,15 @@ package org.platformlayer.config;
 
 import java.lang.reflect.Field;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 import com.google.inject.MembersInjector;
 
 class ConfiguredFieldInjector<T> implements MembersInjector<T> {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(ConfiguredFieldInjector.class);
+	private static final Logger log = LoggerFactory.getLogger(ConfiguredFieldInjector.class);
 
 	final Configuration configuration;
 	final Field field;

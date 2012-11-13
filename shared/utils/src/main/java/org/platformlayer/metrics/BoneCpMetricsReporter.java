@@ -2,7 +2,8 @@ package org.platformlayer.metrics;
 
 import java.lang.reflect.Field;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPDataSource;
@@ -10,7 +11,7 @@ import com.jolbox.bonecp.Statistics;
 
 public class BoneCpMetricsReporter implements MetricsSource {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(BoneCpMetricsReporter.class);
+	private static final Logger log = LoggerFactory.getLogger(BoneCpMetricsReporter.class);
 
 	BoneCP pool;
 

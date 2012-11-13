@@ -33,7 +33,8 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stax.StAXSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -44,7 +45,7 @@ import org.xml.sax.SAXException;
 import com.google.common.collect.Lists;
 
 public class XmlHelper {
-	static final Logger log = Logger.getLogger(XmlHelper.class);
+	static final Logger log = LoggerFactory.getLogger(XmlHelper.class);
 
 	public static XMLStreamReader buildXmlStreamReader(String xml) throws XMLStreamException {
 		XMLInputFactory factory = XMLInputFactory.newInstance();

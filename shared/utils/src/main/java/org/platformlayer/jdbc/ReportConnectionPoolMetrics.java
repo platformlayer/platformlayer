@@ -2,7 +2,7 @@
 //
 //import java.lang.reflect.Field;
 //
-//import org.apache.log4j.Logger;
+//import org.slf4j.Logger;
 //
 //import com.jolbox.bonecp.BoneCP;
 //import com.jolbox.bonecp.BoneCPDataSource;
@@ -12,7 +12,7 @@
 //
 //public class ReportConnectionPoolMetrics {
 //	@SuppressWarnings("unused")
-//	private static final Logger log = Logger.getLogger(ReportConnectionPoolMetrics.class);
+//	private static final Logger log = LoggerFactory.getLogger(ReportConnectionPoolMetrics.class);
 //
 //	final Class<?> context;
 //	final String prefix;

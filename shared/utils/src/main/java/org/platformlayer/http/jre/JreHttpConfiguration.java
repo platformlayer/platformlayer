@@ -3,14 +3,15 @@ package org.platformlayer.http.jre;
 import java.io.IOException;
 import java.net.URI;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.http.HttpConfiguration;
 import org.platformlayer.http.HttpRequest;
 import org.platformlayer.http.SslConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JreHttpConfiguration implements HttpConfiguration {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(JreHttpConfiguration.class);
+	private static final Logger log = LoggerFactory.getLogger(JreHttpConfiguration.class);
 
 	final SslConfiguration sslConfiguration;
 

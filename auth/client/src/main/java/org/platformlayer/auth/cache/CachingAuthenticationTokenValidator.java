@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.auth.AuthenticationTokenValidator;
 import org.platformlayer.crypto.CertificateUtils;
 import org.platformlayer.metrics.CacheMetricsReporter;
@@ -20,9 +19,6 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
 public class CachingAuthenticationTokenValidator implements AuthenticationTokenValidator, HasMetrics {
-	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(CachingAuthenticationTokenValidator.class);
-
 	static final int CACHE_MAX_SIZE = 1000;
 	static final int CACHE_VALIDITY_MINUTES = 5;
 

@@ -5,12 +5,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.ByteSourceBase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FileByteSource extends ByteSourceBase {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(FileByteSource.class);
+	private static final Logger log = LoggerFactory.getLogger(FileByteSource.class);
 	private final File file;
 
 	public FileByteSource(File file) {

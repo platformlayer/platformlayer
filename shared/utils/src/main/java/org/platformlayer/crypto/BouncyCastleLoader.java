@@ -2,12 +2,13 @@ package org.platformlayer.crypto;
 
 import java.security.Security;
 
-import org.apache.log4j.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BouncyCastleLoader {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(BouncyCastleLoader.class);
+	private static final Logger log = LoggerFactory.getLogger(BouncyCastleLoader.class);
 
 	static BouncyCastleProvider provider;
 

@@ -4,15 +4,16 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
 import org.openstack.utils.PropertyUtils;
 import org.platformlayer.ops.OpsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Binder;
 import com.google.inject.name.Names;
 
 public class Configuration {
-	private static final Logger log = Logger.getLogger(Configuration.class);
+	private static final Logger log = LoggerFactory.getLogger(Configuration.class);
 
 	final File basePath;
 	final Properties properties;

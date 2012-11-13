@@ -5,10 +5,11 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.metrics.BoneCpMetricsReporter;
 import org.platformlayer.metrics.MetricKey;
 import org.platformlayer.metrics.MetricRegistry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Maps;
 import com.jolbox.bonecp.BoneCPDataSource;
@@ -16,7 +17,7 @@ import com.jolbox.bonecp.BoneCPDataSource;
 @Singleton
 public class DatabaseStatistics {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(DatabaseStatistics.class);
+	private static final Logger log = LoggerFactory.getLogger(DatabaseStatistics.class);
 
 	final Map<String, BoneCPDataSource> dataSources = Maps.newHashMap();
 

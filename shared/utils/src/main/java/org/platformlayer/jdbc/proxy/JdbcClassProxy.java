@@ -10,19 +10,20 @@ import java.util.concurrent.ExecutionException;
 
 import javax.inject.Provider;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.jdbc.JdbcConnection;
 import org.platformlayer.jdbc.simplejpa.ResultSetMappers;
 import org.platformlayer.metrics.MetricKey;
 import org.platformlayer.metrics.MetricRegistry;
 import org.platformlayer.metrics.MetricTimer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 public class JdbcClassProxy<T> {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(JdbcClassProxy.class);
+	private static final Logger log = LoggerFactory.getLogger(JdbcClassProxy.class);
 
 	final MetricRegistry metricsSystem;
 	final Class<T> interfaceType;

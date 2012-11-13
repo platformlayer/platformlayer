@@ -4,17 +4,18 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.postgresql.PGResultSetMetaData;
 import org.postgresql.core.Field;
 import org.postgresql.jdbc2.AbstractJdbc2ResultSetMetaData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
 public class ConnectionMetadata {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(ConnectionMetadata.class);
+	private static final Logger log = LoggerFactory.getLogger(ConnectionMetadata.class);
 
 	final Map<Integer, String> tableInfoCache = Maps.newHashMap();
 

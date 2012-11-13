@@ -5,17 +5,14 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.platformlayer.ByteSourceBase;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class ArrayByteSource extends ByteSourceBase {
-	@SuppressWarnings("unused")
-	private static final Logger log = LoggerFactory.getLogger(ArrayByteSource.class);
-	public static final ArrayByteSource EMPTY = new ArrayByteSource(new byte[0]);
+import com.google.common.base.Charsets;
+
+public class Utf8StringByteSource extends ByteSourceBase {
 	private final byte[] bytes;
 
-	public ArrayByteSource(byte[] bytes) {
-		this.bytes = bytes;
+	public Utf8StringByteSource(String s) {
+		this.bytes = s.getBytes(Charsets.UTF_8);
 	}
 
 	@Override
@@ -31,4 +28,10 @@ public class ArrayByteSource extends ByteSourceBase {
 	@Override
 	public void close() throws IOException {
 	}
+
+	@Override
+	public String toString() {
+		return "Utf8StringByteSource [len=" + bytes.length + "]";
+	}
+
 }

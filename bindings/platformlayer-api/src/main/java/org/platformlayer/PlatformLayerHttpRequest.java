@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 import com.google.protobuf.ByteString;
 
 class PlatformLayerHttpRequest implements Closeable {
-	static final Logger log = LoggerFactory.getLogger(PlatformLayerHttpRequest.class);
+	private static final Logger log = LoggerFactory.getLogger(PlatformLayerHttpRequest.class);
 
 	final PlatformLayerHttpTransport client;
 	final HttpRequest httpRequest;

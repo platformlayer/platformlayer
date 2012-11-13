@@ -5,15 +5,12 @@ import java.security.cert.X509Certificate;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.auth.AuthenticationService;
 import org.platformlayer.auth.PlatformlayerAuthenticationException;
+import org.platformlayer.auth.v1.AuthenticateResponse;
 import org.platformlayer.auth.v1.PasswordCredentials;
 
 public class PlatformlayerAuthenticationService implements AuthenticationService {
-	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(PlatformlayerAuthenticationService.class);
-
 	@Inject
 	PlatformlayerAuthenticationClient keystoneUserClient;
 
@@ -87,7 +84,8 @@ public class PlatformlayerAuthenticationService implements AuthenticationService
 		passwordCredentials.setPassword(password);
 
 		// TODO: Cache auth tokens??
-		PlatformlayerAuthenticationToken authToken = keystoneUserClient.authenticate(passwordCredentials);
+		AuthenticateResponse response = keystoneUserClient.authenticate(passwordCredentials);
+		PlatformlayerAuthenticationToken authToken = new PlatformlayerAuthenticationToken(response.getAccess());
 
 		return authToken;
 

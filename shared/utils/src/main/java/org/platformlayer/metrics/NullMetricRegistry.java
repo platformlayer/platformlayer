@@ -3,11 +3,12 @@ package org.platformlayer.metrics;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class NullMetricRegistry implements MetricRegistry {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(NullMetricRegistry.class);
+	private static final Logger log = LoggerFactory.getLogger(NullMetricRegistry.class);
 
 	@Override
 	public void discoverMetrics(Object o) {

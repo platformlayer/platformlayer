@@ -3,11 +3,12 @@ package org.platformlayer.web;
 import java.io.PrintWriter;
 import java.util.Stack;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 public class XhtmlWriter extends XmlWriter {
-	static final Logger log = Logger.getLogger(XhtmlWriter.class);
+	static final Logger log = LoggerFactory.getLogger(XhtmlWriter.class);
 
 	public XhtmlWriter(PrintWriter out) throws SAXException {
 		super(out);

@@ -4,8 +4,9 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.sql.DataSource;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.config.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Provider;
 import com.google.inject.assistedinject.Assisted;
@@ -13,7 +14,7 @@ import com.jolbox.bonecp.BoneCPDataSource;
 
 @Singleton
 public class GuiceDataSourceProvider implements Provider<DataSource> {
-	private static final Logger log = Logger.getLogger(GuiceDataSourceProvider.class);
+	private static final Logger log = LoggerFactory.getLogger(GuiceDataSourceProvider.class);
 
 	private final JdbcConfiguration jdbcConfig;
 

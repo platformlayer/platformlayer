@@ -3,7 +3,6 @@ package org.platformlayer.federation;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.HttpPlatformLayerClient;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.TypedItemMapper;
@@ -15,6 +14,8 @@ import org.platformlayer.federation.model.PlatformLayerConnectionConfiguration;
 import org.platformlayer.http.HttpStrategy;
 import org.platformlayer.ids.FederationKey;
 import org.platformlayer.ids.ProjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
@@ -25,7 +26,7 @@ import com.google.common.collect.Maps;
  * Maps platform layer keys to one or more children.
  */
 public class FederationMap {
-	private static final Logger log = Logger.getLogger(FederationMap.class);
+	private static final Logger log = LoggerFactory.getLogger(FederationMap.class);
 
 	private final Map<FederationMapping, MappedTarget> targetMap;
 	private final TypedItemMapper mapper;

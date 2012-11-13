@@ -27,10 +27,11 @@ import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 
-import org.apache.log4j.Logger;
 import org.openstack.utils.Utf8;
 import org.platformlayer.CastUtils;
 import org.platformlayer.IoUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -39,7 +40,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.MapMaker;
 
 public class JaxbHelper {
-	static final Logger log = Logger.getLogger(JaxbHelper.class);
+	static final Logger log = LoggerFactory.getLogger(JaxbHelper.class);
 
 	static ConcurrentMap<Class<?>, JaxbHelper> jaxbHelpers = new MapMaker()
 			.makeComputingMap(new Function<Class<?>, JaxbHelper>() {

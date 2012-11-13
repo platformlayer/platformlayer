@@ -6,17 +6,18 @@ import java.security.PublicKey;
 
 import javax.security.auth.x500.X500Principal;
 
-import org.apache.log4j.Logger;
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
 import org.bouncycastle.crypto.util.PrivateKeyFactory;
 import org.bouncycastle.jce.X509Principal;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BouncyCastleHelpers {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(BouncyCastleHelpers.class);
+	private static final Logger log = LoggerFactory.getLogger(BouncyCastleHelpers.class);
 
 	public static X500Name toX500Name(X500Principal principal) {
 		try {

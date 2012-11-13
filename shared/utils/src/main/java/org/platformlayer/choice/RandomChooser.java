@@ -3,11 +3,12 @@ package org.platformlayer.choice;
 import java.util.List;
 import java.util.Random;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RandomChooser<T> implements Chooser<T> {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(RandomChooser.class);
+	private static final Logger log = LoggerFactory.getLogger(RandomChooser.class);
 
 	private final Random random = new Random();
 

@@ -1,11 +1,12 @@
 package org.platformlayer.cas;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.choice.ScoreChooser;
 import org.platformlayer.ops.OpsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CasPickClosestStore extends ScoreChooser<CasStore, Integer> {
-	private static final Logger log = Logger.getLogger(CasPickClosestStore.class);
+	private static final Logger log = LoggerFactory.getLogger(CasPickClosestStore.class);
 
 	final CasLocation dest;
 

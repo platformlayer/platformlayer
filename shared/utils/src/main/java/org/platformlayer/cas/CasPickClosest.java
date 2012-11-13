@@ -1,10 +1,11 @@
 package org.platformlayer.cas;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.choice.ScoreChooser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CasPickClosest extends ScoreChooser<CasStoreObject, Integer> {
-	private static final Logger log = Logger.getLogger(CasPickClosest.class);
+	private static final Logger log = LoggerFactory.getLogger(CasPickClosest.class);
 
 	final CasLocation dest;
 

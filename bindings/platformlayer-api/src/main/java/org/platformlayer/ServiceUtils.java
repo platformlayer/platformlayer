@@ -2,13 +2,14 @@ package org.platformlayer;
 
 import java.util.Collection;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.core.model.ServiceInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
 
 public class ServiceUtils {
-	static final Logger log = Logger.getLogger(ServiceUtils.class);
+	private static final Logger log = LoggerFactory.getLogger(ServiceUtils.class);
 
 	public static ServiceInfo findByNamespace(Collection<ServiceInfo> services, String namespace) {
 		if (services != null) {

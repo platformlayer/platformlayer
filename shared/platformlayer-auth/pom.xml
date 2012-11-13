@@ -24,6 +24,11 @@
         </dependency>
 
         <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.platformlayer</groupId>
             <artifactId>platformlayer-shared-utils</artifactId>
         </dependency>
@@ -32,7 +37,12 @@
             <groupId>org.platformlayer</groupId>
             <artifactId>keystone-api</artifactId>
         </dependency>
-        
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
         <!-- Database drivers -->
         <dependency>
             <groupId>commons-dbcp</groupId>
@@ -42,6 +52,11 @@
         <dependency>
             <groupId>postgresql</groupId>
             <artifactId>postgresql</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate.javax.persistence</groupId>
+            <artifactId>hibernate-jpa-2.0-api</artifactId>
         </dependency>
     </dependencies>
 

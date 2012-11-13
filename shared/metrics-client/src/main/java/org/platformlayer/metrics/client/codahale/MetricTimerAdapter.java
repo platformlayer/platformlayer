@@ -1,15 +1,11 @@
 package org.platformlayer.metrics.client.codahale;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.metrics.MetricTimer;
 
 import com.yammer.metrics.core.Timer;
 import com.yammer.metrics.core.TimerContext;
 
 public class MetricTimerAdapter implements MetricTimer {
-	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(MetricTimerAdapter.class);
-
 	final Timer timer;
 
 	MetricTimerAdapter(Timer timer) {

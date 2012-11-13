@@ -13,17 +13,18 @@ import java.util.Map.Entry;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.ByteSource;
 import org.platformlayer.IoUtils;
 import org.platformlayer.http.HttpRequest;
 import org.platformlayer.http.HttpResponse;
 import org.platformlayer.http.SslConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Maps;
 
 public class JreHttpRequest implements HttpRequest {
-	static final Logger log = Logger.getLogger(JreHttpRequest.class);
+	static final Logger log = LoggerFactory.getLogger(JreHttpRequest.class);
 
 	final HttpURLConnection httpConn;
 	final URI uri;

@@ -2,12 +2,13 @@ package org.platformlayer.alerts;
 
 import javax.inject.Singleton;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Singleton
 public class SimpleAlerts extends AlertsBase {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(SimpleAlerts.class);
+	private static final Logger log = LoggerFactory.getLogger(SimpleAlerts.class);
 
 	@Override
 	protected void alert(AlertLevel level, String message, Exception e) {

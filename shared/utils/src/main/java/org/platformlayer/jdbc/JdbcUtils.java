@@ -5,11 +5,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.IoUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JdbcUtils {
-	static final Logger log = Logger.getLogger(IoUtils.class);
+	static final Logger log = LoggerFactory.getLogger(IoUtils.class);
 
 	public static void safeClose(Connection closeable) {
 		if (closeable == null) {

@@ -11,16 +11,17 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.apache.log4j.Logger;
 import org.openstack.crypto.CertificateAndKey;
 import org.openstack.crypto.KeyStoreUtils;
 import org.openstack.crypto.SimpleCertificateAndKey;
 import org.platformlayer.config.Configuration;
 import org.platformlayer.ops.OpsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Singleton
 public class KeyStoreEncryptionStore implements EncryptionStore {
-	private static final Logger log = Logger.getLogger(KeyStoreEncryptionStore.class);
+	private static final Logger log = LoggerFactory.getLogger(KeyStoreEncryptionStore.class);
 
 	private static final String DEFAULT_PASSWORD = KeyStoreUtils.DEFAULT_KEYSTORE_SECRET;
 

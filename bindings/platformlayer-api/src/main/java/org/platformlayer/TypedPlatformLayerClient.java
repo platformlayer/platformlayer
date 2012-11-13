@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.common.UntypedItem;
 import org.platformlayer.common.UntypedItemCollection;
 import org.platformlayer.core.model.Action;
@@ -30,11 +29,13 @@ import org.platformlayer.metrics.model.MetricInfoCollection;
 import org.platformlayer.metrics.model.MetricQuery;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.xml.JaxbHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
 public class TypedPlatformLayerClient implements PlatformLayerClient {
-	static final Logger log = Logger.getLogger(TypedPlatformLayerClient.class);
+	private static final Logger log = LoggerFactory.getLogger(TypedPlatformLayerClient.class);
 
 	final PlatformLayerClient platformLayerClient;
 	final TypedItemMapper mapper;

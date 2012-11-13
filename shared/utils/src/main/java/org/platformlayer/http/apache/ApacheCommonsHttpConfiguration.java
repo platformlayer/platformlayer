@@ -16,14 +16,15 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.impl.conn.SchemeRegistryFactory;
 import org.apache.http.params.HttpParams;
-import org.apache.log4j.Logger;
 import org.platformlayer.http.HttpConfiguration;
 import org.platformlayer.http.HttpRequest;
 import org.platformlayer.http.SslConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ApacheCommonsHttpConfiguration implements HttpConfiguration {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(ApacheCommonsHttpConfiguration.class);
+	private static final Logger log = LoggerFactory.getLogger(ApacheCommonsHttpConfiguration.class);
 
 	final HttpClient httpClient;
 

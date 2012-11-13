@@ -6,12 +6,13 @@ import java.util.Collection;
 
 import javax.net.ssl.TrustManager;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CustomTrustManagerSslContextFactory extends SslContextFactory {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(CustomTrustManagerSslContextFactory.class);
+	private static final Logger log = LoggerFactory.getLogger(CustomTrustManagerSslContextFactory.class);
 	private TrustManager[] trustManagers;
 
 	public CustomTrustManagerSslContextFactory() {

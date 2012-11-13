@@ -1,6 +1,5 @@
 package org.platformlayer.rest;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -8,11 +7,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import javax.net.ssl.KeyManager;
-import javax.xml.bind.JAXBException;
 
-import org.apache.log4j.Logger;
-import org.json.JSONObject;
-import org.platformlayer.ByteSource;
 import org.platformlayer.CastUtils;
 import org.platformlayer.IoUtils;
 import org.platformlayer.http.HttpConfiguration;
@@ -22,11 +17,11 @@ import org.platformlayer.http.HttpStrategy;
 import org.platformlayer.http.SslConfiguration;
 import org.platformlayer.xml.JaxbHelper;
 import org.platformlayer.xml.UnmarshalException;
-
-import com.google.protobuf.ByteString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JreRestfulClient implements RestfulClient {
-	static final Logger log = Logger.getLogger(JreRestfulClient.class);
+	static final Logger log = LoggerFactory.getLogger(JreRestfulClient.class);
 
 	final String baseUrl;
 	final HttpStrategy httpStrategy;
@@ -48,12 +43,12 @@ public class JreRestfulClient implements RestfulClient {
 	public class JreRequest<T> implements RestfulRequest<T> {
 		String method;
 		String relativeUri;
-		Object postObject;
+		HttpPayload postObject;
 		Class<T> responseClass;
 
 		SslConfiguration sslConfiguration = null;
 
-		JreRequest(String method, String relativeUri, Object postObject, Class<T> responseClass) {
+		JreRequest(String method, String relativeUri, HttpPayload postObject, Class<T> responseClass) {
 			super();
 			this.method = method;
 			this.relativeUri = relativeUri;
@@ -83,28 +78,12 @@ public class JreRestfulClient implements RestfulClient {
 				}
 
 				if (postObject != null) {
-					String data = null;
-
-					if (postObject instanceof JSONObject) {
-						httpRequest.setRequestHeader("Content-Type", "application/json");
-						data = ((JSONObject) postObject).toString();
-					} else if (postObject instanceof byte[]) {
-						httpRequest.setRequestContent(new ArrayByteSource((byte[]) postObject));
-					} else if (postObject instanceof ByteSource) {
-						httpRequest.setRequestContent((ByteSource) postObject);
-					} else if (postObject instanceof File) {
-						httpRequest.setRequestContent(new FileByteSource((File) postObject));
-					} else {
-						httpRequest.setRequestHeader("Content-Type", "application/xml");
-						data = serializeXml(postObject);
+					String contentType = postObject.getContentType();
+					if (contentType != null) {
+						httpRequest.setRequestHeader("Content-Type", contentType);
 					}
 
-					if (data != null) {
-						httpRequest.setRequestContent(new ByteStringByteSource(ByteString.copyFromUtf8(data)));
-						if (debug != null) {
-							debug.println(data);
-						}
-					}
+					httpRequest.setRequestContent(postObject.getContent());
 				}
 
 				response = httpRequest.doRequest();
@@ -112,7 +91,7 @@ public class JreRestfulClient implements RestfulClient {
 				int responseCode = response.getHttpResponseCode();
 				switch (responseCode) {
 				case 401:
-					throw new RestClientException("Authentication failure (401)");
+					throw new RestClientException("Authentication failure (401)", null, responseCode);
 
 				case 200:
 				case 203: {
@@ -161,15 +140,6 @@ public class JreRestfulClient implements RestfulClient {
 		}
 	}
 
-	String serializeXml(Object object) throws RestClientException {
-		try {
-			boolean formatted = false;
-			return JaxbHelper.toXml(object, formatted);
-		} catch (JAXBException e) {
-			throw new RestClientException("Error serializing data", e);
-		}
-	}
-
 	public String getBaseUrl() {
 		return baseUrl;
 	}
@@ -180,7 +150,7 @@ public class JreRestfulClient implements RestfulClient {
 	}
 
 	@Override
-	public <T> RestfulRequest<T> buildRequest(String method, String relativeUri, Object postObject,
+	public <T> RestfulRequest<T> buildRequest(String method, String relativeUri, HttpPayload postObject,
 			Class<T> responseClass) {
 		return new JreRequest<T>(method, relativeUri, postObject, responseClass);
 	}

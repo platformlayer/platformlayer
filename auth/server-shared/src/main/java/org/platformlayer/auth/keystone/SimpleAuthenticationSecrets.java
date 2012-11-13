@@ -1,12 +1,11 @@
 package org.platformlayer.auth.keystone;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.apache.log4j.Logger;
-import org.bouncycastle.util.Arrays;
 import org.platformlayer.config.Configuration;
 import org.platformlayer.crypto.CryptoUtils;
 
@@ -17,8 +16,6 @@ import com.google.common.primitives.Bytes;
 
 @Singleton
 public class SimpleAuthenticationSecrets implements AuthenticationSecrets {
-	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(SimpleAuthenticationSecrets.class);
 
 	final Map<Byte, CryptoKey> secrets = Maps.newHashMap();
 

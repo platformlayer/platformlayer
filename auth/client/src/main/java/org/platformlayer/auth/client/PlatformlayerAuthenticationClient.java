@@ -25,6 +25,7 @@ import org.platformlayer.crypto.RsaUtils;
 import org.platformlayer.crypto.SimpleClientCertificateKeyManager;
 import org.platformlayer.http.HttpStrategy;
 import org.platformlayer.http.SslConfiguration;
+import org.platformlayer.rest.HttpPayload;
 import org.platformlayer.rest.JreRestfulClient;
 import org.platformlayer.rest.RestClientException;
 import org.platformlayer.rest.RestfulClient;
@@ -85,7 +86,7 @@ public class PlatformlayerAuthenticationClient {
 		}
 	}
 
-	public PlatformlayerAuthenticationToken authenticate(PasswordCredentials passwordCredentials)
+	public AuthenticateResponse authenticate(PasswordCredentials passwordCredentials)
 			throws PlatformlayerAuthenticationException {
 		Auth auth = new Auth();
 		auth.setPasswordCredentials(passwordCredentials);
@@ -95,8 +96,13 @@ public class PlatformlayerAuthenticationClient {
 
 		AuthenticateResponse response;
 		try {
-			response = doSimpleRequest("POST", "tokens", request, AuthenticateResponse.class);
+			response = doSimpleXmlRequest("POST", "tokens", request, AuthenticateResponse.class);
 		} catch (RestClientException e) {
+			Integer httpResponseCode = e.getHttpResponseCode();
+			if (httpResponseCode != null && httpResponseCode == 401) {
+				throw new PlatformlayerInvalidCredentialsException("Invalid credentials");
+			}
+
 			throw new PlatformlayerAuthenticationException("Error authenticating", e);
 		}
 
@@ -108,7 +114,7 @@ public class PlatformlayerAuthenticationClient {
 		// }
 		// }
 
-		return new PlatformlayerAuthenticationToken(response.getAccess());
+		return response;
 	}
 
 	public PlatformlayerAuthenticationToken authenticateWithCertificate(String username,
@@ -131,8 +137,8 @@ public class PlatformlayerAuthenticationClient {
 		for (int i = 0; i < 2; i++) {
 			AuthenticateResponse response;
 			try {
-				RestfulRequest<AuthenticateResponse> httpRequest = httpClient.buildRequest("POST", "tokens", request,
-						AuthenticateResponse.class);
+				RestfulRequest<AuthenticateResponse> httpRequest = httpClient.buildRequest("POST", "tokens",
+						HttpPayload.asXml(request), AuthenticateResponse.class);
 
 				httpRequest.setKeyManager(keyManager);
 
@@ -160,9 +166,10 @@ public class PlatformlayerAuthenticationClient {
 		return null;
 	}
 
-	protected <T> T doSimpleRequest(String method, String relativeUri, Object postObject, Class<T> responseClass)
+	protected <T> T doSimpleXmlRequest(String method, String relativeUri, Object postObject, Class<T> responseClass)
 			throws RestClientException {
-		RestfulRequest<T> request = httpClient.buildRequest(method, relativeUri, postObject, responseClass);
+		HttpPayload payload = postObject != null ? HttpPayload.asXml(postObject) : null;
+		RestfulRequest<T> request = httpClient.buildRequest(method, relativeUri, payload, responseClass);
 		return request.execute();
 	}
 

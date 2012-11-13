@@ -3,10 +3,11 @@ package org.platformlayer.http.apache;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.http.HttpConfiguration;
 import org.platformlayer.http.HttpStrategy;
 import org.platformlayer.http.SslConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -15,7 +16,7 @@ import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
 
 public abstract class CachingHttpStrategy implements HttpStrategy {
-	private static final Logger log = Logger.getLogger(CachingHttpStrategy.class);
+	private static final Logger log = LoggerFactory.getLogger(CachingHttpStrategy.class);
 
 	private static final long MAX_SIZE = 32;
 

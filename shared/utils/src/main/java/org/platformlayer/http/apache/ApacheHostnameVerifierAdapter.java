@@ -9,12 +9,8 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 
 import org.apache.http.conn.ssl.X509HostnameVerifier;
-import org.apache.log4j.Logger;
 
 public class ApacheHostnameVerifierAdapter implements X509HostnameVerifier {
-	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(ApacheHostnameVerifierAdapter.class);
-
 	final HostnameVerifier hostnameVerifier;
 
 	public ApacheHostnameVerifierAdapter(HostnameVerifier hostnameVerifier) {

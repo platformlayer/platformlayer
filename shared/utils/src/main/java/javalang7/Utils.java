@@ -3,10 +3,11 @@ package javalang7;
 import java.io.Closeable;
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Utils {
-	static final Logger log = Logger.getLogger(Utils.class);
+	static final Logger log = LoggerFactory.getLogger(Utils.class);
 
 	public static void safeClose(Closeable closeable) {
 		if (closeable == null) {

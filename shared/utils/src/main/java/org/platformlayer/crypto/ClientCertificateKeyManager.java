@@ -13,12 +13,13 @@ import java.util.List;
 
 import javax.net.ssl.X509KeyManager;
 
-import org.apache.log4j.Logger;
 import org.openstack.crypto.KeyStoreUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ClientCertificateKeyManager implements X509KeyManager {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(ClientCertificateKeyManager.class);
+	private static final Logger log = LoggerFactory.getLogger(ClientCertificateKeyManager.class);
 
 	private final KeyStore keystore;
 

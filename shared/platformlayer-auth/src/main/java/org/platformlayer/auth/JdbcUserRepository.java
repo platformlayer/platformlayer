@@ -17,7 +17,6 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.security.auth.x500.X500Principal;
 
-import org.apache.log4j.Logger;
 import org.openstack.crypto.CertificateAndKey;
 import org.openstack.crypto.SimpleCertificateAndKey;
 import org.openstack.utils.Utf8;
@@ -39,6 +38,8 @@ import org.platformlayer.jdbc.proxy.QueryFactory;
 import org.platformlayer.metrics.Instrumented;
 import org.platformlayer.model.RoleId;
 import org.platformlayer.ops.OpsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fathomdb.crypto.CryptoKey;
 import com.fathomdb.crypto.FathomdbCrypto;
@@ -47,7 +48,7 @@ import com.google.common.collect.Lists;
 
 @Instrumented
 public class JdbcUserRepository implements UserRepository, UserDatabase {
-	static final Logger log = Logger.getLogger(JdbcUserRepository.class);
+	private static final Logger log = LoggerFactory.getLogger(JdbcUserRepository.class);
 
 	@Inject
 	Provider<JdbcConnection> connectionProvider;

@@ -3,12 +3,13 @@ package org.platformlayer;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 //@SerializedBy(TimeSpanSerializer.class)
 //@UseConverter(TimeSpan.TimeSpanConverter.class)
 public class TimeSpan implements Comparable<TimeSpan> {
-	static final Logger log = Logger.getLogger(TimeSpan.class);
+	static final Logger log = LoggerFactory.getLogger(TimeSpan.class);
 
 	public static final TimeSpan ONE_SECOND = new TimeSpan("1s", 1000);
 	public static final TimeSpan TWO_SECONDS = new TimeSpan("2s", 2000);

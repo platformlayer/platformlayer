@@ -8,13 +8,14 @@ import java.util.concurrent.TimeUnit;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 public class CacheInterceptor implements MethodInterceptor {
-	private static final Logger log = Logger.getLogger(CacheInterceptor.class);
+	private static final Logger log = LoggerFactory.getLogger(CacheInterceptor.class);
 
 	final Cache<Method, CacheStore> caches = CacheBuilder.newBuilder().build();
 

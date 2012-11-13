@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.CheckedFunction;
 import org.platformlayer.Format;
 import org.platformlayer.PlatformLayerAuthenticationException;
@@ -47,6 +46,8 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.service.federation.v1.FederatedService;
 import org.platformlayer.service.federation.v1.FederatedServiceMap;
 import org.platformlayer.xml.JaxbHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
@@ -54,7 +55,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
-	static final Logger log = Logger.getLogger(FederatedPlatformLayerClient.class);
+	private static final Logger log = LoggerFactory.getLogger(FederatedPlatformLayerClient.class);
 
 	// TODO: We could maybe do this with a Dynamic Proxy (i.e. MethodInvocation magic)??
 

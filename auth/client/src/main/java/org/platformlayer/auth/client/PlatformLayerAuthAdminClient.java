@@ -35,6 +35,7 @@ import org.platformlayer.http.UrlUtils;
 import org.platformlayer.model.AuthenticationToken;
 import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.rest.HttpPayload;
 import org.platformlayer.rest.JreRestfulClient;
 import org.platformlayer.rest.RestClientException;
 import org.platformlayer.rest.RestfulClient;
@@ -103,7 +104,7 @@ public class PlatformLayerAuthAdminClient implements AuthenticationTokenValidato
 		url += "?project=" + UrlUtils.urlEncode(projectId);
 
 		try {
-			ValidateTokenResponse response = doSimpleRequest("GET", url, null, ValidateTokenResponse.class);
+			ValidateTokenResponse response = doSimpleXmlRequest("GET", url, null, ValidateTokenResponse.class);
 
 			ValidateAccess access = response.getAccess();
 			if (access == null) {
@@ -160,7 +161,7 @@ public class PlatformLayerAuthAdminClient implements AuthenticationTokenValidato
 		CertificateChainInfo chainInfo = CertificateChains.toModel(chain);
 
 		try {
-			ValidateTokenResponse response = doSimpleRequest("POST", url, chainInfo, ValidateTokenResponse.class);
+			ValidateTokenResponse response = doSimpleXmlRequest("POST", url, chainInfo, ValidateTokenResponse.class);
 
 			ValidateAccess access = response.getAccess();
 			if (access == null) {
@@ -201,7 +202,7 @@ public class PlatformLayerAuthAdminClient implements AuthenticationTokenValidato
 		request.setProjectSecret(FathomdbCrypto.serialize(projectSecret));
 
 		try {
-			SignCertificateResponse response = doSimpleRequest("POST", url, request, SignCertificateResponse.class);
+			SignCertificateResponse response = doSimpleXmlRequest("POST", url, request, SignCertificateResponse.class);
 
 			List<X509Certificate> certificates = Lists.newArrayList();
 			for (String cert : response.getCertificates()) {
@@ -221,7 +222,7 @@ public class PlatformLayerAuthAdminClient implements AuthenticationTokenValidato
 		request.setChain(chain);
 
 		try {
-			CheckServiceAccessResponse response = doSimpleRequest("POST", url, request,
+			CheckServiceAccessResponse response = doSimpleXmlRequest("POST", url, request,
 					CheckServiceAccessResponse.class);
 
 			return response.getServiceAccount();
@@ -230,9 +231,10 @@ public class PlatformLayerAuthAdminClient implements AuthenticationTokenValidato
 		}
 	}
 
-	protected <T> T doSimpleRequest(String method, String relativeUri, Object postObject, Class<T> responseClass)
+	protected <T> T doSimpleXmlRequest(String method, String relativeUri, Object postObject, Class<T> responseClass)
 			throws RestClientException {
-		RestfulRequest<T> request = restfulClient.buildRequest(method, relativeUri, postObject, responseClass);
+		HttpPayload payload = postObject != null ? HttpPayload.asXml(postObject) : null;
+		RestfulRequest<T> request = restfulClient.buildRequest(method, relativeUri, payload, responseClass);
 		return request.execute();
 	}
 

@@ -14,19 +14,20 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.Scope;
 import org.platformlayer.auth.AuthenticationTokenValidator;
 import org.platformlayer.auth.client.PlatformlayerAuthenticationToken;
 import org.platformlayer.model.AuthenticationCredentials;
 import org.platformlayer.model.AuthenticationToken;
 import org.platformlayer.model.ProjectAuthorization;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Objects;
 
 @Singleton
 public class AuthenticationFilter implements Filter {
-	static final Logger log = Logger.getLogger(AuthenticationFilter.class);
+	private static final Logger log = LoggerFactory.getLogger(AuthenticationFilter.class);
 
 	@Inject
 	AuthenticationTokenValidator authenticationTokenValidator;

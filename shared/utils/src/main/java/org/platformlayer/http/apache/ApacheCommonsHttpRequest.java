@@ -17,18 +17,19 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.Logger;
 import org.platformlayer.ByteSource;
 import org.platformlayer.IoUtils;
 import org.platformlayer.http.HttpRequest;
 import org.platformlayer.http.HttpResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class ApacheCommonsHttpRequest implements HttpRequest {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(ApacheCommonsHttpRequest.class);
+	private static final Logger log = LoggerFactory.getLogger(ApacheCommonsHttpRequest.class);
 
 	final HttpClient httpClient;
 	final String method;

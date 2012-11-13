@@ -1,10 +1,11 @@
 package org.platformlayer.alerts;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AlertsBase implements Alerts {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(AlertsBase.class);
+	private static final Logger log = LoggerFactory.getLogger(AlertsBase.class);
 
 	@Override
 	public void critical(String message) {

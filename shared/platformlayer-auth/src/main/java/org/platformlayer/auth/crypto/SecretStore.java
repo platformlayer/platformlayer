@@ -16,7 +16,6 @@ import java.util.Arrays;
 
 import javax.crypto.SecretKey;
 
-import org.apache.log4j.Logger;
 import org.openstack.crypto.Md5Hash;
 import org.platformlayer.IoUtils;
 import org.platformlayer.auth.ProjectInfo;
@@ -25,12 +24,14 @@ import org.platformlayer.crypto.CryptoUtils;
 import org.platformlayer.crypto.OpenSshUtils;
 import org.platformlayer.crypto.RsaUtils;
 import org.platformlayer.model.ProjectAuthorization;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fathomdb.crypto.CryptoKey;
 import com.fathomdb.crypto.FathomdbCrypto;
 
 public class SecretStore {
-	static final Logger log = Logger.getLogger(SecretStore.class);
+	private static final Logger log = LoggerFactory.getLogger(SecretStore.class);
 
 	@Deprecated
 	public static final byte ASYMETRIC_SYSTEM_KEY = 1;

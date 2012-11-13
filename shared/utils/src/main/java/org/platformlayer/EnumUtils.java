@@ -4,12 +4,13 @@ import java.util.EnumSet;
 import java.util.Enumeration;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
 public class EnumUtils {
-	static final Logger log = Logger.getLogger(EnumUtils.class);
+	static final Logger log = LoggerFactory.getLogger(EnumUtils.class);
 
 	public static <T> T getOnly(Enumeration<T> enumeration) {
 		if (!enumeration.hasMoreElements()) {

@@ -11,15 +11,16 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.IoUtils;
 import org.platformlayer.ops.OpsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
 public class CertificateReader {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(CertificateReader.class);
+	private static final Logger log = LoggerFactory.getLogger(CertificateReader.class);
 
 	public X509Certificate[] parse(byte[] data) {
 		return parse(new ByteArrayInputStream(data));
