@@ -13,26 +13,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.platformlayer</groupId>
-            <artifactId>platformlayer-shared-utils</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <scope>provided</scope>
+            <groupId>com.fathomdb</groupId>
+            <artifactId>fathomdb-http</artifactId>
         </dependency>
     </dependencies>
 

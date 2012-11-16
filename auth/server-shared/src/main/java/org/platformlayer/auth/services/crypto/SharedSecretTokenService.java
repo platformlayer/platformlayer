@@ -15,11 +15,11 @@ import org.openstack.utils.Utf8;
 import org.platformlayer.IoUtils;
 import org.platformlayer.auth.services.TokenInfo;
 import org.platformlayer.auth.services.TokenService;
-import org.platformlayer.config.Configuration;
 import org.platformlayer.crypto.CryptoUtils;
 import org.platformlayer.crypto.SecureComparison;
 import org.platformlayer.metrics.Instrumented;
 
+import com.fathomdb.Configuration;
 import com.fathomdb.crypto.KeyDerivationFunctions;
 
 @Instrumented

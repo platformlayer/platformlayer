@@ -5,7 +5,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.platformlayer.CastUtils;
 import org.platformlayer.common.UntypedItem;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
@@ -17,6 +16,7 @@ import org.platformlayer.xaas.services.ModelClass;
 import org.platformlayer.xaas.services.ServiceProvider;
 import org.platformlayer.xaas.services.ServiceProviderDictionary;
 
+import com.fathomdb.Casts;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -80,7 +80,7 @@ public class ProviderHelper {
 		ModelClass<? extends ItemBase> modelClass = serviceProviderDictionary.getModelClass(item.getClass());
 
 		Object controller = modelClass.getProvider().getController(item);
-		return CastUtils.checkedCast(controller, interfaceClass);
+		return Casts.checkedCast(controller, interfaceClass);
 	}
 
 	public <T> List<ProviderOf<T>> listChildrenProviding(PlatformLayerKey parent, Class<T> serviceClass)

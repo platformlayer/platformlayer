@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.UnmarshalException;
 
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ServiceInfo;
@@ -18,7 +19,6 @@ import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.xml.JaxbHelper;
-import org.platformlayer.xml.UnmarshalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

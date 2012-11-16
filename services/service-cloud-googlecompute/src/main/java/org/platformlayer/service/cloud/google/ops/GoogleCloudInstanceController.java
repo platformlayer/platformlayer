@@ -21,6 +21,7 @@ import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.google.model.GoogleCloudInstance;
 import org.platformlayer.service.cloud.google.ops.compute.GoogleComputeMachine;
 
+
 public class GoogleCloudInstanceController extends OpsTreeBase {
 	static final Logger log = Logger.getLogger(GoogleCloudInstanceController.class);
 

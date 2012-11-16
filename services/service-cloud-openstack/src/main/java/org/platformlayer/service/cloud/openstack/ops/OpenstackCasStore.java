@@ -8,8 +8,6 @@ import org.openstack.client.OpenstackCredentials;
 import org.openstack.client.OpenstackNotFoundException;
 import org.openstack.client.common.OpenstackSession;
 import org.openstack.client.storage.OpenstackStorageClient;
-import org.openstack.crypto.ByteString;
-import org.openstack.crypto.Md5Hash;
 import org.openstack.model.storage.StorageObject;
 import org.platformlayer.cas.CasLocation;
 import org.platformlayer.cas.CasStore;
@@ -18,6 +16,7 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.cas.OpsCasObjectBase;
 
+import com.fathomdb.hash.Md5Hash;
 import com.google.common.collect.Lists;
 
 public class OpenstackCasStore implements CasStore {
@@ -32,7 +31,7 @@ public class OpenstackCasStore implements CasStore {
 	}
 
 	@Override
-	public CasStoreObject findArtifact(ByteString hash) {
+	public CasStoreObject findArtifact(Md5Hash hash) {
 		OpenstackStorageClient storageClient = getStorageClient();
 
 		try {
@@ -102,7 +101,7 @@ public class OpenstackCasStore implements CasStore {
 	}
 
 	@Override
-	public ByteString findTag(String tag) {
+	public Md5Hash findTag(String tag) {
 		return null;
 	}
 

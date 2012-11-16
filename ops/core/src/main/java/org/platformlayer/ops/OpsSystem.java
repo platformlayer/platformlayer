@@ -8,11 +8,9 @@ import java.util.concurrent.ExecutorService;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.openstack.crypto.CertificateAndKey;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.auth.AuthenticationService;
 import org.platformlayer.auth.AuthenticationTokenValidator;
-import org.platformlayer.config.Configuration;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ServiceInfo;
 import org.platformlayer.crypto.EncryptionStore;
@@ -29,6 +27,8 @@ import org.platformlayer.xaas.repository.ManagedItemRepository;
 import org.platformlayer.xaas.services.ServiceProvider;
 import org.platformlayer.xaas.services.ServiceProviderDictionary;
 
+import com.fathomdb.Configuration;
+import com.fathomdb.crypto.CertificateAndKey;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.inject.Injector;

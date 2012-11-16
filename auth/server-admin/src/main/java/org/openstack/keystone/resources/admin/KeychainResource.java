@@ -4,7 +4,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.auth.AuthenticatorException;
 import org.platformlayer.auth.ProjectEntity;
 import org.platformlayer.auth.UserEntity;
@@ -13,10 +12,12 @@ import org.platformlayer.auth.model.CertificateChainInfo;
 import org.platformlayer.auth.model.ValidateAccess;
 import org.platformlayer.auth.model.ValidateTokenResponse;
 import org.platformlayer.auth.resources.Mapping;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path("v2.0/keychain")
 public class KeychainResource extends RootResource {
-	static final Logger log = Logger.getLogger(KeychainResource.class);
+	private static final Logger log = LoggerFactory.getLogger(KeychainResource.class);
 
 	@POST
 	public ValidateTokenResponse authorizeCertificateChain(@QueryParam("project") String project,

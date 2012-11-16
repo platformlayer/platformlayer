@@ -2,7 +2,6 @@ package org.platformlayer.auth;
 
 import org.platformlayer.crypto.CryptoUtils;
 import org.platformlayer.http.HttpRequest;
-import org.platformlayer.model.AuthenticationToken;
 
 import com.fathomdb.crypto.CryptoKey;
 import com.fathomdb.crypto.FathomdbCrypto;

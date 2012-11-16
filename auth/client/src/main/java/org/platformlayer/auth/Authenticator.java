@@ -2,10 +2,9 @@ package org.platformlayer.auth;
 
 import java.io.PrintStream;
 
-import org.platformlayer.model.AuthenticationToken;
 
 public interface Authenticator {
-	AuthenticationToken getAuthenticationToken() throws PlatformlayerAuthenticationException;
+	AuthenticationToken getAuthenticationToken() throws PlatformlayerAuthenticationClientException;
 
 	void clearAuthenticationToken();
 

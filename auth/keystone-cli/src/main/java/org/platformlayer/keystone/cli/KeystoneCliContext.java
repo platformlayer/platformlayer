@@ -15,7 +15,7 @@ import org.platformlayer.RepositoryException;
 import org.platformlayer.auth.KeystoneJdbcModule;
 import org.platformlayer.auth.UserDatabase;
 import org.platformlayer.auth.UserEntity;
-import org.platformlayer.config.Configuration;
+import org.platformlayer.config.ConfigurationImpl;
 import org.platformlayer.config.ConfigurationModule;
 import org.platformlayer.crypto.CertificateReader;
 import org.platformlayer.keystone.cli.commands.KeystoneCommandRegistry;
@@ -44,7 +44,7 @@ public class KeystoneCliContext extends CliContextBase {
 	@Override
 	public void connect() throws Exception {
 		Properties properties = options.getConfigurationProperties();
-		Configuration configuration = Configuration.from(new File("."), properties);
+		ConfigurationImpl configuration = ConfigurationImpl.from(new File("."), properties);
 
 		List<Module> modules = Lists.newArrayList();
 

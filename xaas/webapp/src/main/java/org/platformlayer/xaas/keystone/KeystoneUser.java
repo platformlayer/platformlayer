@@ -4,7 +4,7 @@ import java.security.PrivateKey;
 
 import org.apache.log4j.Logger;
 import org.platformlayer.auth.OpsUser;
-import org.platformlayer.auth.PlatformlayerUserAuthentication;
+import org.platformlayer.auth.system.PlatformlayerUserAuthentication;
 
 public class KeystoneUser implements OpsUser {
 	@SuppressWarnings("unused")

@@ -8,11 +8,12 @@ import java.io.ObjectOutputStream;
 import java.io.StringReader;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.UnmarshalException;
 
-import org.platformlayer.CastUtils;
 import org.platformlayer.IoUtils;
 import org.platformlayer.xml.JaxbHelper;
-import org.platformlayer.xml.UnmarshalException;
+
+import com.fathomdb.Casts;
 
 public class CloneHelpers {
 	public static <T> T cloneViaSerialization(T o) {
@@ -27,7 +28,7 @@ public class CloneHelpers {
 
 			ois = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()));
 
-			T t = (T) CastUtils.checkedCast(ois.readObject(), o.getClass());
+			T t = (T) Casts.checkedCast(ois.readObject(), o.getClass());
 			return t;
 		} catch (IOException e) {
 			throw new IllegalStateException("Error while cloning object", e);

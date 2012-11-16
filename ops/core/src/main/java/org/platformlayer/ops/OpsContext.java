@@ -14,7 +14,6 @@ import org.platformlayer.ApplicationMode;
 import org.platformlayer.CheckedCallable;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.Scope;
-import org.platformlayer.config.Configuration;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.ConfigureAction;
 import org.platformlayer.core.model.DeleteAction;
@@ -26,6 +25,7 @@ import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.tasks.ActiveJobExecution;
 import org.platformlayer.ops.tasks.OperationInvoker;
 
+import com.fathomdb.Configuration;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Injector;

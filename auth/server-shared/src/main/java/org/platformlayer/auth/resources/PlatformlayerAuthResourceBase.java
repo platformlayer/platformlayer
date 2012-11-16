@@ -9,14 +9,15 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.auth.keystone.KeystoneUserAuthenticator;
 import org.platformlayer.auth.services.RegistrationService;
 import org.platformlayer.web.HttpUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PlatformlayerAuthResourceBase {
-	static final Logger log = Logger.getLogger(PlatformlayerAuthResourceBase.class);
+	private static final Logger log = LoggerFactory.getLogger(PlatformlayerAuthResourceBase.class);
 
 	protected static final String AUTH_HEADER = "X-Auth-Token";
 	protected static final TimeSpan TOKEN_VALIDITY = new TimeSpan("1h");

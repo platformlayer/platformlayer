@@ -5,8 +5,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
-import org.openstack.crypto.CertificateAndKey;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.auth.ProjectEntity;
 import org.platformlayer.auth.UserDatabase;
@@ -15,13 +13,11 @@ import org.platformlayer.crypto.SimpleCertificateAuthority;
 import org.platformlayer.metrics.Instrumented;
 import org.platformlayer.ops.OpsException;
 
+import com.fathomdb.crypto.CertificateAndKey;
 import com.google.common.collect.Lists;
 
 @Instrumented
 public class PkiServiceImpl implements PkiService {
-	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(PkiServiceImpl.class);
-
 	@Inject
 	UserDatabase repository;
 

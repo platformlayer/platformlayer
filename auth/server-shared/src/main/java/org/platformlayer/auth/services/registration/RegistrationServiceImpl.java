@@ -3,20 +3,21 @@ package org.platformlayer.auth.services.registration;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.CustomerFacingException;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.auth.OpsUser;
 import org.platformlayer.auth.UserDatabase;
 import org.platformlayer.auth.services.RegistrationService;
 import org.platformlayer.metrics.Instrumented;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 
 @Singleton
 @Instrumented
 public class RegistrationServiceImpl implements RegistrationService {
-	static final Logger log = Logger.getLogger(RegistrationServiceImpl.class);
+	private static final Logger log = LoggerFactory.getLogger(RegistrationServiceImpl.class);
 
 	private static final int MIN_PASSWORD_LENGTH = 6;
 

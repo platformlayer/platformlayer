@@ -6,6 +6,7 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.Configuration;
 import com.google.inject.AbstractModule;
 import com.google.inject.matcher.Matchers;
 
@@ -13,14 +14,14 @@ public class ConfigurationModule extends AbstractModule {
 	@SuppressWarnings("unused")
 	private static final Logger log = LoggerFactory.getLogger(ConfigurationModule.class);
 
-	private final Configuration configuration;
+	private final ConfigurationImpl configuration;
 
-	public ConfigurationModule(Configuration configuration) {
+	public ConfigurationModule(ConfigurationImpl configuration) {
 		this.configuration = configuration;
 	}
 
 	public ConfigurationModule() {
-		this(Configuration.load());
+		this(ConfigurationImpl.load());
 	}
 
 	@Override

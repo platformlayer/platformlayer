@@ -2,12 +2,13 @@ package org.platformlayer.xaas.services;
 
 import javax.xml.bind.JAXBException;
 
-import org.platformlayer.CastUtils;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.ids.ItemType;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.xml.JaxbHelper;
 import org.platformlayer.xml.JsonHelper;
+
+import com.fathomdb.Casts;
 
 public class ModelClass<T extends ItemBase> {
 	final Class<T> javaClass;
@@ -47,7 +48,7 @@ public class ModelClass<T extends ItemBase> {
 	}
 
 	public T deserializeXml(String modelData) throws JAXBException {
-		return CastUtils.as(getJaxbHelper().unmarshal(modelData), getJavaClass());
+		return Casts.as(getJaxbHelper().unmarshal(modelData), getJavaClass());
 	}
 
 	public ServiceProvider getProvider() {

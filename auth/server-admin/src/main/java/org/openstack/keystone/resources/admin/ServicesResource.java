@@ -3,15 +3,16 @@ package org.openstack.keystone.resources.admin;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.auth.AuthenticatorException;
 import org.platformlayer.auth.ServiceAccountEntity;
 import org.platformlayer.auth.model.CheckServiceAccessRequest;
 import org.platformlayer.auth.model.CheckServiceAccessResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path("/services")
 public class ServicesResource extends RootResource {
-	static final Logger log = Logger.getLogger(ServicesResource.class);
+	private static final Logger log = LoggerFactory.getLogger(ServicesResource.class);
 
 	@POST
 	@Path("check")

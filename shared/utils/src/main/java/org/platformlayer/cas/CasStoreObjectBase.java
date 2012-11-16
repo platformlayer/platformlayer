@@ -1,18 +1,18 @@
 package org.platformlayer.cas;
 
-import org.openstack.crypto.ByteString;
+import com.fathomdb.hash.Md5Hash;
 
 public abstract class CasStoreObjectBase implements CasStoreObject {
 	private final CasStore store;
-	private final ByteString hash;
+	private final Md5Hash hash;
 
-	public CasStoreObjectBase(CasStore store, ByteString hash) {
+	public CasStoreObjectBase(CasStore store, Md5Hash hash) {
 		this.store = store;
 		this.hash = hash;
 	}
 
 	@Override
-	public ByteString getHash() {
+	public Md5Hash getHash() {
 		return hash;
 	}
 

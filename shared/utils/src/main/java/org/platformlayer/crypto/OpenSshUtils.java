@@ -14,11 +14,11 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
 
-import org.openstack.crypto.Md5Hash;
 import org.openstack.utils.Io;
-import org.openstack.utils.Utf8;
 import org.platformlayer.IoUtils;
 
+import com.fathomdb.Utf8;
+import com.fathomdb.hash.Md5Hash;
 import com.google.common.base.Strings;
 
 public class OpenSshUtils {

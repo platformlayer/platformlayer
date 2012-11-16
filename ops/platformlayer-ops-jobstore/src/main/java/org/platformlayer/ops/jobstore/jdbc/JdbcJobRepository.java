@@ -14,7 +14,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
-import org.platformlayer.CastUtils;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.common.JobState;
 import org.platformlayer.core.model.Action;
@@ -30,6 +29,7 @@ import org.platformlayer.jobs.model.JobExecutionData;
 import org.platformlayer.xaas.repository.JobRepository;
 import org.platformlayer.xaas.services.ServiceProviderDictionary;
 
+import com.fathomdb.Casts;
 import com.google.common.collect.Lists;
 
 public class JdbcJobRepository implements JobRepository {
@@ -187,7 +187,7 @@ public class JdbcJobRepository implements JobRepository {
 			throw new RepositoryException("Error deserializing action", e);
 		}
 
-		return CastUtils.checkedCast(o, Action.class);
+		return Casts.checkedCast(o, Action.class);
 	}
 
 	private String toXml(Action action) throws RepositoryException {

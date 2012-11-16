@@ -10,9 +10,9 @@ import javax.xml.bind.JAXBContext;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.auth.AuthenticationService;
 import org.platformlayer.auth.AuthenticationTokenValidator;
-import org.platformlayer.auth.client.PlatformLayerAuthAdminClient;
-import org.platformlayer.auth.client.PlatformlayerAuthenticationClient;
-import org.platformlayer.auth.client.PlatformlayerAuthenticationService;
+import org.platformlayer.auth.client.PlatformLayerAuthenticationClient;
+import org.platformlayer.auth.system.PlatformLayerAuthAdminClient;
+import org.platformlayer.auth.system.PlatformlayerAuthenticationService;
 import org.platformlayer.crypto.EncryptionStore;
 import org.platformlayer.crypto.KeyStoreEncryptionStore;
 import org.platformlayer.guice.xaas.ItemEntity;
@@ -96,7 +96,7 @@ public class GuiceXaasConfig extends AbstractModule {
 
 		// boolean isMultitenant = !Strings.isNullOrEmpty(configuration.lookup("multitenant.keys", null));
 		if (true) { // isMultitenant) {
-			bind(PlatformlayerAuthenticationClient.class).toProvider(PlatformlayerAuthenticationClient.Provider.class)
+			bind(PlatformLayerAuthenticationClient.class).toProvider(PlatformLayerAuthenticationClientProvider.class)
 					.asEagerSingleton();
 
 			bind(AuthenticationService.class).to(PlatformlayerAuthenticationService.class).asEagerSingleton();

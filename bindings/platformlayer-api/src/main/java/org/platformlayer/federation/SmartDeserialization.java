@@ -4,10 +4,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 
+import javax.xml.bind.UnmarshalException;
+
 import org.openstack.utils.Io;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.xml.JaxbHelper;
-import org.platformlayer.xml.UnmarshalException;
 
 public class SmartDeserialization {
 

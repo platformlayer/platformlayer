@@ -14,6 +14,7 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.TrustManager;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.UnmarshalException;
 
 import org.openstack.utils.Utf8;
 import org.platformlayer.crypto.AcceptAllHostnameVerifier;
@@ -21,14 +22,13 @@ import org.platformlayer.crypto.PublicKeyTrustManager;
 import org.platformlayer.http.HttpRequest;
 import org.platformlayer.http.HttpResponse;
 import org.platformlayer.http.SslConfiguration;
-import org.platformlayer.rest.ByteStringByteSource;
+import org.platformlayer.rest.Utf8StringByteSource;
 import org.platformlayer.xml.JaxbHelper;
 import org.platformlayer.xml.JsonHelper;
-import org.platformlayer.xml.UnmarshalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.protobuf.ByteString;
+import com.fathomdb.Casts;
 
 class PlatformLayerHttpRequest implements Closeable {
 	private static final Logger log = LoggerFactory.getLogger(PlatformLayerHttpRequest.class);
@@ -134,7 +134,7 @@ class PlatformLayerHttpRequest implements Closeable {
 					}
 
 					String sendDataString = (String) sendData;
-					httpRequest.setRequestContent(new ByteStringByteSource(ByteString.copyFromUtf8(sendDataString)));
+					httpRequest.setRequestContent(new Utf8StringByteSource(sendDataString));
 				} else {
 					switch (sendDataFormat) {
 					case XML:
@@ -144,7 +144,7 @@ class PlatformLayerHttpRequest implements Closeable {
 
 						JaxbHelper jaxbHelper = JaxbHelper.get(sendData.getClass());
 						String xml = jaxbHelper.marshal(sendData, false);
-						httpRequest.setRequestContent(new ByteStringByteSource(ByteString.copyFromUtf8(xml)));
+						httpRequest.setRequestContent(new Utf8StringByteSource(xml));
 						// jaxbHelper.marshal(sendData, false, getOutputStream());
 						break;
 					case JSON:
@@ -154,7 +154,7 @@ class PlatformLayerHttpRequest implements Closeable {
 
 						JsonHelper jsonHelper = JsonHelper.build(sendData.getClass());
 						String json = jsonHelper.marshal(sendData, false);
-						httpRequest.setRequestContent(new ByteStringByteSource(ByteString.copyFromUtf8(json)));
+						httpRequest.setRequestContent(new Utf8StringByteSource(json));
 						// jsonHelper.marshal(sendData, false, getOutputStream());
 						break;
 					default:
@@ -192,9 +192,9 @@ class PlatformLayerHttpRequest implements Closeable {
 					debug.println("Response: " + text);
 				}
 
-				return CastUtils.as(text, retvalClass);
+				return Casts.as(text, retvalClass);
 			} else if (StreamingResponse.class.equals(retvalClass)) {
-				return CastUtils.as(new StreamingResponse(getResponse()), retvalClass);
+				return Casts.as(new StreamingResponse(getResponse()), retvalClass);
 			} else {
 				if (debug != null) {
 					debug.println("Response: XML/JSON content");

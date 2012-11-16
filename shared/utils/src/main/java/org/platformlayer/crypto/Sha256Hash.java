@@ -1,7 +1,8 @@
 package org.platformlayer.crypto;
 
-import org.openstack.crypto.StronglyTypedHash;
 import org.openstack.utils.Hex;
+
+import com.fathomdb.hash.StronglyTypedHash;
 
 public class Sha256Hash extends StronglyTypedHash {
 	private static final int SHA256_BYTE_LENGTH = 256 / 8;

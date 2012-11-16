@@ -24,9 +24,11 @@ import javax.crypto.spec.SecretKeySpec;
 
 import net.iharder.Base64;
 
-import org.openstack.crypto.Md5Hash;
-import org.platformlayer.ByteSource;
+import com.fathomdb.hash.Md5Hash;
 import org.platformlayer.IoUtils;
+
+import com.fathomdb.hash.Sha1Hash;
+import com.fathomdb.io.ByteSource;
 
 public class CryptoUtils {
 	private static final String UTF8 = "UTF-8";

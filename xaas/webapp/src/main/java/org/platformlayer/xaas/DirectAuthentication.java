@@ -3,11 +3,11 @@ package org.platformlayer.xaas;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.platformlayer.auth.AuthenticationToken;
 import org.platformlayer.auth.DirectAuthenticationToken;
 import org.platformlayer.crypto.CryptoUtils;
 import org.platformlayer.model.Authentication;
 import org.platformlayer.model.AuthenticationCredentials;
-import org.platformlayer.model.AuthenticationToken;
 import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.model.RoleId;
 

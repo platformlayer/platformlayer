@@ -4,12 +4,11 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.sql.DataSource;
 
-import org.platformlayer.config.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.Configuration;
 import com.google.inject.Provider;
-import com.google.inject.assistedinject.Assisted;
 import com.jolbox.bonecp.BoneCPDataSource;
 
 @Singleton
@@ -68,13 +67,21 @@ public class GuiceDataSourceProvider implements Provider<DataSource> {
 		return pooledDataSource;
 	}
 
-	public interface Factory {
-		GuiceDataSourceProvider create(String keyPrefix);
+	@Singleton
+	public static class Factory {
+		@Inject
+		Configuration configuration;
+		@Inject
+		DatabaseStatistics databaseStatistics;
+
+		public GuiceDataSourceProvider create(String keyPrefix) {
+			return new GuiceDataSourceProvider(configuration, databaseStatistics, keyPrefix);
+		}
 	}
 
-	@Inject
+	// @Inject
 	public GuiceDataSourceProvider(Configuration configuration, DatabaseStatistics databaseStatistics,
-			@Assisted String key) {
+	/* @Assisted */String key) {
 		this.key = key;
 		this.jdbcConfig = JdbcConfiguration.build(configuration, key);
 		this.databaseStatistics = databaseStatistics;

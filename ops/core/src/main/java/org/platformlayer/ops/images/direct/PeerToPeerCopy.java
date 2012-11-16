@@ -16,7 +16,7 @@ import java.util.concurrent.TimeoutException;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.openstack.crypto.Md5Hash;
+import com.fathomdb.hash.Md5Hash;
 import org.openstack.utils.Hex;
 import org.platformlayer.ExceptionUtils;
 import org.platformlayer.TimeSpan;

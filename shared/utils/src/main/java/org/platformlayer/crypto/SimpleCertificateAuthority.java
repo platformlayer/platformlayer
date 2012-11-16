@@ -30,13 +30,9 @@ import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
 import org.platformlayer.ops.OpsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class SimpleCertificateAuthority {
 	private static final String SIGNATURE_ALGORITHM = "SHA256WithRSAEncryption";
-	@SuppressWarnings("unused")
-	private static final Logger log = LoggerFactory.getLogger(SimpleCertificateAuthority.class);
 	private static final long ONE_DAY = 24L * 60L * 60L * 1000L;
 
 	public X509Certificate[] caCertificate;

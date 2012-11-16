@@ -17,6 +17,7 @@ import org.platformlayer.service.cloud.direct.model.DirectInstance;
 import org.platformlayer.service.cloud.direct.ops.kvm.KvmInstance;
 import org.platformlayer.service.cloud.direct.ops.lxc.LxcInstanceController;
 
+
 public class DirectInstanceController extends OpsTreeBase {
 	static final Logger log = Logger.getLogger(DirectInstanceController.class);
 

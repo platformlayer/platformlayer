@@ -16,7 +16,6 @@ import java.util.Arrays;
 
 import javax.crypto.SecretKey;
 
-import org.openstack.crypto.Md5Hash;
 import org.platformlayer.IoUtils;
 import org.platformlayer.auth.ProjectInfo;
 import org.platformlayer.auth.UserEntity;
@@ -29,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fathomdb.crypto.CryptoKey;
 import com.fathomdb.crypto.FathomdbCrypto;
+import com.fathomdb.hash.Md5Hash;
 
 public class SecretStore {
 	private static final Logger log = LoggerFactory.getLogger(SecretStore.class);

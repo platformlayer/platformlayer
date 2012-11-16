@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.inject.Provider;
+import javax.xml.bind.UnmarshalException;
 
 import org.platformlayer.ResourceUtils;
 import org.platformlayer.ops.Injection;
@@ -18,7 +19,6 @@ import org.platformlayer.service.imagefactory.v1.DiskImageRecipe;
 import org.platformlayer.service.imagefactory.v1.Repository;
 import org.platformlayer.service.imagefactory.v1.RepositoryKey;
 import org.platformlayer.xml.JaxbHelper;
-import org.platformlayer.xml.UnmarshalException;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Predicate;

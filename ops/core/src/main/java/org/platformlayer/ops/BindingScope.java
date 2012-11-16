@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.platformlayer.CastUtils;
 import org.platformlayer.SimpleThreadLocal;
 
+import com.fathomdb.Casts;
 import com.google.common.collect.Lists;
 
 public class BindingScope implements Closeable {
@@ -59,7 +59,7 @@ public class BindingScope implements Closeable {
 	public <T> T getInstance(Class<T> clazz) {
 		for (int i = scopeObjects.size() - 1; i >= 0; i--) {
 			Object scopeObject = scopeObjects.get(i);
-			T t = CastUtils.as(scopeObject, clazz);
+			T t = Casts.as(scopeObject, clazz);
 			if (t != null) {
 				return t;
 			}

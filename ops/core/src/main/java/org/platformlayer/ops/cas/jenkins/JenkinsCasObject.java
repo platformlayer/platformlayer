@@ -10,7 +10,6 @@ import java.net.UnknownHostException;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.openstack.crypto.ByteString;
 import org.openstack.utils.Io;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.cas.CasLocation;
@@ -28,6 +27,8 @@ import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.proxy.HttpProxyHelper;
 import org.platformlayer.ops.proxy.HttpProxyHelper.Usage;
 
+import com.fathomdb.hash.Md5Hash;
+
 public class JenkinsCasObject extends OpsCasObjectBase {
 	private static final Logger log = Logger.getLogger(JenkinsCasObject.class);
 
@@ -36,7 +37,7 @@ public class JenkinsCasObject extends OpsCasObjectBase {
 
 	private final URI uri;
 
-	public JenkinsCasObject(JenkinsCasStore cas, ByteString hash, URI uri) {
+	public JenkinsCasObject(JenkinsCasStore cas, Md5Hash hash, URI uri) {
 		super(cas, hash);
 
 		this.uri = uri;

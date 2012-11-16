@@ -27,6 +27,11 @@
             <groupId>com.yammer.metrics</groupId>
             <artifactId>metrics-jetty</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.jolbox</groupId>
+            <artifactId>bonecp</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

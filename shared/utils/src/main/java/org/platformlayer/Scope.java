@@ -2,6 +2,7 @@ package org.platformlayer;
 
 import java.util.Map;
 
+import com.fathomdb.Casts;
 import com.google.common.collect.Maps;
 
 public class Scope {
@@ -49,7 +50,7 @@ public class Scope {
 		}
 
 		if (o != null) {
-			return CastUtils.checkedCast(o, itemClass);
+			return Casts.checkedCast(o, itemClass);
 		}
 
 		if (inherit != null) {

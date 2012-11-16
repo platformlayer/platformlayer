@@ -7,17 +7,18 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.auth.AuthenticatorException;
 import org.platformlayer.auth.CertificateAuthenticationRequest;
 import org.platformlayer.auth.CertificateAuthenticationResponse;
 import org.platformlayer.auth.UserEntity;
 import org.platformlayer.auth.model.AuthenticateRequest;
 import org.platformlayer.auth.model.AuthenticateResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path("/v2.0/tokens")
 public class TokensResource extends UserResourceBase {
-	static final Logger log = Logger.getLogger(TokensResource.class);
+	private static final Logger log = LoggerFactory.getLogger(TokensResource.class);
 
 	// @GET
 	// @Produces({ JSONP })

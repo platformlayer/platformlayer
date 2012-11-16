@@ -8,7 +8,7 @@
 //import javax.inject.Inject;
 //
 //import org.platformlayer.TimeSpan;
-//import org.openstack.crypto.Md5Hash;
+//import com.fathomdb.hash.Md5Hash;
 //import org.platformlayer.ops.Command;
 //import org.platformlayer.ops.CommandEnvironment;
 //import org.platformlayer.ops.OpsException;

@@ -3,8 +3,6 @@ package org.platformlayer.ops.cas.filesystem;
 import java.io.File;
 
 import org.apache.log4j.Logger;
-import org.openstack.crypto.ByteString;
-import org.openstack.crypto.Md5Hash;
 import org.platformlayer.cas.CasLocation;
 import org.platformlayer.cas.CasStore;
 import org.platformlayer.cas.CasStoreObject;
@@ -19,6 +17,8 @@ import org.platformlayer.ops.filesystem.FilesystemInfo;
 import org.platformlayer.ops.images.direct.PeerToPeerCopy;
 import org.platformlayer.ops.networks.NetworkPoint;
 
+import com.fathomdb.hash.Md5Hash;
+
 public class FilesystemCasStore implements CasStore {
 	static final Logger log = Logger.getLogger(FilesystemCasStore.class);
 
@@ -32,7 +32,7 @@ public class FilesystemCasStore implements CasStore {
 		this.host = destTarget.getOpsTarget();
 	}
 
-	String toRelativePath(ByteString hash, int splits) {
+	String toRelativePath(Md5Hash hash, int splits) {
 		String hex = hash.toHex();
 
 		StringBuilder sb = new StringBuilder();
@@ -46,7 +46,7 @@ public class FilesystemCasStore implements CasStore {
 	}
 
 	@Override
-	public FilesystemCasObject findArtifact(ByteString hash) throws OpsException {
+	public FilesystemCasObject findArtifact(Md5Hash hash) throws OpsException {
 		File file = checkDirectory(PATH_SEEDS, hash, 0);
 		if (file != null) {
 			return new FilesystemCasObject(this, hash, file);
@@ -60,7 +60,7 @@ public class FilesystemCasStore implements CasStore {
 		return null;
 	}
 
-	private File checkDirectory(File base, ByteString hash, int splits) throws OpsException {
+	private File checkDirectory(File base, Md5Hash hash, int splits) throws OpsException {
 		String relativePath = toRelativePath(hash, splits);
 		File seedFile = new File(base, relativePath);
 		FilesystemInfo seedFileInfo = host.getFilesystemInfoFile(seedFile);
@@ -80,7 +80,7 @@ public class FilesystemCasStore implements CasStore {
 	}
 
 	public FilesystemCasObject copyToStaging(CasStoreObject src) throws OpsException {
-		ByteString hash = src.getHash();
+		Md5Hash hash = src.getHash();
 		File cachePath = new File(PATH_CACHE, toRelativePath(hash, 2));
 		host.mkdir(cachePath.getParentFile());
 
@@ -135,7 +135,7 @@ public class FilesystemCasStore implements CasStore {
 	}
 
 	@Override
-	public ByteString findTag(String tag) {
+	public Md5Hash findTag(String tag) {
 		return null;
 	}
 

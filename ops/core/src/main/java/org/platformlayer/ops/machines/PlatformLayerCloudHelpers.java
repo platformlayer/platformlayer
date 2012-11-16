@@ -8,7 +8,6 @@ import java.util.UUID;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.platformlayer.CastUtils;
 import org.platformlayer.Filter;
 import org.platformlayer.StateFilter;
 import org.platformlayer.TagFilter;
@@ -36,6 +35,7 @@ import org.platformlayer.xaas.services.ModelClass;
 import org.platformlayer.xml.XmlHelper;
 import org.platformlayer.xml.XmlHelper.ElementInfo;
 
+import com.fathomdb.Casts;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
@@ -172,7 +172,7 @@ public class PlatformLayerCloudHelpers {
 
 	private MachineCloudBase findCloud(PlatformLayerKey key) throws OpsException {
 		ItemBase item = platformLayer.findItem(key);
-		return CastUtils.checkedCast(item, MachineCloudBase.class);
+		return Casts.checkedCast(item, MachineCloudBase.class);
 	}
 
 	public List<MachineCloudBase> findClouds() throws OpsException {

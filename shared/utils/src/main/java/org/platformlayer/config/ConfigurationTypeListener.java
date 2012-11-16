@@ -2,6 +2,7 @@ package org.platformlayer.config;
 
 import java.lang.reflect.Field;
 
+import com.fathomdb.Configuration;
 import com.google.inject.TypeLiteral;
 import com.google.inject.spi.TypeEncounter;
 import com.google.inject.spi.TypeListener;

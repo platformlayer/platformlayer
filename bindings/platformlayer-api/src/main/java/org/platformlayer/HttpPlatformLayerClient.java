@@ -7,9 +7,11 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.Properties;
 
+import javax.xml.bind.UnmarshalException;
+
 import org.openstack.utils.PropertyUtils;
 import org.platformlayer.auth.Authenticator;
-import org.platformlayer.auth.client.PlatformlayerAuthenticator;
+import org.platformlayer.auth.PlatformlayerAuthenticator;
 import org.platformlayer.common.UntypedItem;
 import org.platformlayer.common.UntypedItemCollection;
 import org.platformlayer.core.model.Action;
@@ -35,7 +37,6 @@ import org.platformlayer.metrics.model.MetricDataStream;
 import org.platformlayer.metrics.model.MetricInfoCollection;
 import org.platformlayer.metrics.model.MetricQuery;
 import org.platformlayer.xml.JaxbHelper;
-import org.platformlayer.xml.UnmarshalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

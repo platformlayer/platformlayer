@@ -4,19 +4,19 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.openstack.crypto.CertificateAndKey;
 import org.platformlayer.ApplicationMode;
 import org.platformlayer.auth.AuthenticationService;
+import org.platformlayer.auth.AuthenticationToken;
 import org.platformlayer.auth.AuthenticationTokenValidator;
-import org.platformlayer.auth.PlatformlayerAuthenticationException;
-import org.platformlayer.config.Configuration;
+import org.platformlayer.auth.PlatformlayerAuthenticationClientException;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.crypto.EncryptionStore;
-import org.platformlayer.model.AuthenticationToken;
 import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.ops.MultitenantConfiguration;
 import org.platformlayer.ops.OpsException;
 
+import com.fathomdb.Configuration;
+import com.fathomdb.crypto.CertificateAndKey;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 
@@ -67,7 +67,7 @@ public class SimpleMultitenantConfiguration implements MultitenantConfiguration 
 			try {
 				authn = authenticationService.authenticateWithCertificate(username, certificateAndKey.getPrivateKey(),
 						certificateAndKey.getCertificateChain());
-			} catch (PlatformlayerAuthenticationException e) {
+			} catch (PlatformlayerAuthenticationClientException e) {
 				throw new OpsException(message, e);
 			}
 		} else if (password != null) {
@@ -79,7 +79,7 @@ public class SimpleMultitenantConfiguration implements MultitenantConfiguration 
 
 			try {
 				authn = authenticationService.authenticateWithPassword(username, password);
-			} catch (PlatformlayerAuthenticationException e) {
+			} catch (PlatformlayerAuthenticationClientException e) {
 				throw new OpsException(message, e);
 			}
 		}

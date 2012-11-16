@@ -6,7 +6,6 @@ import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.Writer;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.metrics.model.MetricDataStream;
 import org.platformlayer.metrics.model.MetricDataVisitor;
 
@@ -14,8 +13,6 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 
 public class MetricToJsonVisitor implements MetricDataVisitor, Closeable {
-	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(MetricToJsonVisitor.class);
 
 	final JsonGenerator jsonGenerator;
 

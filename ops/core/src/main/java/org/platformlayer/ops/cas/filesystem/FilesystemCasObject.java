@@ -2,16 +2,17 @@ package org.platformlayer.ops.cas.filesystem;
 
 import java.io.File;
 
-import org.openstack.crypto.ByteString;
 import org.platformlayer.cas.CasLocation;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.cas.OpsCasObjectBase;
 
+import com.fathomdb.hash.Md5Hash;
+
 public class FilesystemCasObject extends OpsCasObjectBase {
 	private final File file;
 
-	public FilesystemCasObject(FilesystemCasStore store, ByteString hash, File file) {
+	public FilesystemCasObject(FilesystemCasStore store, Md5Hash hash, File file) {
 		super(store, hash);
 		this.file = file;
 	}

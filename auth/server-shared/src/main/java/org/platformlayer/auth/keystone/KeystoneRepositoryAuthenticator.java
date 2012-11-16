@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.openstack.utils.Hex;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.auth.AuthenticatorException;
@@ -16,13 +15,15 @@ import org.platformlayer.auth.UserEntity;
 import org.platformlayer.auth.UserProjectEntity;
 import org.platformlayer.auth.model.CertificateChainInfo;
 import org.platformlayer.metrics.Instrumented;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fathomdb.crypto.CryptoKey;
 import com.google.common.base.Strings;
 
 @Instrumented
 public class KeystoneRepositoryAuthenticator implements KeystoneUserAuthenticator {
-	private static final Logger log = Logger.getLogger(KeystoneRepositoryAuthenticator.class);
+	private static final Logger log = LoggerFactory.getLogger(KeystoneRepositoryAuthenticator.class);
 
 	@Inject
 	UserDatabase repository;

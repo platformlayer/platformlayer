@@ -35,6 +35,22 @@
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.fathomdb</groupId>
+            <artifactId>fathomdb-http</artifactId>
+        </dependency>
+
+        <!-- Databases -->
+        <dependency>
+            <groupId>postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jolbox</groupId>
+            <artifactId>bonecp</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

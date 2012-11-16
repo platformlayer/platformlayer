@@ -2,7 +2,6 @@ package org.platformlayer.auth.keystone;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.openstack.utils.Hex;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.auth.AuthenticatorException;
@@ -12,12 +11,14 @@ import org.platformlayer.auth.model.CertificateChainInfo;
 import org.platformlayer.auth.model.CertificateInfo;
 import org.platformlayer.auth.services.SystemAuthenticator;
 import org.platformlayer.metrics.Instrumented;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 
 @Instrumented
 public class ClientCertificateSystemAuthenticator implements SystemAuthenticator {
-	private static final Logger log = Logger.getLogger(ClientCertificateSystemAuthenticator.class);
+	private static final Logger log = LoggerFactory.getLogger(ClientCertificateSystemAuthenticator.class);
 
 	@Inject
 	UserDatabase repository;

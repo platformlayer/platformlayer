@@ -7,7 +7,6 @@ import java.net.URISyntaxException;
 
 import javax.inject.Inject;
 
-import org.openstack.crypto.Md5Hash;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.cas.CasStoreMap;
 import org.platformlayer.cas.CasStoreObject;
@@ -20,6 +19,8 @@ import org.platformlayer.ops.cas.OpsCasTarget;
 import org.platformlayer.ops.helpers.CurlRequest;
 import org.platformlayer.ops.proxy.HttpProxyHelper;
 import org.platformlayer.ops.proxy.HttpProxyHelper.Usage;
+
+import com.fathomdb.hash.Md5Hash;
 
 public class DownloadFileByHash extends ManagedFile {
 	public Md5Hash hash;

@@ -2,13 +2,13 @@ package org.platformlayer;
 
 import javax.xml.bind.JAXBException;
 
-import org.openstack.utils.Casts;
 import org.platformlayer.common.UntypedItem;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.xml.JaxbHelper;
 import org.platformlayer.xml.XmlHelper.ElementInfo;
 import org.w3c.dom.Element;
 
+import com.fathomdb.Casts;
 import com.google.common.base.Objects;
 
 public abstract class TypedItemMapper {

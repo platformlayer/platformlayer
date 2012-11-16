@@ -6,11 +6,11 @@ import java.util.List;
 
 import javax.crypto.SecretKey;
 
-import org.openstack.crypto.CertificateAndKey;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.model.RoleId;
 import org.platformlayer.ops.OpsException;
 
+import com.fathomdb.crypto.CertificateAndKey;
 import com.fathomdb.crypto.CryptoKey;
 
 public interface UserDatabase extends UserRepository {

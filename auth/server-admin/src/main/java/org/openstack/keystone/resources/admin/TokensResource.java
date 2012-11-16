@@ -5,7 +5,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.auth.AuthenticatorException;
 import org.platformlayer.auth.ProjectEntity;
 import org.platformlayer.auth.UserEntity;
@@ -15,10 +14,12 @@ import org.platformlayer.auth.model.ValidateAccess;
 import org.platformlayer.auth.model.ValidateTokenResponse;
 import org.platformlayer.auth.resources.Mapping;
 import org.platformlayer.auth.services.TokenInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path("v2.0/tokens")
 public class TokensResource extends RootResource {
-	static final Logger log = Logger.getLogger(TokensResource.class);
+	private static final Logger log = LoggerFactory.getLogger(TokensResource.class);
 
 	@GET
 	// @HEAD support is automatic from the @GET

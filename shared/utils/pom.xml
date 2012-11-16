@@ -29,6 +29,11 @@
             <groupId>com.fathomdb</groupId>
             <artifactId>fathomdb-crypto</artifactId>
         </dependency>
+        
+        <dependency>
+            <groupId>com.fathomdb</groupId>
+            <artifactId>fathomdb-http</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>com.google.protobuf</groupId>
@@ -138,7 +143,6 @@
         <dependency>
             <groupId>com.jolbox</groupId>
             <artifactId>bonecp</artifactId>
-            <version>0.7.1.RELEASE</version>
             <scope>provided</scope>
         </dependency>
 

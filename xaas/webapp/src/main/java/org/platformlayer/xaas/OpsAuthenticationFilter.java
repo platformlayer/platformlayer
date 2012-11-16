@@ -14,10 +14,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.platformlayer.Scope;
+import org.platformlayer.auth.AuthenticationToken;
 import org.platformlayer.auth.AuthenticationTokenValidator;
-import org.platformlayer.auth.client.PlatformlayerAuthenticationToken;
+import org.platformlayer.auth.PlatformlayerAuthenticationToken;
 import org.platformlayer.model.AuthenticationCredentials;
-import org.platformlayer.model.AuthenticationToken;
 
 public class OpsAuthenticationFilter implements Filter {
 	static final Logger log = Logger.getLogger(OpsAuthenticationFilter.class);

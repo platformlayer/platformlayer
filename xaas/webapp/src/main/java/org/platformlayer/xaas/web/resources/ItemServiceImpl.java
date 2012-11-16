@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.platformlayer.CastUtils;
 import org.platformlayer.CheckedCallable;
 import org.platformlayer.Filter;
 import org.platformlayer.RepositoryException;
@@ -32,6 +31,7 @@ import org.platformlayer.xaas.services.ServiceProviderDictionary;
 import org.platformlayer.xml.JaxbHelper;
 import org.platformlayer.xml.JsonHelper;
 
+import com.fathomdb.Casts;
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import com.google.inject.Injector;
@@ -274,7 +274,7 @@ public class ItemServiceImpl implements ItemService {
 
 					try {
 						boolean fetchTags = true;
-						existing = CastUtils.checkedCast(repository.getManagedItem(itemKey, fetchTags, secretProvider),
+						existing = Casts.checkedCast(repository.getManagedItem(itemKey, fetchTags, secretProvider),
 								javaClass);
 					} catch (RepositoryException e) {
 						throw new OpsException("Error fetching item from database", e);
@@ -402,7 +402,7 @@ public class ItemServiceImpl implements ItemService {
 		boolean fetchTags = true;
 		T managedItem;
 		try {
-			managedItem = CastUtils.checkedCast(
+			managedItem = Casts.checkedCast(
 					repository.getManagedItem(modelKey, fetchTags, SecretProvider.from(auth)), itemClass);
 		} catch (RepositoryException e) {
 			throw new OpsException("Error fetching item from database", e);

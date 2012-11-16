@@ -9,14 +9,16 @@ import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
-import org.platformlayer.CastUtils;
 import org.platformlayer.IoUtils;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.auth.services.CacheSystem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fathomdb.Casts;
 
 public class SimpleCacheSystem implements CacheSystem {
-	static final Logger log = Logger.getLogger(SimpleCacheSystem.class);
+	private static final Logger log = LoggerFactory.getLogger(SimpleCacheSystem.class);
 
 	static class LruHashMap<K, V> {
 		final LinkedHashMap<K, V> map;
@@ -78,7 +80,7 @@ public class SimpleCacheSystem implements CacheSystem {
 		ObjectInputStream ois = null;
 		try {
 			ois = new ObjectInputStream(new ByteArrayInputStream(entry.value));
-			T t = CastUtils.as(ois.readObject(), clazz);
+			T t = Casts.as(ois.readObject(), clazz);
 			return t;
 		} catch (IOException e) {
 			log.warn("Ignoring error deserializing from cache", e);

@@ -6,9 +6,9 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.platformlayer.config.Configuration;
 import org.platformlayer.crypto.CryptoUtils;
 
+import com.fathomdb.Configuration;
 import com.fathomdb.crypto.CryptoKey;
 import com.fathomdb.crypto.FathomdbCrypto;
 import com.google.common.collect.Maps;

@@ -9,7 +9,6 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.security.KeyPair;
 
-import org.apache.log4j.Logger;
 import org.apache.sshd.ClientChannel;
 import org.apache.sshd.client.channel.ForwardLocalPort;
 import org.apache.sshd.client.channel.SshTunnelSocket;
@@ -22,9 +21,11 @@ import org.platformlayer.ops.ssh.SshConnection;
 import org.platformlayer.ops.ssh.SshException;
 import org.platformlayer.ops.ssh.SshPortForward;
 import org.platformlayer.ssh.SshConnectionInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MinaSshConnection extends SshConnection {
-	private static final Logger log = Logger.getLogger(MinaSshConnection.class);
+	private static final Logger log = LoggerFactory.getLogger(MinaSshConnection.class);
 
 	public static final TimeSpan DEFAULT_SSH_EXECUTE_TIMEOUT = new TimeSpan("15s");
 

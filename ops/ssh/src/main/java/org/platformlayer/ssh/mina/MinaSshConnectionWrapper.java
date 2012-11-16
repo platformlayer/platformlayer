@@ -4,7 +4,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.security.KeyPair;
 
-import org.apache.log4j.Logger;
 import org.apache.sshd.ClientChannel;
 import org.apache.sshd.ClientSession;
 import org.apache.sshd.SshClient;
@@ -16,9 +15,11 @@ import org.platformlayer.ops.ssh.IServerKeyVerifier;
 import org.platformlayer.ops.ssh.SshException;
 import org.platformlayer.ssh.SshConnectionInfo;
 import org.platformlayer.ssh.mina.bugfix.BugFixChannelExec;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MinaSshConnectionWrapper implements Closeable {
-	static final Logger log = Logger.getLogger(MinaSshConnectionWrapper.class);
+	private static final Logger log = LoggerFactory.getLogger(MinaSshConnectionWrapper.class);
 
 	final SshConnectionInfo connectionInfo;
 

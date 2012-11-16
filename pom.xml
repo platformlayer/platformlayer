@@ -53,6 +53,24 @@
 
             <dependency>
                 <groupId>org.platformlayer</groupId>
+                <artifactId>platformlayer-auth-common</artifactId>
+                <version>${version.project}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>platformlayer-auth-system</artifactId>
+                <version>${version.project}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.platformlayer</groupId>
+                <artifactId>platformlayer-auth-client</artifactId>
+                <version>${version.project}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.platformlayer</groupId>
                 <artifactId>gwt-shared</artifactId>
                 <version>${version.project}</version>
             </dependency>
@@ -243,10 +261,15 @@
                 <version>${version.project}</version>
             </dependency>
 
-
             <dependency>
                 <groupId>com.fathomdb</groupId>
                 <artifactId>fathomdb-crypto</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fathomdb</groupId>
+                <artifactId>fathomdb-http</artifactId>
                 <version>1.0-SNAPSHOT</version>
             </dependency>
 
@@ -412,6 +435,12 @@
                 <groupId>postgresql</groupId>
                 <artifactId>postgresql</artifactId>
                 <version>${version.postgresql}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.jolbox</groupId>
+                <artifactId>bonecp</artifactId>
+                <version>0.7.1.RELEASE</version>
             </dependency>
 
             <!-- Jersey Spring integration; this would normally pull in Spring 

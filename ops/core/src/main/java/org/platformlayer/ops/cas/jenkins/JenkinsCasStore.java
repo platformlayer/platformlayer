@@ -4,8 +4,6 @@ import java.net.URI;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.openstack.crypto.ByteString;
-import org.openstack.crypto.Md5Hash;
 import org.platformlayer.cas.CasLocation;
 import org.platformlayer.cas.CasStore;
 import org.platformlayer.cas.CasStoreObject;
@@ -17,6 +15,8 @@ import org.platformlayer.ops.cas.jenkins.JenkinsClient.BuildInfo.ArtifactInfo;
 import org.platformlayer.ops.cas.jenkins.JenkinsClient.FingerprintInfo;
 import org.platformlayer.ops.networks.NetworkPoint;
 
+import com.fathomdb.hash.Md5Hash;
+
 public class JenkinsCasStore implements CasStore {
 	static final Logger log = Logger.getLogger(JenkinsCasStore.class);
 
@@ -27,7 +27,7 @@ public class JenkinsCasStore implements CasStore {
 	}
 
 	@Override
-	public CasStoreObject findArtifact(ByteString hash) throws OpsException {
+	public CasStoreObject findArtifact(Md5Hash hash) throws OpsException {
 		try {
 			FingerprintInfo fingerprint = client.findByFingerprint(hash.toHex());
 			if (fingerprint == null) {
@@ -63,7 +63,7 @@ public class JenkinsCasStore implements CasStore {
 	}
 
 	@Override
-	public ByteString findTag(String tag) throws OpsException {
+	public Md5Hash findTag(String tag) throws OpsException {
 		URI uri = client.getBaseUrl();
 
 		// TODO: Match jenkins host??

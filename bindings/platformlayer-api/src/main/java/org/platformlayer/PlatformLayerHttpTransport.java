@@ -5,12 +5,12 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import org.platformlayer.auth.AuthenticationToken;
 import org.platformlayer.auth.Authenticator;
-import org.platformlayer.auth.PlatformlayerAuthenticationException;
+import org.platformlayer.auth.PlatformlayerAuthenticationClientException;
 import org.platformlayer.exceptions.OpenstackClientConnectionException;
 import org.platformlayer.http.HttpStrategy;
 import org.platformlayer.ids.ProjectId;
-import org.platformlayer.model.AuthenticationToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +41,7 @@ class PlatformLayerHttpTransport {
 	public AuthenticationToken getAuthenticationToken() throws PlatformLayerAuthenticationException {
 		try {
 			return authClient.getAuthenticationToken();
-		} catch (PlatformlayerAuthenticationException e) {
+		} catch (PlatformlayerAuthenticationClientException e) {
 			throw new PlatformLayerAuthenticationException("Error authenticating", e);
 		}
 	}
@@ -102,7 +102,7 @@ class PlatformLayerHttpTransport {
 				} else {
 					try {
 						retval = request.doRequest(retvalClass, acceptFormat, sendData, sendDataFormat);
-					} catch (PlatformlayerAuthenticationException e) {
+					} catch (PlatformLayerAuthenticationException e) {
 						log.warn("Reauthorizing after auth error", e);
 						authClient.clearAuthenticationToken();
 					} catch (OpenstackClientConnectionException e) {

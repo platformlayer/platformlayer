@@ -1,12 +1,13 @@
 package org.platformlayer.cas;
 
-import org.openstack.crypto.ByteString;
 import org.platformlayer.ops.OpsException;
 
-public interface CasStore {
-	CasStoreObject findArtifact(ByteString hash) throws OpsException;
+import com.fathomdb.hash.Md5Hash;
 
-	ByteString findTag(String tag) throws OpsException;
+public interface CasStore {
+	CasStoreObject findArtifact(Md5Hash hash) throws OpsException;
+
+	Md5Hash findTag(String tag) throws OpsException;
 
 	int estimateDistance(CasLocation target) throws OpsException;
 }

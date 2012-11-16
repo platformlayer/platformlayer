@@ -22,11 +22,9 @@ import org.bouncycastle.pkcs.PKCS10CertificationRequestBuilder;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemObjectGenerator;
 import org.bouncycastle.util.io.pem.PemWriter;
-import org.openstack.crypto.CertificateAndKey;
-import org.openstack.crypto.SimpleCertificateAndKey;
 import org.platformlayer.Scope;
 import org.platformlayer.auth.AuthenticationTokenValidator;
-import org.platformlayer.auth.client.PlatformLayerAuthAdminClient;
+import org.platformlayer.auth.system.PlatformLayerAuthAdminClient;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.crypto.BouncyCastleHelpers;
 import org.platformlayer.crypto.RsaUtils;
@@ -36,6 +34,9 @@ import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.ServiceConfiguration;
+
+import com.fathomdb.crypto.CertificateAndKey;
+import com.fathomdb.crypto.SimpleCertificateAndKey;
 
 public class ProjectContext {
 	@Inject

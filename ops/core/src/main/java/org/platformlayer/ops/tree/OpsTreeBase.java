@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.platformlayer.CastUtils;
 import org.platformlayer.ops.BindingHelper;
 import org.platformlayer.ops.BindingScope;
 import org.platformlayer.ops.CustomRecursor;
@@ -16,6 +15,7 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTree;
 import org.platformlayer.ops.filesystem.ManagedDirectory;
 
+import com.fathomdb.Casts;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -56,7 +56,7 @@ public abstract class OpsTreeBase implements OpsTree, CustomRecursor {
 	protected <T> T getChild(Class<T> findClass) throws OpsException {
 		for (Object child : getChildren()) {
 			if (findClass.isInstance(child)) {
-				return CastUtils.as(child, findClass);
+				return Casts.as(child, findClass);
 			}
 		}
 		throw new OpsException("Could not find child matching type: " + findClass);

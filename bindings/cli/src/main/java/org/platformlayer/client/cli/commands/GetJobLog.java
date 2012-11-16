@@ -2,11 +2,11 @@ package org.platformlayer.client.cli.commands;
 
 import java.io.PrintWriter;
 
-import org.apache.log4j.Priority;
 import org.kohsuke.args4j.Argument;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
 import org.platformlayer.client.cli.autocomplete.AutoCompleteJobId;
+import org.platformlayer.common.JobLogLineLevels;
 import org.platformlayer.jobs.model.JobLog;
 import org.platformlayer.jobs.model.JobLogLine;
 
@@ -43,11 +43,11 @@ public class GetJobLog extends PlatformLayerCommandRunnerBase {
 
 		JobLog jobLog = (JobLog) o;
 		for (JobLogLine line : jobLog) {
-			if (line.level >= Priority.ERROR_INT) {
+			if (line.level >= JobLogLineLevels.LEVEL_ERROR) {
 				ansi.setColorRed();
-			} else if (line.level >= Priority.WARN_INT) {
+			} else if (line.level >= JobLogLineLevels.LEVEL_WARN) {
 				ansi.setColorYellow();
-			} else if (line.level >= Priority.INFO_INT) {
+			} else if (line.level >= JobLogLineLevels.LEVEL_INFO) {
 				ansi.setColorGreen();
 			} else {
 				ansi.setColorBlue();

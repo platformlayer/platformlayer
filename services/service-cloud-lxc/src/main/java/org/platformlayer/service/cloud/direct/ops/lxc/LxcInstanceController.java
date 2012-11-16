@@ -35,6 +35,7 @@ import org.platformlayer.service.cloud.direct.ops.DownloadImage;
 import org.platformlayer.service.cloud.direct.ops.InstanceScript;
 import org.platformlayer.service.cloud.direct.ops.cloud.CloudMap;
 
+
 public class LxcInstanceController extends OpsTreeBase {
 	static final Logger log = Logger.getLogger(LxcInstanceController.class);
 

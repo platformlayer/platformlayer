@@ -119,13 +119,17 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+
         <!-- Dependencies that some services need, and otherwise don't get 
             included -->
         <!-- TODO: Fix this... -->
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
-            <version>2.4.1</version>
         </dependency>
 
 
@@ -140,6 +144,11 @@
             <artifactId>metrics-httpclient</artifactId>
         </dependency>
 
+        <!-- Databases -->
+        <dependency>
+            <groupId>com.jolbox</groupId>
+            <artifactId>bonecp</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

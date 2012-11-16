@@ -18,6 +18,11 @@
         </dependency>
 
         <dependency>
+            <groupId>org.platformlayer</groupId>
+            <artifactId>platformlayer-auth-system</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
         </dependency>
@@ -25,6 +30,11 @@
         <dependency>
             <groupId>org.platformlayer</groupId>
             <artifactId>platformlayer-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.platformlayer</groupId>
+            <artifactId>openstack-commons</artifactId>
         </dependency>
 
         <dependency>

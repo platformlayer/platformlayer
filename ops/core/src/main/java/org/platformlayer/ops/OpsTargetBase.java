@@ -7,11 +7,11 @@ import java.util.Map;
 import java.util.Random;
 
 import org.apache.log4j.Logger;
-import org.openstack.crypto.Md5Hash;
 import org.platformlayer.ops.filesystem.FilesystemInfo;
 import org.platformlayer.ops.process.ProcessExecution;
 import org.platformlayer.ops.process.ProcessExecutionException;
 
+import com.fathomdb.hash.Md5Hash;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;

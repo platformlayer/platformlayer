@@ -7,7 +7,6 @@ import javax.inject.Inject;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.auth.AuthenticatorException;
 import org.platformlayer.auth.ProjectEntity;
 import org.platformlayer.auth.model.SignCertificateRequest;
@@ -15,13 +14,15 @@ import org.platformlayer.auth.model.SignCertificateResponse;
 import org.platformlayer.auth.services.PkiService;
 import org.platformlayer.crypto.CertificateUtils;
 import org.platformlayer.ops.OpsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fathomdb.crypto.FathomdbCrypto;
 import com.google.common.collect.Lists;
 
 @Path("/pki")
 public class PkiResource extends RootResource {
-	static final Logger log = Logger.getLogger(PkiResource.class);
+	private static final Logger log = LoggerFactory.getLogger(PkiResource.class);
 
 	@Inject
 	PkiService pki;

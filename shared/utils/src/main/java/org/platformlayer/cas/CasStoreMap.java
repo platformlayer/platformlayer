@@ -2,10 +2,10 @@ package org.platformlayer.cas;
 
 import java.util.List;
 
-import org.openstack.crypto.ByteString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.hash.Md5Hash;
 import com.google.common.collect.Lists;
 
 public class CasStoreMap {
@@ -15,7 +15,7 @@ public class CasStoreMap {
 	final List<CasStore> secondaryList = Lists.newArrayList();
 	final List<CasStore> stagingStores = Lists.newArrayList();
 
-	public CasStoreObject findArtifact(CasTarget target, ByteString hash) throws Exception {
+	public CasStoreObject findArtifact(CasTarget target, Md5Hash hash) throws Exception {
 		for (CasStore casStore : primaryList) {
 			CasStoreObject found = tryFind(casStore, hash);
 			if (found != null) {
@@ -45,7 +45,7 @@ public class CasStoreMap {
 		return chooser.choose(matches);
 	}
 
-	private CasStoreObject tryFind(CasStore casStore, ByteString hash) {
+	private CasStoreObject tryFind(CasStore casStore, Md5Hash hash) {
 		try {
 			CasStoreObject uri = casStore.findArtifact(hash);
 			if (uri != null) {
@@ -57,9 +57,9 @@ public class CasStoreMap {
 		return null;
 	}
 
-	private ByteString tryResolve(CasStore casStore, String specifier) {
+	private Md5Hash tryResolve(CasStore casStore, String specifier) {
 		try {
-			ByteString hash = casStore.findTag(specifier);
+			Md5Hash hash = casStore.findTag(specifier);
 			if (hash != null) {
 				return hash;
 			}
@@ -81,16 +81,16 @@ public class CasStoreMap {
 		stagingStores.add(secondary);
 	}
 
-	public ByteString resolve(String specifier) {
+	public Md5Hash resolve(String specifier) {
 		for (CasStore casStore : primaryList) {
-			ByteString found = tryResolve(casStore, specifier);
+			Md5Hash found = tryResolve(casStore, specifier);
 			if (found != null) {
 				return found;
 			}
 		}
 
 		for (CasStore casStore : secondaryList) {
-			ByteString found = tryResolve(casStore, specifier);
+			Md5Hash found = tryResolve(casStore, specifier);
 			if (found != null) {
 				return found;
 			}

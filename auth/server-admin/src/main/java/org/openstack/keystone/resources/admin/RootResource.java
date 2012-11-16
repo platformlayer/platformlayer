@@ -4,7 +4,6 @@ import java.security.cert.X509Certificate;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.openstack.utils.Hex;
 import org.platformlayer.auth.AuthenticatorException;
 import org.platformlayer.auth.ServiceAccount;
@@ -13,9 +12,11 @@ import org.platformlayer.auth.model.CertificateInfo;
 import org.platformlayer.auth.resources.PlatformlayerAuthResourceBase;
 import org.platformlayer.auth.services.SystemAuthenticator;
 import org.platformlayer.auth.services.TokenService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RootResource extends PlatformlayerAuthResourceBase {
-	static final Logger log = Logger.getLogger(RootResource.class);
+	private static final Logger log = LoggerFactory.getLogger(RootResource.class);
 
 	@Inject
 	protected SystemAuthenticator systemAuthenticator;

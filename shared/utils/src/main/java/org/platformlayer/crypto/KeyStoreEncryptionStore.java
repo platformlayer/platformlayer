@@ -11,13 +11,14 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.openstack.crypto.CertificateAndKey;
 import org.openstack.crypto.KeyStoreUtils;
-import org.openstack.crypto.SimpleCertificateAndKey;
-import org.platformlayer.config.Configuration;
 import org.platformlayer.ops.OpsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fathomdb.Configuration;
+import com.fathomdb.crypto.CertificateAndKey;
+import com.fathomdb.crypto.SimpleCertificateAndKey;
 
 @Singleton
 public class KeyStoreEncryptionStore implements EncryptionStore {

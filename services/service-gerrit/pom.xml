@@ -16,5 +16,10 @@
             <groupId>org.platformlayer</groupId>
             <artifactId>service-base</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.platformlayer</groupId>
+            <artifactId>service-jetty</artifactId>
+        </dependency>
     </dependencies>
 </project>

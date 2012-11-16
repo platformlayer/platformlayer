@@ -15,17 +15,27 @@
         <dependency>
             <groupId>org.platformlayer</groupId>
             <artifactId>platformlayer-shared-utils</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jaxb-impl</artifactId>
+                    <groupId>com.sun.xml.bind</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>com.fathomdb</groupId>
+            <artifactId>fathomdb-http</artifactId>
+        </dependency>
+        
         <dependency>
             <groupId>org.platformlayer</groupId>
             <artifactId>core-model</artifactId>
         </dependency>
 
-
         <dependency>
             <groupId>org.platformlayer</groupId>
-            <artifactId>keystone-client</artifactId>
+            <artifactId>platformlayer-auth-client</artifactId>
         </dependency>
 
         <dependency>
@@ -43,6 +53,8 @@
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
         </dependency>
+
+
     </dependencies>
 
     <build>

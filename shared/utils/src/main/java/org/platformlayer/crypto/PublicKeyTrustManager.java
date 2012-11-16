@@ -7,6 +7,8 @@ import java.util.Set;
 
 import javax.net.ssl.X509TrustManager;
 
+import org.platformlayer.crypto.OpenSshUtils;
+
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 

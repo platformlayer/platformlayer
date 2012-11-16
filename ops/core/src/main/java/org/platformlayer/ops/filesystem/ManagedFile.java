@@ -6,7 +6,7 @@ import java.io.IOException;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.openstack.crypto.Md5Hash;
+import com.fathomdb.hash.Md5Hash;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.HasDescription;
 import org.platformlayer.ops.OpsContext;

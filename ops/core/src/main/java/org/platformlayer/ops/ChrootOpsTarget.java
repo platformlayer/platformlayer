@@ -2,7 +2,7 @@ package org.platformlayer.ops;
 
 import java.io.File;
 
-import org.openstack.crypto.Md5Hash;
+import com.fathomdb.hash.Md5Hash;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.process.ProcessExecution;
 
