@@ -4,36 +4,26 @@ import java.io.File;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.inject.Inject;
-
-import org.apache.log4j.Logger;
 import org.openstack.utils.Utf8;
+import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.SyntheticFile;
-import org.platformlayer.ops.machines.PlatformLayerHelpers;
 
 import com.google.common.collect.LinkedHashMultimap;
 
 public class GerritConfigurationFile extends SyntheticFile {
-	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(GerritConfigurationFile.class);
 
-	@Inject
-	PlatformLayerHelpers platformLayer;
-
-	private GerritInstanceModel getTemplate() {
-		GerritInstanceModel template = injected(GerritInstanceModel.class);
-		return template;
-	}
+	@Bound
+	GerritTemplate template;
 
 	@Override
 	protected File getFilePath() {
-		return getTemplate().getConfigurationFile();
+		return template.getConfigurationFile();
 	}
 
 	@Override
 	protected byte[] getContentsBytes() throws OpsException {
-		Map<String, String> model = getTemplate().getConfigurationProperties();
+		Map<String, String> model = template.getConfigurationProperties();
 
 		String contents = serialize(model);
 

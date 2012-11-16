@@ -18,7 +18,7 @@ public class JettyInstance extends StandardServiceInstance {
 	JettyService model;
 
 	@Bound
-	JettyTemplate template;
+	public JettyTemplate template;
 
 	@Override
 	protected JettyTemplate getTemplate() {
@@ -49,11 +49,21 @@ public class JettyInstance extends StandardServiceInstance {
 					.setGroup(template.getGroup()));
 		}
 
-		addChild(TemplatedFile.build(template, new File(instanceDir, "start.ini")));
+		{
+			// We need to explicitly get the resource name because of the inheriting template
+			String templateName = TemplatedFile.getDefaultResourceName(JettyInstance.class, "start.ini");
+			addChild(TemplatedFile.build(template, new File(instanceDir, "start.ini"), templateName));
+		}
+
+		if (template.getUseHttps()) {
+			// We need to explicitly get the resource name because of the inheriting template
+			String templateName = TemplatedFile.getDefaultResourceName(JettyInstance.class, "jetty-ssl.xml");
+			addChild(TemplatedFile.build(template, new File(instanceDir, "jetty-ssl.xml"), templateName));
+		}
 
 		AppsContainer apps = addChild(AppsContainer.class);
 
-		if (model.contexts != null) {
+		if (model != null && model.contexts != null) {
 			for (JettyContext context : model.contexts) {
 				SimpleApp app = apps.addChild(SimpleApp.class);
 				String key = context.id;

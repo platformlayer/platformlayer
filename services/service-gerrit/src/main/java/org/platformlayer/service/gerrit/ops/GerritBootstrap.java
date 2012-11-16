@@ -15,17 +15,24 @@ public class GerritBootstrap extends OpsTreeBase {
 	// @Inject
 	// TemplateHelpers templates;
 
+	@Bound
+	GerritTemplate template;
+
 	@Handler
 	public void handler(OpsTarget target) throws OpsException, IOException {
-		GerritInstanceModel template = injected(GerritInstanceModel.class);
-
 		File canary = new File(template.getDataDir(), "bin/gerrit.sh");
+
+		// TODO: Upgrades need to run init
+
+		// Note: There's a nasty migration issue (see release notes for 2.5); dropping the index first fixes it:
+		// drop index submodule_subscription_access_bysubscription;
+
 		if (target.getFilesystemInfoFile(canary) == null) {
 			if (OpsContext.isConfigure()) {
 				File dataDir = template.getDataDir();
 
 				Command command = Command.build("java");
-				command.addLiteral("-jar").addFile(template.getWarFile());
+				command.addLiteral("-jar").addFile(template.getInstallWarFile());
 				command.addLiteral("init");
 				command.addLiteral("--no-auto-start");
 				command.addLiteral("--batch");
@@ -35,28 +42,15 @@ public class GerritBootstrap extends OpsTreeBase {
 			}
 		}
 
-		// // Nexus needs a workdir; by default it's in the home directory of the user we're running under
-		// // With jetty, the jetty user can't create this directory; we do it
-		// File sonatypeDir = new File("/usr/share/jetty/sonatype-work");
-		// target.mkdir(sonatypeDir, "750");
-		//
-		// File nexusDir = new File(sonatypeDir, "nexus");
-		// target.mkdir(nexusDir, "750");
-		//
-		// File confDir = new File(nexusDir, "conf");
-		// target.mkdir(confDir, "750");
-		// {
-		// String contents = ResourceUtils.get(getClass(), "conf/security.xml");
-		// FileUpload.upload(target, new File(confDir, "security.xml"), contents);
-		// }
-		//
-		// {
-		// String contents = ResourceUtils.get(getClass(), "conf/security-configuration.xml");
-		// FileUpload.upload(target, new File(confDir, "security-configuration.xml"), contents);
-		// }
-		//
-		//
-		// target.chown(sonatypeDir, "jetty", "jetty", true, false);
+		// DROP TABLE contributor_agreements;
+		// DROP TABLE account_agreements;
+		// DROP TABLE account_group_agreements;
+		// ALTER TABLE accounts DROP COLUMN display_patch_sets_in_reverse_order;
+		// ALTER TABLE accounts DROP COLUMN display_person_name_in_review_category;
+		// ALTER TABLE tracking_ids DROP COLUMN tracking_id;
+		// ALTER TABLE account_groups DROP COLUMN owner_group_id;
+		// ALTER TABLE account_groups DROP COLUMN external_name;
+
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package org.platformlayer.service.jetty.ops;
 import java.io.File;
 import java.util.Map;
 
+import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Command.Argument;
@@ -18,7 +19,23 @@ public class JettyTemplate extends StandardTemplateData {
 
 	@Override
 	public void buildTemplateModel(Map<String, Object> model) throws OpsException {
+		model.put("useJndi", getUseJndi());
+		model.put("useHttps", getUseHttps());
+		model.put("useContexts", getUseContexts());
 
+		model.put("sslPort", 443);
+	}
+
+	protected boolean getUseHttps() {
+		return false;
+	}
+
+	protected boolean getUseJndi() {
+		return false;
+	}
+
+	protected boolean getUseContexts() {
+		return true;
 	}
 
 	public File getWarsStagingDir() {
@@ -33,8 +50,15 @@ public class JettyTemplate extends StandardTemplateData {
 		return getInstanceDir(); // new File("/var/lib/jetty");
 	}
 
+	/**
+	 * We allow JettyTemplate to be derived (GerritTemplate)
+	 */
 	@Override
-	public JettyService getModel() {
+	public ItemBase getModel() {
+		return getJettyService();
+	}
+
+	public JettyService getJettyService() {
 		JettyService model = OpsContext.get().getInstance(JettyService.class);
 		return model;
 	}
@@ -69,11 +93,20 @@ public class JettyTemplate extends StandardTemplateData {
 
 	@Override
 	protected PlatformLayerKey getSslKeyPath() {
-		return getModel().sslKey;
+		return getJettyService().sslKey;
 	}
 
 	public File getExpandedDir() {
-		return new File(getInstallDir(), "jetty-distribution-7.6.5.v20120716");
+		return new File(getInstallDir(), getVersion());
+	}
+
+	private String getVersion() {
+		return "jetty-distribution-7.6.8.v20121106";
+	}
+
+	@Override
+	public File getDistFile() {
+		return new File(getInstallDir(), getVersion() + ".tar.gz");
 	}
 
 }

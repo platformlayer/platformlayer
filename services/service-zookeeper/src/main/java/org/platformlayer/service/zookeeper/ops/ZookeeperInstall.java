@@ -1,6 +1,6 @@
 package org.platformlayer.service.zookeeper.ops;
 
-import org.openstack.crypto.Md5Hash;
+import com.fathomdb.hash.Md5Hash;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.filesystem.DownloadFileByHash;
 import org.platformlayer.ops.standardservice.StandardServiceInstall;

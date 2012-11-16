@@ -10,25 +10,28 @@ import org.platformlayer.InetAddressChooser;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Secret;
-import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.databases.Database;
 import org.platformlayer.ops.databases.DatabaseHelper;
-import org.platformlayer.ops.standardservice.StandardTemplateData;
 import org.platformlayer.service.gerrit.model.GerritDatabase;
 import org.platformlayer.service.gerrit.model.GerritService;
+import org.platformlayer.service.jetty.ops.JettyTemplate;
 
 import com.google.common.collect.Maps;
 
-public class GerritInstanceModel extends StandardTemplateData {
-	static final Logger log = Logger.getLogger(GerritInstanceModel.class);
+public class GerritTemplate extends JettyTemplate {
+	static final Logger log = Logger.getLogger(GerritTemplate.class);
 
 	@Inject
 	DatabaseHelper databases;
 
 	@Override
 	public GerritService getModel() {
+		return getGerritService();
+	}
+
+	public GerritService getGerritService() {
 		GerritService model = OpsContext.get().getInstance(GerritService.class);
 		return model;
 	}
@@ -37,13 +40,16 @@ public class GerritInstanceModel extends StandardTemplateData {
 		return new File(getInstanceDir(), "logback.xml");
 	}
 
-	@Override
-	public Command getCommand() {
-		File gerritScript = new File(getDataDir(), "bin/gerrit.sh");
-		Command command = Command.build("{0} run", gerritScript);
-
-		return command;
-	}
+	// @Override
+	// public Command getCommand() {
+	// // GerritCodeReview -jar /var/gerrit/default/data/bin/gerrit.war daemon -d /var/gerrit/default/data
+	// // --console-log
+	//
+	// File gerritScript = new File(getDataDir(), "bin/gerrit.sh");
+	// Command command = Command.build("{0} run", gerritScript);
+	//
+	// return command;
+	// }
 
 	@Override
 	public String getKey() {
@@ -74,7 +80,7 @@ public class GerritInstanceModel extends StandardTemplateData {
 	}
 
 	protected PlatformLayerKey getDatabaseKey() {
-		return getModel().database;
+		return getGerritService().database;
 	}
 
 	protected String getJdbcUrl() throws OpsException {
@@ -98,6 +104,18 @@ public class GerritInstanceModel extends StandardTemplateData {
 
 	@Override
 	public void buildTemplateModel(Map<String, Object> model) throws OpsException {
+		super.buildTemplateModel(model);
+
+		Map<String, String> config = getConfigurationProperties();
+		// We can't have dots, or freemarker assumes they are objects
+		for (String key : config.keySet()) {
+			String value = config.get(key);
+			key = key.replace(".", "_");
+			model.put(key, value);
+		}
+
+		String requiredRole = "project-" + getModel().getKey().getProjectString();
+		model.put("requiredRole", requiredRole);
 	}
 
 	public int getSshdPort() {
@@ -112,6 +130,8 @@ public class GerritInstanceModel extends StandardTemplateData {
 	public File getConfigurationFile() {
 		return new File(getDataDir(), "etc/gerrit.config");
 	}
+
+	boolean useOpenId = false;
 
 	@Override
 	protected Map<String, String> getConfigurationProperties() throws OpsException {
@@ -129,8 +149,21 @@ public class GerritInstanceModel extends StandardTemplateData {
 		model.put("gerrit.basePath", "git");
 		model.put("gerrit.canonicalWebUrl", scheme + "://" + getModel().dnsName + ":" + getWebPort() + "/");
 
-		model.put("auth.type", "OPENID");
+		if (useOpenId) {
+			model.put("auth.type", "OPENID");
+		} else {
+			model.put("auth.type", "HTTP");
+			model.put("auth.emailFormat", "{0}");
 
+			// LDAP...
+			// [auth]
+			// type = LDAP_BIND
+			// [ldap]
+			// server = ldap://1.2.3.4:11389
+			// accountEmailAddress = "mail"
+			// accountBase = "ou=people,dc=example,dc=com"
+
+		}
 		model.put("sendemail.enable", "false");
 
 		model.put("container.user", getUser());
@@ -170,19 +203,33 @@ public class GerritInstanceModel extends StandardTemplateData {
 		return new File(getInstanceDir(), "data");
 	}
 
-	public File getWarFile() {
-		return new File(getInstallDir(), "gerrit-2.4.2.war");
-	}
-
-	@Override
-	public File getDistFile() {
-		return getWarFile();
+	public File getInstallWarFile() {
+		// return new File(getInstallDir(), "gerrit-2.4.2.war");
+		return new File(getInstallDir(), "gerrit-full-2.5.war");
 	}
 
 	@Override
 	public String getMatchExecutableName() {
 		// We run a script, but that script runs java
 		return "java";
+	}
+
+	public File getLibExtDir() {
+		return new File(getJettyInstanceDir(), "lib/ext");
+	}
+
+	public File getJettyInstanceDir() {
+		return getInstanceDir();
+	}
+
+	@Override
+	protected boolean getUseHttps() {
+		return true;
+	}
+
+	@Override
+	protected boolean getUseJndi() {
+		return true;
 	}
 
 }

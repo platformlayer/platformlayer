@@ -6,7 +6,7 @@
 //import java.nio.file.Path;
 //
 //import org.openstack.client.OpenstackCredentials;
-//import org.openstack.crypto.Md5Hash;
+//import com.fathomdb.hash.Md5Hash;
 //import org.openstack.filesystem.HashAttributes;
 //import org.openstack.filesystem.OpenstackFileSystem;
 //import org.openstack.filesystem.OpenstackPath;

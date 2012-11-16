@@ -27,7 +27,7 @@ public class GerritServiceController extends OpsTreeBase implements HasPorts {
 	public GerritService model;
 
 	@Inject
-	GerritInstanceModel template;
+	GerritTemplate template;
 
 	@Handler
 	public void handler() {
