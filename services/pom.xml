@@ -45,7 +45,6 @@
         <module>service-solr</module>
         <module>service-redis</module>
         <module>service-httpfrontend</module>
-        <module>service-certificates</module>
         <module>service-gerrit</module>
         <module>service-schedule</module>
         <module>service-app</module>
