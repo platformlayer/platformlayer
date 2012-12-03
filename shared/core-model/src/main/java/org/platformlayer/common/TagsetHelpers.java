@@ -5,6 +5,7 @@ import java.util.List;
 import org.platformlayer.core.model.Tag;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
 public class TagsetHelpers {
@@ -18,7 +19,7 @@ public class TagsetHelpers {
 		if (!a.getKey().equals(b.getKey())) {
 			return false;
 		}
-		if (!a.getValue().equals(b.getValue())) {
+		if (!Objects.equal(a.getValue(), b.getValue())) {
 			return false;
 		}
 

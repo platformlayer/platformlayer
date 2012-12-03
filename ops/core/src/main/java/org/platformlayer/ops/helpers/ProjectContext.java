@@ -114,7 +114,7 @@ public class ProjectContext {
 		return new SimpleCertificateAndKey(chain, keyPair.getPrivate());
 	}
 
-	private String buildCsr(KeyPair keyPair, X500Principal subjectName) {
+	public static String buildCsr(KeyPair keyPair, X500Principal subjectName) {
 		X500Name subject = BouncyCastleHelpers.toX500Name(subjectName);
 		SubjectPublicKeyInfo publicKeyInfo = BouncyCastleHelpers.toSubjectPublicKeyInfo(keyPair.getPublic());
 		PKCS10CertificationRequestBuilder csrBuilder = new PKCS10CertificationRequestBuilder(subject, publicKeyInfo);
