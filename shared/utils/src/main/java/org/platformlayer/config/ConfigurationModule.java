@@ -44,10 +44,17 @@ public class ConfigurationModule extends AbstractModule {
 		Properties bindings = configuration.getChildProperties("bind.");
 		for (Entry<Object, Object> entry : bindings.entrySet()) {
 			String serviceKey = (String) entry.getKey();
-			Class service = Class.forName(serviceKey);
-			Class implementation = Class.forName((String) entry.getValue());
 
-			bind(service).to(implementation);
+			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
+			try {
+				Class service = classLoader.loadClass(serviceKey);
+				Class implementation = classLoader.loadClass((String) entry.getValue());
+				bind(service).to(implementation);
+			} catch (ClassNotFoundException e) {
+				log.warn("Unable to load class", e);
+				throw e;
+			}
 		}
 	}
 }

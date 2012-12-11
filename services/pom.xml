@@ -38,7 +38,7 @@
         <module>service-image-store</module>
         <module>service-networks</module>
         <module>service-federation</module>
-        <!-- Relies on Java 7 <module>service-platformlayer</module> -->
+        <module>service-platformlayer</module> 
         <module>service-zookeeper</module>
         <module>service-desktop</module>
         <module>service-memcache</module>
@@ -58,7 +58,7 @@
                 <directory>${basedir}/src/main/java</directory>
             </resource>
             <resource>
-                <directory>${basedir}/src/main/codegen</directory>
+                <directory>${basedir}/src/main/gwt</directory>
             </resource>
         </resources>
 

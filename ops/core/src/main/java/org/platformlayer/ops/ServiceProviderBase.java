@@ -338,4 +338,8 @@ public abstract class ServiceProviderBase implements ServiceProvider {
 		return Collections.emptyList();
 	}
 
+	@Override
+	public Object getExtensionResource() {
+		return null;
+	}
 }

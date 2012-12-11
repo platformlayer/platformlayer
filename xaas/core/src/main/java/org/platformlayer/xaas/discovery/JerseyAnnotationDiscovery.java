@@ -2,6 +2,8 @@ package org.platformlayer.xaas.discovery;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.List;
 import java.util.Map;
 
@@ -27,8 +29,8 @@ public class JerseyAnnotationDiscovery implements AnnotationDiscovery {
 				}
 			});
 
-	public void scan() {
-		Scanner scanner = buildScanner();
+	public void scan(URLClassLoader classLoader) {
+		Scanner scanner = buildScanner(classLoader);
 
 		AnnotationScannerListener listener = new AnnotationScannerListener(ANNOTATIONS);
 		scanner.scan(listener);
@@ -43,11 +45,19 @@ public class JerseyAnnotationDiscovery implements AnnotationDiscovery {
 		}
 	}
 
-	private Scanner buildScanner() {
+	private Scanner buildScanner(URLClassLoader classLoader) {
 		List<File> paths = Lists.newArrayList();
-		String classpath = System.getProperty("java.class.path");
-		for (String classpathEntry : classpath.split(File.pathSeparator)) {
-			paths.add(new File(classpathEntry));
+
+		// String classpath = System.getProperty("java.class.path");
+		// for (String classpathEntry : classpath.split(File.pathSeparator)) {
+		// paths.add(new File(classpathEntry));
+		// }
+
+		for (URL url : classLoader.getURLs()) {
+			if (!"file".equals(url.getProtocol())) {
+				continue;
+			}
+			paths.add(new File(url.getFile()));
 		}
 		Scanner scanner = new FilesScanner(paths.toArray(new File[paths.size()]));
 		return scanner;

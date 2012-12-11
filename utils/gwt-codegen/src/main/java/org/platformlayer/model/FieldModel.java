@@ -6,5 +6,10 @@ public class FieldModel {
 	public String name;
 	public String accessorType;
 
+	public String methodNameGet;
+
 	public boolean custom;
+
+	public String customGet;
+	public String customSet;
 }

@@ -12,10 +12,11 @@
     <name>PlatformLayer :: Services :: PlatformLayer</name>
 
     <dependencies>
+    <!-- 
         <dependency>
             <groupId>org.platformlayer</groupId>
             <artifactId>openstack-fileprovider</artifactId>
-        </dependency>
+        </dependency>-->
 
         <dependency>
             <groupId>org.platformlayer</groupId>
@@ -52,9 +53,11 @@
             <artifactId>javax.inject</artifactId>
         </dependency>
 
+<!-- 
         <dependency>
             <groupId>org.platformlayer</groupId>
             <artifactId>java6-nio2</artifactId>
         </dependency>
+         -->
     </dependencies>
 </project>

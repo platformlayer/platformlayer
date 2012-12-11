@@ -2,6 +2,8 @@ package org.platformlayer;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -205,12 +207,70 @@ public class GwtCodegenFileVisitor extends FileVisitor {
 				continue;
 			}
 
+			String beanName = Utils.capitalize(fieldName);
+			Class<?> accessorType = type;
+			if (accessorType.isPrimitive()) {
+				accessorType = Utils.getBoxedType(accessorType);
+			}
+
 			if (type == Long.class || type.equals(long.class)) {
 				warnings.add("JSNI cannot map 'long " + fieldName + "'");
 				continue;
 			}
 
 			String mapped = mapSpecialType(type);
+
+			if (mapped == null) {
+				if (type.equals(List.class)) {
+					Type genericType = field.getGenericType();
+					if (genericType instanceof ParameterizedType) {
+						ParameterizedType pt = (ParameterizedType) genericType;
+						Type[] actualTypeArguments = pt.getActualTypeArguments();
+						if (actualTypeArguments != null && actualTypeArguments.length == 1) {
+							Class<?> itemClass = (Class<?>) actualTypeArguments[0];
+
+							mapped = "java.util.List<" + itemClass.getName() + ">";
+
+							// public final
+							// List<org.platformlayer.service.certificates.model.PurchaseCertificateExample>
+							// getExamples() {
+							// return
+							// List<org.platformlayer.service.certificates.model.PurchaseCertificateExample>Js.get(this,
+							// "examples");
+							// }
+							//
+							// public final void
+							// setExamples(List<org.platformlayer.service.certificates.model.PurchaseCertificateExample>
+							// newValue) {
+							// List<org.platformlayer.service.certificates.model.PurchaseCertificateExample>Js.set(this,
+							// "examples", newValue);
+							// }
+
+							// Add imports??
+
+							String get = "";
+							get += "public final java.util.List<{itemClass}> get{beanName}() {\n";
+
+							if (itemClass.equals(String.class)) {
+								get += "	com.google.gwt.core.client.JsArrayString array0 = org.platformlayer.core.model.JsHelpers.getObject0(this, \"{fieldName}\").cast();\n";
+								get += "	return org.platformlayer.core.model.JsStringArrayToList.wrap(array0);\n";
+							} else {
+								get += "	com.google.gwt.core.client.JsArray<{itemClass}> array0 = org.platformlayer.core.model.JsHelpers.getObject0(this, \"{fieldName}\").cast();\n";
+								get += "	return org.platformlayer.core.model.JsArrayToList.wrap(array0);\n";
+							}
+
+							get += "}\n";
+
+							get = get.replace("{beanName}", beanName);
+							get = get.replace("{fieldName}", fieldName);
+							get = get.replace("{itemClass}", itemClass.getName());
+
+							fieldModel.customGet = get;
+							fieldModel.customSet = "";
+						}
+					}
+				}
+			}
 
 			if (mapped != null) {
 
@@ -219,15 +279,13 @@ public class GwtCodegenFileVisitor extends FileVisitor {
 				continue;
 			}
 
-			Class<?> accessorType = type;
-			if (accessorType.isPrimitive()) {
-				accessorType = Utils.getBoxedType(accessorType);
-			}
-			String beanName = Utils.capitalize(fieldName);
-
 			fieldModel.type = mapped != null ? mapped : type.getName();
 			fieldModel.accessorType = mapped != null ? mapped : accessorType.getName();
 			fieldModel.beanName = beanName;
+			fieldModel.methodNameGet = "get" + beanName;
+			if (type.equals(boolean.class) || type.equals(Boolean.class)) {
+				fieldModel.methodNameGet = "is" + beanName;
+			}
 			fieldModel.name = fieldName;
 
 			fieldModel.custom = mapped != null;
@@ -246,11 +304,16 @@ public class GwtCodegenFileVisitor extends FileVisitor {
 			throw new MojoExecutionException("Did not find .gwt.xml file above " + clazz);
 		}
 
-		File gwtOutDir = new File(outDir, Joiner.on("/").join(gwtBasePathComponents));
-		Utils.mkdirs(gwtOutDir);
+		// String gwtPackage = Joiner.on(".").join(gwtBasePathComponents);
+		String outputPackage = clazz.getPackage().getName();
+		model.put("package", outputPackage);
 
-		String gwtPackage = Joiner.on(".").join(gwtBasePathComponents);
-		model.put("gwtPackage", gwtPackage);
+		// File outputDir = new File(outDir, Joiner.on("/").join(gwtBasePathComponents));
+		// Utils.mkdirs(outputDir);
+
+		String outputPath = Joiner.on(".").join(gwtBasePathComponents) + ".translatable." + outputPackage;
+		File outputDir = new File(outDir, outputPath.replace('.', '/'));
+		Utils.mkdirs(outputDir);
 
 		model.put("warnings", warnings);
 
@@ -260,7 +323,7 @@ public class GwtCodegenFileVisitor extends FileVisitor {
 		// String editorPackage = gwtPackage + ".client";
 		// model.put("editorPackage", editorPackage);
 
-		runTemplate("jso/JsoObject.ftl", model, new File(gwtOutDir, "client/model/" + jsoClassName + ".java"));
+		runTemplate("jso/JsoObject.ftl", model, new File(outputDir, jsoClassName + ".java"));
 	}
 
 	private String mapSpecialType(Class<?> type) {

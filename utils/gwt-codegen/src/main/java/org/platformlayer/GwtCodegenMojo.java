@@ -58,7 +58,7 @@ public class GwtCodegenMojo extends AbstractMojo {
 		File projectDir = outputDirectory.getParentFile();
 		// Because we process the compiled output, and generate source code, we need to check out output into version
 		// control...
-		File codegenDir = new File(projectDir, "src/main/codegen");
+		File codegenDir = new File(projectDir, "src/main/gwt");
 		// File codegenDir = new File(projectDir, "target/generated-sources");
 
 		ClassLoader classLoader = buildClassloader();

@@ -1,5 +1,6 @@
 package org.platformlayer.ops.machines;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -68,12 +69,16 @@ public class PlatformLayerHelpers extends TypedPlatformLayerClient {
 		return item;
 	}
 
-	public void setUniqueTags(PlatformLayerKey key, Tag... setTags) throws OpsException {
+	public void setUniqueTags(PlatformLayerKey key, Tag... uniqueTags) throws OpsException {
+		setUniqueTags(key, Arrays.asList(uniqueTags));
+	}
+
+	public void setUniqueTags(PlatformLayerKey key, Iterable<Tag> uniqueTags) throws OpsException {
 		UntypedItem itemUntyped = getItemUntyped(key);
 		Tags tags = itemUntyped.getTags();
 
 		TagChanges tagChanges = new TagChanges();
-		for (Tag setTag : setTags) {
+		for (Tag setTag : uniqueTags) {
 			String tagKey = setTag.getKey();
 
 			List<String> existing = tags.findAll(tagKey);

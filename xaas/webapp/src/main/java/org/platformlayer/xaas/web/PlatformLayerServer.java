@@ -10,31 +10,54 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.google.common.collect.Lists;
+
 public class PlatformLayerServer {
 	static final Logger log = Logger.getLogger(PlatformLayerServer.class);
 
-	private static URLClassLoader buildClassLoader(File base) {
+	private static URLClassLoader buildClassLoader(List<File> serviceDirs) {
 		List<URL> urls = new ArrayList<URL>();
-		// for Lists.newArrayList(classLoader.getURLs());
-		File servicesBase = new File(base, "../../services");
-		for (File serviceDir : servicesBase.listFiles()) {
-			if (!serviceDir.isDirectory()) {
-				continue;
-			}
-			File classesDir = new File(serviceDir, "target/classes");
-			if (!classesDir.isDirectory()) {
-				continue;
-			}
-			classesDir = classesDir.getAbsoluteFile();
+		for (File serviceDirBase : serviceDirs) {
+			// for Lists.newArrayList(classLoader.getURLs());
+			for (File serviceDir : serviceDirBase.listFiles()) {
+				if (!serviceDir.isDirectory()) {
+					continue;
+				}
+				File classesDir = new File(serviceDir, "target/classes");
+				if (!classesDir.isDirectory()) {
+					continue;
+				}
+				classesDir = classesDir.getAbsoluteFile();
 
-			try {
-				urls.add(classesDir.toURI().toURL());
-				log.info("Added " + classesDir);
-			} catch (MalformedURLException e) {
-				throw new IllegalStateException("Error processing directory: " + classesDir, e);
+				try {
+					urls.add(classesDir.toURI().toURL());
+					log.info("Added " + classesDir);
+				} catch (MalformedURLException e) {
+					throw new IllegalStateException("Error processing directory: " + classesDir, e);
+				}
 			}
 		}
+
 		ClassLoader parent = ClassLoader.getSystemClassLoader(); // .getParent();
+
+		// for (File serviceDir : parent.get.get.listFiles()) {
+		// if (!serviceDir.isDirectory()) {
+		// continue;
+		// }
+		// File classesDir = new File(serviceDir, "target/classes");
+		// if (!classesDir.isDirectory()) {
+		// continue;
+		// }
+		// classesDir = classesDir.getAbsoluteFile();
+		//
+		// try {
+		// urls.add(classesDir.toURI().toURL());
+		// log.info("Added " + classesDir);
+		// } catch (MalformedURLException e) {
+		// throw new IllegalStateException("Error processing directory: " + classesDir, e);
+		// }
+		// }
+
 		URLClassLoader extended = URLClassLoader.newInstance(urls.toArray(new URL[urls.size()]), parent);
 		return extended;
 	}
@@ -43,7 +66,20 @@ public class PlatformLayerServer {
 		// System.setProperty("application.mode", "development");
 
 		File base = new File(".");
-		URLClassLoader classLoader = buildClassLoader(base);
+
+		String serviceClasspath = System.getProperty("serviceClasspath", "../../services");
+
+		List<File> serviceBases = Lists.newArrayList();
+		for (String servicePath : serviceClasspath.split(":")) {
+			File servicesBase;
+			if (servicePath.startsWith("/")) {
+				servicesBase = new File(servicePath);
+			} else {
+				servicesBase = new File(base, servicePath);
+			}
+			serviceBases.add(servicesBase);
+		}
+		URLClassLoader classLoader = buildClassLoader(serviceBases);
 
 		Class<?> mainClass = classLoader.loadClass("org.platformlayer.xaas.web.StandaloneXaasWebserver");
 		Method main = mainClass.getMethod("main", new Class[] { args.getClass() });

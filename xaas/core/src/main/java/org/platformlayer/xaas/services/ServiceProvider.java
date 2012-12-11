@@ -47,4 +47,6 @@ public interface ServiceProvider {
 	Object getController(Object item) throws OpsException;
 
 	List<Class<? extends Action>> getActions();
+
+	Object getExtensionResource();
 }

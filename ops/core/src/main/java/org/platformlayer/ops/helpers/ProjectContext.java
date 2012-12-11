@@ -1,7 +1,5 @@
 package org.platformlayer.ops.helpers;
 
-import java.io.IOException;
-import java.io.StringWriter;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 import java.util.List;
@@ -9,24 +7,10 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.security.auth.x500.X500Principal;
 
-import org.bouncycastle.asn1.x500.X500Name;
-import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
-import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
-import org.bouncycastle.operator.ContentSigner;
-import org.bouncycastle.operator.DefaultDigestAlgorithmIdentifierFinder;
-import org.bouncycastle.operator.DefaultSignatureAlgorithmIdentifierFinder;
-import org.bouncycastle.operator.OperatorCreationException;
-import org.bouncycastle.operator.bc.BcRSAContentSignerBuilder;
-import org.bouncycastle.pkcs.PKCS10CertificationRequest;
-import org.bouncycastle.pkcs.PKCS10CertificationRequestBuilder;
-import org.bouncycastle.util.io.pem.PemObject;
-import org.bouncycastle.util.io.pem.PemObjectGenerator;
-import org.bouncycastle.util.io.pem.PemWriter;
 import org.platformlayer.Scope;
 import org.platformlayer.auth.AuthenticationTokenValidator;
 import org.platformlayer.auth.system.PlatformLayerAuthAdminClient;
 import org.platformlayer.core.model.PlatformLayerKey;
-import org.platformlayer.crypto.BouncyCastleHelpers;
 import org.platformlayer.crypto.RsaUtils;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceMetadataKey;
@@ -97,8 +81,8 @@ public class ProjectContext {
 			}
 
 			PlatformLayerAuthAdminClient adminClient = PlatformLayerAuthAdminClient.find(authenticationTokenValidator);
-			String csr = buildCsr(keyPair, getX500Principal());
-			chain = adminClient.signCsr(projectId.getKey(), projectAuthorization.getProjectSecret(), csr);
+			Csr csr = Csr.buildCsr(keyPair, getX500Principal());
+			chain = adminClient.signCsr(projectId.getKey(), projectAuthorization.getProjectSecret(), csr.getEncoded());
 
 			privateData.putCertificate(projectId, null, METADATA_PROJECT_CERT, chain);
 		}
@@ -114,36 +98,4 @@ public class ProjectContext {
 		return new SimpleCertificateAndKey(chain, keyPair.getPrivate());
 	}
 
-	public static String buildCsr(KeyPair keyPair, X500Principal subjectName) {
-		X500Name subject = BouncyCastleHelpers.toX500Name(subjectName);
-		SubjectPublicKeyInfo publicKeyInfo = BouncyCastleHelpers.toSubjectPublicKeyInfo(keyPair.getPublic());
-		PKCS10CertificationRequestBuilder csrBuilder = new PKCS10CertificationRequestBuilder(subject, publicKeyInfo);
-
-		AlgorithmIdentifier sigAlgId = new DefaultSignatureAlgorithmIdentifierFinder().find("SHA1withRSA");
-		AlgorithmIdentifier digAlgId = new DefaultDigestAlgorithmIdentifierFinder().find(sigAlgId);
-
-		BcRSAContentSignerBuilder sigBuild = new BcRSAContentSignerBuilder(sigAlgId, digAlgId);
-		ContentSigner signer;
-		try {
-			signer = sigBuild.build(BouncyCastleHelpers.toAsymmetricKeyParameter(keyPair.getPrivate()));
-		} catch (OperatorCreationException e) {
-			throw new IllegalArgumentException("Error building content signer", e);
-		}
-
-		PKCS10CertificationRequest csrHolder = csrBuilder.build(signer);
-
-		StringWriter stringWriter = new StringWriter();
-
-		try {
-			PemWriter writer = new PemWriter(stringWriter);
-			PemObjectGenerator pemObject = new PemObject("CERTIFICATE REQUEST", csrHolder.getEncoded());
-			writer.writeObject(pemObject);
-			writer.close();
-		} catch (IOException e) {
-			throw new IllegalArgumentException("Error generating PEM", e);
-		}
-
-		return stringWriter.toString();
-
-	}
 }

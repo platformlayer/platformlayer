@@ -4,8 +4,10 @@ import java.security.cert.X509Certificate;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import org.platformlayer.Scope;
@@ -100,4 +102,9 @@ public class ResourceBase {
 	protected X509Certificate[] getCertificateChain() {
 		return HttpUtils.getCertificateChain(request);
 	}
+
+	protected void raiseNotFound() {
+		throw new WebApplicationException(Status.NOT_FOUND);
+	}
+
 }

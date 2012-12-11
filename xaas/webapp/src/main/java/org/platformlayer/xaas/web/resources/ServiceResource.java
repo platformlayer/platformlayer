@@ -102,4 +102,15 @@ public class ServiceResource extends XaasResourceBase {
 		return resources;
 	}
 
+	@Path("extensions")
+	public Object getExtensionsResource() {
+		ServiceProvider serviceProvider = getServiceProvider();
+
+		Object extensionResource = serviceProvider.getExtensionResource();
+		if (extensionResource == null) {
+			raiseNotFound();
+		}
+
+		return extensionResource;
+	}
 }

@@ -1,6 +1,7 @@
 package org.platformlayer.xaas;
 
 import java.io.File;
+import java.net.URLClassLoader;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -84,8 +85,9 @@ public class GuiceXaasConfig extends AbstractModule {
 
 		bind(DataSource.class).toProvider(GuiceDataSourceProvider.bind("platformlayer.jdbc.")).asEagerSingleton();
 
+		URLClassLoader urlClassLoader = (URLClassLoader) Thread.currentThread().getContextClassLoader();
 		JerseyAnnotationDiscovery discovery = new JerseyAnnotationDiscovery();
-		discovery.scan();
+		discovery.scan(urlClassLoader);
 		bind(AnnotationDiscovery.class).toInstance(discovery);
 
 		HttpStrategy httpStrategy = new InstrumentedApacheHttpStrategy();
