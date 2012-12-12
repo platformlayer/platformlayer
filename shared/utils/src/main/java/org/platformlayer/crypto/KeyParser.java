@@ -1,13 +1,20 @@
 package org.platformlayer.crypto;
 
+import java.io.StringReader;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CodingErrorAction;
 import java.security.KeyFactory;
+import java.security.KeyPair;
 import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.interfaces.RSAPrivateCrtKey;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.RSAPublicKeySpec;
 
+import org.bouncycastle.util.io.pem.PemObject;
+import org.bouncycastle.util.io.pem.PemReader;
 import org.openstack.utils.Utf8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +71,30 @@ public class KeyParser {
 
 					key = tryParsePemFormat(payload);
 				}
+			}
+		}
+
+		if (key == null) {
+			try {
+				PemReader reader = new PemReader(new StringReader(s));
+				PemObject pemObject = reader.readPemObject();
+				reader.close();
+
+				PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(pemObject.getContent());
+				KeyFactory kf = KeyFactory.getInstance("RSA");
+				PrivateKey privateKey = kf.generatePrivate(keySpec);
+				if (privateKey instanceof RSAPrivateCrtKey) {
+					RSAPrivateCrtKey rsaPrivateCrtKey = (RSAPrivateCrtKey) privateKey;
+					RSAPublicKeySpec publicKeySpec = new java.security.spec.RSAPublicKeySpec(
+							rsaPrivateCrtKey.getModulus(), rsaPrivateCrtKey.getPublicExponent());
+					PublicKey publicKey = kf.generatePublic(publicKeySpec);
+					key = new KeyPair(publicKey, privateKey);
+				} else {
+					key = privateKey;
+				}
+			} catch (Exception e) {
+				log.debug("Error reading pem data", e);
+				return null;
 			}
 		}
 

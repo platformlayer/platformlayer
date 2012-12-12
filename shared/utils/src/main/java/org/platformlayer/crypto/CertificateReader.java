@@ -53,6 +53,9 @@ public class CertificateReader {
 	}
 
 	public X509Certificate[] parse(String data) throws OpsException {
+		if (data == null)
+			return null;
+
 		return parse(data.getBytes());
 	}
 
@@ -68,6 +71,21 @@ public class CertificateReader {
 		}
 
 		return certificateFactory;
+	}
+
+	public static X509Certificate parseFirst(String cert) throws OpsException {
+		CertificateReader reader = new CertificateReader();
+		java.security.cert.Certificate[] parsed = reader.parse(cert);
+		if (parsed == null || parsed.length == 0) {
+			throw new OpsException("Cannot parse certificate");
+		} else {
+			java.security.cert.Certificate first = parsed[0];
+			if (first instanceof X509Certificate) {
+				return (X509Certificate) first;
+			} else {
+				throw new OpsException("Expected X509 certificate, found: " + first.getClass().getSimpleName());
+			}
+		}
 	}
 
 }
