@@ -10,5 +10,5 @@
     <entry-point
         class='org.platformlayer.service.dns.client.GwtEntryPoint' />
 
-
+    <super-source path="translatable" />
 </module>

@@ -9,4 +9,6 @@
 
     <entry-point
         class='org.platformlayer.service.jetty.client.GwtEntryPoint' />
+        
+    <super-source path="translatable" />
 </module>

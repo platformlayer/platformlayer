@@ -8,7 +8,7 @@ import org.platformlayer.gwt.client.ui.ItemViewImpl;
 import org.platformlayer.gwt.client.ui.ViewHandler;
 import org.platformlayer.gwt.client.widgets.ControlGroup;
 import org.platformlayer.gwt.client.widgets.Form;
-import org.platformlayer.service.jetty.client.model.JettyService;
+import org.platformlayer.service.jetty.model.JettyService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.ButtonElement;

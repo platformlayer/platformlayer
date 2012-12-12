@@ -6,7 +6,7 @@ import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.gwt.client.ui.DefaultListViewImpl;
 import org.platformlayer.gwt.client.ui.JsTextColumn;
 import org.platformlayer.gwt.client.widgets.BoundTable;
-import org.platformlayer.service.jetty.client.model.JettyService;
+import org.platformlayer.service.jetty.model.JettyService;
 
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.TextColumn;

@@ -4,7 +4,7 @@ import java.util.logging.Logger;
 
 import org.platformlayer.gwt.client.ui.ItemActivity;
 import org.platformlayer.service.jetty.client.JettyPlugin;
-import org.platformlayer.service.jetty.client.model.JettyService;
+import org.platformlayer.service.jetty.model.JettyService;
 
 import com.google.inject.Inject;
 

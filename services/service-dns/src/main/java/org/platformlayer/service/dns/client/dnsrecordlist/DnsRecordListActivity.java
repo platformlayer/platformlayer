@@ -8,7 +8,7 @@ import org.platformlayer.gwt.client.places.ShellPlace;
 import org.platformlayer.gwt.client.ui.ListActivity;
 import org.platformlayer.service.dns.client.DnsPlugin;
 import org.platformlayer.service.dns.client.dnsrecord.DnsRecordPlace;
-import org.platformlayer.service.dns.client.model.DnsRecord;
+import org.platformlayer.service.dns.model.DnsRecord;
 
 import com.google.inject.Inject;
 

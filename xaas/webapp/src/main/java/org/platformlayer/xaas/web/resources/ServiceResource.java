@@ -103,10 +103,21 @@ public class ServiceResource extends XaasResourceBase {
 	}
 
 	@Path("extensions")
-	public Object getExtensionsResource() {
-		ServiceProvider serviceProvider = getServiceProvider();
+	public Object getExtensionsResource() throws Exception {
+		final ServiceProvider serviceProvider = getServiceProvider();
 
-		Object extensionResource = serviceProvider.getExtensionResource();
+		OpsContextBuilder opsContextBuilder = objectInjector.getInstance(OpsContextBuilder.class);
+
+		final OpsContext opsContext = opsContextBuilder.buildTemporaryOpsContext(getServiceType(),
+				getProjectAuthorization());
+
+		Object extensionResource = OpsContext.runInContext(opsContext, new CheckedCallable<Object, Exception>() {
+			@Override
+			public Object call() throws Exception {
+				return serviceProvider.getExtensionResource();
+			}
+		});
+
 		if (extensionResource == null) {
 			raiseNotFound();
 		}

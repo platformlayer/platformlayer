@@ -6,7 +6,7 @@ import org.platformlayer.gwt.client.alerts.Alert;
 import org.platformlayer.gwt.client.ui.ViewHandler;
 import org.platformlayer.gwt.client.widgets.ControlGroup;
 import org.platformlayer.gwt.client.widgets.Form;
-import org.platformlayer.service.dns.client.model.DnsRecord;
+import org.platformlayer.service.dns.model.DnsRecord;
 import org.platformlayer.ui.shared.client.views.AbstractApplicationView;
 
 import com.google.gwt.core.client.GWT;

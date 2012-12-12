@@ -6,7 +6,7 @@ import org.platformlayer.gwt.client.places.ShellPlace;
 import org.platformlayer.gwt.client.ui.ListActivity;
 import org.platformlayer.gwt.client.ui.ListView;
 import org.platformlayer.service.jetty.client.JettyPlugin;
-import org.platformlayer.service.jetty.client.model.JettyService;
+import org.platformlayer.service.jetty.model.JettyService;
 
 import com.google.inject.Inject;
 

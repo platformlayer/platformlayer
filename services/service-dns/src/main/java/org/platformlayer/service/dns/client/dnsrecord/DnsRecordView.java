@@ -1,7 +1,7 @@
 package org.platformlayer.service.dns.client.dnsrecord;
 
 import org.platformlayer.gwt.client.ui.ItemView;
-import org.platformlayer.service.dns.client.model.DnsRecord;
+import org.platformlayer.service.dns.model.DnsRecord;
 
 import com.google.inject.ImplementedBy;
 
