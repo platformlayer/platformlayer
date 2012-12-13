@@ -342,4 +342,9 @@ public abstract class ServiceProviderBase implements ServiceProvider {
 	public Object getExtensionResource() {
 		return null;
 	}
+
+	@Override
+	public Object getItemExtensionResource(Object item) throws OpsException {
+		return null;
+	}
 }

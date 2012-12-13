@@ -15,6 +15,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.xml.bind.JAXBException;
 
+import org.platformlayer.CheckedCallable;
 import org.platformlayer.Filter;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.TagFilter;
@@ -27,7 +28,10 @@ import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.jobs.model.JobExecutionData;
+import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.tasks.OpsContextBuilder;
+import org.platformlayer.xaas.services.ServiceProvider;
 
 public class ManagedItemResource extends XaasResourceBase {
 	@Inject
@@ -145,11 +149,35 @@ public class ManagedItemResource extends XaasResourceBase {
 	}
 
 	@Path("actions")
-	@Consumes({ XML, JSON })
-	@Produces({ XML, JSON })
 	public ActionsResource getActions() {
 		ActionsResource resource = objectInjector.getInstance(ActionsResource.class);
 		return resource;
+	}
+
+	@Path("extensions")
+	public Object getExtensionsResource() throws Exception {
+		OpsContextBuilder opsContextBuilder = objectInjector.getInstance(OpsContextBuilder.class);
+
+		final OpsContext opsContext = opsContextBuilder.buildTemporaryOpsContext(getServiceType(),
+				getProjectAuthorization());
+
+		Object extensionResource = OpsContext.runInContext(opsContext, new CheckedCallable<Object, Exception>() {
+			@Override
+			public Object call() throws Exception {
+				boolean fetchTags = true;
+				ItemBase managedItem = getManagedItem(fetchTags);
+
+				ServiceProvider serviceProvider = getServiceProvider();
+				Object resource = serviceProvider.getItemExtensionResource(managedItem);
+				return resource;
+			}
+		});
+
+		if (extensionResource == null) {
+			raiseNotFound();
+		}
+
+		return extensionResource;
 	}
 
 	// @DELETE

@@ -45,6 +45,14 @@ public class RootResource extends XaasResourceBase {
 	@Inject
 	AuthenticationTokenValidator authTokenValidator;
 
+	@Inject
+	BlobsResource blobs;
+
+	@Path("_blobs")
+	public BlobsResource getBlobs() {
+		return blobs;
+	}
+
 	@Path("{projectId}")
 	public ServicesCollectionResource retrieveServiceList(@PathParam("projectId") String projectKey) {
 		ProjectAuthorization authz = AuthenticationFilter.authorizeProject(getAuthenticationCredentials(),
