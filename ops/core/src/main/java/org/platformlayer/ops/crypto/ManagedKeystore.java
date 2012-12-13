@@ -197,7 +197,9 @@ public class ManagedKeystore extends OpsTreeBase {
 		List<X509Certificate> certificateChain = Lists.newArrayList();
 		certificateChain.add(certificate);
 
-		ensureCertificateChain(keystore, certificateChain);
+		ensureCertificateChain(certificateChain);
+
+		addAll(keystore, certificateChain);
 
 		Key privateKey = key.getPrivateKey();
 
@@ -210,7 +212,38 @@ public class ManagedKeystore extends OpsTreeBase {
 		}
 	}
 
-	void ensureCertificateChain(KeyStore keyStore, List<X509Certificate> certificateChain) throws OpsException {
+	public static List<X509Certificate> buildCertificateChain(X509Certificate root) throws OpsException {
+		List<X509Certificate> certificateChain = Lists.newArrayList();
+		certificateChain.add(root);
+
+		ensureCertificateChain(certificateChain);
+		return certificateChain;
+	}
+
+	private void addAll(KeyStore keystore, List<X509Certificate> certificateChain) throws OpsException {
+		for (X509Certificate certificate : certificateChain) {
+			add(keystore, certificate);
+		}
+	}
+
+	private void add(KeyStore keyStore, X509Certificate cert) throws OpsException {
+		X500Principal issuer = cert.getSubjectX500Principal();
+
+		String alias = sanitizeX500Principal(issuer);
+
+		try {
+			if (keyStore.containsAlias(alias)) {
+				throw new OpsException("Keystore already has alias");
+			}
+
+			keyStore.setCertificateEntry(alias, cert);
+		} catch (KeyStoreException e) {
+			throw new OpsException("Error setting key into keystore", e);
+		}
+
+	}
+
+	static void ensureCertificateChain(List<X509Certificate> certificateChain) throws OpsException {
 		while (true) {
 			X509Certificate tail = certificateChain.get(certificateChain.size() - 1);
 
@@ -224,18 +257,6 @@ public class ManagedKeystore extends OpsTreeBase {
 				throw new OpsException("Cannot find certificate: " + issuer);
 			}
 
-			String alias = sanitizeX500Principal(issuer);
-
-			try {
-				if (keyStore.containsAlias(alias)) {
-					throw new OpsException("Keystore already has alias");
-				}
-
-				keyStore.setCertificateEntry(alias, issuerCert);
-			} catch (KeyStoreException e) {
-				throw new OpsException("Error setting key into keystore", e);
-			}
-
 			certificateChain.add(issuerCert);
 
 			if (certificateChain.size() > 64) {
@@ -244,14 +265,14 @@ public class ManagedKeystore extends OpsTreeBase {
 		}
 	}
 
-	private X509Certificate findIssuerCertificate(X500Principal issuer) throws OpsException {
+	private static X509Certificate findIssuerCertificate(X500Principal issuer) throws OpsException {
 		String resource = sanitizeX500Principal(issuer);
 
 		resource = "certificates/" + resource.toLowerCase() + ".crt";
 
 		byte[] issuerCertData = null;
 		try {
-			issuerCertData = ResourceUtils.findBinary(getClass(), resource);
+			issuerCertData = ResourceUtils.findBinary(ManagedKeystore.class, resource);
 		} catch (IOException e) {
 			log.warn("Error while reading resource: " + resource, e);
 		}
@@ -275,7 +296,7 @@ public class ManagedKeystore extends OpsTreeBase {
 		return (X509Certificate) issuerCerts[0];
 	}
 
-	private String sanitizeX500Principal(X500Principal issuer) {
+	private static String sanitizeX500Principal(X500Principal issuer) {
 		Sanitizer sanitizer = new Sanitizer(Decision.Replace, '_');
 		sanitizer.allowAlphanumeric().setCombineBlocked(true);
 
