@@ -1,6 +1,7 @@
 package org.platformlayer;
 
 import java.io.File;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -218,56 +219,95 @@ public class GwtCodegenFileVisitor extends FileVisitor {
 				continue;
 			}
 
-			String mapped = mapSpecialType(type);
+			String mapped = null;
 
-			if (mapped == null) {
-				if (type.equals(List.class)) {
-					Type genericType = field.getGenericType();
-					if (genericType instanceof ParameterizedType) {
-						ParameterizedType pt = (ParameterizedType) genericType;
-						Type[] actualTypeArguments = pt.getActualTypeArguments();
-						if (actualTypeArguments != null && actualTypeArguments.length == 1) {
-							Class<?> itemClass = (Class<?>) actualTypeArguments[0];
+			if (!isNativeType(type)) {
+				mapped = mapSpecialType(type);
 
-							mapped = "java.util.List<" + itemClass.getName() + ">";
+				if (mapped == null) {
+					String get = null;
+					String set = null;
 
-							// public final
-							// List<org.platformlayer.service.certificates.model.PurchaseCertificateExample>
-							// getExamples() {
-							// return
-							// List<org.platformlayer.service.certificates.model.PurchaseCertificateExample>Js.get(this,
-							// "examples");
-							// }
-							//
-							// public final void
-							// setExamples(List<org.platformlayer.service.certificates.model.PurchaseCertificateExample>
-							// newValue) {
-							// List<org.platformlayer.service.certificates.model.PurchaseCertificateExample>Js.set(this,
-							// "examples", newValue);
-							// }
+					if (type.equals(List.class)) {
+						Type genericType = field.getGenericType();
+						if (genericType instanceof ParameterizedType) {
+							ParameterizedType pt = (ParameterizedType) genericType;
+							Type[] actualTypeArguments = pt.getActualTypeArguments();
+							if (actualTypeArguments != null && actualTypeArguments.length == 1) {
+								Class<?> itemClass = (Class<?>) actualTypeArguments[0];
 
-							// Add imports??
+								mapped = "java.util.List<" + itemClass.getName() + ">";
 
-							String get = "";
-							get += "public final java.util.List<{itemClass}> get{beanName}() {\n";
+								// public final
+								// List<org.platformlayer.service.certificates.model.PurchaseCertificateExample>
+								// getExamples() {
+								// return
+								// List<org.platformlayer.service.certificates.model.PurchaseCertificateExample>Js.get(this,
+								// "examples");
+								// }
+								//
+								// public final void
+								// setExamples(List<org.platformlayer.service.certificates.model.PurchaseCertificateExample>
+								// newValue) {
+								// List<org.platformlayer.service.certificates.model.PurchaseCertificateExample>Js.set(this,
+								// "examples", newValue);
+								// }
 
-							if (itemClass.equals(String.class)) {
-								get += "	com.google.gwt.core.client.JsArrayString array0 = org.platformlayer.core.model.JsHelpers.getObject0(this, \"{fieldName}\").cast();\n";
-								get += "	return org.platformlayer.core.model.JsStringArrayToList.wrap(array0);\n";
-							} else {
-								get += "	com.google.gwt.core.client.JsArray<{itemClass}> array0 = org.platformlayer.core.model.JsHelpers.getObject0(this, \"{fieldName}\").cast();\n";
-								get += "	return org.platformlayer.core.model.JsArrayToList.wrap(array0);\n";
+								// Add imports??
+
+								get = "";
+								get += "public final java.util.List<{itemClass}> get{beanName}() {\n";
+
+								if (itemClass.equals(String.class)) {
+									get += "	com.google.gwt.core.client.JsArrayString array0 = org.platformlayer.core.model.JsHelpers.getObject0(this, \"{fieldName}\").cast();\n";
+									get += "	return org.platformlayer.core.model.JsStringArrayToList.wrap(array0);\n";
+								} else {
+									get += "	com.google.gwt.core.client.JsArray<{itemClass}> array0 = org.platformlayer.core.model.JsHelpers.getObject0(this, \"{fieldName}\").cast();\n";
+									get += "	return org.platformlayer.core.model.JsArrayToList.wrap(array0);\n";
+								}
+
+								get += "}\n";
+
+								set = "";
+
+								get = get.replace("{itemClass}", itemClass.getName());
+								set = set.replace("{itemClass}", itemClass.getName());
 							}
+						}
+					} else {
+						boolean gwtSafe = false;
+						for (Annotation annotation : type.getAnnotations()) {
+							if (annotation.annotationType().getSimpleName().equals("GwtSafe")) {
+								gwtSafe = true;
+							}
+						}
 
+						if (gwtSafe) {
+							get = "";
+							get += "public final {field.type} get{beanName}() {\n";
+							get += "	return org.platformlayer.core.model.JsHelpers.getObject0(this, \"{fieldName}\").cast();\n";
 							get += "}\n";
 
-							get = get.replace("{beanName}", beanName);
-							get = get.replace("{fieldName}", fieldName);
-							get = get.replace("{itemClass}", itemClass.getName());
+							set = "";
 
-							fieldModel.customGet = get;
-							fieldModel.customSet = "";
+							mapped = "HACK";
 						}
+					}
+
+					if (get != null) {
+						get = get.replace("{beanName}", beanName);
+						get = get.replace("{fieldName}", fieldName);
+						get = get.replace("{field.type}", type.getName());
+
+						fieldModel.customGet = get;
+					}
+
+					if (set != null) {
+						set = set.replace("{beanName}", beanName);
+						set = set.replace("{fieldName}", fieldName);
+						set = set.replace("{field.type}", type.getName());
+
+						fieldModel.customSet = set;
 					}
 				}
 			}
