@@ -46,6 +46,10 @@ public class JettyTemplate extends StandardTemplateData {
 		return new File(getBaseDir(), "webapps");
 	}
 
+	public File getContextDir() {
+		return new File(getBaseDir(), "contexts");
+	}
+
 	public File getBaseDir() {
 		return getInstanceDir(); // new File("/var/lib/jetty");
 	}

@@ -10,6 +10,7 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.filesystem.DownloadFileByHash;
 import org.platformlayer.ops.filesystem.ManagedSymlink;
+import org.platformlayer.ops.filesystem.TemplatedFile;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class SimpleApp extends OpsTreeBase {
@@ -31,6 +32,9 @@ public class SimpleApp extends OpsTreeBase {
 		DownloadFileByHash download = addChild(buildDownload());
 		File deployed = new File(template.getWarsDeployDir(), getWarName());
 		addChild(ManagedSymlink.build(deployed, download.filePath));
+
+		File contextDir = template.getContextDir();
+		addChild(TemplatedFile.build(template, new File(contextDir, "context.xml")));
 	}
 
 	protected DownloadFileByHash buildDownload() {
