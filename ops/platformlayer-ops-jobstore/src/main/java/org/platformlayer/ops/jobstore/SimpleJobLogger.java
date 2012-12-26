@@ -15,10 +15,10 @@ public class SimpleJobLogger implements JobLogger {
 	}
 
 	@Override
-	public void logMessage(String message, String[] exceptionInfo, int level) {
+	public void logMessage(String message, List<String[]> exceptionStacks, int level) {
 		JobLogExceptionInfo jobLogExceptionInfo = null;
-		if (exceptionInfo != null) {
-			jobLogExceptionInfo = JobUtils.buildJobLogExceptionInfo(exceptionInfo);
+		if (exceptionStacks != null) {
+			jobLogExceptionInfo = JobUtils.buildJobLogExceptionInfo(exceptionStacks);
 		}
 
 		JobLogLine jobLogLine = new JobLogLine(System.currentTimeMillis(), level, message, jobLogExceptionInfo);

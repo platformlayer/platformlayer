@@ -741,6 +741,11 @@ public final class JobDataProtobuf {
     java.util.List<String> getInfoList();
     int getInfoCount();
     String getInfo(int index);
+    
+    // optional .JobLogExceptionInfo inner = 2;
+    boolean hasInner();
+    org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfo getInner();
+    org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfoOrBuilder getInnerOrBuilder();
   }
   public static final class JobLogExceptionInfo extends
       com.google.protobuf.GeneratedMessage
@@ -770,6 +775,7 @@ public final class JobDataProtobuf {
       return org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.internal_static_JobLogExceptionInfo_fieldAccessorTable;
     }
     
+    private int bitField0_;
     // repeated string info = 1;
     public static final int INFO_FIELD_NUMBER = 1;
     private com.google.protobuf.LazyStringList info_;
@@ -784,8 +790,22 @@ public final class JobDataProtobuf {
       return info_.get(index);
     }
     
+    // optional .JobLogExceptionInfo inner = 2;
+    public static final int INNER_FIELD_NUMBER = 2;
+    private org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfo inner_;
+    public boolean hasInner() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfo getInner() {
+      return inner_;
+    }
+    public org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfoOrBuilder getInnerOrBuilder() {
+      return inner_;
+    }
+    
     private void initFields() {
       info_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      inner_ = org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfo.getDefaultInstance();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -801,6 +821,9 @@ public final class JobDataProtobuf {
       getSerializedSize();
       for (int i = 0; i < info_.size(); i++) {
         output.writeBytes(1, info_.getByteString(i));
+      }
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeMessage(2, inner_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -819,6 +842,10 @@ public final class JobDataProtobuf {
         }
         size += dataSize;
         size += 1 * getInfoList().size();
+      }
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, inner_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -936,6 +963,7 @@ public final class JobDataProtobuf {
       }
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getInnerFieldBuilder();
         }
       }
       private static Builder create() {
@@ -946,6 +974,12 @@ public final class JobDataProtobuf {
         super.clear();
         info_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000001);
+        if (innerBuilder_ == null) {
+          inner_ = org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfo.getDefaultInstance();
+        } else {
+          innerBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
       
@@ -983,12 +1017,22 @@ public final class JobDataProtobuf {
       public org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfo buildPartial() {
         org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfo result = new org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfo(this);
         int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
         if (((bitField0_ & 0x00000001) == 0x00000001)) {
           info_ = new com.google.protobuf.UnmodifiableLazyStringList(
               info_);
           bitField0_ = (bitField0_ & ~0x00000001);
         }
         result.info_ = info_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        if (innerBuilder_ == null) {
+          result.inner_ = inner_;
+        } else {
+          result.inner_ = innerBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
@@ -1013,6 +1057,9 @@ public final class JobDataProtobuf {
             info_.addAll(other.info_);
           }
           onChanged();
+        }
+        if (other.hasInner()) {
+          mergeInner(other.getInner());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -1048,6 +1095,15 @@ public final class JobDataProtobuf {
             case 10: {
               ensureInfoIsMutable();
               info_.add(input.readBytes());
+              break;
+            }
+            case 18: {
+              org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfo.Builder subBuilder = org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfo.newBuilder();
+              if (hasInner()) {
+                subBuilder.mergeFrom(getInner());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setInner(subBuilder.buildPartial());
               break;
             }
           }
@@ -1112,6 +1168,96 @@ public final class JobDataProtobuf {
         onChanged();
       }
       
+      // optional .JobLogExceptionInfo inner = 2;
+      private org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfo inner_ = org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfo.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfo, org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfo.Builder, org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfoOrBuilder> innerBuilder_;
+      public boolean hasInner() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfo getInner() {
+        if (innerBuilder_ == null) {
+          return inner_;
+        } else {
+          return innerBuilder_.getMessage();
+        }
+      }
+      public Builder setInner(org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfo value) {
+        if (innerBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          inner_ = value;
+          onChanged();
+        } else {
+          innerBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      public Builder setInner(
+          org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfo.Builder builderForValue) {
+        if (innerBuilder_ == null) {
+          inner_ = builderForValue.build();
+          onChanged();
+        } else {
+          innerBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      public Builder mergeInner(org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfo value) {
+        if (innerBuilder_ == null) {
+          if (((bitField0_ & 0x00000002) == 0x00000002) &&
+              inner_ != org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfo.getDefaultInstance()) {
+            inner_ =
+              org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfo.newBuilder(inner_).mergeFrom(value).buildPartial();
+          } else {
+            inner_ = value;
+          }
+          onChanged();
+        } else {
+          innerBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      public Builder clearInner() {
+        if (innerBuilder_ == null) {
+          inner_ = org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfo.getDefaultInstance();
+          onChanged();
+        } else {
+          innerBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+      public org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfo.Builder getInnerBuilder() {
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return getInnerFieldBuilder().getBuilder();
+      }
+      public org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfoOrBuilder getInnerOrBuilder() {
+        if (innerBuilder_ != null) {
+          return innerBuilder_.getMessageOrBuilder();
+        } else {
+          return inner_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfo, org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfo.Builder, org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfoOrBuilder> 
+          getInnerFieldBuilder() {
+        if (innerBuilder_ == null) {
+          innerBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfo, org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfo.Builder, org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfoOrBuilder>(
+                  inner_,
+                  getParentForChildren(),
+                  isClean());
+          inner_ = null;
+        }
+        return innerBuilder_;
+      }
+      
       // @@protoc_insertion_point(builder_scope:JobLogExceptionInfo)
     }
     
@@ -1145,9 +1291,10 @@ public final class JobDataProtobuf {
       "\n\020JobData.protobuf\"v\n\nJobLogLine\022\021\n\ttime" +
       "stamp\030\001 \001(\003\022\017\n\007message\030\002 \001(\t\022\r\n\005level\030\003 " +
       "\001(\005\022\'\n\texception\030\004 \001(\0132\024.JobLogException" +
-      "Info\022\014\n\004type\030\005 \001(\t\"#\n\023JobLogExceptionInf" +
-      "o\022\014\n\004info\030\001 \003(\tB)\n\'org.platformlayer.ops" +
-      ".jobstore.protobuf"
+      "Info\022\014\n\004type\030\005 \001(\t\"H\n\023JobLogExceptionInf" +
+      "o\022\014\n\004info\030\001 \003(\t\022#\n\005inner\030\002 \001(\0132\024.JobLogE" +
+      "xceptionInfoB)\n\'org.platformlayer.ops.jo" +
+      "bstore.protobuf"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -1167,7 +1314,7 @@ public final class JobDataProtobuf {
           internal_static_JobLogExceptionInfo_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_JobLogExceptionInfo_descriptor,
-              new java.lang.String[] { "Info", },
+              new java.lang.String[] { "Info", "Inner", },
               org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfo.class,
               org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf.JobLogExceptionInfo.Builder.class);
           return null;

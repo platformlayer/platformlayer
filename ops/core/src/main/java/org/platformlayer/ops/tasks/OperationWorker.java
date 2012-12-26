@@ -168,9 +168,7 @@ public class OperationWorker implements Callable<Object> {
 
 				log.warn("Scheduling retry in " + retry);
 
-				// TODO: Create new/copy of worker??
-				OperationWorker retryTask = this;
-				opsSystem.getOperationQueue().submitRetry(retryTask, retry);
+				opsSystem.getJobRegistry().enqueueRetry(activeJob, retry);
 
 				return null;
 			} finally {

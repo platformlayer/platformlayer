@@ -1,5 +1,7 @@
 package org.platformlayer.ops.log;
 
+import java.util.List;
+
 import org.platformlayer.ops.OpsContext;
 import org.slf4j.LoggerFactory;
 
@@ -10,6 +12,8 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.classic.spi.StackTraceElementProxy;
 import ch.qos.logback.core.AppenderBase;
+
+import com.google.common.collect.Lists;
 
 public class LogbackHook<E> extends AppenderBase<E> {
 
@@ -44,28 +48,47 @@ public class LogbackHook<E> extends AppenderBase<E> {
 			Level level = event.getLevel();
 			int levelInt = level.toInt();
 
-			String[] exceptionStackTrace = null;
+			List<String[]> exceptionStacks = null;
 
 			IThrowableProxy throwableInformation = event.getThrowableProxy();
-			if (throwableInformation != null) {
+			while (throwableInformation != null) {
+				String[] exceptionStackTrace = null;
 				StackTraceElementProxy[] trace = throwableInformation.getStackTraceElementProxyArray();
 
+				String exceptionMessage = throwableInformation.getMessage();
+				String exceptionClass = throwableInformation.getClassName();
+
 				if (trace != null) {
-					exceptionStackTrace = new String[trace.length];
-					for (int i = 0; i < exceptionStackTrace.length; i++) {
-						exceptionStackTrace[i] = trace[i].getSTEAsString();
+					exceptionStackTrace = new String[1 + trace.length];
+					exceptionStackTrace[0] = exceptionClass + ": " + exceptionMessage;
+
+					for (int i = 0; i < trace.length; i++) {
+						exceptionStackTrace[1 + i] = trace[i].getSTEAsString();
 					}
+				} else {
+					exceptionStackTrace = new String[1];
+					exceptionStackTrace[0] = exceptionClass + ": " + exceptionMessage;
 				}
+
+				if (exceptionStacks == null) {
+					exceptionStacks = Lists.newArrayList();
+				}
+				exceptionStacks.add(exceptionStackTrace);
+
+				throwableInformation = throwableInformation.getCause();
 			}
 
-			if (message != null || exceptionStackTrace != null) {
-				opsContext.getJobLogger().logMessage(message, exceptionStackTrace, levelInt);
+			if (message != null || exceptionStacks != null) {
+				opsContext.getJobLogger().logMessage(message, exceptionStacks, levelInt);
 
 				if (levelInt >= Level.ERROR_INT) {
 					// String key = "warn-" + OpsSystem.buildSimpleTimeString() + "-" + (System.nanoTime() % 1000);
 					if (opsContext != null) { // && opsContext.getOperation() != null) {
-						if (exceptionStackTrace != null && exceptionStackTrace.length >= 1) {
-							message += "; " + exceptionStackTrace[0];
+						if (exceptionStacks != null && !exceptionStacks.isEmpty()) {
+							String[] exceptionStack = exceptionStacks.get(0);
+							if (exceptionStack != null && exceptionStack.length > 0) {
+								message += "; " + exceptionStack[0];
+							}
 						}
 
 						opsContext.addWarning(null, message);

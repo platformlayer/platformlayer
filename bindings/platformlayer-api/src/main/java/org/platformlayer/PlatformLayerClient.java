@@ -91,6 +91,6 @@ public interface PlatformLayerClient {
 
 	public PlatformLayerEndpointInfo getEndpointInfo(PlatformLayerKey item);
 
-	public JobExecutionList listJobExecutions(PlatformLayerKey jobKey) throws PlatformLayerClientException;
+	public JobExecutionList listJobExecutions(String jobId) throws PlatformLayerClientException;
 
 }

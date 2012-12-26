@@ -751,10 +751,11 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
-	public JobExecutionList listJobExecutions(PlatformLayerKey jobKey) throws PlatformLayerClientException {
-		assert false; // This logic is suspect...
-		MappedPlatformLayerKey mapped = mapToChild(jobKey);
-		return mapped.child.client.listJobExecutions(jobKey);
+	public JobExecutionList listJobExecutions(String jobId) throws PlatformLayerClientException {
+		throw new UnsupportedOperationException();
+		// assert false; // This logic is suspect...
+		// MappedPlatformLayerKey mapped = mapToChild(jobKey);
+		// return mapped.child.client.listJobExecutions(jobKey);
 	}
 
 }

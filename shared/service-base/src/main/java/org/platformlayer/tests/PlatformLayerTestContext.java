@@ -280,7 +280,7 @@ public class PlatformLayerTestContext {
 				throw new IllegalStateException("Job not found in job list");
 			}
 
-			JobExecutionList executions = client.listJobExecutions(job.getJobKey());
+			JobExecutionList executions = client.listJobExecutions(job.getJobKey().getItemIdString());
 			JobExecutionData foundExecution = null;
 			for (JobExecutionData candidate : executions) {
 				if (jobKey.equals(candidate.getJobKey())) {

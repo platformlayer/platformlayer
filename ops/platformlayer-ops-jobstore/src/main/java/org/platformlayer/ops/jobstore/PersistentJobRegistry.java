@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.platformlayer.RepositoryException;
+import org.platformlayer.TimeSpan;
 import org.platformlayer.common.JobState;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.PlatformLayerKey;
@@ -98,6 +99,33 @@ public class PersistentJobRegistry implements JobRegistry {
 		OperationWorker operationWorker = new OperationWorker(opsSystem, activeJob);
 		operationQueue.submit(operationWorker);
 		return execution;
+	}
+
+	@Override
+	public void enqueueRetry(ActiveJobExecution activeJob, TimeSpan delay) throws OpsException {
+		JobData jobData = activeJob.getJobExecution().getJob();
+
+		Date startedAt = new Date();
+		String executionId;
+		try {
+			executionId = repository.insertExecution(jobData.key, startedAt);
+		} catch (RepositoryException e) {
+			throw new OpsException("Error inserting job execution into repository", e);
+		}
+
+		JobExecutionData execution = new JobExecutionData();
+		execution.job = jobData;
+		execution.jobKey = jobData.getJobKey();
+		execution.startedAt = startedAt;
+		execution.executionId = executionId;
+		execution.state = JobState.PRESTART;
+
+		PersistentActiveJob retryJob = new PersistentActiveJob(this, activeJob.getProjectAuthorization(), execution);
+		OperationWorker operationWorker = new OperationWorker(opsSystem, retryJob);
+		operationQueue.submitRetry(operationWorker, delay);
+
+		// ???
+		activeJobs.put(execution.jobKey, retryJob);
 	}
 
 	private static final int RECENT_JOB_COUNT = 100;

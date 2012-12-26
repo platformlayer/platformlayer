@@ -342,8 +342,8 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 	}
 
 	@Override
-	public JobExecutionList listJobExecutions(PlatformLayerKey jobKey) throws PlatformLayerClientException {
-		return platformLayerClient.listJobExecutions(jobKey);
+	public JobExecutionList listJobExecutions(String jobId) throws PlatformLayerClientException {
+		return platformLayerClient.listJobExecutions(jobId);
 	}
 
 }

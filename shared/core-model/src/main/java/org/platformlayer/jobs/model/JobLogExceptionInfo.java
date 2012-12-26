@@ -11,6 +11,8 @@ import com.google.common.collect.Lists;
 public class JobLogExceptionInfo {
 	public List<String> info;
 
+	public JobLogExceptionInfo inner;
+
 	public JobLogExceptionInfo(String[] info) {
 		this.info = Lists.newArrayList(info);
 	}
@@ -23,6 +25,10 @@ public class JobLogExceptionInfo {
 			info = Lists.newArrayList();
 		}
 		return info;
+	}
+
+	public JobLogExceptionInfo getInner() {
+		return inner;
 	}
 
 }

@@ -91,9 +91,9 @@ public class FilesystemJobLogStore implements JobLogStore {
 	}
 
 	@Override
-	public void saveJobLog(PlatformLayerKey jobKey, String executionId, Date endTime, JobLogger logger)
+	public void saveJobLog(PlatformLayerKey jobKey, String executionId, Date startTime, JobLogger logger)
 			throws IOException {
-		File file = toFile(endTime, jobKey, executionId);
+		File file = toFile(startTime, jobKey, executionId);
 		if (file.exists()) {
 			throw new IllegalStateException("Job log file already exists");
 		}
@@ -151,6 +151,9 @@ public class FilesystemJobLogStore implements JobLogStore {
 			JobDataProtobuf.JobLogExceptionInfo.Builder exceptionBuilder) {
 		exceptionBuilder.clear();
 		exceptionBuilder.addAllInfo(exception.info);
+		if (exception.inner != null) {
+			mapToProtobuf(exception.inner, exceptionBuilder.getInnerBuilder());
+		}
 	}
 
 	private JobLogExceptionInfo mapFromProtobuf(JobDataProtobuf.JobLogExceptionInfo.Builder exceptionBuilder) {
@@ -159,18 +162,26 @@ public class FilesystemJobLogStore implements JobLogStore {
 		for (String info : exceptionBuilder.getInfoList()) {
 			exception.info.add(info);
 		}
+
+		if (exceptionBuilder.hasInner()) {
+			exception.inner = mapFromProtobuf(exceptionBuilder.getInnerBuilder());
+		}
+
 		return exception;
 	}
 
-	private File toFile(Date endTime, PlatformLayerKey jobKey, String executionId) {
-		long t = endTime.getTime();
+	private File toFile(Date startTime, PlatformLayerKey jobKey, String executionId) {
+		long t = startTime.getTime();
+
+		long tBucket = t;
+
 		// Convert to seconds
-		t /= 1000L;
+		tBucket /= 1000L;
 
 		// Store in 1000 second buckets
-		t /= 1000L;
+		tBucket /= 1000L;
 
-		String dir = Long.toString(t);
+		String dir = Long.toString(tBucket);
 
 		String fileName = executionId;
 

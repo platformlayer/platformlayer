@@ -10,4 +10,5 @@ message JobLogLine {
 
 message JobLogExceptionInfo {
 	repeated string info = 1;
+	optional JobLogExceptionInfo inner = 2;
 }

@@ -2,6 +2,7 @@ package org.platformlayer.ops.tasks;
 
 import java.util.List;
 
+import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ids.ProjectId;
@@ -26,6 +27,8 @@ public interface JobRegistry {
 
 	JobExecutionData enqueueOperation(Action action, ProjectAuthorization projectAuthorization, PlatformLayerKey itemKey)
 			throws OpsException;
+
+	void enqueueRetry(ActiveJobExecution activeJob, TimeSpan delay) throws OpsException;
 
 	ActiveJobExecution startSystemJob(ServiceType serviceType, ProjectAuthorization authentication);
 
