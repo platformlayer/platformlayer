@@ -1,6 +1,5 @@
 package org.platformlayer.guice.xaas;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -38,7 +37,7 @@ public class JdbcServiceAuthorizationRepository implements ServiceAuthorizationR
 	public ServiceAuthorization findServiceAuthorization(ServiceType serviceType, ProjectId project)
 			throws RepositoryException {
 		try {
-			Connection connection = connectionProvider.get().getConnection();
+			JdbcConnection connection = connectionProvider.get();
 			int serviceId = JdbcRepositoryHelpers.getServiceKey(connection, serviceType);
 			int projectId = JdbcRepositoryHelpers.getProjectKey(connection, project);
 
@@ -46,7 +45,7 @@ public class JdbcServiceAuthorizationRepository implements ServiceAuthorizationR
 
 			List<ServiceAuthorization> items = Lists.newArrayList();
 
-			PreparedStatement ps = connection.prepareStatement(sql);
+			PreparedStatement ps = connection.getConnection().prepareStatement(sql);
 			ResultSet rs = null;
 			try {
 				ps.setInt(1, serviceId);
@@ -80,13 +79,13 @@ public class JdbcServiceAuthorizationRepository implements ServiceAuthorizationR
 		try {
 			ServiceType serviceType = new ServiceType(authorization.serviceType);
 
-			Connection connection = connectionProvider.get().getConnection();
+			JdbcConnection connection = connectionProvider.get();
 			int serviceId = JdbcRepositoryHelpers.getServiceKey(connection, serviceType);
 			int projectId = JdbcRepositoryHelpers.getProjectKey(connection, project);
 
 			final String sql = "INSERT INTO service_authorizations (service, project, data) VALUES (?, ?, ?)";
 
-			PreparedStatement ps = connection.prepareStatement(sql);
+			PreparedStatement ps = connection.getConnection().prepareStatement(sql);
 			ResultSet rs = null;
 			try {
 				ps.setInt(1, serviceId);
@@ -192,7 +191,7 @@ public class JdbcServiceAuthorizationRepository implements ServiceAuthorizationR
 	class DbHelper extends DbHelperBase {
 
 		public DbHelper(ServiceType serviceType, ProjectId project, ServiceMetadataKey metadataKey) {
-			super(connectionProvider.get().getConnection());
+			super(connectionProvider.get());
 			if (serviceType != null) {
 				setAtom(serviceType);
 			}

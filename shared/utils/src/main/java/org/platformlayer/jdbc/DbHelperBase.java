@@ -9,7 +9,7 @@ import java.util.Map;
 import com.google.common.collect.Maps;
 
 public class DbHelperBase implements Closeable {
-	protected final Connection connection;
+	protected final JdbcConnection jdbcConnection;
 	final Map<String, PreparedStatement> preparedStatements = Maps.newHashMap();
 
 	final Map<Class<?>, DbAtom<?>> atoms = Maps.newHashMap();
@@ -27,14 +27,14 @@ public class DbHelperBase implements Closeable {
 		atom.setValue(o);
 	}
 
-	protected DbHelperBase(Connection connection) {
-		this.connection = connection;
+	protected DbHelperBase(JdbcConnection jdbcConnection) {
+		this.jdbcConnection = jdbcConnection;
 	}
 
 	protected PreparedStatement prepareStatement(String sql) throws SQLException {
 		PreparedStatement ps = preparedStatements.get(sql);
 		if (ps == null) {
-			ps = connection.prepareStatement(sql);
+			ps = getConnection().prepareStatement(sql);
 			preparedStatements.put(sql, ps);
 		}
 		return ps;
@@ -48,7 +48,7 @@ public class DbHelperBase implements Closeable {
 	}
 
 	protected int getAtomValue(DbAtom<?> atom) throws SQLException {
-		return atom.getCode(connection);
+		return atom.getCode(jdbcConnection);
 	}
 
 	protected int getAtomValue(Class<?> clazz) throws SQLException {
@@ -64,11 +64,11 @@ public class DbHelperBase implements Closeable {
 		// DbAtom<?> atom = atoms.get(clazz);
 		// if (atom != null) {
 		// }
-		return DbAtom.mapCodeToKey(connection, clazz, model);
+		return DbAtom.mapCodeToKey(jdbcConnection, clazz, model);
 	}
 
 	public <T> int mapToValue(T t) throws SQLException {
-		return DbAtom.mapKeyToCode(connection, t);
+		return DbAtom.mapKeyToCode(jdbcConnection, t);
 	}
 
 	protected void setAtom(PreparedStatement ps, int parameterIndex, Class<?> clazz) throws SQLException {
@@ -76,7 +76,11 @@ public class DbHelperBase implements Closeable {
 	}
 
 	public Connection getConnection() {
-		return connection;
+		return jdbcConnection.getConnection();
+	}
+
+	public JdbcConnection getJdbcConnection() {
+		return jdbcConnection;
 	}
 
 }

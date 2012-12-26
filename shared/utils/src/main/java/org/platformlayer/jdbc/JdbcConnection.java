@@ -1,6 +1,7 @@
 package org.platformlayer.jdbc;
 
 import java.sql.Connection;
+import java.util.concurrent.Callable;
 
 import org.platformlayer.jdbc.simplejpa.ConnectionMetadata;
 import org.slf4j.Logger;
@@ -25,6 +26,10 @@ public class JdbcConnection {
 
 	public ConnectionMetadata getConnectionMetadata() {
 		return metadata;
+	}
+
+	public <K, V> V getCacheable(final K key, final Callable<V> fn) {
+		return metadata.getCacheable(key, fn);
 	}
 
 }

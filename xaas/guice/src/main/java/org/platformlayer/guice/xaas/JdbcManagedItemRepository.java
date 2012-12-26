@@ -338,7 +338,7 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 		}
 
 		public DbHelper(ServiceType serviceType, ItemType itemType, ProjectId project) {
-			super(connectionProvider.get().getConnection());
+			super(connectionProvider.get());
 			if (serviceType != null) {
 				setAtom(serviceType);
 			}
@@ -452,7 +452,7 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 			Integer itemId = null;
 			final String sql = "INSERT INTO items (service, model, project, state, data, key, secret) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-			PreparedStatement ps = connection.prepareStatement(sql, new String[] { "id" });
+			PreparedStatement ps = getConnection().prepareStatement(sql, new String[] { "id" });
 			ResultSet rs = null;
 			try {
 				ManagedItemState managedItemState = item.state;

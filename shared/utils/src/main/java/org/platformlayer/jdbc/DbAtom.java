@@ -1,6 +1,5 @@
 package org.platformlayer.jdbc;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.platformlayer.model.StringWrapper;
@@ -10,7 +9,7 @@ public class DbAtom<T> {
 
 	int code;
 
-	public int getCode(Connection connection) throws SQLException {
+	public int getCode(JdbcConnection connection) throws SQLException {
 		if (code == 0) {
 			Class<?> valueClass = value.getClass();
 			String tableName = getTableName(valueClass);
@@ -38,12 +37,12 @@ public class DbAtom<T> {
 		return tableName;
 	}
 
-	protected static String mapCodeToKey(Connection connection, Class<?> clazz, int model) throws SQLException {
+	protected static String mapCodeToKey(JdbcConnection connection, Class<?> clazz, int model) throws SQLException {
 		String tableName = getTableName(clazz);
 		return AtomHelpers.getValue(connection, tableName, model);
 	}
 
-	protected static <T> int mapKeyToCode(Connection connection, T t) throws SQLException {
+	protected static <T> int mapKeyToCode(JdbcConnection connection, T t) throws SQLException {
 		DbAtom<T> atom = DbAtom.build();
 		atom.setValue(t);
 		return atom.getCode(connection);

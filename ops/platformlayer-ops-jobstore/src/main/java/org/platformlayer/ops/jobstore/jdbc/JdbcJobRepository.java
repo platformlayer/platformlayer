@@ -74,7 +74,7 @@ public class JdbcJobRepository implements JobRepository {
 		final Queries queries;
 
 		public DbHelper() {
-			super(connectionProvider.get().getConnection());
+			super(connectionProvider.get());
 
 			this.queries = queryFactory.get(Queries.class);
 		}

@@ -408,7 +408,7 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 		final Queries queries;
 
 		public DbHelper() {
-			super(connectionProvider.get().getConnection());
+			super(connectionProvider.get());
 			this.queries = queryFactory.get(Queries.class);
 		}
 
@@ -446,7 +446,7 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 			Integer userId = null;
 			final String sql = "INSERT INTO users (key, password, secret, public_key, private_key) VALUES (?, ?, ?, ?, ?)";
 
-			PreparedStatement ps = connection.prepareStatement(sql, new String[] { "id" });
+			PreparedStatement ps = getConnection().prepareStatement(sql, new String[] { "id" });
 			ResultSet rs = null;
 			try {
 				ps.setString(1, userName);

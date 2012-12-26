@@ -56,7 +56,7 @@ public class JdbcSchedulerRepository implements SchedulerRepository {
 		final Queries queries;
 
 		public DbHelper() {
-			super(connectionProvider.get().getConnection());
+			super(connectionProvider.get());
 
 			this.queries = queryFactory.get(Queries.class);
 		}
