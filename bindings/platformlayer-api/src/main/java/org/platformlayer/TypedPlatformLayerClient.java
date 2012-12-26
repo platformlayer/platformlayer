@@ -19,7 +19,6 @@ import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.core.model.Tags;
 import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.ids.ProjectId;
-import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobDataList;
 import org.platformlayer.jobs.model.JobExecutionData;
 import org.platformlayer.jobs.model.JobExecutionList;
@@ -243,7 +242,7 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 	}
 
 	@Override
-	public JobData doAction(PlatformLayerKey key, Action action) throws PlatformLayerClientException {
+	public JobExecutionData doAction(PlatformLayerKey key, Action action) throws PlatformLayerClientException {
 		return platformLayerClient.doAction(key, action);
 	}
 

@@ -11,7 +11,6 @@ import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.core.model.Tags;
 import org.platformlayer.ids.ProjectId;
-import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobDataList;
 import org.platformlayer.jobs.model.JobExecutionData;
 import org.platformlayer.jobs.model.JobExecutionList;
@@ -22,7 +21,7 @@ import org.platformlayer.metrics.model.MetricQuery;
 
 public interface PlatformLayerClient {
 	// Actions
-	public JobData doAction(PlatformLayerKey key, Action action) throws PlatformLayerClientException;
+	public JobExecutionData doAction(PlatformLayerKey key, Action action) throws PlatformLayerClientException;
 
 	// Item CRUD
 	// public <T> Iterable<T> listItems(Class<T> clazz) throws PlatformLayerClientException;

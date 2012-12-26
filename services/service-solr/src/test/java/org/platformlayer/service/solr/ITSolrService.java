@@ -13,7 +13,7 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.Tag;
-import org.platformlayer.jobs.model.JobData;
+import org.platformlayer.jobs.model.JobExecutionData;
 import org.platformlayer.service.solr.model.SolrCluster;
 import org.platformlayer.service.solr.model.SolrSchemaField;
 import org.platformlayer.service.solr.model.SolrServer;
@@ -74,9 +74,9 @@ public class ITSolrService extends PlatformLayerApiTest {
 		// TODO: trigger this automatically
 
 		SolrServer server = getItem(id + "-0", SolrServer.class);
-		JobData configureJob = getContext().doConfigure(server);
+		JobExecutionData configureJob = getContext().doConfigure(server);
 
-		waitForJobComplete(configureJob, TimeSpan.FIVE_MINUTES);
+		waitForJobComplete(configureJob.getJob(), TimeSpan.FIVE_MINUTES);
 
 		testSolrCustomField(url, customFieldKey);
 	}

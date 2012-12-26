@@ -451,9 +451,9 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
-	public JobData doAction(PlatformLayerKey key, Action action) throws PlatformLayerClientException {
+	public JobExecutionData doAction(PlatformLayerKey key, Action action) throws PlatformLayerClientException {
 		MappedPlatformLayerKey mapped = mapToChild(key);
-		JobData result = mapped.child.client.doAction(mapped.key, action);
+		JobExecutionData result = mapped.child.client.doAction(mapped.key, action);
 		return mapped.child.setHost(result);
 	}
 

@@ -9,6 +9,7 @@ public class PlatformLayerFormatterRegistry extends FormatterRegistryBase {
 
 		addFormatter(new TagFormatter());
 		addFormatter(new JobDataFormatter());
+		addFormatter(new JobExecutionDataFormatter());
 		addFormatter(new JobLogLineFormatter());
 		addFormatter(new ServiceInfoFormatter());
 		addFormatter(new UntypedItemFormatter());

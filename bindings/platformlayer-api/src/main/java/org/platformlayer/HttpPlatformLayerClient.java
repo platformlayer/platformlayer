@@ -27,7 +27,6 @@ import org.platformlayer.ids.ItemType;
 import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceType;
-import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobDataList;
 import org.platformlayer.jobs.model.JobExecutionData;
 import org.platformlayer.jobs.model.JobExecutionList;
@@ -416,10 +415,11 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
-	public JobData doAction(PlatformLayerKey key, Action action) throws PlatformLayerClientException {
+	public JobExecutionData doAction(PlatformLayerKey key, Action action) throws PlatformLayerClientException {
 		String relativePath = buildRelativePath(key) + "/actions";
 
-		JobData retval = doRequest("POST", relativePath, JobData.class, Format.XML, action, Format.XML);
+		JobExecutionData retval = doRequest("POST", relativePath, JobExecutionData.class, Format.XML, action,
+				Format.XML);
 		return retval;
 	}
 
