@@ -119,11 +119,9 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 		DbHelper db = new DbHelper(project);
 
 		try {
-			// TODO: We could maybe push the "root" filter into the DB
+			// TODO: Push-down logic for item selection as well
 
-			// TODO: Use this logic for item selection as well
-
-			JoinedQueryResult result = db.listAllItems();
+			JoinedQueryResult result = db.listRoots();
 
 			Multimap<Integer, Tag> itemTags = HashMultimap.create();
 			for (TagEntity row : result.getAll(TagEntity.class)) {
@@ -144,6 +142,8 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 						break;
 					}
 				}
+
+				assert isRoot;
 
 				if (isRoot) {
 					rootIds.add(itemId);
@@ -291,6 +291,9 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 		@Query("SELECT i.*, t.* FROM items i LEFT JOIN item_tags t on t.item = i.id WHERE i.project=?")
 		JoinedQueryResult listAllItems(int projectId) throws SQLException;
 
+		@Query("SELECT i.*, t.* FROM items i LEFT JOIN item_tags t on t.item = i.id WHERE i.project=? and i.id NOT IN (SELECT item from item_tags WHERE key=?)")
+		JoinedQueryResult listRoots(int projectId, String parentTag) throws SQLException;
+
 		@Query("UPDATE items set secret=? where service=? and model=? and project=? and key=?")
 		int updateSecret(byte[] itemSecret, int serviceId, int itemId, int projectId, String key);
 
@@ -375,6 +378,10 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 
 		public JoinedQueryResult listAllItems() throws SQLException {
 			return queries.listAllItems(getAtomValue(ProjectId.class));
+		}
+
+		public JoinedQueryResult listRoots() throws SQLException {
+			return queries.listRoots(getAtomValue(ProjectId.class), Tag.PARENT.getKey());
 		}
 
 		public List<TagEntity> listTags() throws SQLException {
