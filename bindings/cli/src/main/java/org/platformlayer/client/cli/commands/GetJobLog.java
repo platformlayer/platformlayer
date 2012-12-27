@@ -75,7 +75,27 @@ public class GetJobLog extends PlatformLayerCommandRunnerBase {
 
 		List<JobLog> jobLogs = (List<JobLog>) o;
 		for (JobLog jobLog : jobLogs) {
+			int depth = 0;
+			String indent = "";
+
 			for (JobLogLine line : jobLog) {
+				String type = line.getType();
+
+				if (!Strings.isNullOrEmpty(type)) {
+					if (type.equals(JobLogLine.TYPE_ENTER_SCOPE)) {
+						writer.println(indent + ">>> " + line.message);
+						depth++;
+						indent += "  ";
+					} else if (type.equals(JobLogLine.TYPE_EXIT_SCOPE)) {
+						depth--;
+						indent = indent.substring(0, depth * 2);
+						// writer.println(indent + "<<< " + line.message);
+					} else {
+						writer.println(indent + "??? " + line.message);
+					}
+					continue;
+				}
+
 				if (line.level >= JobLogLineLevels.LEVEL_ERROR) {
 					ansi.setColorRed();
 				} else if (line.level >= JobLogLineLevels.LEVEL_WARN) {
@@ -86,11 +106,13 @@ public class GetJobLog extends PlatformLayerCommandRunnerBase {
 					ansi.setColorBlue();
 				}
 
+				writer.print(indent);
 				writer.println(line.message);
 
 				JobLogExceptionInfo exceptionInfo = line.exception;
 				while (exceptionInfo != null) {
 					for (String exceptionLine : exceptionInfo.info) {
+						writer.print(indent);
 						writer.println(exceptionLine);
 					}
 
