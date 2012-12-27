@@ -1,0 +1,60 @@
+<assembly
+    xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+
+    <id>service-package</id>
+
+    <formats>
+        <format>tar.gz</format>
+    </formats>
+
+    <includeBaseDirectory>false</includeBaseDirectory>
+
+    <fileSets>
+        <fileSet>
+            <directory>${project.basedir}</directory>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>README*</include>
+                <include>LICENSE*</include>
+                <include>NOTICE*</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>/</outputDirectory>
+            <useProjectArtifact>true</useProjectArtifact>
+            <unpack>false</unpack>
+            <scope>runtime</scope>
+
+
+            <excludes>
+                <exclude>org.slf4j:slf4j-api:*</exclude>
+                <exclude>com.google.guava:guava:*</exclude>
+                <exclude>com.google.inject:guice:*</exclude>
+                <exclude>javax.inject:javax.inject:*</exclude>
+
+                <exclude>com.fathomdb:fathomdb-crypto:*</exclude>
+                <exclude>com.fathomdb:fathomdb-commons:*</exclude>
+                <exclude>com.fathomdb:fathomdb-http:*</exclude>
+                <exclude>com.sun.xml.bind:*</exclude>
+
+                <exclude>org.platformlayer:platformlayer-shared-utils:*</exclude>
+                <exclude>org.platformlayer:model-shared:*</exclude>
+
+                <exclude>aopalliance:aopalliance:*</exclude>
+
+                <exclude>net.iharder:base64:*</exclude>
+                
+                <exclude>org.platformlayer:billing-client:*</exclude>
+                <exclude>org.platformlayer:billing-server:*</exclude>
+
+                <exclude>org.hibernate.javax.persistence:*</exclude>
+                <!-- aopalliance-1.0.jar base64-2.3.8.jar hibernate-jpa-2.0-api-1.0.1.Final.jar -->
+            </excludes>
+        </dependencySet>
+    </dependencySets>
+</assembly>
