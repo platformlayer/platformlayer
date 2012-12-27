@@ -2,7 +2,7 @@ package org.platformlayer.ops.vpn;
 
 import java.io.File;
 
-import org.openstack.utils.Utf8;
+import com.fathomdb.Utf8;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;

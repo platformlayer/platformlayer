@@ -6,7 +6,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.openstack.utils.Utf8;
+import com.fathomdb.Utf8;
 import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.templates.TemplateDataSource;

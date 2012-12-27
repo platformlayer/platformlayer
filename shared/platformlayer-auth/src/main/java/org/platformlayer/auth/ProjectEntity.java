@@ -10,7 +10,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openstack.utils.Utf8;
 import org.platformlayer.auth.crypto.SecretStore;
 import org.platformlayer.crypto.CertificateUtils;
 import org.platformlayer.crypto.RsaUtils;
@@ -19,6 +18,7 @@ import org.platformlayer.ops.OpsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.Utf8;
 import com.fathomdb.crypto.CryptoKey;
 import com.fathomdb.crypto.FathomdbCrypto;
 

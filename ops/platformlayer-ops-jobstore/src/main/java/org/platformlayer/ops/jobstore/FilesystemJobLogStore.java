@@ -13,7 +13,6 @@ import java.util.zip.GZIPOutputStream;
 
 import javax.inject.Singleton;
 
-import org.platformlayer.IoUtils;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.jobs.model.JobLog;
 import org.platformlayer.jobs.model.JobLogExceptionInfo;
@@ -21,6 +20,7 @@ import org.platformlayer.jobs.model.JobLogLine;
 import org.platformlayer.ops.jobstore.protobuf.JobDataProtobuf;
 import org.platformlayer.ops.log.JobLogger;
 
+import com.fathomdb.io.IoUtils;
 import com.google.common.collect.Lists;
 import com.google.common.io.Closeables;
 import com.google.protobuf.CodedInputStream;

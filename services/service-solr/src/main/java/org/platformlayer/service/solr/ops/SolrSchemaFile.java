@@ -5,7 +5,7 @@ import java.io.InputStream;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.openstack.utils.Utf8;
+import com.fathomdb.Utf8;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.service.solr.model.SolrSchemaField;

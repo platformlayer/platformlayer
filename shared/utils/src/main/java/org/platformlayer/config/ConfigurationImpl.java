@@ -4,11 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.openstack.utils.PropertyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fathomdb.Configuration;
+import com.fathomdb.properties.PropertyUtils;
 import com.google.inject.Binder;
 import com.google.inject.name.Names;
 
@@ -65,11 +65,13 @@ public class ConfigurationImpl implements Configuration {
 		return value;
 	}
 
+	@Override
 	public String find(String key) {
 		String value = lookup(key, null);
 		return value;
 	}
 
+	@Override
 	public Properties getChildProperties(String keyPrefix) {
 		return PropertyUtils.getChildProperties(properties, keyPrefix);
 	}
@@ -107,6 +109,7 @@ public class ConfigurationImpl implements Configuration {
 		return new ConfigurationImpl(basePath, properties);
 	}
 
+	@Override
 	public File lookupFile(String key, String defaultPath) {
 		String value = lookup(key, defaultPath);
 		if (value == null) {
@@ -120,6 +123,7 @@ public class ConfigurationImpl implements Configuration {
 		}
 	}
 
+	@Override
 	public File getBasePath() {
 		return basePath;
 	}

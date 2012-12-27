@@ -3,7 +3,7 @@ package org.platformlayer.service.cloud.direct.ops;
 import java.io.File;
 
 import org.apache.log4j.Logger;
-import org.openstack.utils.Utf8;
+import com.fathomdb.Utf8;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;

@@ -8,9 +8,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
-import java.io.Writer;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
@@ -19,9 +19,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import org.openstack.utils.Utf8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fathomdb.Utf8;
+import com.google.common.base.Charsets;
 
 /**
  * Utility functions to do with IO
@@ -29,6 +31,8 @@ import org.slf4j.LoggerFactory;
  * @author justinsb
  * 
  */
+@Deprecated
+// Move to fathomdb-commons
 public class IoUtils {
 	static final Logger log = LoggerFactory.getLogger(IoUtils.class);
 
@@ -179,16 +183,6 @@ public class IoUtils {
 		}
 	}
 
-	public static void writeAll(File file, String contents) throws IOException {
-		Writer writer = Utf8.openWriter(new FileOutputStream(file));
-		try {
-			writer.write(contents);
-			writer.flush();
-		} finally {
-			writer.close();
-		}
-	}
-
 	public static void writeAllBinary(File file, byte[] data) throws IOException {
 		FileOutputStream writer = new FileOutputStream(file);
 		try {
@@ -201,18 +195,9 @@ public class IoUtils {
 		}
 	}
 
-	public static void writeAll(File file, InputStream is) throws IOException {
-		FileOutputStream os = new FileOutputStream(file);
-		try {
-			copyStream(is, os);
-		} finally {
-			os.close();
-		}
-	}
-
 	public static byte[] readAllBinary(InputStream input) throws IOException {
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
-		copyStream(input, output);
+		com.fathomdb.io.IoUtils.copyStream(input, output);
 		return output.toByteArray();
 	}
 
@@ -256,20 +241,6 @@ public class IoUtils {
 	// }
 	// }
 
-	public static long copyStream(InputStream input, OutputStream output) throws IOException {
-		long bytesCopied = 0;
-		byte[] buffer = new byte[32768];
-		while (true) {
-			int bytesRead = input.read(buffer);
-			if (bytesRead <= 0) {
-				break;
-			}
-			output.write(buffer, 0, bytesRead);
-			bytesCopied += bytesRead;
-		}
-		return bytesCopied;
-	}
-
 	public static String readAll(Reader in) throws IOException {
 		StringBuilder contents = new StringBuilder();
 
@@ -293,7 +264,7 @@ public class IoUtils {
 	 * @throws IOException
 	 */
 	public static String readAll(InputStream inputStream) throws IOException {
-		BufferedReader in = new BufferedReader(Utf8.openReader(inputStream));
+		BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, Charsets.UTF_8));
 		try {
 			return readAll(in);
 		} finally {
@@ -342,29 +313,9 @@ public class IoUtils {
 		}
 	}
 
-	public static void safeDelete(File file) {
-		if (file == null) {
-			return;
-		}
-
-		if (!file.delete()) {
-			log.error("Could not delete file: " + file);
-		}
-	}
-
-	public static void checkedDelete(File file) throws IOException {
-		if (file == null) {
-			return;
-		}
-
-		if (!file.delete()) {
-			throw new IOException("Could not delete file: " + file);
-		}
-	}
-
 	public static void renameReplace(File src, File dest) throws IOException {
 		if (isWindows()) {
-			safeDelete(dest);
+			com.fathomdb.io.IoUtils.safeDelete(dest);
 		}
 		if (!src.renameTo(dest)) {
 			throw new IOException("Error renaming file " + src + " to " + dest);
@@ -533,7 +484,7 @@ public class IoUtils {
 
 	public static Iterable<String> readLines(InputStream is, boolean skipBlanks, boolean skipComments)
 			throws IOException {
-		BufferedReader reader = new BufferedReader(Utf8.openReader(is));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(is, Charsets.UTF_8));
 		try {
 			// TODO: This could avoid buffering if we ever start using this for huge files
 			List<String> lines = new ArrayList<String>();

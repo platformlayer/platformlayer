@@ -8,10 +8,10 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import org.kohsuke.args4j.Option;
-import org.openstack.utils.Io;
-import org.openstack.utils.NoCloseInputStream;
 
 import com.fathomdb.cli.CliOptions;
+import com.fathomdb.io.IoUtils;
+import com.fathomdb.io.NoCloseInputStream;
 
 public class KeystoneCliOptions extends CliOptions {
 	@Option(name = "-c", aliases = "--config", usage = "specify configuration file")
@@ -40,7 +40,7 @@ public class KeystoneCliOptions extends CliOptions {
 						if (isServerMode()) {
 							throw new IllegalArgumentException("Must pass config file over stdin in server mode");
 						}
-						File file = Io.resolve(configFile);
+						File file = IoUtils.resolve(configFile);
 						if (!file.exists()) {
 							throw new FileNotFoundException("Configuration file not found: " + file);
 						}
@@ -56,7 +56,7 @@ public class KeystoneCliOptions extends CliOptions {
 				} catch (IOException e) {
 					throw new IllegalArgumentException("Error reading configuration file", e);
 				} finally {
-					Io.safeClose(is);
+					IoUtils.safeClose(is);
 				}
 			}
 

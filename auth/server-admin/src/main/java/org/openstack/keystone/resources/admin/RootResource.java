@@ -4,7 +4,6 @@ import java.security.cert.X509Certificate;
 
 import javax.inject.Inject;
 
-import org.openstack.utils.Hex;
 import org.platformlayer.auth.AuthenticatorException;
 import org.platformlayer.auth.ServiceAccount;
 import org.platformlayer.auth.model.CertificateChainInfo;
@@ -14,6 +13,8 @@ import org.platformlayer.auth.services.SystemAuthenticator;
 import org.platformlayer.auth.services.TokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fathomdb.utils.Hex;
 
 public class RootResource extends PlatformlayerAuthResourceBase {
 	private static final Logger log = LoggerFactory.getLogger(RootResource.class);

@@ -16,7 +16,6 @@ import javax.net.ssl.TrustManager;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.UnmarshalException;
 
-import org.openstack.utils.Utf8;
 import org.platformlayer.crypto.AcceptAllHostnameVerifier;
 import org.platformlayer.crypto.PublicKeyTrustManager;
 import org.platformlayer.http.HttpRequest;
@@ -185,7 +184,7 @@ class PlatformLayerHttpRequest implements Closeable {
 
 				String text = null;
 				if (is != null) {
-					text = IoUtils.readAll(Utf8.openReader(is));
+					text = IoUtils.readAll(is);
 				}
 
 				if (debug != null) {
@@ -263,7 +262,7 @@ class PlatformLayerHttpRequest implements Closeable {
 		try {
 			errorStream = getErrorStream();
 			if (errorStream != null) {
-				errorText = IoUtils.readAll(Utf8.openReader(errorStream));
+				errorText = IoUtils.readAll(errorStream);
 			}
 		} catch (IOException e) {
 			log.warn("Could not read error response from request", e);

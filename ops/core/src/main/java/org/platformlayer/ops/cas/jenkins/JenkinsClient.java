@@ -11,8 +11,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.log4j.Logger;
-import org.openstack.utils.Io;
-import org.platformlayer.IoUtils;
 import org.platformlayer.PlatformLayerClientBase;
 import org.platformlayer.xml.XmlHelper;
 import org.w3c.dom.Document;
@@ -21,6 +19,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.fathomdb.io.IoUtils;
 import com.google.common.collect.Lists;
 
 public class JenkinsClient {
@@ -44,7 +43,7 @@ public class JenkinsClient {
 				throw new JenkinsException("Unexpected status code from Jenkins: " + statusCode, statusCode);
 			}
 			is = response.getEntity().getContent();
-			return Io.readAll(is);
+			return IoUtils.readAll(is);
 		} catch (IOException e) {
 			throw new JenkinsException("Error making request to Jenkins", e);
 		} finally {

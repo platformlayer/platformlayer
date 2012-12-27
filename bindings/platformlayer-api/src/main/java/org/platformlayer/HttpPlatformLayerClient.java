@@ -9,7 +9,6 @@ import java.util.Properties;
 
 import javax.xml.bind.UnmarshalException;
 
-import org.openstack.utils.PropertyUtils;
 import org.platformlayer.auth.Authenticator;
 import org.platformlayer.auth.PlatformlayerAuthenticator;
 import org.platformlayer.common.UntypedItem;
@@ -39,6 +38,7 @@ import org.platformlayer.xml.JaxbHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.properties.PropertyUtils;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;

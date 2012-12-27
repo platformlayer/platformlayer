@@ -3,7 +3,7 @@ package org.platformlayer.keystone.cli.commands;
 import java.util.List;
 
 import org.kohsuke.args4j.Option;
-import org.openstack.utils.Hex;
+import com.fathomdb.utils.Hex;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.auth.ServiceAccountEntity;
 import org.platformlayer.auth.UserDatabase;

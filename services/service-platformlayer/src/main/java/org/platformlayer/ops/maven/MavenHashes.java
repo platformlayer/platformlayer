@@ -5,9 +5,8 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import org.openstack.utils.Io;
-
 import com.fathomdb.hash.Md5Hash;
+import com.fathomdb.io.IoUtils;
 
 public class MavenHashes {
 	public static Md5Hash getMd5(Path artifactPath) throws IOException {
@@ -19,10 +18,10 @@ public class MavenHashes {
 
 		try {
 			is = Files.newInputStream(md5Path);
-			String md5 = Io.readAll(is);
+			String md5 = IoUtils.readAll(is);
 			return new Md5Hash(md5);
 		} finally {
-			Io.safeClose(is);
+			IoUtils.safeClose(is);
 		}
 	}
 }

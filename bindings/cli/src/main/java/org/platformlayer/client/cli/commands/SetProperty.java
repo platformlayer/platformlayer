@@ -7,9 +7,7 @@ import java.util.List;
 
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
-import org.openstack.utils.NoCloseInputStream;
 import org.platformlayer.Format;
-import org.platformlayer.IoUtils;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
 import org.platformlayer.UntypedItemXml;
@@ -22,8 +20,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import com.fathomdb.cli.CliException;
+import com.fathomdb.io.NoCloseInputStream;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+import com.google.common.io.ByteStreams;
 
 public class SetProperty extends PlatformLayerCommandRunnerBase {
 	@Option(name = "-stdin", usage = "Read value from stdin")
@@ -54,7 +54,7 @@ public class SetProperty extends PlatformLayerCommandRunnerBase {
 			}
 
 			InputStream stream = new NoCloseInputStream(System.in);
-			byte[] data = IoUtils.readAllBinary(stream);
+			byte[] data = ByteStreams.toByteArray(stream);
 
 			if ("base64".equals(format)) {
 				value = CryptoUtils.toBase64(data);

@@ -10,7 +10,6 @@ import java.security.cert.CertificateException;
 import java.util.List;
 import java.util.Properties;
 
-import org.openstack.crypto.KeyStoreUtils;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.auth.KeystoneJdbcModule;
 import org.platformlayer.auth.UserDatabase;
@@ -25,6 +24,7 @@ import org.platformlayer.ops.OpsException;
 
 import com.fathomdb.cli.CliContextBase;
 import com.fathomdb.cli.CliException;
+import com.fathomdb.crypto.KeyStoreUtils;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.inject.ConfigurationException;

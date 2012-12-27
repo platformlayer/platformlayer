@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.openstack.utils.Utf8;
+import com.fathomdb.Utf8;
 import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.SyntheticFile;

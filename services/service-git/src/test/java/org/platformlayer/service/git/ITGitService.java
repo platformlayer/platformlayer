@@ -4,7 +4,6 @@ import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.openstack.utils.Io;
 import org.platformlayer.service.git.model.GitRepository;
 import org.platformlayer.service.git.model.GitService;
 import org.platformlayer.service.git.ops.GitServerController;
@@ -16,6 +15,8 @@ import org.platformlayer.tests.PlatformLayerApiTest;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import com.fathomdb.io.IoUtils;
 
 public class ITGitService extends PlatformLayerApiTest {
 
@@ -89,7 +90,7 @@ public class ITGitService extends PlatformLayerApiTest {
 		 */
 
 		try {
-			Io.readAll(url);
+			IoUtils.readAll(url);
 		} catch (Exception e) {
 			// We're not authenticated, so we expect a 401
 

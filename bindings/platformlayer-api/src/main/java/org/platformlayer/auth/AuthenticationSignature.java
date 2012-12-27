@@ -8,9 +8,9 @@ import java.util.TreeMap;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 
-import org.openstack.utils.Utf8;
 import org.platformlayer.crypto.CryptoUtils;
 
+import com.fathomdb.Utf8;
 import com.google.common.collect.Maps;
 
 public class AuthenticationSignature {

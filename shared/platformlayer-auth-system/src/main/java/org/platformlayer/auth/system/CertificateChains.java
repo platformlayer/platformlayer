@@ -3,11 +3,12 @@ package org.platformlayer.auth.system;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
-import com.fathomdb.hash.Md5Hash;
-import org.openstack.utils.Hex;
 import org.platformlayer.auth.v1.CertificateChainInfo;
 import org.platformlayer.auth.v1.CertificateInfo;
 import org.platformlayer.crypto.OpenSshUtils;
+
+import com.fathomdb.hash.Md5Hash;
+import com.fathomdb.utils.Hex;
 
 public class CertificateChains {
 	public static CertificateChainInfo toModel(X509Certificate[] chain) {

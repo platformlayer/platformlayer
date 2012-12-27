@@ -4,13 +4,14 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URL;
 
-import org.openstack.utils.Io;
 import org.platformlayer.service.jenkins.model.JenkinsService;
 import org.platformlayer.service.jenkins.ops.JenkinsServiceController;
 import org.platformlayer.tests.PlatformLayerApiTest;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import com.fathomdb.io.IoUtils;
 
 public class ITJenkinsService extends PlatformLayerApiTest {
 
@@ -51,7 +52,7 @@ public class ITJenkinsService extends PlatformLayerApiTest {
 
 		URL url = new URL(fetchUrl);
 
-		String html = Io.readAll(url);
+		String html = IoUtils.readAll(url);
 		System.out.println(html);
 
 		return html;

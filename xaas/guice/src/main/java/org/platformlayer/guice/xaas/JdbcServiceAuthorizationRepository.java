@@ -8,7 +8,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-import org.openstack.utils.Utf8;
+import com.fathomdb.Utf8;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceMetadataKey;

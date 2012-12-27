@@ -11,13 +11,13 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.openstack.crypto.KeyStoreUtils;
 import org.platformlayer.ops.OpsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fathomdb.Configuration;
 import com.fathomdb.crypto.CertificateAndKey;
+import com.fathomdb.crypto.KeyStoreUtils;
 import com.fathomdb.crypto.SimpleCertificateAndKey;
 
 @Singleton

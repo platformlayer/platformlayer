@@ -16,8 +16,6 @@ import java.util.concurrent.TimeoutException;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
-import com.fathomdb.hash.Md5Hash;
-import org.openstack.utils.Hex;
 import org.platformlayer.ExceptionUtils;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.ops.Command;
@@ -33,6 +31,8 @@ import org.platformlayer.ops.process.ProcessExecution;
 import org.platformlayer.ops.process.ProcessExecutionException;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
+import com.fathomdb.hash.Md5Hash;
+import com.fathomdb.utils.Hex;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Objects;
 import com.google.common.base.Splitter;

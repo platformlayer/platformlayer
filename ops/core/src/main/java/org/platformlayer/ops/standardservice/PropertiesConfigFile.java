@@ -4,11 +4,11 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
 
-import org.openstack.utils.PropertyUtils;
-import org.openstack.utils.Utf8;
+import com.fathomdb.Utf8;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.SyntheticFile;
 
+import com.fathomdb.properties.PropertyUtils;
 import com.google.common.base.Supplier;
 
 public class PropertiesConfigFile extends SyntheticFile {

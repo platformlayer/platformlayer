@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
-import org.openstack.utils.Io;
 import org.platformlayer.core.model.Secret;
 import org.platformlayer.jdbc.JdbcUtils;
 import org.platformlayer.ops.OpsException;
@@ -24,6 +23,7 @@ import org.platformlayer.ops.ssh.SshPortForward;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.io.Closeables;
 import com.google.common.net.InetAddresses;
 
 public class TunneledDatabaseTarget extends DatabaseTarget {
@@ -107,7 +107,7 @@ public class TunneledDatabaseTarget extends DatabaseTarget {
 			JdbcUtils.safeClose(rs);
 			JdbcUtils.safeClose(statement);
 			JdbcUtils.safeClose(conn);
-			Io.safeClose(forwardLocalPort);
+			Closeables.closeQuietly(forwardLocalPort);
 		}
 
 	}

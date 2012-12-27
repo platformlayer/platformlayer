@@ -9,9 +9,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.openstack.utils.Io;
 import org.platformlayer.ApplicationMode;
-import org.platformlayer.IoUtils;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.crypto.CertificateUtils;
 import org.platformlayer.crypto.KeyPairUtils;
@@ -23,6 +21,7 @@ import org.platformlayer.ids.ServiceType;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.xaas.repository.ServiceAuthorizationService;
 
+import com.fathomdb.io.IoUtils;
 
 public class PrivateDataHelper {
 	private static final Logger log = Logger.getLogger(PrivateDataHelper.class);
@@ -122,7 +121,7 @@ public class PrivateDataHelper {
 				fileName = "project-" + project.getKey();
 			}
 
-			File credentials = Io.resolve("~/.credentials");
+			File credentials = IoUtils.resolve("~/.credentials");
 			File ssh = new File(credentials, "ssh");
 			File projectDir = new File(ssh, project.getKey());
 			File keyFile = new File(projectDir, fileName);

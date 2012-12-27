@@ -2,12 +2,13 @@ package org.platformlayer.tests;
 
 import java.io.IOException;
 
-import org.openstack.utils.RandomUtil;
 import org.platformlayer.TypedItemMapper;
 import org.platformlayer.TypedPlatformLayerClient;
 import org.platformlayer.ops.OpsException;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
+
+import com.fathomdb.RandomUtil;
 
 public abstract class AbstractPlatformLayerTest {
 	private PlatformLayerTestContext context;

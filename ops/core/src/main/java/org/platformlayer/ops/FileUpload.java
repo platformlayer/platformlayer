@@ -6,7 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.openstack.utils.Utf8;
+import com.fathomdb.Utf8;
 
 public class FileUpload {
 	public File path;

@@ -8,7 +8,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-import org.openstack.utils.Utf8;
+import com.fathomdb.Utf8;
 import org.platformlayer.ops.ChrootOpsTarget;
 import org.platformlayer.ops.FileUpload;
 import org.platformlayer.ops.Handler;

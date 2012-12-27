@@ -3,7 +3,7 @@ package org.platformlayer.ops.process;
 import java.io.Serializable;
 
 import org.apache.log4j.Logger;
-import org.openstack.utils.Utf8;
+import com.fathomdb.Utf8;
 
 public class ProcessExecution implements Serializable {
 	private static final long serialVersionUID = 1L;

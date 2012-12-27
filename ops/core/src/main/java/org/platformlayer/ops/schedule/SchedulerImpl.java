@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.TimerTask;
 
 import org.apache.log4j.Logger;
-import org.openstack.utils.Hex;
+import com.fathomdb.utils.Hex;
 import org.platformlayer.HttpPlatformLayerClient;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;

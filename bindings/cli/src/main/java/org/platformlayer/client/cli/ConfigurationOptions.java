@@ -13,11 +13,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.kohsuke.args4j.Option;
-import org.openstack.utils.Io;
-import org.openstack.utils.NoCloseInputStream;
-import org.openstack.utils.PropertyUtils;
 import org.platformlayer.HttpPlatformLayerClient;
-import org.platformlayer.IoUtils;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.http.HttpStrategy;
 import org.platformlayer.http.jre.JreHttpStrategy;
@@ -25,8 +21,12 @@ import org.platformlayer.ops.OpsException;
 
 import com.fathomdb.cli.CliException;
 import com.fathomdb.cli.CliOptions;
+import com.fathomdb.io.IoUtils;
+import com.fathomdb.io.NoCloseInputStream;
+import com.fathomdb.properties.PropertyUtils;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.io.Closeables;
 
 public class ConfigurationOptions extends CliOptions {
 	@Option(name = "-c", aliases = "--config", usage = "config file", required = true)
@@ -54,7 +54,7 @@ public class ConfigurationOptions extends CliOptions {
 				if (isServerMode()) {
 					throw new IllegalArgumentException("Must pass config file over stdin in server mode");
 				}
-				File file = Io.resolve(configFile);
+				File file = IoUtils.resolve(configFile);
 				if (!file.exists()) {
 					throw new FileNotFoundException("Configuration file not found: " + file);
 				}
@@ -92,7 +92,7 @@ public class ConfigurationOptions extends CliOptions {
 			}
 		} finally {
 			if (is != System.in) {
-				IoUtils.safeClose(is);
+				Closeables.closeQuietly(is);
 			}
 		}
 

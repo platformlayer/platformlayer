@@ -7,7 +7,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
-import org.openstack.utils.Utf8;
+import com.fathomdb.Utf8;
 import org.platformlayer.ExceptionUtils;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.ops.networks.NetworkPoint;

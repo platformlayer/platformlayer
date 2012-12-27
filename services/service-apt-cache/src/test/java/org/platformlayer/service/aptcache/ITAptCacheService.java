@@ -7,13 +7,14 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
 
-import org.openstack.utils.Io;
 import org.platformlayer.service.aptcache.model.AptCacheService;
 import org.platformlayer.service.aptcache.ops.AptCacheServiceController;
 import org.platformlayer.tests.PlatformLayerApiTest;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import com.fathomdb.io.IoUtils;
 
 public class ITAptCacheService extends PlatformLayerApiTest {
 
@@ -56,7 +57,7 @@ public class ITAptCacheService extends PlatformLayerApiTest {
 		uc.connect();
 
 		InputStream is = uc.getInputStream();
-		String html = Io.readAll(is);
+		String html = IoUtils.readAll(is);
 		is.close();
 
 		System.out.println(html);

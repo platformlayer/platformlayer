@@ -25,7 +25,7 @@ import org.openstack.model.compute.SecurityGroup;
 import org.openstack.model.compute.SecurityGroupRule;
 import org.openstack.model.compute.Server;
 import org.openstack.model.compute.ServerForCreate;
-import org.openstack.utils.Utf8;
+import com.fathomdb.Utf8;
 import org.platformlayer.Comparisons;
 import org.platformlayer.ExceptionUtils;
 import org.platformlayer.TimeSpan;

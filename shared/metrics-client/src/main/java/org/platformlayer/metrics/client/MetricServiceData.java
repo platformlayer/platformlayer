@@ -8,8 +8,9 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
-import org.platformlayer.IoUtils;
 import org.platformlayer.metrics.model.MetricDataSource;
+
+import com.fathomdb.io.IoUtils;
 
 public class MetricServiceData implements MetricDataSource {
 	final HttpGet request;

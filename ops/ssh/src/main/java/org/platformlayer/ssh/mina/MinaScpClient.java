@@ -12,13 +12,14 @@ import java.io.PipedOutputStream;
 import org.apache.log4j.Logger;
 import org.apache.sshd.ClientChannel;
 import org.apache.sshd.ClientSession;
-import org.openstack.utils.Io;
-import org.openstack.utils.Utf8;
 import org.platformlayer.ExceptionUtils;
-import org.platformlayer.IoUtils;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.ops.ssh.SshException;
 import org.platformlayer.ssh.mina.bugfix.BugFixChannelExec;
+
+import com.fathomdb.Utf8;
+import com.fathomdb.io.IoUtils;
+import com.google.common.io.Closeables;
 
 /**
  * See http://blogs.sun.com/janp/entry/how_the_scp_protocol_works
@@ -66,7 +67,7 @@ public class MinaScpClient {
 		} catch (IOException e) {
 			throw (IOException) new IOException("Error during SCP download").initCause(e);
 		} finally {
-			Io.safeClose(channel);
+			IoUtils.safeClose(channel);
 		}
 	}
 
@@ -95,7 +96,7 @@ public class MinaScpClient {
 		} catch (IOException e) {
 			throw (IOException) new IOException("Error during SCP upload").initCause(e);
 		} finally {
-			Io.safeClose(channel);
+			Closeables.closeQuietly(channel);
 		}
 	}
 

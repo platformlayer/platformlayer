@@ -13,9 +13,10 @@ import java.util.List;
 
 import javax.net.ssl.X509KeyManager;
 
-import org.openstack.crypto.KeyStoreUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fathomdb.crypto.KeyStoreUtils;
 
 public class ClientCertificateKeyManager implements X509KeyManager {
 	@SuppressWarnings("unused")

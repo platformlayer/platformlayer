@@ -14,12 +14,12 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
 
-import org.openstack.utils.Io;
 import org.platformlayer.IoUtils;
 
 import com.fathomdb.Utf8;
 import com.fathomdb.hash.Md5Hash;
 import com.google.common.base.Strings;
+import com.google.common.io.Closeables;
 
 public class OpenSshUtils {
 	private static final String SSH_RSA_PREFIX = "ssh-rsa ";
@@ -161,7 +161,7 @@ public class OpenSshUtils {
 					throw new IOException("Unhandled key type: " + keyType);
 				}
 			} finally {
-				Io.safeClose(is);
+				Closeables.closeQuietly(is);
 			}
 		} else {
 			throw new IOException("Unknown key format: " + sshPublicKey);

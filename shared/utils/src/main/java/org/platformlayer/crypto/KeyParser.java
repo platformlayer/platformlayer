@@ -15,9 +15,10 @@ import java.security.spec.RSAPublicKeySpec;
 
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
-import org.openstack.utils.Utf8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fathomdb.Utf8;
 
 public class KeyParser {
 	private static final Logger log = LoggerFactory.getLogger(KeyParser.class);

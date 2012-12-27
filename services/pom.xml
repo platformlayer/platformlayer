@@ -38,7 +38,7 @@
         <module>service-image-store</module>
         <module>service-networks</module>
         <module>service-federation</module>
-        <module>service-platformlayer</module> 
+        <module>service-platformlayer</module>
         <module>service-zookeeper</module>
         <module>service-desktop</module>
         <module>service-memcache</module>

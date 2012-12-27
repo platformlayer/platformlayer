@@ -7,7 +7,6 @@ import javax.inject.Inject;
 import javax.ws.rs.WebApplicationException;
 
 import org.apache.log4j.Logger;
-import org.openstack.utils.Io;
 import org.platformlayer.ApplicationMode;
 import org.platformlayer.CheckedCallable;
 import org.platformlayer.RepositoryException;
@@ -36,6 +35,7 @@ import org.platformlayer.ops.backups.BackupHelpers;
 import org.platformlayer.xaas.repository.ManagedItemRepository;
 import org.platformlayer.xaas.services.ServiceProvider;
 
+import com.fathomdb.io.IoUtils;
 import com.google.common.collect.Lists;
 
 public class OperationWorker implements Callable<Object> {
@@ -179,7 +179,7 @@ public class OperationWorker implements Callable<Object> {
 				}
 			}
 		} finally {
-			Io.safeClose(rename);
+			IoUtils.safeClose(rename);
 		}
 	}
 

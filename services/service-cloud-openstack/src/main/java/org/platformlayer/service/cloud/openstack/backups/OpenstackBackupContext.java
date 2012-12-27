@@ -8,7 +8,7 @@ import org.openstack.client.OpenstackCredentials;
 import org.openstack.client.OpenstackException;
 import org.openstack.client.common.OpenstackSession;
 import org.openstack.client.storage.OpenstackStorageClient;
-import org.openstack.utils.Utf8;
+import com.fathomdb.Utf8;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.backups.Backup;

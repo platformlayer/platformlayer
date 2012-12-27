@@ -6,8 +6,7 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import org.openstack.utils.SimpleIterator;
-
+import com.fathomdb.SimpleIterator;
 import com.google.common.base.Strings;
 
 public abstract class IpRange {

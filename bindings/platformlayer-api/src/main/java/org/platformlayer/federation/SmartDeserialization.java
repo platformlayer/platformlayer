@@ -6,9 +6,10 @@ import java.io.StringReader;
 
 import javax.xml.bind.UnmarshalException;
 
-import org.openstack.utils.Io;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.xml.JaxbHelper;
+
+import com.fathomdb.io.IoUtils;
 
 public class SmartDeserialization {
 
@@ -21,7 +22,7 @@ public class SmartDeserialization {
 
 		String data;
 		try {
-			data = Io.readAll(is);
+			data = IoUtils.readAll(is);
 		} catch (IOException e) {
 			throw new OpsException("Error reading data", e);
 		}

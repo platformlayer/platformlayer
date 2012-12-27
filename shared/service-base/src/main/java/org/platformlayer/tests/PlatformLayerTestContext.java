@@ -13,10 +13,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Properties;
 
-import org.openstack.utils.Io;
-import org.openstack.utils.RandomUtil;
 import org.platformlayer.HttpPlatformLayerClient;
-import org.platformlayer.IoUtils;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientBase;
 import org.platformlayer.TimeSpan;
@@ -39,6 +36,8 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.service.network.v1.NetworkConnection;
 import org.platformlayer.xml.JaxbHelper;
 
+import com.fathomdb.RandomUtil;
+import com.fathomdb.io.IoUtils;
 import com.google.common.collect.Lists;
 
 public class PlatformLayerTestContext {
@@ -69,7 +68,7 @@ public class PlatformLayerTestContext {
 			config = "~/.credentials/" + config;
 		}
 
-		File configFile = Io.resolve(config);
+		File configFile = IoUtils.resolve(config);
 		return new PlatformLayerTestContext(configFile, typedItemMapper);
 	}
 

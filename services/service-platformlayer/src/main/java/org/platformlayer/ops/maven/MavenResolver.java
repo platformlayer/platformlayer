@@ -8,9 +8,9 @@ import org.apache.log4j.Logger;
 import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.apache.maven.artifact.repository.metadata.SnapshotVersion;
 import org.apache.maven.artifact.repository.metadata.Versioning;
-import org.openstack.utils.Io;
 import org.platformlayer.maven.MavenXml;
 
+import com.fathomdb.io.IoUtils;
 import com.google.common.base.Objects;
 
 public class MavenResolver {
@@ -37,7 +37,7 @@ public class MavenResolver {
 		Path artifactMavenMetadataPath = versionedPath.resolve("maven-metadata.xml");
 
 		log.info("Reading file: " + artifactMavenMetadataPath);
-		String mavenMetadataXml = Io.readAll(Files.newInputStream(artifactMavenMetadataPath));
+		String mavenMetadataXml = IoUtils.readAll(Files.newInputStream(artifactMavenMetadataPath));
 
 		Metadata mavenMetadata = MavenXml.readMetadata(mavenMetadataXml);
 
@@ -48,7 +48,7 @@ public class MavenResolver {
 		Path artifactMavenMetadataPath = artifactPath.resolve("maven-metadata.xml");
 
 		log.info("Reading file: " + artifactMavenMetadataPath);
-		String mavenMetadataXml = Io.readAll(Files.newInputStream(artifactMavenMetadataPath));
+		String mavenMetadataXml = IoUtils.readAll(Files.newInputStream(artifactMavenMetadataPath));
 
 		Metadata mavenMetadata = MavenXml.readMetadata(mavenMetadataXml);
 

@@ -19,12 +19,12 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
-import org.openstack.crypto.KeyStoreUtils;
 import org.platformlayer.crypto.AcceptAllClientCertificatesTrustManager;
 import org.platformlayer.crypto.EncryptionStore;
 import org.platformlayer.ops.OpsException;
 
 import com.fathomdb.crypto.CertificateAndKey;
+import com.fathomdb.crypto.KeyStoreUtils;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceFilter;

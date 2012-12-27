@@ -5,7 +5,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.openstack.utils.Hex;
 import org.platformlayer.PlatformLayerEndpointInfo;
 import org.platformlayer.auth.Authenticator;
 import org.platformlayer.auth.DirectAuthenticationToken;
@@ -17,6 +16,7 @@ import org.platformlayer.core.model.Secret;
 import org.platformlayer.ops.OpsException;
 
 import com.fathomdb.crypto.FathomdbCrypto;
+import com.fathomdb.utils.Hex;
 import com.google.common.base.Joiner;
 
 public class ActionScheduler {

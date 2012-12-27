@@ -8,8 +8,7 @@ import java.util.Properties;
 
 import javax.inject.Inject;
 
-import org.openstack.utils.PropertyUtils;
-import org.openstack.utils.Utf8;
+import com.fathomdb.Utf8;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
@@ -24,6 +23,7 @@ import org.platformlayer.service.httpfrontend.model.HttpServer;
 import org.platformlayer.service.httpfrontend.model.HttpSite;
 import org.platformlayer.service.machines.openstack.v1.OpenstackCloud;
 
+import com.fathomdb.properties.PropertyUtils;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;

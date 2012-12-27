@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
-import org.openstack.utils.Utf8;
+import com.fathomdb.Utf8;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.firewall.Sanitizer;
 import org.platformlayer.ops.firewall.Sanitizer.Decision;

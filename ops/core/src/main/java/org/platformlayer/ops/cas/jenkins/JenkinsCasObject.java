@@ -10,7 +10,6 @@ import java.net.UnknownHostException;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.openstack.utils.Io;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.cas.CasLocation;
 import org.platformlayer.ops.Command;
@@ -28,6 +27,8 @@ import org.platformlayer.ops.proxy.HttpProxyHelper;
 import org.platformlayer.ops.proxy.HttpProxyHelper.Usage;
 
 import com.fathomdb.hash.Md5Hash;
+import com.fathomdb.io.IoUtils;
+import com.google.common.io.Closeables;
 
 public class JenkinsCasObject extends OpsCasObjectBase {
 	private static final Logger log = Logger.getLogger(JenkinsCasObject.class);
@@ -77,9 +78,9 @@ public class JenkinsCasObject extends OpsCasObjectBase {
 			try {
 				InputStream is = uri.toURL().openStream();
 				try {
-					Io.copyStreams(is, tempFile);
+					IoUtils.copyStream(is, tempFile);
 				} finally {
-					Io.safeClose(is);
+					Closeables.closeQuietly(is);
 				}
 
 				FileUpload.upload(target, remoteFilePath, tempFile);

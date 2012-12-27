@@ -20,7 +20,6 @@ import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.webapp.WebAppContext;
-import org.openstack.crypto.KeyStoreUtils;
 import org.platformlayer.cache.CacheModule;
 import org.platformlayer.config.ConfigurationModule;
 import org.platformlayer.crypto.EncryptionStore;
@@ -33,6 +32,7 @@ import org.platformlayer.xaas.GuiceXaasConfig;
 import org.platformlayer.xaas.PlatformLayerServletModule;
 
 import com.fathomdb.crypto.CertificateAndKey;
+import com.fathomdb.crypto.KeyStoreUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Guice;

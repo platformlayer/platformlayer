@@ -4,9 +4,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Properties;
 
-import org.openstack.utils.PropertyUtils;
-
 import com.fathomdb.Configuration;
+import com.fathomdb.properties.PropertyUtils;
 
 class JdbcConfiguration {
 	final String jdbcUrl;

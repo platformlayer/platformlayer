@@ -2,7 +2,6 @@ package org.platformlayer.auth.keystone;
 
 import javax.inject.Inject;
 
-import org.openstack.utils.Hex;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.auth.AuthenticatorException;
 import org.platformlayer.auth.ServiceAccountEntity;
@@ -14,6 +13,7 @@ import org.platformlayer.metrics.Instrumented;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.utils.Hex;
 import com.google.common.base.Strings;
 
 @Instrumented

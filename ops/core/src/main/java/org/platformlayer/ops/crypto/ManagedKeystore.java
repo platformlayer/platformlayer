@@ -15,7 +15,6 @@ import javax.inject.Inject;
 import javax.security.auth.x500.X500Principal;
 
 import org.apache.log4j.Logger;
-import org.openstack.crypto.KeyStoreUtils;
 import org.platformlayer.ResourceUtils;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.Tag;
@@ -33,6 +32,7 @@ import org.platformlayer.ops.tree.OpsTreeBase;
 
 import sun.security.x509.X500Name;
 
+import com.fathomdb.crypto.KeyStoreUtils;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 

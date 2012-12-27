@@ -14,7 +14,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
 import org.apache.log4j.Logger;
-import org.openstack.utils.Utf8;
+import com.fathomdb.Utf8;
 import org.platformlayer.Filter;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.auth.crypto.SecretProvider;

@@ -1,7 +1,8 @@
 package org.platformlayer.tests;
 
-import org.openstack.utils.RandomUtil;
 import org.platformlayer.core.model.Secret;
+
+import com.fathomdb.RandomUtil;
 
 public class TestHelper {
 	protected final PlatformLayerTestContext context;

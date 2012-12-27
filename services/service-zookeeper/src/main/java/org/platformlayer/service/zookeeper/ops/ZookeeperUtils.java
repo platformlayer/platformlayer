@@ -9,7 +9,6 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.openstack.utils.Io;
 import org.platformlayer.Filter;
 import org.platformlayer.TagFilter;
 import org.platformlayer.TimeSpan;
@@ -22,6 +21,7 @@ import org.platformlayer.ops.process.ProcessExecution;
 import org.platformlayer.service.zookeeper.model.ZookeeperCluster;
 import org.platformlayer.service.zookeeper.model.ZookeeperServer;
 
+import com.fathomdb.io.IoUtils;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -92,7 +92,7 @@ public class ZookeeperUtils {
 		s.getOutputStream().flush();
 
 		// TODO: Timeout?
-		String response = Io.readAll(s.getInputStream());
+		String response = IoUtils.readAll(s.getInputStream());
 
 		return new ZookeeperResponse(response);
 	}

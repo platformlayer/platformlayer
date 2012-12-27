@@ -2,6 +2,7 @@ package org.platformlayer.service.cloud.direct.ops.kvm.monitor;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -9,7 +10,8 @@ import java.net.Socket;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.openstack.utils.Utf8;
+
+import com.google.common.base.Charsets;
 
 public class QemuMonitor {
 	static final Logger log = Logger.getLogger(QemuMonitor.class);
@@ -29,8 +31,8 @@ public class QemuMonitor {
 		this.port = port;
 		this.socket = open();
 
-		this.reader = new BufferedReader(Utf8.openReader(socket.getInputStream()));
-		this.writer = Utf8.openWriter(socket.getOutputStream());
+		this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), Charsets.UTF_8));
+		this.writer = new OutputStreamWriter(socket.getOutputStream(), Charsets.UTF_8);
 		negotiate();
 	}
 

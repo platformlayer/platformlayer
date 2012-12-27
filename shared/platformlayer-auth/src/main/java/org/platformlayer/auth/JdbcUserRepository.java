@@ -17,7 +17,6 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.security.auth.x500.X500Principal;
 
-import org.openstack.utils.Utf8;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.auth.crypto.SecretStore;
 import org.platformlayer.auth.crypto.SecretStore.Writer;
@@ -39,6 +38,7 @@ import org.platformlayer.ops.OpsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.Utf8;
 import com.fathomdb.crypto.CertificateAndKey;
 import com.fathomdb.crypto.CryptoKey;
 import com.fathomdb.crypto.FathomdbCrypto;

@@ -7,7 +7,7 @@ import java.util.Map;
 import javax.inject.Provider;
 
 import org.apache.log4j.Logger;
-import org.openstack.utils.Utf8;
+import com.fathomdb.Utf8;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;

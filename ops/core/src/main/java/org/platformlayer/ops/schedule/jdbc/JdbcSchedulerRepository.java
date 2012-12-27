@@ -8,7 +8,6 @@ import javax.inject.Provider;
 import javax.xml.bind.JAXBException;
 
 import org.apache.log4j.Logger;
-import org.openstack.utils.Hex;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.JobSchedule;
@@ -27,6 +26,7 @@ import org.platformlayer.ops.schedule.SchedulerRecord;
 import org.platformlayer.ops.schedule.SchedulerRepository;
 import org.platformlayer.xml.JaxbHelper;
 
+import com.fathomdb.utils.Hex;
 import com.google.common.collect.Lists;
 
 public class JdbcSchedulerRepository implements SchedulerRepository {

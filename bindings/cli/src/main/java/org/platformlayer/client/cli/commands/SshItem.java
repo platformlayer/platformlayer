@@ -5,7 +5,6 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 
 import org.kohsuke.args4j.Argument;
-import org.openstack.utils.Io;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
 import org.platformlayer.client.cli.model.ItemPath;
@@ -15,6 +14,7 @@ import org.platformlayer.ids.ProjectId;
 
 import com.fathomdb.cli.CliException;
 import com.fathomdb.cli.output.ClientAction;
+import com.fathomdb.io.IoUtils;
 
 public class SshItem extends PlatformLayerCommandRunnerBase {
 	@Argument
@@ -48,7 +48,7 @@ public class SshItem extends PlatformLayerCommandRunnerBase {
 			String projectKey = project.getKey();
 			String serviceKey = "service-" + key.getServiceType().getKey();
 
-			File sshKey = Io.resolve("~/.credentials/ssh/" + projectKey + "/" + serviceKey);
+			File sshKey = IoUtils.resolve("~/.credentials/ssh/" + projectKey + "/" + serviceKey);
 
 			// Hmmm... user? key?
 			action = new ClientAction(ClientAction.ClientActionType.SSH, user + "@" + sshAddress.getHostAddress(),
