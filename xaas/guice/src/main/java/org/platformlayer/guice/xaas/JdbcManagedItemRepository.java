@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import com.fathomdb.Utf8;
 import org.platformlayer.Filter;
 import org.platformlayer.RepositoryException;
+import org.platformlayer.TagFilter;
 import org.platformlayer.auth.crypto.SecretProvider;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.ManagedItemState;
@@ -189,7 +190,14 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 
 			// TODO: Use this logic for item selection as well
 
-			JoinedQueryResult result = db.listAllItems();
+			JoinedQueryResult result;
+			if (filter instanceof TagFilter) {
+				TagFilter tagFilter = (TagFilter) filter;
+				Tag requiredTag = tagFilter.getRequiredTag();
+				result = db.listAllItemsWithTag(requiredTag.getKey(), requiredTag.getValue());
+			} else {
+				result = db.listAllItems();
+			}
 
 			Multimap<Integer, Tag> itemTags = HashMultimap.create();
 			for (TagEntity row : result.getAll(TagEntity.class)) {
@@ -291,8 +299,12 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 		@Query("SELECT i.*, t.* FROM items i LEFT JOIN item_tags t on t.item = i.id WHERE i.project=?")
 		JoinedQueryResult listAllItems(int projectId) throws SQLException;
 
-		@Query("SELECT i.*, t.* FROM items i LEFT JOIN item_tags t on t.item = i.id WHERE i.project=? and i.id NOT IN (SELECT item from item_tags WHERE key=?)")
-		JoinedQueryResult listRoots(int projectId, String parentTag) throws SQLException;
+		@Query("SELECT i.*, t.* FROM items i LEFT JOIN item_tags t on t.item = i.id WHERE i.project=? and i.id IN (SELECT item from item_tags where project=? and key=? and data=?)")
+		JoinedQueryResult listAllItemsWithTag(int projectId, int projectId2, String tagName, String tagValue)
+				throws SQLException;
+
+		@Query("SELECT i.*, t.* FROM items i LEFT JOIN item_tags t on t.item = i.id WHERE i.project=? and i.id NOT IN (SELECT item from item_tags WHERE project=? and key=?)")
+		JoinedQueryResult listRoots(int projectId, int projectId2, String parentTag) throws SQLException;
 
 		@Query("UPDATE items set secret=? where service=? and model=? and project=? and key=?")
 		int updateSecret(byte[] itemSecret, int serviceId, int itemId, int projectId, String key);
@@ -380,8 +392,14 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 			return queries.listAllItems(getAtomValue(ProjectId.class));
 		}
 
+		public JoinedQueryResult listAllItemsWithTag(String tagName, String tagValue) throws SQLException {
+			int projectId = getAtomValue(ProjectId.class);
+			return queries.listAllItemsWithTag(projectId, projectId, tagName, tagValue);
+		}
+
 		public JoinedQueryResult listRoots() throws SQLException {
-			return queries.listRoots(getAtomValue(ProjectId.class), Tag.PARENT.getKey());
+			int projectId = getAtomValue(ProjectId.class);
+			return queries.listRoots(projectId, projectId, Tag.PARENT.getKey());
 		}
 
 		public List<TagEntity> listTags() throws SQLException {
