@@ -91,6 +91,10 @@ public abstract class StandardTemplateData implements TemplateDataSource {
 		return new File(getInstallDir(), getKey() + ".tar.gz");
 	}
 
+	public File getWarsPath() {
+		return new File(getInstallDir(), "wars");
+	}
+
 	public boolean shouldExpand() {
 		String distFilename = getDistFile().getName();
 		return distFilename.endsWith(".tar.gz") || distFilename.endsWith(".zip");

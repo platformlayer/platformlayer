@@ -14,6 +14,7 @@ import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Secret;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.Command;
+import org.platformlayer.ops.Command.Argument;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.databases.Database;
@@ -54,7 +55,13 @@ public class PlatformLayerInstanceModel extends StandardTemplateData {
 
 		command.addDefine("conf", getConfigurationFile());
 
+		command.addArgument(Argument.buildFile(getRootWar()));
+
 		return command.get();
+	}
+
+	public File getRootWar() {
+		return new File(getWarsPath(), "root.war");
 	}
 
 	@Override

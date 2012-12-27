@@ -53,4 +53,8 @@ public class TagFilter extends Filter {
 		return matchesTags(tags);
 	}
 
+	public Tag getRequiredTag() {
+		return requiredTag;
+	}
+
 }
