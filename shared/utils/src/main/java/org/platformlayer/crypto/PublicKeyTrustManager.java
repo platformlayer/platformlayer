@@ -7,12 +7,14 @@ import java.util.Set;
 
 import javax.net.ssl.X509TrustManager;
 
-import org.platformlayer.crypto.OpenSshUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 
 public class PublicKeyTrustManager implements X509TrustManager {
+	private static final Logger log = LoggerFactory.getLogger(PublicKeyTrustManager.class);
 
 	private final Set<String> trusted;
 
@@ -38,6 +40,7 @@ public class PublicKeyTrustManager implements X509TrustManager {
 			String sigString = OpenSshUtils.getSignatureString(certPublicKey);
 
 			if (!trusted.contains(sigString)) {
+				log.warn("Certificate is not in trusted list (" + sigString + ")");
 				throw new CertificateException("Certificate is not in trusted list (" + sigString + ")");
 			}
 		}
@@ -47,4 +50,10 @@ public class PublicKeyTrustManager implements X509TrustManager {
 	public X509Certificate[] getAcceptedIssuers() {
 		throw new UnsupportedOperationException();
 	}
+
+	@Override
+	public String toString() {
+		return "PublicKeyTrustManager [trusted=" + trusted + "]";
+	}
+
 }
