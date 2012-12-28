@@ -15,6 +15,12 @@
     <dependencies>
         <dependency>
             <groupId>org.platformlayer</groupId>
+            <artifactId>billing-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.platformlayer</groupId>
             <artifactId>gwt-shared</artifactId>
         </dependency>
 
@@ -56,10 +62,16 @@
             <!-- It's just easier to pull in TestNG for compile scope -->
             <scope>compile</scope>
         </dependency>
+        
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
             <version>2.0.1</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
         </dependency>
     </dependencies>
 </project>

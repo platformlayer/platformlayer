@@ -50,7 +50,7 @@
                 <exclude>net.iharder:base64:*</exclude>
 
                 <exclude>org.platformlayer:billing-client:*</exclude>
-                <exclude>org.platformlayer:billing-server:*</exclude>
+                <exclude>org.platformlayer:billing-shared:*</exclude>
 
                 <exclude>org.hibernate.javax.persistence:*</exclude>
                 <!-- aopalliance-1.0.jar base64-2.3.8.jar hibernate-jpa-2.0-api-1.0.1.Final.jar -->

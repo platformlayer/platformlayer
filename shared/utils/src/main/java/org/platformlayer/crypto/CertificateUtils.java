@@ -16,12 +16,12 @@ import javax.security.auth.x500.X500Principal;
 
 import org.bouncycastle.openssl.PEMReader;
 import org.bouncycastle.openssl.PEMWriter;
-import org.platformlayer.IoUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fathomdb.crypto.CertificateAndKey;
 import com.fathomdb.crypto.KeyStoreUtils;
+import com.fathomdb.io.IoUtils;
 import com.google.common.collect.Lists;
 
 public class CertificateUtils {

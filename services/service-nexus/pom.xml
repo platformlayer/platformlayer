@@ -17,5 +17,11 @@
             <artifactId>service-base</artifactId>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.platformlayer</groupId>
+            <artifactId>service-jetty</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>

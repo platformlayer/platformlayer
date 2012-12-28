@@ -22,7 +22,6 @@ import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fathomdb.Utf8;
 import com.google.common.base.Charsets;
 
 /**
@@ -276,15 +275,6 @@ public class IoUtils {
 		FileInputStream in = new FileInputStream(file);
 		try {
 			return readAllBinary(in);
-		} finally {
-			IoUtils.safeClose(in);
-		}
-	}
-
-	public static String readAll(File file) throws IOException {
-		BufferedReader in = new BufferedReader(Utf8.openFile(file));
-		try {
-			return readAll(in);
 		} finally {
 			IoUtils.safeClose(in);
 		}

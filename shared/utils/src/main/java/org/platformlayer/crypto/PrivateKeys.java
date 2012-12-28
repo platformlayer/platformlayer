@@ -7,7 +7,8 @@ import java.security.KeyPair;
 import java.security.PrivateKey;
 
 import org.bouncycastle.openssl.PEMReader;
-import org.platformlayer.IoUtils;
+
+import com.fathomdb.io.IoUtils;
 
 public class PrivateKeys {
 	public static PrivateKey fromPem(String data) {

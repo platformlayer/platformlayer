@@ -20,6 +20,12 @@
 
         <dependency>
             <groupId>org.platformlayer</groupId>
+            <artifactId>service-networks</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.platformlayer</groupId>
             <artifactId>service-mysql</artifactId>
             <scope>provided</scope>
         </dependency>
