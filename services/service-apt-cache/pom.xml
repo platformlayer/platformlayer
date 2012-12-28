@@ -21,6 +21,7 @@
         <dependency>
             <groupId>org.platformlayer</groupId>
             <artifactId>service-base</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <!-- TestNG -->

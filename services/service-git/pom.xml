@@ -15,12 +15,14 @@
         <dependency>
             <groupId>org.platformlayer</groupId>
             <artifactId>service-base</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <!-- We use OpenLDAP for authentication -->
         <dependency>
             <groupId>org.platformlayer</groupId>
             <artifactId>service-openldap</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>

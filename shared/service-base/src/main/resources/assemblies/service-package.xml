@@ -48,12 +48,30 @@
                 <exclude>aopalliance:aopalliance:*</exclude>
 
                 <exclude>net.iharder:base64:*</exclude>
-                
+
                 <exclude>org.platformlayer:billing-client:*</exclude>
                 <exclude>org.platformlayer:billing-server:*</exclude>
 
                 <exclude>org.hibernate.javax.persistence:*</exclude>
                 <!-- aopalliance-1.0.jar base64-2.3.8.jar hibernate-jpa-2.0-api-1.0.1.Final.jar -->
+
+                <exclude>org.apache.httpcomponents:httpclient:*</exclude>
+                <exclude>org.apache.httpcomponents:httpcore:*</exclude>
+                <exclude>com.google.protobuf:protobuf-java:*</exclude>
+
+                <exclude>commons-codec:commons-codec:*</exclude>
+                <exclude>com.sun.jersey:jersey-core:*</exclude>
+                <exclude>com.sun.jersey:jersey-client:*</exclude>
+                <exclude>com.sun.jersey:jersey-json:*</exclude>
+                <exclude>org.codehaus.jettison:jettison:*</exclude>
+                <exclude>javax.xml.bind:jaxb-api:*</exclude>
+                <exclude>javax.xml.stream:stax-api:*</exclude>
+                <exclude>stax:stax-api:*</exclude>
+                <exclude>javax.activation:activation:*</exclude>
+                <exclude>org.codehaus.jackson:jackson-core-asl:*</exclude>
+                <exclude>org.codehaus.jackson:jackson-mapper-asl:*</exclude>
+                <exclude>org.codehaus.jackson:jackson-jaxrs:*</exclude>
+                <exclude>org.codehaus.jackson:jackson-xc:*</exclude>
             </excludes>
         </dependencySet>
     </dependencySets>

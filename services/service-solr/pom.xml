@@ -15,12 +15,14 @@
         <dependency>
             <groupId>org.platformlayer</groupId>
             <artifactId>service-base</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <!-- We use Jetty for hosting SOLR -->
         <dependency>
             <groupId>org.platformlayer</groupId>
             <artifactId>service-jetty</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <!-- TestNG -->
@@ -29,6 +31,7 @@
             <artifactId>testng</artifactId>
             <scope>test</scope>
         </dependency>
+        
         <dependency>
             <groupId>org.apache.solr</groupId>
             <artifactId>solr-solrj</artifactId>

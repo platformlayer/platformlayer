@@ -14,33 +14,14 @@
     <dependencies>
         <dependency>
             <groupId>org.platformlayer</groupId>
-            <artifactId>platformlayer-xaas-core</artifactId>
-        </dependency>
-        
-         <dependency>
-            <groupId>org.platformlayer</groupId>
-            <artifactId>service-networks</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.platformlayer</groupId>
-            <artifactId>platformlayer-ops-ssh</artifactId>
+            <artifactId>service-base</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.platformlayer</groupId>
             <artifactId>service-mysql</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.platformlayer</groupId>
-            <artifactId>platformlayer-api</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>
