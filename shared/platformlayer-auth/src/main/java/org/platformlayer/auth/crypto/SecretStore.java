@@ -16,7 +16,6 @@ import java.util.Arrays;
 
 import javax.crypto.SecretKey;
 
-import org.platformlayer.IoUtils;
 import org.platformlayer.auth.ProjectInfo;
 import org.platformlayer.auth.UserEntity;
 import org.platformlayer.crypto.CryptoUtils;
@@ -29,6 +28,8 @@ import org.slf4j.LoggerFactory;
 import com.fathomdb.crypto.CryptoKey;
 import com.fathomdb.crypto.FathomdbCrypto;
 import com.fathomdb.hash.Md5Hash;
+import com.fathomdb.io.IoUtils;
+import com.google.common.io.ByteStreams;
 
 public class SecretStore {
 	private static final Logger log = LoggerFactory.getLogger(SecretStore.class);
@@ -251,7 +252,7 @@ public class SecretStore {
 	private static byte[] readArray(DataInputStream dis) throws IOException {
 		int length = readEncoded(dis);
 		byte[] array = new byte[length];
-		IoUtils.readFully(dis, array, 0, length);
+		ByteStreams.readFully(dis, array, 0, length);
 		return array;
 	}
 

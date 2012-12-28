@@ -13,9 +13,10 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import org.platformlayer.IoUtils;
 import org.platformlayer.metrics.model.MetricDataSource;
 import org.platformlayer.web.ResourceBase;
+
+import com.fathomdb.io.IoUtils;
 
 @Singleton
 @Produces({ ResourceBase.JSON, ResourceBase.XML })

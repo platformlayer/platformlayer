@@ -42,6 +42,7 @@ import com.fathomdb.properties.PropertyUtils;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.io.Closeables;
 
 public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 	public static final String SERVICE_PLATFORMLAYER = "platformlayer";
@@ -409,7 +410,7 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 		} catch (IOException e) {
 			throw new PlatformLayerClientException("Error parsing returned data", e);
 		} finally {
-			IoUtils.safeClose(response);
+			Closeables.closeQuietly(response);
 		}
 		return dataStream;
 	}

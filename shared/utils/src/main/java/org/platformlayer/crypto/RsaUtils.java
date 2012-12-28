@@ -16,7 +16,8 @@ import java.security.spec.X509EncodedKeySpec;
 import javax.crypto.Cipher;
 
 import org.platformlayer.ExceptionUtils;
-import org.platformlayer.IoUtils;
+
+import com.fathomdb.io.IoUtils;
 
 public class RsaUtils {
 	private static final String ALGORITHM = "RSA";

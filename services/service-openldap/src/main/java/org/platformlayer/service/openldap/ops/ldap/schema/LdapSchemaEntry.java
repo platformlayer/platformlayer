@@ -2,7 +2,6 @@ package org.platformlayer.service.openldap.ops.ldap.schema;
 
 import java.io.IOException;
 
-import org.platformlayer.IoUtils;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.ldap.LdapAttributes;
 import org.platformlayer.ops.ldap.LdapDN;
@@ -10,6 +9,7 @@ import org.platformlayer.service.openldap.ops.ldap.LdapEntry;
 import org.platformlayer.service.openldap.ops.ldap.LdifRecord;
 import org.platformlayer.service.openldap.ops.ldap.OpenLdapServer;
 
+import com.fathomdb.io.IoUtils;
 import com.google.common.collect.Iterables;
 
 public class LdapSchemaEntry extends LdapEntry {

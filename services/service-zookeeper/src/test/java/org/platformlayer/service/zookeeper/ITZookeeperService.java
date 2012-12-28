@@ -4,12 +4,13 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
-import org.platformlayer.IoUtils;
 import org.platformlayer.service.zookeeper.model.ZookeeperCluster;
 import org.platformlayer.tests.PlatformLayerApiTest;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import com.fathomdb.io.IoUtils;
 
 public class ITZookeeperService extends PlatformLayerApiTest {
 

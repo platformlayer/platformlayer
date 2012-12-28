@@ -10,10 +10,10 @@ import java.io.StringReader;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.UnmarshalException;
 
-import org.platformlayer.IoUtils;
 import org.platformlayer.xml.JaxbHelper;
 
 import com.fathomdb.Casts;
+import com.fathomdb.io.IoUtils;
 
 public class CloneHelpers {
 	public static <T> T cloneViaSerialization(T o) {

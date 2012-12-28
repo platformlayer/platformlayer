@@ -11,7 +11,6 @@ import javax.crypto.interfaces.PBEKey;
 import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
 
-import org.platformlayer.IoUtils;
 import org.platformlayer.auth.services.TokenInfo;
 import org.platformlayer.auth.services.TokenService;
 import org.platformlayer.crypto.CryptoUtils;
@@ -21,6 +20,7 @@ import org.platformlayer.metrics.Instrumented;
 import com.fathomdb.Configuration;
 import com.fathomdb.Utf8;
 import com.fathomdb.crypto.KeyDerivationFunctions;
+import com.google.common.io.ByteStreams;
 
 @Instrumented
 public class SharedSecretTokenService implements TokenService {
@@ -131,7 +131,7 @@ public class SharedSecretTokenService implements TokenService {
 		length--;
 
 		byte[] data = new byte[length];
-		IoUtils.readFully(is, data, 0, length);
+		ByteStreams.readFully(is, data, 0, length);
 		return data;
 	}
 

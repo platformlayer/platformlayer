@@ -5,9 +5,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.platformlayer.IoUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fathomdb.io.IoUtils;
 
 public class JdbcUtils {
 	static final Logger log = LoggerFactory.getLogger(IoUtils.class);

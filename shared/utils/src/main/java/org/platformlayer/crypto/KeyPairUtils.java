@@ -9,8 +9,9 @@ import java.security.NoSuchAlgorithmException;
 
 import org.bouncycastle.openssl.PEMReader;
 import org.bouncycastle.openssl.PEMWriter;
-import org.platformlayer.IoUtils;
 import org.platformlayer.ops.OpsException;
+
+import com.fathomdb.io.IoUtils;
 
 public class KeyPairUtils {
 

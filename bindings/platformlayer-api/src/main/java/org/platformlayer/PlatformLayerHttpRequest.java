@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fathomdb.Casts;
+import com.fathomdb.io.IoUtils;
 
 class PlatformLayerHttpRequest implements Closeable {
 	private static final Logger log = LoggerFactory.getLogger(PlatformLayerHttpRequest.class);

@@ -6,13 +6,13 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.log4j.Logger;
-import org.platformlayer.IoUtils;
 import org.platformlayer.crypto.CryptoUtils;
 import org.platformlayer.ops.FileUpload;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 
 import com.fathomdb.hash.Md5Hash;
+import com.fathomdb.io.IoUtils;
 
 public abstract class SyntheticFile extends ManagedFile {
 	static final Logger log = Logger.getLogger(SyntheticFile.class);

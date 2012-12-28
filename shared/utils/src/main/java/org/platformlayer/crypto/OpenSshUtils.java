@@ -14,11 +14,10 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
 
-import org.platformlayer.IoUtils;
-
 import com.fathomdb.Utf8;
 import com.fathomdb.hash.Md5Hash;
 import com.google.common.base.Strings;
+import com.google.common.io.ByteStreams;
 import com.google.common.io.Closeables;
 
 public class OpenSshUtils {
@@ -67,7 +66,7 @@ public class OpenSshUtils {
 				throw new IllegalStateException();
 			}
 			byte[] buffer = new byte[(int) length];
-			IoUtils.readFully(is, buffer, 0, (int) length);
+			ByteStreams.readFully(is, buffer, 0, (int) length);
 			return buffer;
 		}
 

@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
+import com.fathomdb.io.IoUtils;
 
 public class ResourceUtils {
 	public static String get(Class<?> contextClass, String resourceName) throws IOException {

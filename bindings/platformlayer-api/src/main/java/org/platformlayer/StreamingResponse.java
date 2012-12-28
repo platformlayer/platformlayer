@@ -6,6 +6,8 @@ import java.io.InputStream;
 
 import org.platformlayer.http.HttpResponse;
 
+import com.google.common.io.Closeables;
+
 public class StreamingResponse implements Closeable {
 
 	private final InputStream responseStream;
@@ -18,8 +20,8 @@ public class StreamingResponse implements Closeable {
 
 	@Override
 	public void close() throws IOException {
-		IoUtils.safeClose(responseStream);
-		IoUtils.safeClose(response);
+		Closeables.closeQuietly(responseStream);
+		Closeables.closeQuietly(response);
 	}
 
 	public InputStream getResponseStream() {

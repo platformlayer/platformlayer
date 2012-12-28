@@ -11,11 +11,11 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
-import org.platformlayer.IoUtils;
 import org.platformlayer.ops.OpsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.io.IoUtils;
 import com.google.common.collect.Lists;
 
 public class CertificateReader {

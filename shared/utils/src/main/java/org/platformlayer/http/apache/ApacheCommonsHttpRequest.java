@@ -17,13 +17,13 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.util.EntityUtils;
-import org.platformlayer.IoUtils;
 import org.platformlayer.http.HttpRequest;
 import org.platformlayer.http.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fathomdb.io.ByteSource;
+import com.fathomdb.io.IoUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
