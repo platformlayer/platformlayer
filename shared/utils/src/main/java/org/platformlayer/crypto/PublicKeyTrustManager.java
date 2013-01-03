@@ -18,9 +18,16 @@ public class PublicKeyTrustManager implements X509TrustManager {
 
 	private final Set<String> trusted;
 
-	public PublicKeyTrustManager(Iterable<String> keys) {
+	private final boolean checkAll;
+
+	public PublicKeyTrustManager(Iterable<String> keys, boolean checkAll) {
+		this.checkAll = checkAll;
 		this.trusted = Sets.newHashSet();
 		Iterables.addAll(this.trusted, keys);
+	}
+
+	public PublicKeyTrustManager(Iterable<String> keys) {
+		this(keys, false);
 	}
 
 	@Override
@@ -42,6 +49,11 @@ public class PublicKeyTrustManager implements X509TrustManager {
 			if (!trusted.contains(sigString)) {
 				log.warn("Certificate is not in trusted list (" + sigString + ")");
 				throw new CertificateException("Certificate is not in trusted list (" + sigString + ")");
+			}
+
+			if (!checkAll) {
+				log.debug("First certificate matched key; checkAll is false: done!");
+				break;
 			}
 		}
 	}
