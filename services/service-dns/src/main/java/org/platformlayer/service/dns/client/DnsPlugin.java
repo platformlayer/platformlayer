@@ -4,6 +4,7 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.platformlayer.gwt.client.ApplicationState;
+import org.platformlayer.gwt.client.ExternalPlugin;
 import org.platformlayer.gwt.client.places.ShellPlace;
 import org.platformlayer.service.dns.client.dnsrecord.DnsRecordActivity;
 import org.platformlayer.service.dns.client.dnsrecord.DnsRecordPlace;
@@ -13,24 +14,22 @@ import org.platformlayer.service.dns.client.home.HomeActivity;
 import org.platformlayer.service.dns.client.home.HomePlace;
 import org.platformlayer.service.dns.client.splash.SplashPanel;
 import org.platformlayer.ui.shared.client.plugin.PlugInProvider;
-import org.platformlayer.ui.shared.client.plugin.PlugInRegistry;
 import org.platformlayer.ui.shared.client.plugin.PlugInView;
 import org.platformlayer.ui.shared.client.plugin.PluginItem;
-import org.platformlayer.ui.shared.client.plugin.PluginProviderBase;
 
 import com.google.gwt.activity.shared.Activity;
 import com.google.gwt.place.shared.Place;
 import com.google.inject.Inject;
 
 @Singleton
-public class DnsPlugin extends PluginProviderBase {
+public class DnsPlugin extends ExternalPlugin {
 	public static final String KEY = "dns";
 
 	public static final String SERVICE_TYPE = "dns";
 	public static final String ITEM_TYPE_DNSRECORD = "dnsRecord";
 
 	public DnsPlugin() {
-		super(KEY);
+		super(KEY, KEY);
 
 		addItem(new PluginItem(ITEM_TYPE_DNSRECORD, "Record", DnsRecordListPlace.KEY));
 	}
@@ -43,13 +42,14 @@ public class DnsPlugin extends PluginProviderBase {
 
 	static DnsPlugin INSTANCE;
 
+	@Override
 	public void register() {
 		if (INSTANCE != null) {
 			throw new IllegalStateException();
 		}
 		INSTANCE = this;
 
-		PlugInRegistry.add(KEY, this);
+		super.register();
 	}
 
 	@Override
