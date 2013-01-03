@@ -51,6 +51,8 @@ public class PlatformLayerInstanceModel extends StandardTemplateData {
 	public Command getCommand() {
 		JavaCommandBuilder command = new JavaCommandBuilder();
 		command.addClasspathFolder(getInstallDir());
+		command.addClasspathFolder(getServicesPath());
+
 		command.setMainClass("org.platformlayer.xaas.web.StandaloneXaasWebserver");
 
 		command.addDefine("conf", getConfigurationFile());
@@ -62,6 +64,10 @@ public class PlatformLayerInstanceModel extends StandardTemplateData {
 
 	public File getRootWar() {
 		return new File(getWarsPath(), "root.war");
+	}
+
+	public File getServicesPath() {
+		return new File(getInstallDir(), "services");
 	}
 
 	@Override
