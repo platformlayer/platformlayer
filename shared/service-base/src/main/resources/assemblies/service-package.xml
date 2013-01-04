@@ -78,6 +78,47 @@
                 <exclude>org.codehaus.jackson:jackson-mapper-asl:*</exclude>
                 <exclude>org.codehaus.jackson:jackson-jaxrs:*</exclude>
                 <exclude>org.codehaus.jackson:jackson-xc:*</exclude>
+                
+                <exclude>*:gwtquery:*</exclude>
+                <exclude>*:gwt-shared:*</exclude>
+                <exclude>*:guava-gwt:*</exclude>
+                <exclude>*:gwt-platformlayer-shell:*</exclude>
+                <exclude>*:gwt-user:*</exclude>
+                <exclude>*:validation-api:*</exclude>
+                <exclude>*:json:*</exclude>
+                <exclude>*:gin:*</exclude>
+                <exclude>*:guice-assistedinject:*</exclude>
+                <exclude>*:gwt-servlet:*</exclude>
+                <exclude>*:gwt-core-model:*</exclude>
+                <exclude>*:gwt-utils:*</exclude>
+                <exclude>*:platformlayer-xaas-core:*</exclude>
+                <exclude>*:platformlayer-api:*</exclude>
+                <exclude>*:platformlayer-auth-client:*</exclude>
+                <exclude>*:platformlayer-auth-common:*</exclude>
+                <exclude>*:keystone-client:*</exclude>
+                <exclude>*:platformlayer-auth:*</exclude>
+                <exclude>*:keystone-api:*</exclude>
+                <exclude>*:commons-dbcp:*</exclude>
+                <exclude>*:commons-pool:*</exclude>
+                <exclude>*:postgresql:*</exclude>
+                <exclude>*:jersey-server:*</exclude>
+                <exclude>*:asm:*</exclude>
+                <exclude>*:platformlayer-ops-core:*</exclude>
+                <exclude>*:platformlayer-auth-system:*</exclude>
+                <exclude>*:freemarker:*</exclude>
+                <exclude>*:bcprov-jdk15on:*</exclude>
+                <exclude>*:logback-classic:*</exclude>
+                <exclude>*:logback-core:*</exclude>
+                <exclude>*:log4j-over-slf4j:*</exclude>
+                <exclude>*:commons-logging:*</exclude>
+                <exclude>*:bcpkix-jdk15on:*</exclude>
+                <exclude>*:platformlayer-ops-ssh:*</exclude>
+                <exclude>*:sshd-core:*</exclude>
+                <exclude>*:mina-core:*</exclude>
+                <exclude>*:jzlib:*</exclude>
+                <exclude>*:jsr305:*</exclude>
+                <exclude>*:hibernate-validator:*</exclude>
+                <exclude>*:jboss-logging:*</exclude>
             </excludes>
         </dependencySet>
     </dependencySets>

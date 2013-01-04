@@ -17,33 +17,33 @@
             <groupId>org.platformlayer</groupId>
             <artifactId>billing-client</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.platformlayer</groupId>
             <artifactId>gwt-shared</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.platformlayer</groupId>
             <artifactId>gwt-platformlayer-shell</artifactId>
             <version>1.0-SNAPSHOT</version>
-            <scope>provided</scope>
         </dependency>
 
         <!-- Google Web Toolkit (GWT) -->
         <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-user</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.platformlayer</groupId>
             <artifactId>platformlayer-xaas-core</artifactId>
-            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.platformlayer</groupId>
+            <artifactId>platformlayer-ops-core</artifactId>
         </dependency>
 
         <dependency>
@@ -54,20 +54,17 @@
         <dependency>
             <groupId>org.platformlayer</groupId>
             <artifactId>platformlayer-ops-ssh</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.platformlayer</groupId>
             <artifactId>codegen-annotations</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -81,13 +78,11 @@
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
             <version>2.0.1</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>
