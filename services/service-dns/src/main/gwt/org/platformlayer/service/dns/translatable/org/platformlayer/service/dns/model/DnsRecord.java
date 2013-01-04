@@ -11,18 +11,26 @@ public class DnsRecord extends org.platformlayer.core.model.ItemBaseJs {
 	// TODO: JSNI cannot map 'SecretInfo secret'
 
     
-	public final native java.lang.String getDnsName()
-	/*-{ return this.dnsName; }-*/;
+    public final String getDnsName() {
+	return org.platformlayer.core.model.JsHelpers.getString0(this, "dnsName");
+}
+
 	
-	public final native void setDnsName(java.lang.String newValue)
-	/*-{ this.dnsName = newValue; }-*/;
+    public final void setDnsName(String v) {
+	org.platformlayer.core.model.JsHelpers.set0(this, "dnsName", v);
+}
+
 
     
-	public final native java.lang.String getRecordType()
-	/*-{ return this.recordType; }-*/;
+    public final String getRecordType() {
+	return org.platformlayer.core.model.JsHelpers.getString0(this, "recordType");
+}
+
 	
-	public final native void setRecordType(java.lang.String newValue)
-	/*-{ this.recordType = newValue; }-*/;
+    public final void setRecordType(String v) {
+	org.platformlayer.core.model.JsHelpers.set0(this, "recordType", v);
+}
+
 
     
     public final java.util.List<java.lang.String> getAddress() {

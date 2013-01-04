@@ -11,11 +11,15 @@ public class DnsZone extends org.platformlayer.core.model.ItemBaseJs {
 	// TODO: JSNI cannot map 'SecretInfo secret'
 
     
-	public final native java.lang.String getDnsName()
-	/*-{ return this.dnsName; }-*/;
+    public final String getDnsName() {
+	return org.platformlayer.core.model.JsHelpers.getString0(this, "dnsName");
+}
+
 	
-	public final native void setDnsName(java.lang.String newValue)
-	/*-{ this.dnsName = newValue; }-*/;
+    public final void setDnsName(String v) {
+	org.platformlayer.core.model.JsHelpers.set0(this, "dnsName", v);
+}
+
 
 
 	public static final DnsZone create() {
