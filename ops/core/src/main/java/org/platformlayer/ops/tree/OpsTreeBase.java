@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.platformlayer.ops.BindingHelper;
 import org.platformlayer.ops.BindingScope;
 import org.platformlayer.ops.CustomRecursor;
 import org.platformlayer.ops.OperationRecursor;
@@ -63,11 +62,7 @@ public abstract class OpsTreeBase implements OpsTree, CustomRecursor {
 	}
 
 	public static <T> T injected(Class<T> clazz) {
-		T item = OpsContext.get().getInjector().getInstance(clazz);
-
-		BindingHelper.INSTANCE.bind(item);
-
-		return item;
+		return OpsContext.injected(clazz);
 	}
 
 	protected abstract void addChildren() throws OpsException;

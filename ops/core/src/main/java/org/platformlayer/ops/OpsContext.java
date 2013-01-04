@@ -268,6 +268,22 @@ public class OpsContext implements Closeable {
 		return false;
 	}
 
+	public static <T> T injected(Class<T> clazz, Object... preboundItems) {
+		Injector injector = OpsContext.get().getInjector();
+
+		Map<Class<?>, Object> prebound = Maps.newHashMap();
+		for (Object preboundItem : preboundItems) {
+			prebound.put(preboundItem.getClass(), preboundItem);
+		}
+
+		BindingHelper helper = new BindingHelper(injector, prebound);
+
+		T item = injector.getInstance(clazz);
+		helper.bind(item);
+
+		return item;
+	}
+
 	// public OpsProject getProject() {
 	// return auth.getProject();
 	// }
