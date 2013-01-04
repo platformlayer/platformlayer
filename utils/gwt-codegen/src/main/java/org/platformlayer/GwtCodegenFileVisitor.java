@@ -55,6 +55,7 @@ public class GwtCodegenFileVisitor extends FileVisitor {
 
 		try {
 			log.info("Processing " + fullClassName);
+
 			Class<?> clazz = classInspection.loadClass(fullClassName);
 
 			if (classInspection.findAnnotation(clazz, "org.platformlayer.codegen.GwtModel") == null) {
@@ -74,9 +75,9 @@ public class GwtCodegenFileVisitor extends FileVisitor {
 			}
 			// getLog().info(" => " + converted);
 		} catch (ClassNotFoundException e) {
-			log.warn("Error loading class: " + fullClassName, e);
+			log.warn("Error loading class: " + fullClassName + "; dependent class not found: " + e.getMessage());
 		} catch (NoClassDefFoundError e) {
-			log.warn("Error loading class: " + fullClassName, e);
+			log.warn("Error loading class: " + fullClassName + "; dependent class not found: " + e.getMessage());
 		}
 	}
 
@@ -284,6 +285,8 @@ public class GwtCodegenFileVisitor extends FileVisitor {
 						set += "public final void set{beanName}(String v) {\n";
 						set += "	org.platformlayer.core.model.JsHelpers.set0(this, \"{fieldName}\", v);\n";
 						set += "}\n";
+
+						mapped = "HACK";
 					} else {
 						boolean gwtSafe = false;
 						for (Annotation annotation : type.getAnnotations()) {
