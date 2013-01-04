@@ -274,6 +274,16 @@ public class GwtCodegenFileVisitor extends FileVisitor {
 								set = set.replace("{itemClass}", itemClass.getName());
 							}
 						}
+					} else if (type.equals(String.class)) {
+						get = "";
+						get += "public final String get{beanName}() {\n";
+						get += "	return org.platformlayer.core.model.JsHelpers.getString0(this, \"{fieldName}\");\n";
+						get += "}\n";
+
+						set = "";
+						set += "public final void set{beanName}(String v) {\n";
+						set += "	org.platformlayer.core.model.JsHelpers.set0(this, \"{fieldName}\", v);\n";
+						set += "}\n";
 					} else {
 						boolean gwtSafe = false;
 						for (Annotation annotation : type.getAnnotations()) {
@@ -378,9 +388,6 @@ public class GwtCodegenFileVisitor extends FileVisitor {
 
 	private boolean isNativeType(Class<?> type) {
 		if (type.isPrimitive()) {
-			return true;
-		}
-		if (type == String.class) {
 			return true;
 		}
 
