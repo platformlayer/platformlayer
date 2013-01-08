@@ -19,9 +19,9 @@ public class JobDataFormatter extends SimpleFormatter<JobData> {
 	public void visit(JobData o, OutputSink sink) throws IOException {
 		LinkedHashMap<String, Object> values = Maps.newLinkedHashMap();
 
-		values.put("key", o.key);
+		values.put("id", o.key.getItemIdString());
 		values.put("target", o.targetId);
-		values.put("action", o.action);
+		values.put("action", o.action.getType());
 		// values.put("state", o.state);
 
 		sink.outputRow(values);

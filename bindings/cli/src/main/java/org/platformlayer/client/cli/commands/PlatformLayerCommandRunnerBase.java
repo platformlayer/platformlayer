@@ -9,6 +9,7 @@ import org.platformlayer.ids.FederationKey;
 import org.platformlayer.ids.ItemType;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceType;
+import org.platformlayer.jobs.model.JobDataList;
 
 import com.fathomdb.cli.commands.CommandRunnerBase;
 import com.fathomdb.cli.commands.CommandSpecifier;
@@ -30,6 +31,15 @@ public abstract class PlatformLayerCommandRunnerBase extends CommandRunnerBase {
 	@Override
 	protected PlatformLayerCliContext getContext() {
 		return (PlatformLayerCliContext) super.getContext();
+	}
+
+	@Override
+	public Object convertToOutputFormat(Object results) {
+		if (results instanceof JobDataList) {
+			return ((JobDataList) results).getJobs();
+		}
+
+		return results;
 	}
 
 	protected static String getServiceTypeFromItemType(PlatformLayerClient client, String itemType)
