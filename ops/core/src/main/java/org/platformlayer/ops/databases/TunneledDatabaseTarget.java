@@ -135,7 +135,7 @@ public class TunneledDatabaseTarget extends DatabaseTarget {
 			// return;
 			// }
 
-			if (Objects.equal(sqlState, "WHATISTHISCODE")) {
+			if (Objects.equal(sqlState, "3D000")) {
 				log.info("Database does not already exist");
 			} else {
 				// if (Objects.equal(sqlState, "42P04")) {
