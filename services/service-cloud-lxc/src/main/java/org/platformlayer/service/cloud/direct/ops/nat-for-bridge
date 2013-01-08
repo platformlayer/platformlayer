@@ -3,19 +3,23 @@
 
 set -e
 
-# Only for our interface
-if [ "$IFACE" != ${publicInterface} ]; then
-        exit 0
-fi
+# Only for bridge interface
 
-# Only run from ifup.
+echo "nat-for-bridge[$MODE][$IFACE][$ADDRFAM]" >> /var/log/platformlayer
+
 if [ "$MODE" != start ]; then
-        exit 0
+	echo "MODE != start; exiting"
+	exit 0
 fi
 
-# Only for IPV4
-if [ "$ADDRFAM" != inet ]; then
-        exit 0
+if [ "$IFACE" != ${bridgeInterface} ]; then
+	echo "IFACE != --all; exiting"
+	exit 0
+fi
+
+if [ "$ADDRFAM" != "inet" ]; then
+	echo "ADDRFAM != --meta; exiting"
+	exit 0
 fi
 
 

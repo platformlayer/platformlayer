@@ -2,6 +2,26 @@
 
 set -e
 
+echo "iptables-lockdown[$MODE][$IFACE][$ADDRFAM]" >> /var/log/platformlayer
+
+# Only run from ifup.
+if [ "$MODE" != start ]; then
+	echo "Not run from ifup; exiting"
+	exit 0
+fi
+
+
+if [ "$IFACE" != "--all" ]; then
+	echo "IFACE != --all; exiting"
+	exit 0
+fi
+
+if [ "$ADDRFAM" != "meta" ]; then
+	echo "ADDRFAM != --meta; exiting"
+	exit 0
+fi
+
+
 iptables-restore <<EOF
 # By default, we lock down everything but SSH & ICMP & IPV6
 *filter

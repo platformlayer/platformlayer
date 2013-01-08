@@ -3,6 +3,8 @@
 
 set -e
 
+echo "ipv6[$MODE][$IFACE][$ADDRFAM]" >> /var/log/platformlayer
+
 # Only run from ifup.
 if [ "$MODE" != start ]; then
         echo "Not run from ifup; exiting"
