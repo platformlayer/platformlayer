@@ -40,23 +40,29 @@ public class PutItem extends PlatformLayerCommandRunnerBase {
 		if (parent != null) {
 			parentKey = parent.resolve(getContext());
 
-			JSONArray jsonTags = null;
-			if (jsonObject.has("core.tags")) {
-				jsonTags = jsonObject.getJSONArray("core.tags");
+			JSONObject tagsObject = null;
+			if (jsonObject.has("tags")) {
+				tagsObject = jsonObject.getJSONObject("tags");
 			} else {
-				jsonTags = new JSONArray();
-				jsonObject.put("core.tags", jsonTags);
+				tagsObject = new JSONObject();
+				jsonObject.put("tags", tagsObject);
 			}
 
 			Tag parentTag = Tag.buildParentTag(parentKey);
 
 			JSONObject jsonTag = new JSONObject();
-			jsonTag.put("core.key", parentTag.getKey());
-			jsonTag.put("core.value", parentTag.getValue());
-			JSONObject jsonTagWrapper = new JSONObject();
-			jsonTagWrapper.put("core.tags", jsonTag);
-			jsonTags.put(jsonTagWrapper);
+			jsonTag.put("key", parentTag.getKey());
+			jsonTag.put("value", parentTag.getValue());
 
+			JSONArray tagsArray;
+			if (tagsObject.has("tags")) {
+				tagsArray = tagsObject.getJSONArray("tags");
+			} else {
+				tagsArray = new JSONArray();
+				tagsObject.put("tags", tagsArray);
+			}
+
+			tagsArray.put(jsonTag);
 		}
 
 		PlatformLayerKey key = path.resolve(getContext());
