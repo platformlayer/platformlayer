@@ -92,6 +92,15 @@ public class ProviderHelper {
 			modelClasses.put(model.getJavaClass(), model);
 		}
 
+		{
+			Object parentItem = platformLayer.getItem(parent);
+			ModelClass<?> modelClass = modelClasses.get(parentItem.getClass());
+
+			if (modelClass != null) {
+				providers.add(new ProviderOf<T>(modelClass, (ItemBase) parentItem));
+			}
+		}
+
 		for (UntypedItem untypedItem : platformLayer.listChildren(parent).getItems()) {
 			Object item = platformLayer.promoteToTyped(untypedItem);
 			ModelClass<?> modelClass = modelClasses.get(item.getClass());
