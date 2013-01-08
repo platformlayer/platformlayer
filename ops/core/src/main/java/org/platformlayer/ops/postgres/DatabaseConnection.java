@@ -21,7 +21,7 @@ import org.platformlayer.ops.tree.OpsTreeBase;
 public class DatabaseConnection extends OpsTreeBase implements CustomRecursor {
 	public static final int POSTGRES_PORT = 5432;
 
-	public PlatformLayerKey key;
+	public PlatformLayerKey serverKey;
 	public String username;
 	public Secret password;
 	public String databaseName;
@@ -35,9 +35,9 @@ public class DatabaseConnection extends OpsTreeBase implements CustomRecursor {
 	@Inject
 	ProviderHelper providers;
 
-	public static DatabaseConnection build(PlatformLayerKey key) throws OpsException {
+	public static DatabaseConnection build(PlatformLayerKey serverKey) throws OpsException {
 		DatabaseConnection db = injected(DatabaseConnection.class);
-		db.key = key;
+		db.serverKey = serverKey;
 		return db;
 	}
 
@@ -47,7 +47,7 @@ public class DatabaseConnection extends OpsTreeBase implements CustomRecursor {
 
 	@Override
 	public void doRecurseOperation() throws OpsException {
-		ItemBase server = platformLayer.getItem(key);
+		ItemBase server = platformLayer.getItem(serverKey);
 
 		Database database = providers.toInterface(server, Database.class);
 
