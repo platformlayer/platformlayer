@@ -8,12 +8,12 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 
 import com.google.common.collect.Lists;
 
 public class PlatformLayerServer {
-	static final Logger log = Logger.getLogger(PlatformLayerServer.class);
+	static final Logger log = LoggerFactory.getLogger(PlatformLayerServer.class);
 
 	private static URLClassLoader buildClassLoader(List<File> serviceDirs) {
 		List<URL> urls = new ArrayList<URL>();

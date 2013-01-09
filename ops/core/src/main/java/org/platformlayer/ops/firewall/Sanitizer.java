@@ -2,13 +2,13 @@ package org.platformlayer.ops.firewall;
 
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 
 import com.google.common.collect.Maps;
 
 public class Sanitizer {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(Sanitizer.class);
+	private static final Logger log = LoggerFactory.getLogger(Sanitizer.class);
 
 	private final Decision defaultDecision;
 	private final char blockChar;

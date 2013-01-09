@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.ManagedItemState;
@@ -23,7 +23,7 @@ import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
 public class ForEach {
-	static final Logger log = Logger.getLogger(ForEach.class);
+	static final Logger log = LoggerFactory.getLogger(ForEach.class);
 
 	@Inject
 	InstanceHelpers instances;

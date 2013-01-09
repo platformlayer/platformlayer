@@ -2,7 +2,6 @@ package org.platformlayer.service.platformlayer.ops.backend.db;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.InetAddressChooser;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
@@ -13,9 +12,12 @@ import org.platformlayer.ops.databases.Database;
 import org.platformlayer.ops.databases.DatabaseHelper;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.service.platformlayer.model.PlatformLayerDatabase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PlatformLayerDatabaseTemplate {
-	static final Logger log = Logger.getLogger(PlatformLayerDatabaseTemplate.class);
+
+	private static final Logger log = LoggerFactory.getLogger(PlatformLayerDatabaseTemplate.class);
 
 	public PlatformLayerDatabase getModel() {
 		PlatformLayerDatabase model = OpsContext.get().getInstance(PlatformLayerDatabase.class);

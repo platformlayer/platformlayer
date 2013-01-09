@@ -6,7 +6,7 @@ import java.util.concurrent.Callable;
 import javax.inject.Inject;
 import javax.ws.rs.WebApplicationException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.ApplicationMode;
 import org.platformlayer.CheckedCallable;
 import org.platformlayer.RepositoryException;
@@ -39,7 +39,7 @@ import com.fathomdb.io.IoUtils;
 import com.google.common.collect.Lists;
 
 public class OperationWorker implements Callable<Object> {
-	static final Logger log = Logger.getLogger(OperationWorker.class);
+	static final Logger log = LoggerFactory.getLogger(OperationWorker.class);
 
 	final OpsSystem opsSystem;
 

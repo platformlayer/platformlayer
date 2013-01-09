@@ -3,11 +3,9 @@ package org.platformlayer.service.redis.ops;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.filesystem.TemplatedFile;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
@@ -16,56 +14,59 @@ import org.platformlayer.ops.packages.PackageDependency;
 import org.platformlayer.ops.service.ManagedService;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.redis.model.RedisServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RedisServerController extends OpsTreeBase {
-    static final Logger log = Logger.getLogger(RedisServerController.class);
 
-    public static final int PORT = 6379;
+	private static final Logger log = LoggerFactory.getLogger(RedisServerController.class);
 
-    @Handler
-    public void handler() throws OpsException, IOException {
-    }
+	public static final int PORT = 6379;
 
-    @Override
-    protected void addChildren() throws OpsException {
-        RedisServer model = OpsContext.get().getInstance(RedisServer.class);
+	@Handler
+	public void handler() throws OpsException, IOException {
+	}
 
-        InstanceBuilder vm;
+	@Override
+	protected void addChildren() throws OpsException {
+		RedisServer model = OpsContext.get().getInstance(RedisServer.class);
 
-        {
-            vm = InstanceBuilder.build(model.dnsName, DiskImageRecipeBuilder.buildDiskImageRecipe(this));
+		InstanceBuilder vm;
 
-            // TODO: Memory _really_ needs to be configurable here!
-            vm.publicPorts.add(PORT);
+		{
+			vm = InstanceBuilder.build(model.dnsName, DiskImageRecipeBuilder.buildDiskImageRecipe(this));
 
-            vm.minimumMemoryMb = 1024;
+			// TODO: Memory _really_ needs to be configurable here!
+			vm.publicPorts.add(PORT);
 
-            vm.hostPolicy.allowRunInContainer = true;
-            addChild(vm);
-        }
+			vm.minimumMemoryMb = 1024;
 
-        vm.addChild(PackageDependency.build("redis-server"));
+			vm.hostPolicy.allowRunInContainer = true;
+			addChild(vm);
+		}
 
-        RedisTemplateModel template = injected(RedisTemplateModel.class);
+		vm.addChild(PackageDependency.build("redis-server"));
 
-        vm.addChild(TemplatedFile.build(template, new File("/etc/redis/redis.conf")).setFileMode("444"));
+		RedisTemplateModel template = injected(RedisTemplateModel.class);
 
-        // Collectd not restarting correctly (doesn't appear to be hostname problems??)
-        // instance.addChild(CollectdCollector.build());
+		vm.addChild(TemplatedFile.build(template, new File("/etc/redis/redis.conf")).setFileMode("444"));
 
-        {
-            PublicEndpoint endpoint = injected(PublicEndpoint.class);
-            // endpoint.network = null;
-            endpoint.publicPort = PORT;
-            endpoint.backendPort = PORT;
-            endpoint.dnsName = model.dnsName;
+		// Collectd not restarting correctly (doesn't appear to be hostname problems??)
+		// instance.addChild(CollectdCollector.build());
 
-            endpoint.tagItem = model.getKey();
-            endpoint.parentItem = model.getKey();
+		{
+			PublicEndpoint endpoint = injected(PublicEndpoint.class);
+			// endpoint.network = null;
+			endpoint.publicPort = PORT;
+			endpoint.backendPort = PORT;
+			endpoint.dnsName = model.dnsName;
 
-            vm.addChild(endpoint);
-        }
+			endpoint.tagItem = model.getKey();
+			endpoint.parentItem = model.getKey();
 
-        vm.addChild(ManagedService.build("redis-server"));
-    }
+			vm.addChild(endpoint);
+		}
+
+		vm.addChild(ManagedService.build("redis-server"));
+	}
 }

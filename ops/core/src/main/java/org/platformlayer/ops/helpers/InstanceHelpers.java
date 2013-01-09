@@ -6,7 +6,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.core.model.InstanceBase;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.ids.ServiceType;
@@ -22,7 +22,7 @@ import org.platformlayer.xaas.services.ModelClass;
 import org.platformlayer.xaas.services.ServiceProviderDictionary;
 
 public class InstanceHelpers {
-	static final Logger log = Logger.getLogger(InstanceHelpers.class);
+	static final Logger log = LoggerFactory.getLogger(InstanceHelpers.class);
 
 	@Inject
 	CloudContext cloud;

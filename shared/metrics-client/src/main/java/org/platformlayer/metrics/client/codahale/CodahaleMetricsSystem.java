@@ -14,7 +14,7 @@
 //import com.yammer.metrics.core.MetricsRegistry;
 //
 //public class CodahaleMetricsRegistry implements MetricRegistry {
-//	private static final Logger log = Logger.getLogger(CodahaleMetricsRegistry.class);
+//	private static final Logger log = LoggerFactory.getLogger(CodahaleMetricsRegistry.class);
 //
 //	@Inject
 //	Injector injector;

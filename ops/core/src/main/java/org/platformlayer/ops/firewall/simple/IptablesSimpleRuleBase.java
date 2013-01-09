@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
@@ -19,7 +19,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 
 public abstract class IptablesSimpleRuleBase extends OpsTreeBase {
-	static final Logger log = Logger.getLogger(IptablesSimpleRuleBase.class);
+	static final Logger log = LoggerFactory.getLogger(IptablesSimpleRuleBase.class);
 
 	public Transport transport;
 	public Protocol protocol;

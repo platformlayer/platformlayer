@@ -4,11 +4,9 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.firewall.Transport;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
@@ -19,9 +17,12 @@ import org.platformlayer.ops.vpn.IpsecForPort;
 import org.platformlayer.ops.vpn.IpsecInstall;
 import org.platformlayer.ops.vpn.IpsecPresharedKey;
 import org.platformlayer.service.zookeeper.model.ZookeeperServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ZookeeperServerController extends OpsTreeBase {
-	static final Logger log = Logger.getLogger(ZookeeperServerController.class);
+
+	private static final Logger log = LoggerFactory.getLogger(ZookeeperServerController.class);
 
 	@Inject
 	IpsecHelpers ipsec;

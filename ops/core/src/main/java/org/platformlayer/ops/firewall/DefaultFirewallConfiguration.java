@@ -1,11 +1,11 @@
 //package org.platformlayer.ops.firewall;
 //
-//import org.apache.log4j.Logger;
+//import org.slf4j.*;
 //import org.platformlayer.ops.OpsException;
 //import org.platformlayer.ops.firewall.FirewallRecord.Protocol;
 //
 //public class DefaultFirewallConfiguration {
-//    static final Logger log = Logger.getLogger(DefaultFirewallConfiguration.class);
+//    static final Logger log = LoggerFactory.getLogger(DefaultFirewallConfiguration.class);
 //
 //    public static void addDefaultConfiguration(FirewallConfiguration configuration) throws OpsException {
 //        // # Block any packets which are too short to be real

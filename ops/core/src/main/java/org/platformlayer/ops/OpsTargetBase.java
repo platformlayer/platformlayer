@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.ops.filesystem.FilesystemInfo;
 import org.platformlayer.ops.process.ProcessExecution;
 import org.platformlayer.ops.process.ProcessExecutionException;
@@ -18,7 +18,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public abstract class OpsTargetBase implements OpsTarget {
-	static final Logger log = Logger.getLogger(OpsTargetBase.class);
+	static final Logger log = LoggerFactory.getLogger(OpsTargetBase.class);
 
 	public OpsTargetBase() {
 	}

@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.EnumUtils;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.ops.Handler;
@@ -18,11 +17,14 @@ import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.networks.HasPorts;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.network.model.NetworkConnection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
 public class NetworkConnectionController extends OpsTreeBase {
-	static final Logger log = Logger.getLogger(NetworkConnectionController.class);
+
+	private static final Logger log = LoggerFactory.getLogger(NetworkConnectionController.class);
 
 	@Inject
 	OpsContext ops;

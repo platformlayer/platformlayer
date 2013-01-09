@@ -10,7 +10,6 @@ import java.util.concurrent.TimeoutException;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.EnumUtils;
 import org.platformlayer.ExceptionUtils;
 import org.platformlayer.ResourceUtils;
@@ -55,6 +54,8 @@ import org.platformlayer.service.imagefactory.model.DiskImageRecipe;
 import org.platformlayer.service.imagefactory.model.OperatingSystemRecipe;
 import org.platformlayer.service.imagefactory.model.Repository;
 import org.platformlayer.service.imagefactory.model.RepositoryKey;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
@@ -62,7 +63,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 public class DiskImageController {
-	static final Logger log = Logger.getLogger(DiskImageController.class);
+	private static final Logger log = LoggerFactory.getLogger(DiskImageController.class);
 
 	@Inject
 	CloudContext cloud;

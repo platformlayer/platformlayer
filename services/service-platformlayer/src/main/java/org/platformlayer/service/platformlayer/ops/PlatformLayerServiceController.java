@@ -25,7 +25,7 @@
 //import com.google.common.collect.Lists;
 //
 //public class PlatformLayerServiceController extends OpsTreeBase {
-//	static final Logger log = Logger.getLogger(PlatformLayerServiceController.class);
+//	static final Logger log = LoggerFactory.getLogger(PlatformLayerServiceController.class);
 //
 //	@Inject
 //	SoftwareRepositoryHelpers softwareRepository;

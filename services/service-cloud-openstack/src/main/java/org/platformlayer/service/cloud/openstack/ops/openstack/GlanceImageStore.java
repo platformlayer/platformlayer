@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openstack.client.OpenstackException;
@@ -22,13 +21,17 @@ import org.platformlayer.ops.images.CloudImage;
 import org.platformlayer.ops.images.ImageFormat;
 import org.platformlayer.ops.images.ImageStore;
 import org.platformlayer.ops.process.ProcessExecution;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class GlanceImageStore implements ImageStore {
-	static final Logger log = Logger.getLogger(GlanceImageStore.class);
+
+	private static final Logger log = LoggerFactory.getLogger(GlanceImageStore.class);
+
 	private final OpenstackImageClient openstackImageClient;
 
 	public GlanceImageStore(OpenstackImageClient openstackImageClient) {

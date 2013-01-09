@@ -3,7 +3,7 @@ package org.platformlayer.ops.multitenant;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.ApplicationMode;
 import org.platformlayer.auth.AuthenticationService;
 import org.platformlayer.auth.AuthenticationToken;
@@ -21,7 +21,7 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 
 public class SimpleMultitenantConfiguration implements MultitenantConfiguration {
-	private static final Logger log = Logger.getLogger(SimpleMultitenantConfiguration.class);
+	private static final Logger log = LoggerFactory.getLogger(SimpleMultitenantConfiguration.class);
 
 	final ProjectAuthorization masterProject;
 	final List<PlatformLayerKey> mappedItems;

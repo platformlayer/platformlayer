@@ -5,7 +5,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.core.model.Secret;
 import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OpsContext;
@@ -16,9 +15,12 @@ import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.templates.TemplateDataSource;
 import org.platformlayer.service.mysql.model.MysqlServer;
 import org.platformlayer.service.wordpress.model.WordpressService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WordpressTemplateData implements TemplateDataSource {
-	static final Logger log = Logger.getLogger(WordpressTemplateData.class);
+
+	private static final Logger log = LoggerFactory.getLogger(WordpressTemplateData.class);
 
 	private static final boolean USE_DNS_NAME = false;
 

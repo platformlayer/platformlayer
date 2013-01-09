@@ -3,7 +3,7 @@
 //import java.rmi.server.Operation;
 //import java.util.List;
 //
-//import org.apache.log4j.Logger;
+//import org.slf4j.*;
 //import org.platformlayer.ops.OpsException;
 //
 //import com.google.common.collect.Lists;
@@ -38,7 +38,7 @@
 //
 //    }
 //
-//    static final Logger log = Logger.getLogger(FirewallConfiguration.class);
+//    static final Logger log = LoggerFactory.getLogger(FirewallConfiguration.class);
 //
 //    public void addRule(String rule) throws OpsException {
 //        FirewallRecord record = FirewallRecordParser.parseRule(rule);

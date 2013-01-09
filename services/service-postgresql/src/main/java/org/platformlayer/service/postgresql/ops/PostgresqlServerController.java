@@ -5,7 +5,6 @@ import java.net.InetAddress;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.InetAddressChooser;
 import org.platformlayer.core.model.Secret;
 import org.platformlayer.ops.Handler;
@@ -27,9 +26,12 @@ import org.platformlayer.ops.packages.PackageDependency;
 import org.platformlayer.ops.service.ManagedService;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.postgresql.model.PostgresqlServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PostgresqlServerController extends OpsTreeBase implements Database {
-	static final Logger log = Logger.getLogger(PostgresqlServerController.class);
+
+	private static final Logger log = LoggerFactory.getLogger(PostgresqlServerController.class);
 
 	@Inject
 	InstanceHelpers instanceHelpers;

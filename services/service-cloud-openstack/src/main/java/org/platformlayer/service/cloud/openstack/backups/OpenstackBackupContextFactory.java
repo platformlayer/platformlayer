@@ -5,7 +5,6 @@ import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OpsException;
@@ -14,10 +13,12 @@ import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.machines.PlatformLayerCloudHelpers;
 import org.platformlayer.ops.machines.StorageConfiguration;
 import org.platformlayer.service.cloud.openstack.ops.OpenstackStorageConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OpenstackBackupContextFactory implements BackupContextFactory {
-	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(OpenstackBackupContextFactory.class);
+
+	private static final Logger log = LoggerFactory.getLogger(OpenstackBackupContextFactory.class);
 
 	@Inject
 	Provider<OpenstackBackupContext> backupContextProvider;

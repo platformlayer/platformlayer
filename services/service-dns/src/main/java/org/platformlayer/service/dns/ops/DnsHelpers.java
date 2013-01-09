@@ -7,7 +7,6 @@ import javalang7.AutoCloseable;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.EndpointInfo;
 import org.platformlayer.ops.CloudContext;
@@ -22,12 +21,15 @@ import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.service.dns.model.DnsRecord;
 import org.platformlayer.service.dns.model.DnsServer;
 import org.platformlayer.service.dns.model.DnsZone;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
 public class DnsHelpers {
-	static final Logger log = Logger.getLogger(DnsHelpers.class);
+
+	private static final Logger log = LoggerFactory.getLogger(DnsHelpers.class);
 
 	@Inject
 	CloudContext cloud;

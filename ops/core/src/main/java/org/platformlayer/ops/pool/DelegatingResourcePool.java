@@ -3,12 +3,12 @@ package org.platformlayer.ops.pool;
 import java.io.File;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.ops.OpsException;
 
 public class DelegatingResourcePool implements ResourcePool {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(DelegatingResourcePool.class);
+	private static final Logger log = LoggerFactory.getLogger(DelegatingResourcePool.class);
 
 	final ResourcePool underlying;
 

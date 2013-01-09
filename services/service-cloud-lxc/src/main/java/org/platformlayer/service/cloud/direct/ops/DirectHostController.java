@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
@@ -23,7 +23,7 @@ import org.platformlayer.service.cloud.direct.model.DirectHost;
 import org.platformlayer.service.cloud.direct.ops.kvm.host.KvmHost;
 
 public class DirectHostController extends OpsTreeBase {
-	static final Logger log = Logger.getLogger(DirectHostController.class);
+	static final Logger log = LoggerFactory.getLogger(DirectHostController.class);
 
 	public static final File LXC_INSTANCE_DIR = new File("/var/instances/lxc");
 	public static final File KVM_INSTANCE_DIR = new File("/var/instances/kvm");

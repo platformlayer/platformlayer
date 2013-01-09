@@ -4,7 +4,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.ops.OpsContext;
 
 import com.google.inject.Injector;
@@ -12,7 +12,7 @@ import com.google.inject.Provider;
 
 public class OpsContextProvider<T> implements Provider<T> {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(OpsContextProvider.class);
+	private static final Logger log = LoggerFactory.getLogger(OpsContextProvider.class);
 
 	final Class<T> clazz;
 

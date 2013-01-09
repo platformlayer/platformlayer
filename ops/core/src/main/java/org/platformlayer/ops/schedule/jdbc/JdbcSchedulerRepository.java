@@ -7,7 +7,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.xml.bind.JAXBException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.JobSchedule;
@@ -30,7 +30,7 @@ import com.fathomdb.utils.Hex;
 import com.google.common.collect.Lists;
 
 public class JdbcSchedulerRepository implements SchedulerRepository {
-	private static final Logger log = Logger.getLogger(JdbcSchedulerRepository.class);
+	private static final Logger log = LoggerFactory.getLogger(JdbcSchedulerRepository.class);
 
 	@Inject
 	Provider<JdbcConnection> connectionProvider;

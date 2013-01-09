@@ -15,7 +15,7 @@ import java.util.concurrent.TimeoutException;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.ExceptionUtils;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.ops.Command;
@@ -41,7 +41,7 @@ import com.google.common.collect.Lists;
 public class PeerToPeerCopy {
 	public static class FirewallRules extends OpsTreeBase {
 		@SuppressWarnings("unused")
-		private static final Logger log = Logger.getLogger(FirewallRules.class);
+		private static final Logger log = LoggerFactory.getLogger(FirewallRules.class);
 
 		private static final String KEY = "PeerToPeerCopy";
 
@@ -59,7 +59,7 @@ public class PeerToPeerCopy {
 		}
 	}
 
-	static final Logger log = Logger.getLogger(PeerToPeerCopy.class);
+	static final Logger log = LoggerFactory.getLogger(PeerToPeerCopy.class);
 
 	public static final int PORT = 6666;
 

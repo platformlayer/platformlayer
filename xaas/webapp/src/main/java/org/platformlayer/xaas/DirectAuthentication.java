@@ -2,7 +2,7 @@ package org.platformlayer.xaas;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.auth.AuthenticationToken;
 import org.platformlayer.auth.DirectAuthenticationToken;
 import org.platformlayer.crypto.CryptoUtils;
@@ -17,7 +17,7 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 
 public class DirectAuthentication implements AuthenticationCredentials, ProjectAuthorization {
-	static final Logger log = Logger.getLogger(DirectAuthentication.class);
+	static final Logger log = LoggerFactory.getLogger(DirectAuthentication.class);
 
 	private final ProjectAuthorization project;
 

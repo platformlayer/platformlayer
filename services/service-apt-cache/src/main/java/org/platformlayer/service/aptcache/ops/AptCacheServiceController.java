@@ -5,7 +5,6 @@ import java.net.URI;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.Machine;
@@ -22,9 +21,13 @@ import org.platformlayer.ops.proxy.HttpProxyController;
 import org.platformlayer.ops.service.ManagedService;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.aptcache.model.AptCacheService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AptCacheServiceController extends OpsTreeBase implements HttpProxyController {
-	static final Logger log = Logger.getLogger(AptCacheServiceController.class);
+
+	private static final Logger log = LoggerFactory.getLogger(AptCacheServiceController.class);
+
 	public static final int PORT = 3128;
 
 	@Inject

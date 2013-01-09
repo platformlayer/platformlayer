@@ -2,7 +2,7 @@ package org.platformlayer.ops.cas.filesystem;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.cas.CasLocation;
 import org.platformlayer.cas.CasStore;
 import org.platformlayer.cas.CasStoreObject;
@@ -20,7 +20,7 @@ import org.platformlayer.ops.networks.NetworkPoint;
 import com.fathomdb.hash.Md5Hash;
 
 public class FilesystemCasStore implements CasStore {
-	static final Logger log = Logger.getLogger(FilesystemCasStore.class);
+	static final Logger log = LoggerFactory.getLogger(FilesystemCasStore.class);
 
 	static final File PATH_BASE = new File("/var/cas");
 	static final File PATH_SEEDS = new File(PATH_BASE, "seeds");

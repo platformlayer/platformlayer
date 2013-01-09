@@ -14,7 +14,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.security.auth.x500.X500Principal;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.ResourceUtils;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.Tag;
@@ -47,7 +47,7 @@ public class ManagedKeystore extends OpsTreeBase {
 
 	public ItemBase tagWithPublicKeys;
 
-	private static final Logger log = Logger.getLogger(ManagedKeystore.class);
+	private static final Logger log = LoggerFactory.getLogger(ManagedKeystore.class);
 
 	@Inject
 	PlatformLayerHelpers platformlayer;

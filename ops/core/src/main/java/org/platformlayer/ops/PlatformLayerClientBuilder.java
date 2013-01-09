@@ -1,11 +1,11 @@
 package org.platformlayer.ops;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.PlatformLayerClient;
 
 public class PlatformLayerClientBuilder {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(PlatformLayerClientBuilder.class);
+	private static final Logger log = LoggerFactory.getLogger(PlatformLayerClientBuilder.class);
 
 	final OpsSystem opsSystem;
 

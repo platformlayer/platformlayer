@@ -1,6 +1,5 @@
 package org.platformlayer.service.platformlayer.ops.auth.user;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
@@ -8,9 +7,12 @@ import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.networks.PublicEndpoint;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.platformlayer.model.UserAuthService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UserAuthServiceController extends OpsTreeBase {
-	static final Logger log = Logger.getLogger(UserAuthServiceController.class);
+
+	private static final Logger log = LoggerFactory.getLogger(UserAuthServiceController.class);
 
 	public static final int PORT = 5001;
 

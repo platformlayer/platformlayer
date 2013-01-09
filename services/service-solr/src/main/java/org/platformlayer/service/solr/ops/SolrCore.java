@@ -1,6 +1,5 @@
 package org.platformlayer.service.solr.ops;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
@@ -8,11 +7,14 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.service.solr.ops.SolrCoreHelpers.SolrCoreStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Objects;
 
 public class SolrCore {
-	static final Logger log = Logger.getLogger(SolrCore.class);
+
+	private static final Logger log = LoggerFactory.getLogger(SolrCore.class);
 
 	public String key;
 

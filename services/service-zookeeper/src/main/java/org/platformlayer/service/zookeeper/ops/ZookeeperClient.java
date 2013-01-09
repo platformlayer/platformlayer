@@ -4,17 +4,18 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.apache.zookeeper.KeeperException.NoNodeException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.platformlayer.ops.OpsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.netflix.curator.framework.CuratorFramework;
 
 public class ZookeeperClient implements Watcher, Closeable {
-	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(ZookeeperClient.class);
+
+	private static final Logger log = LoggerFactory.getLogger(ZookeeperClient.class);
 
 	private final List<String> dnsNames;
 

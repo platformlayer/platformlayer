@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.core.model.Secret;
 import org.platformlayer.jdbc.JdbcUtils;
 import org.platformlayer.ops.OpsException;
@@ -27,7 +27,7 @@ import com.google.common.io.Closeables;
 import com.google.common.net.InetAddresses;
 
 public class TunneledDatabaseTarget extends DatabaseTarget {
-	private static final Logger log = Logger.getLogger(TunneledDatabaseTarget.class);
+	private static final Logger log = LoggerFactory.getLogger(TunneledDatabaseTarget.class);
 
 	public static final int POSTGRES_PORT = 5432;
 

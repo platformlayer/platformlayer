@@ -12,7 +12,7 @@
 // */
 //public class PlatformLayerKeyAdapter extends XmlAdapter<String, PlatformLayerKey> {
 //	@SuppressWarnings("unused")
-//	private static final Logger log = Logger.getLogger(PlatformLayerKeyAdapter.class);
+//	private static final Logger log = LoggerFactory.getLogger(PlatformLayerKeyAdapter.class);
 //
 //	@Override
 //	public PlatformLayerKey unmarshal(String v) throws Exception {

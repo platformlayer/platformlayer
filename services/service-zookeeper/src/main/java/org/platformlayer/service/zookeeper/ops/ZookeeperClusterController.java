@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.Handler;
@@ -20,11 +19,14 @@ import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.ops.tree.OwnedItem;
 import org.platformlayer.service.zookeeper.model.ZookeeperCluster;
 import org.platformlayer.service.zookeeper.model.ZookeeperServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
 public class ZookeeperClusterController extends OpsTreeBase implements MachineCluster {
-	static final Logger log = Logger.getLogger(ZookeeperClusterController.class);
+
+	private static final Logger log = LoggerFactory.getLogger(ZookeeperClusterController.class);
 
 	@Inject
 	PlatformLayerHelpers platformLayer;

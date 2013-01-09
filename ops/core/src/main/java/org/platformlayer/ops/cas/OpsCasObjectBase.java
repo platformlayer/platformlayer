@@ -2,7 +2,7 @@ package org.platformlayer.ops.cas;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.cas.CasLocation;
 import org.platformlayer.cas.CasStore;
 import org.platformlayer.cas.CasStoreObjectBase;
@@ -15,7 +15,7 @@ import org.platformlayer.ops.cas.filesystem.FilesystemCasStore;
 import com.fathomdb.hash.Md5Hash;
 
 public abstract class OpsCasObjectBase extends CasStoreObjectBase {
-	static final Logger log = Logger.getLogger(OpsCasObjectBase.class);
+	static final Logger log = LoggerFactory.getLogger(OpsCasObjectBase.class);
 
 	public OpsCasObjectBase(CasStore store, Md5Hash hash) {
 		super(store, hash);

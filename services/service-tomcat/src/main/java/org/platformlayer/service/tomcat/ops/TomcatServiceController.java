@@ -2,7 +2,6 @@ package org.platformlayer.service.tomcat.ops;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
@@ -14,9 +13,12 @@ import org.platformlayer.ops.packages.PackageDependency;
 import org.platformlayer.ops.service.ManagedService;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.tomcat.model.TomcatService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TomcatServiceController extends OpsTreeBase {
-	static final Logger log = Logger.getLogger(TomcatServiceController.class);
+
+	private static final Logger log = LoggerFactory.getLogger(TomcatServiceController.class);
 
 	@Handler
 	public void doOperation() throws OpsException, IOException {

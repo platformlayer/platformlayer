@@ -5,14 +5,14 @@ import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.TimeSpan;
 
 import com.google.inject.Singleton;
 
 @Singleton
 public class SimpleThreadServices implements ThreadServices {
-	static final Logger log = Logger.getLogger(SimpleThreadServices.class);
+	static final Logger log = LoggerFactory.getLogger(SimpleThreadServices.class);
 
 	static final TimeSpan TIMER_PURGE_INTERVAL = TimeSpan.FIVE_MINUTES;
 

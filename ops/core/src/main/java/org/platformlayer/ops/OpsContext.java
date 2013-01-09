@@ -9,7 +9,7 @@ import java.util.Map;
 import javalang7.AutoCloseable;
 import javalang7.Utils;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.ApplicationMode;
 import org.platformlayer.CheckedCallable;
 import org.platformlayer.PlatformLayerClient;
@@ -31,7 +31,7 @@ import com.google.common.collect.Maps;
 import com.google.inject.Injector;
 
 public class OpsContext implements Closeable {
-	static final Logger log = Logger.getLogger(OpsContext.class);
+	static final Logger log = LoggerFactory.getLogger(OpsContext.class);
 
 	final OpsSystem opsSystem;
 	final List<AutoCloseable> ownedObjects = Lists.newArrayList();

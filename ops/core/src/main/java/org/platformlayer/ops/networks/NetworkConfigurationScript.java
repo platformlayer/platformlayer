@@ -2,14 +2,14 @@
 //
 //import java.io.File;
 //
-//import org.apache.log4j.Logger;
+//import org.slf4j.*;
 //import com.fathomdb.Utf8;
 //import org.platformlayer.ops.Injection;
 //import org.platformlayer.ops.OpsException;
 //import org.platformlayer.ops.filesystem.SyntheticFile;
 //
 //public class NetworkConfigurationScript extends SyntheticFile {
-//	private static final Logger log = Logger.getLogger(NetworkConfigurationScript.class);
+//	private static final Logger log = LoggerFactory.getLogger(NetworkConfigurationScript.class);
 //
 //	public String interfaceName;
 //	public AddressModel address;

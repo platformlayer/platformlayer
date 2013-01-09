@@ -9,7 +9,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 
 import com.google.inject.Singleton;
 
@@ -19,7 +19,7 @@ import freemarker.template.Template;
 
 @Singleton
 public class FreemarkerTemplateEngine implements TemplateEngine {
-	static final Logger log = Logger.getLogger(FreemarkerTemplateEngine.class);
+	static final Logger log = LoggerFactory.getLogger(FreemarkerTemplateEngine.class);
 
 	Configuration cfg;
 

@@ -10,7 +10,7 @@ import java.util.Map.Entry;
 import javax.inject.Inject;
 import javax.servlet.DispatcherType;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
@@ -41,7 +41,7 @@ import com.google.inject.Module;
 import com.google.inject.servlet.GuiceFilter;
 
 class StandaloneXaasWebserver {
-	static final Logger log = Logger.getLogger(StandaloneXaasWebserver.class);
+	static final Logger log = LoggerFactory.getLogger(StandaloneXaasWebserver.class);
 
 	static final int PORT = 8082;
 

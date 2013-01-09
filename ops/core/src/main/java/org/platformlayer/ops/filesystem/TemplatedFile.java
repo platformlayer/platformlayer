@@ -5,7 +5,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import com.fathomdb.Utf8;
 import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsException;
@@ -15,7 +15,7 @@ import org.platformlayer.ops.templates.TemplateEngine;
 import com.google.common.collect.Maps;
 
 public class TemplatedFile extends SyntheticFile {
-	static final Logger log = Logger.getLogger(TemplatedFile.class);
+	static final Logger log = LoggerFactory.getLogger(TemplatedFile.class);
 
 	@Inject
 	TemplateEngine template;

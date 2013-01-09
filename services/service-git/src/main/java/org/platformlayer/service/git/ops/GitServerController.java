@@ -6,7 +6,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.EndpointChooser;
 import org.platformlayer.core.model.EndpointInfo;
 import org.platformlayer.ops.Handler;
@@ -27,9 +26,11 @@ import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.git.model.GitService;
 import org.platformlayer.service.openldap.model.LdapDomain;
 import org.platformlayer.service.openldap.model.LdapService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GitServerController extends OpsTreeBase implements TemplateDataSource {
-	static final Logger log = Logger.getLogger(GitServerController.class);
+	private static final Logger log = LoggerFactory.getLogger(GitServerController.class);
 
 	public static final int PORT = 80;
 

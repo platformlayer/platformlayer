@@ -5,7 +5,6 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.core.model.HostPolicy;
 import org.platformlayer.crypto.OpenSshUtils;
 import org.platformlayer.ops.Handler;
@@ -16,10 +15,11 @@ import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.direct.model.DirectInstance;
 import org.platformlayer.service.cloud.direct.ops.kvm.KvmInstance;
 import org.platformlayer.service.cloud.direct.ops.lxc.LxcInstanceController;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DirectInstanceController extends OpsTreeBase {
-	static final Logger log = Logger.getLogger(DirectInstanceController.class);
+	static final Logger log = LoggerFactory.getLogger(DirectInstanceController.class);
 
 	@Handler
 	public void handler() throws OpsException, IOException {

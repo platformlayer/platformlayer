@@ -4,24 +4,25 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.core.model.EndpointInfo;
 import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsProvider;
-import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.tagger.Tagger;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.openstack.model.OpenstackInstance;
 import org.platformlayer.service.cloud.openstack.model.OpenstackPublicEndpoint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 
 public class OpenstackPublicEndpointController extends OpsTreeBase {
-	static final Logger log = Logger.getLogger(OpenstackPublicEndpointController.class);
+
+	private static final Logger log = LoggerFactory.getLogger(OpenstackPublicEndpointController.class);
 
 	@Handler
 	public void handler() throws OpsException, IOException {

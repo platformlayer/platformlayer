@@ -2,7 +2,7 @@ package org.platformlayer.ops.vpn;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
@@ -13,7 +13,7 @@ import org.platformlayer.ops.OpsTarget;
  * 
  */
 public class IpsecBootstrap {
-	static final Logger log = Logger.getLogger(IpsecBootstrap.class);
+	static final Logger log = LoggerFactory.getLogger(IpsecBootstrap.class);
 
 	@Handler
 	public void handler(OpsTarget target) throws OpsException {

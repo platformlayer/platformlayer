@@ -2,12 +2,12 @@ package org.platformlayer.ops.databases;
 
 import java.sql.SQLException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.ops.OpsException;
 
 public abstract class DatabaseTarget {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(DatabaseTarget.class);
+	private static final Logger log = LoggerFactory.getLogger(DatabaseTarget.class);
 
 	public abstract SqlResults execute(String sql) throws SQLException, OpsException;
 

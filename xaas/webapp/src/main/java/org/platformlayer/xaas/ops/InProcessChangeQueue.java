@@ -2,7 +2,7 @@ package org.platformlayer.xaas.ops;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.core.model.ConfigureAction;
 import org.platformlayer.core.model.DeleteAction;
 import org.platformlayer.core.model.ManagedItemState;
@@ -15,7 +15,7 @@ import org.platformlayer.xaas.repository.ManagedItemRepository;
 import org.platformlayer.xaas.services.ChangeQueue;
 
 public class InProcessChangeQueue implements ChangeQueue {
-	static final Logger log = Logger.getLogger(InProcessChangeQueue.class);
+	static final Logger log = LoggerFactory.getLogger(InProcessChangeQueue.class);
 
 	@Inject
 	JobRegistry operations;

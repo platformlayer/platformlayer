@@ -4,7 +4,7 @@ import java.net.InetSocketAddress;
 
 import javax.inject.Provider;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsProvider;
 import org.platformlayer.ops.firewall.IptablesChain;
@@ -12,7 +12,7 @@ import org.platformlayer.ops.firewall.Protocol;
 import org.platformlayer.ops.firewall.Transport;
 
 public class IptablesForwardPort extends IpTablesRuleScript {
-	static final Logger log = Logger.getLogger(IptablesForwardPort.class);
+	static final Logger log = LoggerFactory.getLogger(IptablesForwardPort.class);
 
 	public Provider<InetSocketAddress> publicAddress;
 	public OpsProvider<String> privateAddress;

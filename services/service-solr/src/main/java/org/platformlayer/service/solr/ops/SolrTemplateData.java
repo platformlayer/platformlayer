@@ -6,7 +6,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.TagFilter;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
@@ -17,11 +16,14 @@ import org.platformlayer.ops.templates.TemplateDataSource;
 import org.platformlayer.service.solr.model.SolrCluster;
 import org.platformlayer.service.solr.model.SolrSchemaField;
 import org.platformlayer.service.solr.model.SolrServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
 public class SolrTemplateData implements TemplateDataSource {
-	static final Logger log = Logger.getLogger(SolrTemplateData.class);
+
+	private static final Logger log = LoggerFactory.getLogger(SolrTemplateData.class);
 
 	@Inject
 	PlatformLayerHelpers platformLayer;

@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsSystem;
@@ -13,9 +12,12 @@ import org.platformlayer.ops.helpers.ServiceContext;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.raw.model.RawInstance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RawInstanceController extends OpsTreeBase {
-	static final Logger log = Logger.getLogger(RawInstanceController.class);
+
+	private static final Logger log = LoggerFactory.getLogger(RawInstanceController.class);
 
 	@Inject
 	PlatformLayerHelpers platformLayer;

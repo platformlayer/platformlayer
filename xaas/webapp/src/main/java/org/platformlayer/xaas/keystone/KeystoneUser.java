@@ -2,13 +2,13 @@ package org.platformlayer.xaas.keystone;
 
 import java.security.PrivateKey;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.auth.OpsUser;
 import org.platformlayer.auth.system.PlatformlayerUserAuthentication;
 
 public class KeystoneUser implements OpsUser {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(KeystoneUser.class);
+	private static final Logger log = LoggerFactory.getLogger(KeystoneUser.class);
 
 	private final PlatformlayerUserAuthentication auth;
 

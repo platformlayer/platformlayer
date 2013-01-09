@@ -3,7 +3,7 @@ package org.platformlayer.ops.firewall;
 import java.io.File;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.FileUpload;
 import org.platformlayer.ops.OpsException;
@@ -13,7 +13,7 @@ import org.platformlayer.ops.networks.ScriptBuilder;
 import com.google.common.base.Objects;
 
 public class IpTablesFirewallManager extends FirewallManager {
-	static final Logger log = Logger.getLogger(IpTablesFirewallManager.class);
+	static final Logger log = LoggerFactory.getLogger(IpTablesFirewallManager.class);
 	private final Transport transport;
 
 	public IpTablesFirewallManager(Transport transport) {

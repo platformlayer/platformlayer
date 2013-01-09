@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimerTask;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import com.fathomdb.utils.Hex;
 import org.platformlayer.HttpPlatformLayerClient;
 import org.platformlayer.PlatformLayerClient;
@@ -34,7 +34,7 @@ import com.google.inject.Singleton;
 
 @Singleton
 public class SchedulerImpl implements Scheduler {
-	static final Logger log = Logger.getLogger(SchedulerImpl.class);
+	static final Logger log = LoggerFactory.getLogger(SchedulerImpl.class);
 
 	private static final TimeSpan MIN_DELAY = new TimeSpan("1s");
 

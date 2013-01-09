@@ -2,7 +2,7 @@ package org.platformlayer.ops.firewall;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.SetUtils;
 import org.platformlayer.SetUtils.SetCompareResults;
 import org.platformlayer.ops.OpsContext;
@@ -19,7 +19,7 @@ import com.google.common.collect.Lists;
  * 
  */
 public abstract class FirewallManager {
-	static final Logger log = Logger.getLogger(FirewallManager.class);
+	static final Logger log = LoggerFactory.getLogger(FirewallManager.class);
 
 	private static final boolean DUMP_CONFIG = false;
 

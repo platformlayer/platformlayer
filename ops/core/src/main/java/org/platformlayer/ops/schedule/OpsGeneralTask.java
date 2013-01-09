@@ -1,10 +1,10 @@
 package org.platformlayer.ops.schedule;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 
 public abstract class OpsGeneralTask {
 
-	static final Logger log = Logger.getLogger(OpsGeneralTask.class);
+	static final Logger log = LoggerFactory.getLogger(OpsGeneralTask.class);
 
 	private boolean blockConcurrentRuns;
 	private boolean waitForTreeReady;

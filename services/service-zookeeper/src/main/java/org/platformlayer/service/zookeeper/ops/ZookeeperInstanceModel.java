@@ -6,7 +6,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.TagFilter;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
@@ -22,12 +21,15 @@ import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.standardservice.StandardTemplateData;
 import org.platformlayer.service.zookeeper.model.ZookeeperCluster;
 import org.platformlayer.service.zookeeper.model.ZookeeperServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class ZookeeperInstanceModel extends StandardTemplateData {
-	static final Logger log = Logger.getLogger(ZookeeperInstanceModel.class);
+
+	private static final Logger log = LoggerFactory.getLogger(ZookeeperInstanceModel.class);
 
 	@Inject
 	PlatformLayerHelpers platformLayer;

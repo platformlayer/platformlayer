@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.choice.RandomChooser;
 import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.core.model.PlatformLayerKey;
@@ -22,9 +21,12 @@ import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.git.model.GitRepository;
 import org.platformlayer.service.git.model.GitService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GitServerAssignment extends OpsTreeBase implements CustomRecursor {
-	static final Logger log = Logger.getLogger(GitServerAssignment.class);
+
+	private static final Logger log = LoggerFactory.getLogger(GitServerAssignment.class);
 
 	@Inject
 	PlatformLayerHelpers platformLayer;

@@ -1,13 +1,15 @@
 package org.platformlayer.ops.tree;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.HasDescription;
 import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class LateBound<T> extends OpsTreeBase implements HasDescription {
-	private static final Logger log = Logger.getLogger(LateBound.class);
+
+	private static final Logger log = LoggerFactory.getLogger(LateBound.class);
 
 	boolean addedChildren = false;
 

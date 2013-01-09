@@ -5,9 +5,10 @@ import java.util.List;
 
 import javax.inject.Singleton;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.ops.OpsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
 import com.netflix.curator.RetryPolicy;
@@ -18,8 +19,8 @@ import com.netflix.curator.retry.RetryOneTime;
 
 @Singleton
 public class ZookeeperContext {
-	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(ZookeeperContext.class);
+
+	private static final Logger log = LoggerFactory.getLogger(ZookeeperContext.class);
 
 	public CuratorFramework buildZk(List<String> dnsNames) throws OpsException {
 		String connectionString = Joiner.on(",").join(dnsNames);

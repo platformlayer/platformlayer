@@ -6,7 +6,6 @@ import java.util.Collections;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
@@ -34,10 +33,12 @@ import org.platformlayer.service.cloud.direct.ops.DirectHostController;
 import org.platformlayer.service.cloud.direct.ops.DownloadImage;
 import org.platformlayer.service.cloud.direct.ops.InstanceScript;
 import org.platformlayer.service.cloud.direct.ops.cloud.CloudMap;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LxcInstanceController extends OpsTreeBase {
-	static final Logger log = Logger.getLogger(LxcInstanceController.class);
+
+	private static final Logger log = LoggerFactory.getLogger(LxcInstanceController.class);
 
 	public File instanceDir;
 	public String id;

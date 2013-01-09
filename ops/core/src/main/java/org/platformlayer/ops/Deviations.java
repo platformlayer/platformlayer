@@ -2,13 +2,13 @@ package org.platformlayer.ops;
 
 import java.util.Collection;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 
 import com.google.common.base.Objects;
 
 public class Deviations {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(Deviations.class);
+	private static final Logger log = LoggerFactory.getLogger(Deviations.class);
 
 	public static void assertEquals(Object expected, Object actual, String message) {
 		// TODO: Make much more structured

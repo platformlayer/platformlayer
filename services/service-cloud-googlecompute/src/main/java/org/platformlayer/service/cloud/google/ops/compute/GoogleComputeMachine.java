@@ -5,13 +5,14 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.MachineBase;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.service.cloud.google.model.GoogleCloud;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.api.services.compute.model.Instance;
 import com.google.api.services.compute.model.Operation;
@@ -21,7 +22,8 @@ import com.google.common.collect.Lists;
 import com.google.common.net.InetAddresses;
 
 public class GoogleComputeMachine extends MachineBase {
-	static final Logger log = Logger.getLogger(GoogleComputeMachine.class);
+
+	private static final Logger log = LoggerFactory.getLogger(GoogleComputeMachine.class);
 
 	final GoogleComputeClient computeClient;
 	final GoogleCloud cloud;

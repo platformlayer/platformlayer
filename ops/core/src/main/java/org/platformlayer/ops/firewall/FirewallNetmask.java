@@ -1,9 +1,9 @@
 package org.platformlayer.ops.firewall;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 
 public class FirewallNetmask {
-	static final Logger log = Logger.getLogger(FirewallNetmask.class);
+	static final Logger log = LoggerFactory.getLogger(FirewallNetmask.class);
 
 	private static final String DEFAULT_AWS_GROUP = "default";
 

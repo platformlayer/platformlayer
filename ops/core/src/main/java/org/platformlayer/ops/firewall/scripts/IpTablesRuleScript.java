@@ -2,7 +2,7 @@ package org.platformlayer.ops.firewall.scripts;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
@@ -12,7 +12,7 @@ import org.platformlayer.ops.firewall.Sanitizer;
 import org.platformlayer.ops.networks.ScriptBuilder;
 
 public abstract class IpTablesRuleScript extends SyntheticFile {
-	private static final Logger log = Logger.getLogger(IpTablesRuleScript.class);
+	private static final Logger log = LoggerFactory.getLogger(IpTablesRuleScript.class);
 
 	public String ruleKey;
 	public String interfaceName = "eth0";

@@ -1,9 +1,9 @@
 package org.platformlayer.ops.firewall;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 
 public class FirewallRecord {
-	static final Logger log = Logger.getLogger(FirewallRecord.class);
+	static final Logger log = LoggerFactory.getLogger(FirewallRecord.class);
 
 	public enum Decision {
 		Block, Pass

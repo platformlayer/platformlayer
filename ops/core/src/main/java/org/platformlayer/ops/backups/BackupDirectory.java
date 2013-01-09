@@ -6,7 +6,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.core.model.BackupAction;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.Handler;
@@ -14,11 +14,12 @@ import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.tree.OpsTreeBase;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
 public class BackupDirectory extends OpsTreeBase {
-	static final Logger log = Logger.getLogger(BackupDirectory.class);
+	static final Logger log = LoggerFactory.getLogger(BackupDirectory.class);
 	private static final String FORMAT = "tgz_directory";
 
 	public File backupRoot;

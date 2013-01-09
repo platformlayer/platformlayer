@@ -2,13 +2,13 @@ package org.platformlayer.ops.firewall;
 
 import java.util.Queue;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.EnumUtils;
 
 import com.google.common.collect.Lists;
 
 public class FirewallRecordParser {
-	static final Logger log = Logger.getLogger(FirewallRecordParser.class);
+	static final Logger log = LoggerFactory.getLogger(FirewallRecordParser.class);
 
 	public static FirewallRecord parseRule(String rule) {
 		String[] tokenArray = rule.split(" ");

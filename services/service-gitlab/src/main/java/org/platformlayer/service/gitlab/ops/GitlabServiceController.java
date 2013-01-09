@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
@@ -16,11 +15,14 @@ import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.ops.users.PosixGroup;
 import org.platformlayer.ops.users.PosixUser;
 import org.platformlayer.service.gitlab.model.GitlabService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Splitter;
 
 public class GitlabServiceController extends OpsTreeBase implements TemplateDataSource {
-	static final Logger log = Logger.getLogger(GitlabServiceController.class);
+
+	private static final Logger log = LoggerFactory.getLogger(GitlabServiceController.class);
 
 	@Handler
 	public void doOperation() throws OpsException, IOException {

@@ -3,7 +3,7 @@ package org.platformlayer.ops.firewall;
 import java.util.List;
 import java.util.Queue;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
@@ -14,7 +14,7 @@ import org.platformlayer.ops.process.ProcessExecution;
 import com.google.common.collect.Lists;
 
 public class IpTablesManager {
-	static final Logger log = Logger.getLogger(IpTablesManager.class);
+	static final Logger log = LoggerFactory.getLogger(IpTablesManager.class);
 
 	// static final String CMD_IPFSTAT = "/usr/sbin/ipfstat ";
 	static final String CMD_IPTABLES4 = "/sbin/iptables ";

@@ -8,7 +8,7 @@ import javax.inject.Inject;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.cas.CasLocation;
 import org.platformlayer.cas.CasPickClosestStore;
 import org.platformlayer.cas.CasStore;
@@ -28,9 +28,10 @@ import org.platformlayer.ops.helpers.SshKeys;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.service.machines.direct.v1.DirectHost;
+import org.slf4j.LoggerFactory;
 
 public class CasStoreHelper {
-	static final Logger log = Logger.getLogger(CasStoreHelper.class);
+	static final Logger log = LoggerFactory.getLogger(CasStoreHelper.class);
 
 	// List<CasStore> casStores;
 

@@ -1,6 +1,6 @@
 package org.platformlayer.ops.bootstrap;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
@@ -8,7 +8,7 @@ import org.platformlayer.ops.OpsTarget;
 
 public class PackageRemoval {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(PackageRemoval.class);
+	private static final Logger log = LoggerFactory.getLogger(PackageRemoval.class);
 
 	@Handler
 	public void handler(OpsTarget target) throws OpsException {

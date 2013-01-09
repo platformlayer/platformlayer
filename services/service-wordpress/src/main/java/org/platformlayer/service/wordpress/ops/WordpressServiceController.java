@@ -2,7 +2,6 @@ package org.platformlayer.service.wordpress.ops;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.Injection;
@@ -16,9 +15,12 @@ import org.platformlayer.ops.service.ManagedService;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.network.ops.PlatformLayerFirewallEntry;
 import org.platformlayer.service.wordpress.model.WordpressService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WordpressServiceController extends OpsTreeBase {
-	static final Logger log = Logger.getLogger(WordpressServiceController.class);
+
+	private static final Logger log = LoggerFactory.getLogger(WordpressServiceController.class);
 
 	@Handler
 	public void doOperation() throws OpsException, IOException {

@@ -2,7 +2,7 @@ package org.platformlayer.ops.instances;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.core.model.DeleteAction;
 import org.platformlayer.ops.FileUpload;
 import org.platformlayer.ops.Handler;
@@ -16,7 +16,7 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 
 public class ConfigureHostname {
-	private static final Logger log = Logger.getLogger(ConfigureHostname.class);
+	private static final Logger log = LoggerFactory.getLogger(ConfigureHostname.class);
 
 	public String hostname;
 

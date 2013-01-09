@@ -6,7 +6,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
@@ -21,7 +21,7 @@ import org.platformlayer.service.dnsresolver.v1.DnsResolverService;
 import com.google.common.collect.Lists;
 
 public class DnsResolverModuleBuilder implements TemplateDataSource {
-	static final Logger log = Logger.getLogger(DnsResolverModuleBuilder.class);
+	static final Logger log = LoggerFactory.getLogger(DnsResolverModuleBuilder.class);
 
 	@Inject
 	PlatformLayerHelpers platformLayer;

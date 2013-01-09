@@ -7,7 +7,6 @@ import java.util.concurrent.TimeoutException;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.openstack.client.OpenstackException;
 import org.openstack.client.OpenstackNotFoundException;
 import org.openstack.client.common.OpenstackComputeClient;
@@ -36,12 +35,15 @@ import org.platformlayer.service.cloud.openstack.ops.openstack.CloudBehaviours;
 import org.platformlayer.service.cloud.openstack.ops.openstack.OpenstackCloudContext;
 import org.platformlayer.service.cloud.openstack.ops.openstack.OpenstackCloudHelpers;
 import org.platformlayer.service.cloud.openstack.ops.openstack.OpenstackComputeMachine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 
 public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
-	static final Logger log = Logger.getLogger(CloudInstanceMapper.class);
+
+	private static final Logger log = LoggerFactory.getLogger(CloudInstanceMapper.class);
 
 	public OpenstackInstance instance;
 	public boolean createInstance = true;

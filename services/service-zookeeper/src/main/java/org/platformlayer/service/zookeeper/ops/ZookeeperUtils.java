@@ -8,7 +8,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.Filter;
 import org.platformlayer.TagFilter;
 import org.platformlayer.TimeSpan;
@@ -20,6 +19,8 @@ import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.process.ProcessExecution;
 import org.platformlayer.service.zookeeper.model.ZookeeperCluster;
 import org.platformlayer.service.zookeeper.model.ZookeeperServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fathomdb.io.IoUtils;
 import com.google.common.base.Splitter;
@@ -27,7 +28,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class ZookeeperUtils {
-	private static final Logger log = Logger.getLogger(ZookeeperUtils.class);
+
+	private static final Logger log = LoggerFactory.getLogger(ZookeeperUtils.class);
 
 	@Inject
 	PlatformLayerHelpers platformLayer;

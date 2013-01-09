@@ -1,12 +1,14 @@
 package org.platformlayer.service.git.ops;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.tree.OpsTreeBase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GitRepositoryController extends OpsTreeBase {
-	static final Logger log = Logger.getLogger(GitRepositoryController.class);
+
+	private static final Logger log = LoggerFactory.getLogger(GitRepositoryController.class);
 
 	@Handler
 	public void handler() throws Exception {

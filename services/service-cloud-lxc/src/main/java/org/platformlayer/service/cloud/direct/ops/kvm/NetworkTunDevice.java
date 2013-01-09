@@ -2,7 +2,6 @@ package org.platformlayer.service.cloud.direct.ops.kvm;
 
 import javax.inject.Provider;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
@@ -10,9 +9,12 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.process.ProcessExecution;
 import org.platformlayer.ops.process.ProcessExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class NetworkTunDevice {
-	static final Logger log = Logger.getLogger(NetworkTunDevice.class);
+
+	private static final Logger log = LoggerFactory.getLogger(NetworkTunDevice.class);
 
 	public String interfaceName;
 	public Provider<String> bridgeName;

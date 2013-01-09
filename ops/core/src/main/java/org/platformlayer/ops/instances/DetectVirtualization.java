@@ -1,6 +1,6 @@
 package org.platformlayer.ops.instances;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.OpsTargetOperation;
@@ -8,7 +8,7 @@ import org.platformlayer.ops.process.ProcessExecution;
 
 public class DetectVirtualization {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(DetectVirtualization.class);
+	private static final Logger log = LoggerFactory.getLogger(DetectVirtualization.class);
 
 	public enum VirtualizationType {
 		Unknown, Lxc

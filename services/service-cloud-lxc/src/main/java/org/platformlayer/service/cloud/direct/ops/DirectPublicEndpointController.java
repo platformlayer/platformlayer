@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.EnumUtils;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
@@ -14,9 +13,12 @@ import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.direct.model.DirectInstance;
 import org.platformlayer.service.cloud.direct.model.DirectPublicEndpoint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DirectPublicEndpointController extends OpsTreeBase {
-	static final Logger log = Logger.getLogger(DirectPublicEndpointController.class);
+
+	private static final Logger log = LoggerFactory.getLogger(DirectPublicEndpointController.class);
 
 	@Handler
 	public void handler() throws OpsException, IOException {

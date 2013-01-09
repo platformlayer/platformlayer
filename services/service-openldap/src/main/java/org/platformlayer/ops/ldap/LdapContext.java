@@ -28,7 +28,7 @@ package org.platformlayer.ops.ldap;
 //public class LdapContext {
 //	private static final TimeSpan CONNECTION_POOL_TIMEOUT = FathomConfig.getTimeSpan("ldapContext.connectionPoolTimeout", "5m");
 //
-//	static final Logger log = Logger.getLogger(LdapContext.class);
+//	static final Logger log = LoggerFactory.getLogger(LdapContext.class);
 //
 //	private static final String DEFAULT_CONFIG_PREFIX = "ldap.";
 //	final LdapConnectionInformation ldapConnectionInformation;

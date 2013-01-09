@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.HasDescription;
 import org.platformlayer.ops.OpsContext;
@@ -17,7 +17,7 @@ import com.google.common.base.Objects;
 
 //@Icon("document")
 public abstract class ManagedFile extends ManagedFilesystemItem implements HasDescription {
-	static final Logger log = Logger.getLogger(ManagedFile.class);
+	static final Logger log = LoggerFactory.getLogger(ManagedFile.class);
 
 	@Inject
 	OpsContext ops;

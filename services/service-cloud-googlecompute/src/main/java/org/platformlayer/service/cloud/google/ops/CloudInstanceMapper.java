@@ -8,7 +8,6 @@ import java.util.concurrent.TimeoutException;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.Tags;
@@ -30,13 +29,16 @@ import org.platformlayer.service.cloud.google.model.GoogleCloudInstance;
 import org.platformlayer.service.cloud.google.ops.compute.GoogleComputeClient;
 import org.platformlayer.service.cloud.google.ops.compute.GoogleComputeClientFactory;
 import org.platformlayer.service.cloud.google.ops.compute.GoogleComputeMachine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.api.services.compute.model.Instance;
 import com.google.api.services.compute.model.Operation;
 import com.google.common.collect.Iterables;
 
 public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
-	static final Logger log = Logger.getLogger(CloudInstanceMapper.class);
+
+	private static final Logger log = LoggerFactory.getLogger(CloudInstanceMapper.class);
 
 	public GoogleCloudInstance instance;
 	public boolean createInstance = true;

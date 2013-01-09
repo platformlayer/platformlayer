@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.ManagedItemState;
@@ -21,7 +21,7 @@ import org.platformlayer.ops.networks.NetworkPoint;
 import com.google.common.collect.Lists;
 
 public class HttpProxyHelper {
-	static final Logger log = Logger.getLogger(HttpProxyHelper.class);
+	static final Logger log = LoggerFactory.getLogger(HttpProxyHelper.class);
 
 	public enum Usage {
 		SoftwarePackages, General

@@ -5,7 +5,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.common.UntypedItem;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.ManagedItemState;
@@ -17,7 +17,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 public class TreeWalker {
-	private static final Logger log = Logger.getLogger(TreeWalker.class);
+	private static final Logger log = LoggerFactory.getLogger(TreeWalker.class);
 
 	@Inject
 	PlatformLayerHelpers platformLayer;

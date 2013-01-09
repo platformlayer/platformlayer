@@ -2,21 +2,22 @@ package org.openstack.service.nginx.ops;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
 import org.openstack.service.nginx.model.NginxService;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.networks.PublicEndpoint;
 import org.platformlayer.ops.packages.PackageDependency;
 import org.platformlayer.ops.service.ManagedService;
 import org.platformlayer.ops.tree.OpsTreeBase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class NginxServiceController extends OpsTreeBase {
-	static final Logger log = Logger.getLogger(NginxServiceController.class);
+
+	private static final Logger log = LoggerFactory.getLogger(NginxServiceController.class);
 
 	@Handler
 	public void handler() throws OpsException, IOException {

@@ -2,7 +2,6 @@ package org.platformlayer.ops.jobstore;
 
 import java.util.Date;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.common.JobState;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.PlatformLayerKey;
@@ -13,9 +12,11 @@ import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.log.JobLogger;
 import org.platformlayer.ops.tasks.ActiveJobExecution;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PersistentActiveJob implements ActiveJobExecution {
-	private static final Logger log = Logger.getLogger(PersistentActiveJob.class);
+	private static final Logger log = LoggerFactory.getLogger(PersistentActiveJob.class);
 
 	final String executionId;
 	final JobExecutionData jobExecution;

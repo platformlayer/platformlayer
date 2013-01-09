@@ -9,7 +9,7 @@ import java.net.UnknownHostException;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.cas.CasLocation;
 import org.platformlayer.ops.Command;
@@ -31,7 +31,7 @@ import com.fathomdb.io.IoUtils;
 import com.google.common.io.Closeables;
 
 public class JenkinsCasObject extends OpsCasObjectBase {
-	private static final Logger log = Logger.getLogger(JenkinsCasObject.class);
+	private static final Logger log = LoggerFactory.getLogger(JenkinsCasObject.class);
 
 	@Inject
 	HttpProxyHelper httpProxies;

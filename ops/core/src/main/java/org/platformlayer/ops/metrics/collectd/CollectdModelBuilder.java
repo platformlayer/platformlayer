@@ -6,7 +6,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.Machine;
@@ -20,7 +20,7 @@ import org.platformlayer.ops.templates.TemplateDataSource;
 import org.platformlayer.service.collectd.v1.CollectdService;
 
 public class CollectdModelBuilder implements TemplateDataSource {
-	static final Logger log = Logger.getLogger(CollectdModelBuilder.class);
+	static final Logger log = LoggerFactory.getLogger(CollectdModelBuilder.class);
 
 	@Inject
 	PlatformLayerHelpers platformLayer;

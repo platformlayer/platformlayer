@@ -1,6 +1,6 @@
 //package org.platformlayer.ops.firewall;
 //
-//import org.apache.log4j.Logger;
+//import org.slf4j.*;
 //import org.platformlayer.ops.Handler;
 //import org.platformlayer.ops.OpsContext;
 //import org.platformlayer.ops.OpsException;
@@ -9,7 +9,7 @@
 //
 ////@Icon("firewall")
 //public class FirewallEntry {
-//	static final Logger log = Logger.getLogger(FirewallEntry.class);
+//	static final Logger log = LoggerFactory.getLogger(FirewallEntry.class);
 //
 //	public FirewallRecord rule;
 //

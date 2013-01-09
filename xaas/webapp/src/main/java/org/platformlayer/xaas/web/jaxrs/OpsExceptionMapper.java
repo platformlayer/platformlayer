@@ -7,7 +7,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.CustomerFacingException;
 import org.platformlayer.core.model.ErrorDetail;
 import org.platformlayer.core.model.ErrorResponse;
@@ -18,7 +18,7 @@ import com.sun.jersey.api.core.HttpContext;
 @Singleton
 @Provider
 public class OpsExceptionMapper implements ExceptionMapper<OpsException> {
-	private static final Logger log = Logger.getLogger(OpsExceptionMapper.class);
+	private static final Logger log = LoggerFactory.getLogger(OpsExceptionMapper.class);
 
 	@Context
 	HttpContext httpContext;

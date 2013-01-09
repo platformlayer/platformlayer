@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.ops.BindingScope;
 import org.platformlayer.ops.CustomRecursor;
 import org.platformlayer.ops.OperationRecursor;
@@ -20,7 +20,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public abstract class OpsTreeBase implements OpsTree, CustomRecursor {
-	static final Logger log = Logger.getLogger(OpsTreeBase.class);
+	static final Logger log = LoggerFactory.getLogger(OpsTreeBase.class);
 
 	private List<Object> children = null;
 

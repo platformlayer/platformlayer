@@ -2,7 +2,7 @@ package org.platformlayer.ops.tagger;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
@@ -14,7 +14,7 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsProvider;
 
 public class Tagger {
-	static final Logger log = Logger.getLogger(Tagger.class);
+	static final Logger log = LoggerFactory.getLogger(Tagger.class);
 
 	public PlatformLayerKey platformLayerKey;
 	public OpsProvider<TagChanges> tagChangesProvider;

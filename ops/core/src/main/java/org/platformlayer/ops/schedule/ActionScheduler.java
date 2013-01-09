@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.PlatformLayerEndpointInfo;
 import org.platformlayer.auth.Authenticator;
 import org.platformlayer.auth.DirectAuthenticationToken;
@@ -14,13 +14,14 @@ import org.platformlayer.core.model.JobSchedule;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Secret;
 import org.platformlayer.ops.OpsException;
+import org.slf4j.LoggerFactory;
 
 import com.fathomdb.crypto.FathomdbCrypto;
 import com.fathomdb.utils.Hex;
 import com.google.common.base.Joiner;
 
 public class ActionScheduler {
-	private static final Logger log = Logger.getLogger(ActionScheduler.class);
+	private static final Logger log = LoggerFactory.getLogger(ActionScheduler.class);
 
 	@Inject
 	Scheduler scheduler;

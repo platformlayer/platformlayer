@@ -3,7 +3,6 @@ package org.platformlayer.service.cloud.openstack.ops.openstack;
 import java.net.InetAddress;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.openstack.client.InstanceState;
 import org.openstack.model.compute.Addresses.Network.Ip;
 import org.openstack.model.compute.Server;
@@ -13,13 +12,16 @@ import org.platformlayer.ops.MachineBase;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.service.cloud.openstack.model.OpenstackCloud;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.net.InetAddresses;
 
 public class OpenstackComputeMachine extends MachineBase {
-	static final Logger log = Logger.getLogger(OpenstackComputeMachine.class);
+
+	private static final Logger log = LoggerFactory.getLogger(OpenstackComputeMachine.class);
 
 	final OpenstackCloudContext cloudContext;
 	final OpenstackCloud cloud;

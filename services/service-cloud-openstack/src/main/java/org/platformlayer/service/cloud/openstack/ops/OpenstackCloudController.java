@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.openstack.client.OpenstackCredentials;
 import org.platformlayer.core.model.InstanceBase;
 import org.platformlayer.core.model.MachineCloudBase;
@@ -22,9 +21,12 @@ import org.platformlayer.service.cloud.openstack.model.OpenstackCloud;
 import org.platformlayer.service.cloud.openstack.model.OpenstackInstance;
 import org.platformlayer.service.cloud.openstack.model.OpenstackPublicEndpoint;
 import org.platformlayer.service.cloud.openstack.ops.openstack.OpenstackCloudContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OpenstackCloudController extends OpsTreeBase implements CloudController, CasStoreProvider {
-	static final Logger log = Logger.getLogger(OpenstackCloudController.class);
+
+	private static final Logger log = LoggerFactory.getLogger(OpenstackCloudController.class);
 
 	@Bound
 	OpenstackCloud model;

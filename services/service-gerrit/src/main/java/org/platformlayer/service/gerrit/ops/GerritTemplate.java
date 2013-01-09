@@ -5,7 +5,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.InetAddressChooser;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
@@ -17,11 +16,14 @@ import org.platformlayer.ops.databases.DatabaseHelper;
 import org.platformlayer.service.gerrit.model.GerritDatabase;
 import org.platformlayer.service.gerrit.model.GerritService;
 import org.platformlayer.service.jetty.ops.JettyTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Maps;
 
 public class GerritTemplate extends JettyTemplate {
-	static final Logger log = Logger.getLogger(GerritTemplate.class);
+
+	private static final Logger log = LoggerFactory.getLogger(GerritTemplate.class);
 
 	@Inject
 	DatabaseHelper databases;

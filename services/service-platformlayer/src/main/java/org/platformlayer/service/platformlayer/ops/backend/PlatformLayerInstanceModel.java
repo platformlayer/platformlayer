@@ -7,7 +7,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.InetAddressChooser;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
@@ -25,6 +24,8 @@ import org.platformlayer.service.platformlayer.model.PlatformLayerDatabase;
 import org.platformlayer.service.platformlayer.model.PlatformLayerService;
 import org.platformlayer.service.platformlayer.model.SystemAuthService;
 import org.platformlayer.service.platformlayer.model.UserAuthService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
@@ -32,7 +33,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class PlatformLayerInstanceModel extends StandardTemplateData {
-	static final Logger log = Logger.getLogger(PlatformLayerInstanceModel.class);
+
+	private static final Logger log = LoggerFactory.getLogger(PlatformLayerInstanceModel.class);
 
 	@Inject
 	DatabaseHelper databases;

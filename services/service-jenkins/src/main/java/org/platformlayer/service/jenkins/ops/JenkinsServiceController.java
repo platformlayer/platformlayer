@@ -2,7 +2,6 @@ package org.platformlayer.service.jenkins.ops;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
@@ -17,9 +16,12 @@ import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.imagefactory.v1.Repository;
 import org.platformlayer.service.imagefactory.v1.RepositoryKey;
 import org.platformlayer.service.jenkins.model.JenkinsService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JenkinsServiceController extends OpsTreeBase {
-	static final Logger log = Logger.getLogger(JenkinsServiceController.class);
+	private static final Logger log = LoggerFactory.getLogger(JenkinsServiceController.class);
+
 	public static final int PORT = 8080;
 
 	@Handler

@@ -2,14 +2,14 @@ package org.platformlayer.ops.schedule;
 
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.RepositoryException;
 
 import com.google.common.collect.Maps;
 
 public class InMemorySchedulerRepository implements SchedulerRepository {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(InMemorySchedulerRepository.class);
+	private static final Logger log = LoggerFactory.getLogger(InMemorySchedulerRepository.class);
 
 	final Map<String, SchedulerRecord> store = Maps.newHashMap();
 

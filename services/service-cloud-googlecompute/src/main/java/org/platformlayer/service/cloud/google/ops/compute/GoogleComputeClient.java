@@ -9,7 +9,6 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.ExceptionUtils;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.crypto.OpenSshUtils;
@@ -19,6 +18,8 @@ import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.service.cloud.google.model.GoogleCloud;
 import org.platformlayer.service.imagefactory.v1.DiskImageRecipe;
 import org.platformlayer.service.imagefactory.v1.OperatingSystemRecipe;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.compute.Compute;
@@ -40,7 +41,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 public class GoogleComputeClient {
-	static final Logger log = Logger.getLogger(GoogleComputeClient.class);
+
+	private static final Logger log = LoggerFactory.getLogger(GoogleComputeClient.class);
 
 	public static final String ZONE_US_EAST1_A = "us-east1-a";
 	public static final String ZONE_US_CENTRAL1_A = "us-central1-a";

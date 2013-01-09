@@ -8,7 +8,7 @@ import java.util.concurrent.ExecutorService;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.Tags;
@@ -23,7 +23,7 @@ import org.platformlayer.ops.images.PropertiesFileStore;
 import com.google.common.collect.Lists;
 
 public class DirectImageStore implements ImageStore {
-	static final Logger log = Logger.getLogger(DirectImageStore.class);
+	static final Logger log = LoggerFactory.getLogger(DirectImageStore.class);
 
 	private static final String PROPERTY_KEY_IMAGE_RAW_SIZE = "image.size.raw";
 

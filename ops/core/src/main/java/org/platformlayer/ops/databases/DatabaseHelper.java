@@ -2,13 +2,13 @@ package org.platformlayer.ops.databases;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.helpers.ProviderHelper;
 
 public class DatabaseHelper {
-	static final Logger log = Logger.getLogger(DatabaseHelper.class);
+	static final Logger log = LoggerFactory.getLogger(DatabaseHelper.class);
 
 	@Inject
 	ProviderHelper providerHelper;

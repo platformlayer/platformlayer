@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsException;
@@ -32,7 +32,7 @@ import com.google.common.collect.Sets;
  * 
  */
 public abstract class FilesystemBackedPool implements ResourcePool {
-	static final Logger log = Logger.getLogger(FilesystemBackedPool.class);
+	static final Logger log = LoggerFactory.getLogger(FilesystemBackedPool.class);
 
 	final PoolBuilder poolBuilder;
 	protected final OpsTarget target;

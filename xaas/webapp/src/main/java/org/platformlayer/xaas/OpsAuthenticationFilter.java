@@ -12,7 +12,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.Scope;
 import org.platformlayer.auth.AuthenticationToken;
 import org.platformlayer.auth.AuthenticationTokenValidator;
@@ -20,7 +20,7 @@ import org.platformlayer.auth.PlatformlayerAuthenticationToken;
 import org.platformlayer.model.AuthenticationCredentials;
 
 public class OpsAuthenticationFilter implements Filter {
-	static final Logger log = Logger.getLogger(OpsAuthenticationFilter.class);
+	static final Logger log = LoggerFactory.getLogger(OpsAuthenticationFilter.class);
 
 	// private static final long MAX_TIMESTAMP_SKEW = 300L * 1000L;
 

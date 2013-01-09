@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
 import org.openstack.client.common.RequestBuilder;
 import org.openstack.client.storage.OpenstackStorageClient;
 import org.openstack.model.storage.ObjectProperties;
@@ -19,11 +18,14 @@ import org.platformlayer.ops.helpers.CurlResult;
 import org.platformlayer.ops.process.ProcessExecution;
 import org.platformlayer.service.cloud.openstack.ops.RemoteCurlOpenstackSession;
 import org.platformlayer.service.cloud.openstack.ops.RemoteCurlOpenstackSession.RemoteCurlOpenstackRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
 
 public class ShellBackupClient {
-	static final Logger log = Logger.getLogger(ShellBackupClient.class);
+
+	private static final Logger log = LoggerFactory.getLogger(ShellBackupClient.class);
 
 	public final OpenstackBackupContext context;
 

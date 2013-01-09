@@ -1,6 +1,5 @@
 package org.platformlayer.service.dns.ops;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.ops.Bound;
@@ -12,9 +11,11 @@ import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.networks.PublicEndpoint;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.dns.model.DnsServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DnsServerController extends OpsTreeBase {
-	static final Logger log = Logger.getLogger(DnsServerController.class);
+	private static final Logger log = LoggerFactory.getLogger(DnsServerController.class);
 
 	@Handler
 	public void handler() {

@@ -3,7 +3,7 @@ package org.platformlayer.ops.machines;
 import java.net.InetAddress;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.core.model.EndpointInfo;
 import org.platformlayer.core.model.InstanceBase;
 import org.platformlayer.core.model.ManagedItemState;
@@ -17,7 +17,7 @@ import org.platformlayer.ops.networks.NetworkPoint;
 import com.google.common.collect.Lists;
 
 public class PlatformLayerCloudMachine extends MachineBase {
-	static final Logger log = Logger.getLogger(PlatformLayerCloudMachine.class);
+	static final Logger log = LoggerFactory.getLogger(PlatformLayerCloudMachine.class);
 
 	final PlatformLayerHelpers platformLayerClient;
 	final InstanceBase machine;

@@ -1,13 +1,13 @@
 package org.platformlayer.ops.postgres;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.databases.DatabaseTarget;
 
 public class CreateDatabase {
-	static final Logger log = Logger.getLogger(CreateDatabase.class);
+	static final Logger log = LoggerFactory.getLogger(CreateDatabase.class);
 
 	public String databaseName;
 

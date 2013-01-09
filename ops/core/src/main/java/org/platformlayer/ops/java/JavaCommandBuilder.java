@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Command.Argument;
 
@@ -13,7 +13,7 @@ import com.google.common.collect.Maps;
 
 public class JavaCommandBuilder {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(JavaCommandBuilder.class);
+	private static final Logger log = LoggerFactory.getLogger(JavaCommandBuilder.class);
 
 	final Map<String, String> defines = Maps.newHashMap();
 	String mainClass;

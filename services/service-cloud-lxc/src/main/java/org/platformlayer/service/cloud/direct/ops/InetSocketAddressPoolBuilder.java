@@ -4,11 +4,12 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.ops.pool.PoolBuilderBase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class InetSocketAddressPoolBuilder extends PoolBuilderBase<InetSocketAddress> {
-	static final Logger log = Logger.getLogger(InetSocketAddressPoolBuilder.class);
+	private static final Logger log = LoggerFactory.getLogger(InetSocketAddressPoolBuilder.class);
 
 	@Override
 	protected Properties buildProperties(InetSocketAddress socketAddress) {

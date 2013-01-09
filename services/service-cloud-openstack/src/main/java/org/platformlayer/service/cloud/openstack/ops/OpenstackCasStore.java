@@ -3,7 +3,6 @@ package org.platformlayer.service.cloud.openstack.ops;
 import java.io.File;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.openstack.client.OpenstackCredentials;
 import org.openstack.client.OpenstackNotFoundException;
 import org.openstack.client.common.OpenstackSession;
@@ -15,12 +14,15 @@ import org.platformlayer.cas.CasStoreObject;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.cas.OpsCasObjectBase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fathomdb.hash.Md5Hash;
 import com.google.common.collect.Lists;
 
 public class OpenstackCasStore implements CasStore {
-	static final Logger log = Logger.getLogger(OpenstackCasStore.class);
+
+	private static final Logger log = LoggerFactory.getLogger(OpenstackCasStore.class);
 
 	final String containerName;
 	final OpenstackCredentials credentials;

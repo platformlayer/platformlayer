@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.Filter;
 import org.platformlayer.TagFilter;
 import org.platformlayer.core.model.PlatformLayerKey;
@@ -22,11 +21,14 @@ import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.ops.tree.OwnedItem;
 import org.platformlayer.service.solr.model.SolrCluster;
 import org.platformlayer.service.solr.model.SolrServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
 public class SolrClusterController extends OpsTreeBase implements MachineCluster {
-	static final Logger log = Logger.getLogger(SolrClusterController.class);
+
+	private static final Logger log = LoggerFactory.getLogger(SolrClusterController.class);
 
 	@Inject
 	PlatformLayerHelpers platformLayer;

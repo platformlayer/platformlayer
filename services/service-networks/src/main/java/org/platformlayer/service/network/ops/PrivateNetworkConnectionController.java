@@ -2,7 +2,6 @@ package org.platformlayer.service.network.ops;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
@@ -10,9 +9,12 @@ import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.instances.ThrowingProvider;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.network.model.PrivateNetworkConnection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PrivateNetworkConnectionController extends OpsTreeBase {
-	static final Logger log = Logger.getLogger(NetworkConnectionController.class);
+
+	private static final Logger log = LoggerFactory.getLogger(PrivateNetworkConnectionController.class);
 
 	@Inject
 	OpsContext ops;

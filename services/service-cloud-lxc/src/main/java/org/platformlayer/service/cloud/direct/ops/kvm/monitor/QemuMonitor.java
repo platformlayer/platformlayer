@@ -7,14 +7,16 @@ import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 
-import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Charsets;
 
 public class QemuMonitor {
-	static final Logger log = Logger.getLogger(QemuMonitor.class);
+
+	private static final Logger log = LoggerFactory.getLogger(QemuMonitor.class);
 
 	private final InetAddress address;
 	private final int port;

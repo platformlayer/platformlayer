@@ -7,7 +7,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.InetAddressChooser;
 import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
@@ -23,12 +22,15 @@ import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.networks.PublicEndpoint;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.jetty.model.JettyService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 import com.google.common.net.InetAddresses;
 
 public class JettyServiceController extends OpsTreeBase implements HasPorts, HttpBackend {
-	static final Logger log = Logger.getLogger(JettyServiceController.class);
+
+	private static final Logger log = LoggerFactory.getLogger(JettyServiceController.class);
 
 	public static final int PORT = 8080;
 

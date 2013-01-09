@@ -5,7 +5,6 @@ import java.security.PublicKey;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.crypto.OpenSshUtils;
@@ -20,10 +19,12 @@ import org.platformlayer.ops.tagger.Tagger;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.google.model.GoogleCloudInstance;
 import org.platformlayer.service.cloud.google.ops.compute.GoogleComputeMachine;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GoogleCloudInstanceController extends OpsTreeBase {
-	static final Logger log = Logger.getLogger(GoogleCloudInstanceController.class);
+
+	private static final Logger log = LoggerFactory.getLogger(GoogleCloudInstanceController.class);
 
 	@Handler
 	public void handler() throws OpsException, IOException {

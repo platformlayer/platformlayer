@@ -2,7 +2,7 @@ package org.platformlayer.ops.postgres;
 
 import java.sql.SQLException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.core.model.Secret;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
@@ -12,7 +12,7 @@ import org.platformlayer.ops.databases.DatabaseTarget;
 import com.google.common.base.Objects;
 
 public class CreateUser {
-	static final Logger log = Logger.getLogger(CreateUser.class);
+	static final Logger log = LoggerFactory.getLogger(CreateUser.class);
 
 	public String grantDatabaseName;
 	public String databaseUser;

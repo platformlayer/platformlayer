@@ -2,7 +2,7 @@ package org.platformlayer.ops.helpers;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.core.model.InstanceBase;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
@@ -13,7 +13,7 @@ import com.google.common.collect.Lists;
 
 public class InstanceFinder extends TreeWalker {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(InstanceFinder.class);
+	private static final Logger log = LoggerFactory.getLogger(InstanceFinder.class);
 
 	List<InstanceBase> instances = Lists.newArrayList();
 

@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.EndpointChooser;
 import org.platformlayer.core.model.EndpointInfo;
 import org.platformlayer.ops.Deviations;
@@ -15,10 +14,12 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.service.zookeeper.model.ZookeeperServer;
 import org.platformlayer.service.zookeeper.ops.ZookeeperUtils.ZookeeperResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ZookeeperStatusChecker {
-	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(ZookeeperStatusChecker.class);
+
+	private static final Logger log = LoggerFactory.getLogger(ZookeeperStatusChecker.class);
 
 	@Handler
 	public void handler(OpsTarget target, ZookeeperServer zookeeperServer) throws OpsException {

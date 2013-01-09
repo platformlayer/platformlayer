@@ -3,7 +3,7 @@ package org.platformlayer.ops.cas.jenkins;
 import java.net.URI;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.cas.CasLocation;
 import org.platformlayer.cas.CasStore;
 import org.platformlayer.cas.CasStoreObject;
@@ -18,7 +18,7 @@ import org.platformlayer.ops.networks.NetworkPoint;
 import com.fathomdb.hash.Md5Hash;
 
 public class JenkinsCasStore implements CasStore {
-	static final Logger log = Logger.getLogger(JenkinsCasStore.class);
+	static final Logger log = LoggerFactory.getLogger(JenkinsCasStore.class);
 
 	final JenkinsClient client;
 

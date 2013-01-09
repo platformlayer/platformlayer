@@ -12,7 +12,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.ManagedItemCollection;
@@ -21,7 +21,7 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.xaas.services.ModelClass;
 
 public class ManagedItemCollectionResource extends XaasResourceBase {
-	static final Logger log = Logger.getLogger(ManagedItemCollectionResource.class);
+	static final Logger log = LoggerFactory.getLogger(ManagedItemCollectionResource.class);
 
 	@Inject
 	ItemService itemService;

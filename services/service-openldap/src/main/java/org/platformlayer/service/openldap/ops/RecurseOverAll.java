@@ -2,7 +2,6 @@ package org.platformlayer.service.openldap.ops;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.ops.BindingScope;
@@ -14,9 +13,12 @@ import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.helpers.SshKey;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RecurseOverAll {
-	static final Logger log = Logger.getLogger(RecurseOverAll.class);
+
+	private static final Logger log = LoggerFactory.getLogger(RecurseOverAll.class);
 
 	@Inject
 	InstanceHelpers instances;

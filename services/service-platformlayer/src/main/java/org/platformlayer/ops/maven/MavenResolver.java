@@ -4,17 +4,19 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import org.apache.log4j.Logger;
 import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.apache.maven.artifact.repository.metadata.SnapshotVersion;
 import org.apache.maven.artifact.repository.metadata.Versioning;
 import org.platformlayer.maven.MavenXml;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fathomdb.io.IoUtils;
 import com.google.common.base.Objects;
 
 public class MavenResolver {
-	static final Logger log = Logger.getLogger(MavenResolver.class);
+
+	private static final Logger log = LoggerFactory.getLogger(MavenResolver.class);
 
 	final Path basePath;
 

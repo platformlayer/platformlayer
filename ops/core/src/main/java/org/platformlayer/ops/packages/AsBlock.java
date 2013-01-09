@@ -4,16 +4,17 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.SshOpsTarget;
 import org.platformlayer.ops.networks.IpRange;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 import com.google.common.net.InetAddresses;
 
 public class AsBlock {
-	private static final Logger log = Logger.getLogger(AsBlock.class);
+	private static final Logger log = LoggerFactory.getLogger(AsBlock.class);
 
 	final String key;
 	final Country country;

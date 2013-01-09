@@ -6,7 +6,6 @@ import java.util.Map.Entry;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.SetUtils;
 import org.platformlayer.SetUtils.SetCompareResults;
 import org.platformlayer.core.model.ConfigureAction;
@@ -18,13 +17,16 @@ import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.ldap.LdapDN;
 import org.platformlayer.service.openldap.model.LdapService;
 import org.platformlayer.service.openldap.ops.LdapHelpers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 public abstract class LdapEntry {
-	static final Logger log = Logger.getLogger(LdapEntry.class);
+
+	private static final Logger log = LoggerFactory.getLogger(LdapEntry.class);
 
 	private static final Collection<String> IGNORE_PROPERTIES_IN_VALIDATE = Lists.newArrayList("userPassword");
 

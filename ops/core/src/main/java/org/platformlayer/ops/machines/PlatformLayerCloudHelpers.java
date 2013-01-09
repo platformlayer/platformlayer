@@ -7,7 +7,7 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.Filter;
 import org.platformlayer.StateFilter;
 import org.platformlayer.TagFilter;
@@ -40,7 +40,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 public class PlatformLayerCloudHelpers {
-	static final Logger log = Logger.getLogger(PlatformLayerCloudHelpers.class);
+	static final Logger log = LoggerFactory.getLogger(PlatformLayerCloudHelpers.class);
 
 	@Inject
 	MultiCloudScheduler scheduler;

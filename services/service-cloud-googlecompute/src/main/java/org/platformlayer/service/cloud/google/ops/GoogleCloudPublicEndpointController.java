@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.core.model.EndpointInfo;
 import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.ops.Handler;
@@ -16,11 +15,14 @@ import org.platformlayer.ops.tagger.Tagger;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.google.model.GoogleCloudInstance;
 import org.platformlayer.service.cloud.google.model.GoogleCloudPublicEndpoint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 
 public class GoogleCloudPublicEndpointController extends OpsTreeBase {
-	static final Logger log = Logger.getLogger(GoogleCloudPublicEndpointController.class);
+
+	private static final Logger log = LoggerFactory.getLogger(GoogleCloudPublicEndpointController.class);
 
 	@Handler
 	public void handler() throws OpsException, IOException {

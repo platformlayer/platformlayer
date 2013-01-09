@@ -2,15 +2,18 @@ package org.platformlayer.service.cloud.direct.ops;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
-import com.fathomdb.Utf8;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.filesystem.SyntheticFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fathomdb.Utf8;
 
 public class SysctlSetting extends SyntheticFile {
-	private static final Logger log = Logger.getLogger(SysctlSetting.class);
+
+	private static final Logger log = LoggerFactory.getLogger(SysctlSetting.class);
 
 	public String key;
 	public String value;

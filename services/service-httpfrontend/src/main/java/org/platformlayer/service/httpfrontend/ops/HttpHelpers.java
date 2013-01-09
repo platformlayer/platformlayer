@@ -2,10 +2,12 @@ package org.platformlayer.service.httpfrontend.ops;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HttpHelpers {
-	static final Logger log = Logger.getLogger(HttpHelpers.class);
+
+	private static final Logger log = LoggerFactory.getLogger(HttpHelpers.class);
 
 	// @Inject
 	// CloudContext cloud;

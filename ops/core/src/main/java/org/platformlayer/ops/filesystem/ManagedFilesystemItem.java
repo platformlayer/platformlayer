@@ -9,7 +9,7 @@ import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
 public abstract class ManagedFilesystemItem extends OpsTreeBase {
-	// static final Logger log = Logger.getLogger(ManagedFilesystemOpsItem.class);
+	// static final Logger log = LoggerFactory.getLogger(ManagedFilesystemOpsItem.class);
 	//
 	public File filePath;
 	public String fileMode = "0400";

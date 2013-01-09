@@ -2,7 +2,6 @@ package org.platformlayer.service.app.ops;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.Bound;
@@ -17,11 +16,13 @@ import org.platformlayer.service.app.model.App;
 import org.platformlayer.service.httpfrontend.model.HttpSite;
 import org.platformlayer.service.jetty.model.JettyContext;
 import org.platformlayer.service.jetty.model.JettyService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
 public class AppController extends OpsTreeBase implements HasPorts {
-	static final Logger log = Logger.getLogger(AppController.class);
+	private static final Logger log = LoggerFactory.getLogger(AppController.class);
 
 	@Bound
 	App model;

@@ -2,13 +2,13 @@ package org.platformlayer.ops.process;
 
 import java.io.Serializable;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import com.fathomdb.Utf8;
 
 public class ProcessExecution implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	static final Logger log = Logger.getLogger(ProcessExecution.class);
+	static final Logger log = LoggerFactory.getLogger(ProcessExecution.class);
 
 	private final int exitCode;
 	private String stdOut;

@@ -1,13 +1,13 @@
 package org.platformlayer.ops.metrics.collectd;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.service.ManagedService;
 
 public class CollectdSink extends CollectdCommon {
-	static final Logger log = Logger.getLogger(CollectdSink.class);
+	static final Logger log = LoggerFactory.getLogger(CollectdSink.class);
 
 	@Handler
 	public void doOperation() throws OpsException {

@@ -3,13 +3,13 @@ package org.platformlayer.ops.pool;
 import java.net.InetAddress;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.ops.networks.IpRange;
 
 import com.google.common.collect.Iterables;
 
 public class NetworkPoolBuilder extends PoolBuilderBase<InetAddress> {
-	static final Logger log = Logger.getLogger(NetworkPoolBuilder.class);
+	static final Logger log = LoggerFactory.getLogger(NetworkPoolBuilder.class);
 
 	final IpRange range;
 	final int skipCount;

@@ -1,6 +1,6 @@
 package org.platformlayer.xaas;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.fasterxml.jackson.databind.JavaType;
@@ -13,7 +13,7 @@ public class PlatformLayerTypeIdResolver extends TypeIdResolverBase {
 	}
 
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(PlatformLayerTypeIdResolver.class);
+	private static final Logger log = LoggerFactory.getLogger(PlatformLayerTypeIdResolver.class);
 
 	@Override
 	public String idFromValue(Object value) {

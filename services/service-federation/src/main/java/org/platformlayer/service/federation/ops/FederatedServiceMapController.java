@@ -1,12 +1,13 @@
 package org.platformlayer.service.federation.ops;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.tree.OpsTreeBase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FederatedServiceMapController extends OpsTreeBase {
-	static final Logger log = Logger.getLogger(FederatedServiceMapController.class);
+	private static final Logger log = LoggerFactory.getLogger(FederatedServiceMapController.class);
 
 	@Handler
 	public void doOperation() {

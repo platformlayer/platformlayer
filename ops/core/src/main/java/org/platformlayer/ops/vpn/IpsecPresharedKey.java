@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.core.model.Secret;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.FileUpload;
@@ -19,7 +19,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class IpsecPresharedKey {
-	static final Logger log = Logger.getLogger(IpsecPresharedKey.class);
+	static final Logger log = LoggerFactory.getLogger(IpsecPresharedKey.class);
 
 	public static final String SHAREDKEY_USER_FQDN = "sharedkey@platformlayer.org";
 

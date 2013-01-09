@@ -5,7 +5,6 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.ops.CustomRecursor;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.Injection;
@@ -26,9 +25,12 @@ import org.platformlayer.service.openldap.ops.ldap.HdbDatabaseEntry;
 import org.platformlayer.service.openldap.ops.ldap.OrganizationLdapEntry;
 import org.platformlayer.service.openldap.ops.ldap.OrganizationalRoleLdapEntry;
 import org.platformlayer.service.openldap.ops.ldap.OrganizationalUnitLdapEntry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LdapDomainController extends OpsTreeBase implements CustomRecursor {
-	static final Logger log = Logger.getLogger(LdapDomainController.class);
+
+	private static final Logger log = LoggerFactory.getLogger(LdapDomainController.class);
 
 	@Inject
 	ServiceContext service;

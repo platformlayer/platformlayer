@@ -17,7 +17,7 @@
 //import org.platformlayer.ops.tree.OpsTreeBase;
 //
 //public abstract class ZippedService extends OpsTreeBase {
-//	static final Logger log = Logger.getLogger(ZippedService.class);
+//	static final Logger log = LoggerFactory.getLogger(ZippedService.class);
 //
 //	@Inject
 //	SoftwareRepositoryHelpers softwareRepository;

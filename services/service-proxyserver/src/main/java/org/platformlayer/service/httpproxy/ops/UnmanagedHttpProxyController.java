@@ -2,16 +2,18 @@ package org.platformlayer.service.httpproxy.ops;
 
 import java.net.URI;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.proxy.HttpProxyController;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.httpproxy.model.UnmanagedHttpProxy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UnmanagedHttpProxyController extends OpsTreeBase implements HttpProxyController {
-	static final Logger log = Logger.getLogger(UnmanagedHttpProxyController.class);
+
+	private static final Logger log = LoggerFactory.getLogger(UnmanagedHttpProxyController.class);
 
 	@Handler
 	public void doOperation() {

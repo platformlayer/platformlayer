@@ -10,7 +10,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.PlatformLayerClientBase;
 import org.platformlayer.xml.XmlHelper;
 import org.w3c.dom.Document;
@@ -23,7 +23,7 @@ import com.fathomdb.io.IoUtils;
 import com.google.common.collect.Lists;
 
 public class JenkinsClient {
-	static final Logger log = Logger.getLogger(JenkinsClient.class);
+	static final Logger log = LoggerFactory.getLogger(JenkinsClient.class);
 
 	final URI baseUrl;
 	final HttpClient httpClient;

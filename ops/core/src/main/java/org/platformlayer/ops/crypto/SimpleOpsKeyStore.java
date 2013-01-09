@@ -6,13 +6,13 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.crypto.RsaUtils;
 
 import com.google.common.collect.Maps;
 
 public class SimpleOpsKeyStore implements OpsKeyStore {
-	private static final Logger log = Logger.getLogger(SimpleOpsKeyStore.class);
+	private static final Logger log = LoggerFactory.getLogger(SimpleOpsKeyStore.class);
 
 	static final File SECRETS_ROOT = new File("/var/secrets/");
 

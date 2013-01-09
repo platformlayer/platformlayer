@@ -9,17 +9,19 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.helpers.CurlRequest;
 import org.platformlayer.ops.helpers.CurlResult;
 import org.platformlayer.xml.XmlHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 public class SolrCoreHelpers {
-	static final Logger log = Logger.getLogger(SolrCoreHelpers.class);
+
+	private static final Logger log = LoggerFactory.getLogger(SolrCoreHelpers.class);
 
 	final OpsTarget target;
 	final String coreKey;

@@ -5,7 +5,6 @@ import java.security.PublicKey;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpaqueMachine;
 import org.platformlayer.ops.OpsException;
@@ -16,9 +15,12 @@ import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.ssh.SshAuthorizedKey;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.raw.model.RawTarget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RawTargetController extends OpsTreeBase {
-	static final Logger log = Logger.getLogger(RawTargetController.class);
+
+	private static final Logger log = LoggerFactory.getLogger(RawTargetController.class);
 
 	@Inject
 	ServiceContext service;

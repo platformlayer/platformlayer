@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.Handler;
@@ -23,12 +22,14 @@ import org.platformlayer.ops.networks.IpRange;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.tree.LateBound;
 import org.platformlayer.ops.tree.OpsTreeBase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 
 public class PlatformLayerFirewallEntry extends OpsTreeBase {
-	static final Logger log = Logger.getLogger(PlatformLayerFirewallEntry.class);
+	private static final Logger log = LoggerFactory.getLogger(PlatformLayerFirewallEntry.class);
 
 	public PlatformLayerKey destItem;
 	public PlatformLayerKey sourceItemKey;

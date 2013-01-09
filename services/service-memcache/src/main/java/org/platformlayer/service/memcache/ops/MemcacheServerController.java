@@ -3,11 +3,9 @@ package org.platformlayer.service.memcache.ops;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.filesystem.TemplatedFile;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
@@ -16,9 +14,12 @@ import org.platformlayer.ops.packages.PackageDependency;
 import org.platformlayer.ops.service.ManagedService;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.memcache.model.MemcacheServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MemcacheServerController extends OpsTreeBase {
-	static final Logger log = Logger.getLogger(MemcacheServerController.class);
+
+	private static final Logger log = LoggerFactory.getLogger(MemcacheServerController.class);
 
 	public static final int MEMCACHE_PORT = 11211;
 

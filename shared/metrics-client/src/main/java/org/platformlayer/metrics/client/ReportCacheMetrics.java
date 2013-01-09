@@ -9,7 +9,7 @@
 //
 //public class ReportCacheMetrics {
 //	@SuppressWarnings("unused")
-//	private static final Logger log = Logger.getLogger(ReportCacheMetrics.class);
+//	private static final Logger log = LoggerFactory.getLogger(ReportCacheMetrics.class);
 //
 //	final Class<?> context;
 //	final String prefix;

@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.core.model.BackupAction;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Handler;
@@ -15,12 +14,13 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.backups.Backup;
 import org.platformlayer.ops.backups.BackupContext;
-import org.platformlayer.ops.backups.BackupDirectory;
 import org.platformlayer.ops.backups.BackupHelpers;
 import org.platformlayer.ops.backups.BackupItem;
 import org.platformlayer.ops.process.ProcessExecution;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.postgresql.model.PostgresqlServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
@@ -28,7 +28,7 @@ import com.google.common.collect.Lists;
 public class PostgresqlServerBackup extends OpsTreeBase {
 	private static final String FORMAT = "pgdump";
 
-	static final Logger log = Logger.getLogger(BackupDirectory.class);
+	private static final Logger log = LoggerFactory.getLogger(PostgresqlServerBackup.class);
 
 	@Inject
 	BackupHelpers backups;

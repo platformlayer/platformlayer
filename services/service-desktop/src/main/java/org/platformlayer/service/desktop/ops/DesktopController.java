@@ -2,11 +2,9 @@ package org.platformlayer.service.desktop.ops;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.networks.PublicEndpoint;
@@ -15,9 +13,12 @@ import org.platformlayer.ops.packages.RecipeOperatingSystem;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.desktop.model.Desktop;
 import org.platformlayer.service.imagefactory.v1.OperatingSystemRecipe;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DesktopController extends OpsTreeBase {
-	static final Logger log = Logger.getLogger(DesktopController.class);
+
+	private static final Logger log = LoggerFactory.getLogger(DesktopController.class);
 
 	@Handler
 	public void doOperation() throws OpsException, IOException {

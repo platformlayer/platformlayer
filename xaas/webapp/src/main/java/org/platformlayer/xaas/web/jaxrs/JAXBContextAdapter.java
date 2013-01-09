@@ -6,11 +6,11 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.Validator;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 
 public class JAXBContextAdapter extends JAXBContext {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(JAXBContextAdapter.class);
+	private static final Logger log = LoggerFactory.getLogger(JAXBContextAdapter.class);
 
 	@Override
 	public Unmarshaller createUnmarshaller() throws JAXBException {

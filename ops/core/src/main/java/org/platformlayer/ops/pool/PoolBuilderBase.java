@@ -3,13 +3,15 @@ package org.platformlayer.ops.pool;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.ops.OpsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
 
 public abstract class PoolBuilderBase<T> implements PoolBuilder {
-	static final Logger log = Logger.getLogger(PoolBuilderBase.class);
+
+	private static final Logger log = LoggerFactory.getLogger(PoolBuilderBase.class);
 
 	protected int batchAddCount = 16;
 

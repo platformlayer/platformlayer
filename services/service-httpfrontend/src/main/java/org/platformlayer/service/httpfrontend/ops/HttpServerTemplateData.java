@@ -3,7 +3,6 @@ package org.platformlayer.service.httpfrontend.ops;
 import java.io.File;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Command.Argument;
@@ -12,11 +11,14 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.java.JavaCommandBuilder;
 import org.platformlayer.ops.standardservice.StandardTemplateData;
 import org.platformlayer.service.httpfrontend.model.HttpServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Maps;
 
 public class HttpServerTemplateData extends StandardTemplateData {
-	static final Logger log = Logger.getLogger(HttpServerTemplateData.class);
+
+	private static final Logger log = LoggerFactory.getLogger(HttpServerTemplateData.class);
 
 	// public File getInstanceDir() {
 	// return HttpHelpers.PATH_BASE;

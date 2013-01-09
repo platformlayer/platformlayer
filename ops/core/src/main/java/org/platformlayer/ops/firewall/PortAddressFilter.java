@@ -1,9 +1,9 @@
 package org.platformlayer.ops.firewall;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 
 public class PortAddressFilter {
-	static final Logger log = Logger.getLogger(PortAddressFilter.class);
+	static final Logger log = LoggerFactory.getLogger(PortAddressFilter.class);
 
 	/**
 	 * Low port to which rule applies, INCLUSIVE

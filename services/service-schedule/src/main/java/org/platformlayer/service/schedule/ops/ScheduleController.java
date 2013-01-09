@@ -2,7 +2,6 @@ package org.platformlayer.service.schedule.ops;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.PlatformLayerEndpointInfo;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.JobSchedule;
@@ -15,9 +14,12 @@ import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.schedule.ActionScheduler;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.schedule.model.ScheduledTask;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ScheduleController extends OpsTreeBase {
-	static final Logger log = Logger.getLogger(ScheduleController.class);
+
+	private static final Logger log = LoggerFactory.getLogger(ScheduleController.class);
 
 	@Inject
 	ActionScheduler actionScheduler;

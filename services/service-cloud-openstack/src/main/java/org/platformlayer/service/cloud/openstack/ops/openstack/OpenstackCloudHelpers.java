@@ -4,7 +4,6 @@ import java.security.PublicKey;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
 import org.openstack.client.OpenstackCredentials;
 import org.openstack.client.OpenstackException;
 import org.openstack.client.common.OpenstackComputeClient;
@@ -20,12 +19,15 @@ import org.openstack.model.compute.Server;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.helpers.SshKeys;
 import org.platformlayer.service.cloud.openstack.model.OpenstackCloud;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 public class OpenstackCloudHelpers {
-	static final Logger log = Logger.getLogger(OpenstackCloudHelpers.class);
+
+	private static final Logger log = LoggerFactory.getLogger(OpenstackCloudHelpers.class);
 
 	public OpenstackComputeClient buildOpenstackComputeClient(OpenstackCloud cloud) throws OpsException {
 		try {

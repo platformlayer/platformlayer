@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.core.model.MachineCloudBase;
 import org.platformlayer.ops.MachineCreationRequest;
@@ -16,7 +16,7 @@ import org.platformlayer.service.machines.raw.v1.RawCloud;
 import com.google.common.collect.Lists;
 
 public class SimpleMultiCloudScheduler implements MultiCloudScheduler {
-	static final Logger log = Logger.getLogger(SimpleMultiCloudScheduler.class);
+	static final Logger log = LoggerFactory.getLogger(SimpleMultiCloudScheduler.class);
 
 	@Inject
 	PlatformLayerHelpers platformLayerHelpers;

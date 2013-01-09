@@ -7,7 +7,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.CommandEnvironment;
@@ -27,7 +27,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class AptPackageManager {
-	static final Logger log = Logger.getLogger(AptPackageManager.class);
+	static final Logger log = LoggerFactory.getLogger(AptPackageManager.class);
 
 	@Inject
 	HttpProxyHelper httpProxies;

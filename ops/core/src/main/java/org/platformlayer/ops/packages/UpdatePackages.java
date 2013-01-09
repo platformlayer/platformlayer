@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Deviations;
 import org.platformlayer.ops.Handler;
@@ -14,7 +14,7 @@ import org.platformlayer.ops.OpsTarget;
 
 public class UpdatePackages {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(UpdatePackages.class);
+	private static final Logger log = LoggerFactory.getLogger(UpdatePackages.class);
 
 	@Inject
 	AptPackageManager apt;

@@ -2,7 +2,7 @@ package org.platformlayer.ops.filesystem;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.HasDescription;
 import org.platformlayer.ops.OpsContext;
@@ -12,7 +12,7 @@ import com.google.common.base.Objects;
 
 //@Icon("folder")
 public class ManagedSymlink extends ManagedFilesystemItem implements HasDescription {
-	static final Logger log = Logger.getLogger(ManagedSymlink.class);
+	static final Logger log = LoggerFactory.getLogger(ManagedSymlink.class);
 
 	public File symlinkTarget;
 

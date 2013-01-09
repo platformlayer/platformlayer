@@ -6,8 +6,6 @@ import java.util.Map;
 
 import javax.inject.Provider;
 
-import org.apache.log4j.Logger;
-import com.fathomdb.Utf8;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
@@ -18,14 +16,17 @@ import org.platformlayer.ops.networks.ScriptBuilder;
 import org.platformlayer.ops.supervisor.ManagedSupervisordInstance;
 import org.platformlayer.ops.supervisor.SupervisorProcessConfig;
 import org.platformlayer.service.cloud.direct.model.DirectHost;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.fathomdb.Utf8;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.inject.util.Providers;
 
 public class InstanceScript extends SyntheticFile {
-	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(InstanceScript.class);
+
+	private static final Logger log = LoggerFactory.getLogger(InstanceScript.class);
 
 	public String key;
 	public Command launchInstanceCommand;

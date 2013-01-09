@@ -3,7 +3,7 @@ package org.platformlayer.ops.bootstrap;
 import java.io.File;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
@@ -23,7 +23,7 @@ import com.google.common.collect.Lists;
  * 
  */
 public class RegenerateLocales {
-	private static final Logger log = Logger.getLogger(RegenerateLocales.class);
+	private static final Logger log = LoggerFactory.getLogger(RegenerateLocales.class);
 
 	public static final File LOCALE_GEN_FILE = new File("/etc/locale.gen");
 

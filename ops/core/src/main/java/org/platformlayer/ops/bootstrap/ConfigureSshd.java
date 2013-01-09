@@ -2,7 +2,7 @@ package org.platformlayer.ops.bootstrap;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
@@ -11,7 +11,7 @@ import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class ConfigureSshd extends OpsTreeBase {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(ConfigureSshd.class);
+	private static final Logger log = LoggerFactory.getLogger(ConfigureSshd.class);
 
 	@Handler
 	public void handler() {

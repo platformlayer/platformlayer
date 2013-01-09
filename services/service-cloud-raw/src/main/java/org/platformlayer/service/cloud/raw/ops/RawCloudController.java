@@ -2,7 +2,6 @@ package org.platformlayer.service.cloud.raw.ops;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.core.model.InstanceBase;
 import org.platformlayer.core.model.MachineCloudBase;
 import org.platformlayer.core.model.PublicEndpointBase;
@@ -15,9 +14,12 @@ import org.platformlayer.ops.machines.StorageConfiguration;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.raw.model.RawInstance;
 import org.platformlayer.service.cloud.raw.model.RawPublicEndpoint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RawCloudController extends OpsTreeBase implements CloudController {
-	static final Logger log = Logger.getLogger(RawCloudController.class);
+
+	private static final Logger log = LoggerFactory.getLogger(RawCloudController.class);
 
 	@Handler
 	public void handler() throws OpsException, IOException {

@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.xaas.web.jaxrs.JaxbContextHelper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JsonMapper {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(JsonMapper.class);
+	private static final Logger log = LoggerFactory.getLogger(JsonMapper.class);
 
 	@Inject
 	JaxbContextHelper jaxbContextHelper;

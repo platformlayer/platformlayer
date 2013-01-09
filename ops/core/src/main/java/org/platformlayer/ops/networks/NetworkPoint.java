@@ -5,7 +5,7 @@ import java.net.UnknownHostException;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.InetAddressChooser;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
@@ -17,7 +17,7 @@ import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
 public class NetworkPoint {
-	private static final Logger log = Logger.getLogger(NetworkPoint.class);
+	private static final Logger log = LoggerFactory.getLogger(NetworkPoint.class);
 
 	final String privateNetworkId;
 	final InetAddress address;

@@ -8,7 +8,6 @@ import java.util.Properties;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.InetAddressChooser;
 import org.platformlayer.core.model.EndpointInfo;
 import org.platformlayer.core.model.ItemBase;
@@ -32,13 +31,16 @@ import org.platformlayer.ops.pool.SocketAddressPoolAssignment;
 import org.platformlayer.ops.tagger.Tagger;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.direct.model.DirectInstance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.inject.Provider;
 
 public class PublicPorts extends OpsTreeBase {
-	static final Logger log = Logger.getLogger(PublicPorts.class);
+
+	private static final Logger log = LoggerFactory.getLogger(PublicPorts.class);
 
 	public int backendPort;
 	public int publicPort;

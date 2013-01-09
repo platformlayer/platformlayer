@@ -5,7 +5,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.EndpointInfo;
 import org.platformlayer.core.model.PlatformLayerKey;
@@ -27,7 +27,7 @@ import org.platformlayer.ops.tree.OpsTreeBase;
 import com.google.common.base.Strings;
 
 public class PublicEndpoint extends OpsTreeBase {
-	static final Logger log = Logger.getLogger(PublicEndpoint.class);
+	static final Logger log = LoggerFactory.getLogger(PublicEndpoint.class);
 
 	// public String network;
 	public int publicPort;

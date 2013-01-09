@@ -3,12 +3,10 @@ package org.platformlayer.service.mysql.ops;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.core.model.Secret;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.filesystem.SimpleFile;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
@@ -17,10 +15,13 @@ import org.platformlayer.ops.packages.PackageDependency;
 import org.platformlayer.ops.service.ManagedService;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.mysql.model.MysqlServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MysqlServerController extends OpsTreeBase {
 	public static final Secret DEFAULT_BOOTSTRAP_PASSWORD = Secret.build("bootstrap_password");
-	static final Logger log = Logger.getLogger(MysqlServerController.class);
+
+	private static final Logger log = LoggerFactory.getLogger(MysqlServerController.class);
 
 	@Handler
 	public void handler() throws OpsException, IOException {

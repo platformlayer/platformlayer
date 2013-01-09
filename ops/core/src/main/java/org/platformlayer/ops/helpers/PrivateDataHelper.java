@@ -8,7 +8,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.ApplicationMode;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.crypto.CertificateUtils;
@@ -24,7 +24,7 @@ import org.platformlayer.xaas.repository.ServiceAuthorizationService;
 import com.fathomdb.io.IoUtils;
 
 public class PrivateDataHelper {
-	private static final Logger log = Logger.getLogger(PrivateDataHelper.class);
+	private static final Logger log = LoggerFactory.getLogger(PrivateDataHelper.class);
 
 	@Inject
 	ServiceAuthorizationService serviceAuthorizationService;

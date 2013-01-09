@@ -3,7 +3,6 @@ package org.platformlayer.service.cloud.direct.ops;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.CommandEnvironment;
@@ -11,9 +10,12 @@ import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.TemplatedFile;
 import org.platformlayer.ops.tree.OpsTreeBase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class NetworkBridge extends OpsTreeBase {
-	static final Logger log = Logger.getLogger(NetworkBridge.class);
+
+	private static final Logger log = LoggerFactory.getLogger(NetworkBridge.class);
 
 	@Bound
 	HostTemplate template;

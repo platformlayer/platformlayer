@@ -3,13 +3,13 @@ package org.platformlayer.ops.filesystem;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.ResourceUtils;
 import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsException;
 
 public class SimpleFile extends SyntheticFile {
-	static final Logger log = Logger.getLogger(SimpleFile.class);
+	static final Logger log = LoggerFactory.getLogger(SimpleFile.class);
 
 	public Class<?> contextClass;
 	public String resourceName;

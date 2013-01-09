@@ -2,13 +2,15 @@ package org.platformlayer.service.dns.ops;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.service.dns.model.DnsZone;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DnsZoneController {
-	static final Logger log = Logger.getLogger(DnsZoneController.class);
+
+	private static final Logger log = LoggerFactory.getLogger(DnsZoneController.class);
 
 	@Inject
 	DnsHelpers dns;

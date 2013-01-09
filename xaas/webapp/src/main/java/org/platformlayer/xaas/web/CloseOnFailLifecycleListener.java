@@ -1,12 +1,12 @@
 package org.platformlayer.xaas.web;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.eclipse.jetty.util.component.LifeCycle;
 import org.eclipse.jetty.util.component.LifeCycle.Listener;
 
 public class CloseOnFailLifecycleListener implements Listener {
 
-	private static final Logger log = Logger.getLogger(CloseOnFailLifecycleListener.class);
+	private static final Logger log = LoggerFactory.getLogger(CloseOnFailLifecycleListener.class);
 
 	@Override
 	public void lifeCycleStopping(LifeCycle event) {

@@ -13,7 +13,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.auth.AuthenticationTokenValidator;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.inject.ObjectInjector;
@@ -24,7 +24,7 @@ import org.platformlayer.web.AuthenticationFilter;
 @Path("/")
 @Singleton
 public class RootResource extends XaasResourceBase {
-	static final Logger LOG = Logger.getLogger(RootResource.class);
+	static final Logger log = LoggerFactory.getLogger(RootResource.class);
 
 	@Context
 	HttpHeaders requestHeaders;

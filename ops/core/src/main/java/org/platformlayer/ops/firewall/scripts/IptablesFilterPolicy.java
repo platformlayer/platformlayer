@@ -1,12 +1,12 @@
 package org.platformlayer.ops.firewall.scripts;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.ops.firewall.FirewallRecord.Direction;
 import org.platformlayer.ops.firewall.IptablesChain;
 import org.platformlayer.ops.firewall.Transport;
 
 public class IptablesFilterPolicy extends IpTablesRuleScript {
-	static final Logger log = Logger.getLogger(IptablesFilterPolicy.class);
+	static final Logger log = LoggerFactory.getLogger(IptablesFilterPolicy.class);
 
 	// Inherited:
 	// public String ruleKey;

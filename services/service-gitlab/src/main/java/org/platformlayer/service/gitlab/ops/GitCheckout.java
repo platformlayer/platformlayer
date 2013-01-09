@@ -2,16 +2,18 @@ package org.platformlayer.service.gitlab.ops;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GitCheckout {
-	static final Logger log = Logger.getLogger(GitCheckout.class);
+
+	private static final Logger log = LoggerFactory.getLogger(GitCheckout.class);
 
 	public File targetDir;
 	public String source;

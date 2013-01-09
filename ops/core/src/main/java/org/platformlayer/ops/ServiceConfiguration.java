@@ -1,11 +1,11 @@
 package org.platformlayer.ops;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceType;
 
 public class ServiceConfiguration {
-	static final Logger log = Logger.getLogger(ServiceConfiguration.class);
+	static final Logger log = LoggerFactory.getLogger(ServiceConfiguration.class);
 
 	final ServiceType serviceType;
 	final ProjectId project;

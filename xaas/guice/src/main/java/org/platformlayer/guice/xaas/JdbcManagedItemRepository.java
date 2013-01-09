@@ -13,8 +13,7 @@ import javax.inject.Provider;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
-import org.apache.log4j.Logger;
-import com.fathomdb.Utf8;
+import org.slf4j.*;
 import org.platformlayer.Filter;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.TagFilter;
@@ -44,7 +43,9 @@ import org.platformlayer.xaas.services.ModelClass;
 import org.platformlayer.xaas.services.ServiceProvider;
 import org.platformlayer.xaas.services.ServiceProviderDictionary;
 import org.platformlayer.xml.JaxbHelper;
+import org.slf4j.LoggerFactory;
 
+import com.fathomdb.Utf8;
 import com.fathomdb.crypto.CryptoKey;
 import com.fathomdb.crypto.FathomdbCrypto;
 import com.google.common.base.Charsets;
@@ -55,7 +56,7 @@ import com.google.common.collect.Multimap;
 
 public class JdbcManagedItemRepository implements ManagedItemRepository {
 
-	private static final Logger log = Logger.getLogger(JdbcManagedItemRepository.class);
+	private static final Logger log = LoggerFactory.getLogger(JdbcManagedItemRepository.class);
 
 	/**
 	 * We originally weren't de-duplicating tags, but I think we want to

@@ -1,6 +1,6 @@
 package org.platformlayer.ops.bootstrap;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.firewall.scripts.PersistIptablesScripts;
@@ -18,7 +18,7 @@ import org.platformlayer.ops.tree.OpsTreeBase;
 // TODO: Don't use for LXC/KVM hosts?
 public class InstanceBootstrap extends OpsTreeBase {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(InstanceBootstrap.class);
+	private static final Logger log = LoggerFactory.getLogger(InstanceBootstrap.class);
 
 	@Handler
 	public void handler() {

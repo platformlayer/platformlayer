@@ -5,7 +5,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.choice.Chooser;
 import org.platformlayer.choice.ScoreChooser;
 import org.platformlayer.core.model.HostPolicy;
@@ -17,6 +16,8 @@ import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.service.cloud.direct.model.DirectInstance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
 import com.google.common.base.Objects;
@@ -25,8 +26,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class ScoreHostPolicy implements Chooser<DirectCloudHost> {
-	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(ScoreHostPolicy.class);
+
+	private static final Logger log = LoggerFactory.getLogger(ScoreHostPolicy.class);
 
 	@Inject
 	PlatformLayerHelpers platformLayer;

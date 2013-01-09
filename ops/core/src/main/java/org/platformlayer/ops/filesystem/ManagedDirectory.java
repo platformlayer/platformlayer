@@ -25,7 +25,7 @@ public class ManagedDirectory extends ManagedFilesystemItem implements HasDescri
 		fileMode = "0700";
 	}
 
-	// static final Logger log = Logger.getLogger(ManagedDirectoryOpsItem.class);
+	// static final Logger log = LoggerFactory.getLogger(ManagedDirectoryOpsItem.class);
 	//
 	@Handler
 	public void doConfigureValidate(OpsTarget target) throws Exception {

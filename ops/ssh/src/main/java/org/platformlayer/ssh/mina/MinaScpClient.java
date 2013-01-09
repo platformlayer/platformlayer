@@ -9,13 +9,14 @@ import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
-import org.apache.log4j.Logger;
 import org.apache.sshd.ClientChannel;
 import org.apache.sshd.ClientSession;
 import org.platformlayer.ExceptionUtils;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.ops.ssh.SshException;
 import org.platformlayer.ssh.mina.bugfix.BugFixChannelExec;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fathomdb.Utf8;
 import com.fathomdb.io.IoUtils;
@@ -28,7 +29,7 @@ import com.google.common.io.Closeables;
  * 
  */
 public class MinaScpClient {
-	static final Logger log = Logger.getLogger(MinaScpClient.class);
+	static final Logger log = LoggerFactory.getLogger(MinaScpClient.class);
 
 	private final ClientSession clientSession;
 

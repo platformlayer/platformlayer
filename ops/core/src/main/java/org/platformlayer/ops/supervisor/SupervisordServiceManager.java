@@ -5,14 +5,14 @@ import java.util.Map;
 
 import javax.inject.Provider;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class SupervisordServiceManager implements ServiceManager {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(SupervisordServiceManager.class);
+	private static final Logger log = LoggerFactory.getLogger(SupervisordServiceManager.class);
 
 	@Override
 	public void addServiceInstance(final StandardService service) throws OpsException {

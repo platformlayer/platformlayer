@@ -3,19 +3,20 @@ package org.platformlayer.ops.packages;
 import java.io.File;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-import com.fathomdb.Utf8;
+import org.slf4j.*;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.filesystem.SyntheticFile;
+import org.slf4j.LoggerFactory;
 
+import com.fathomdb.Utf8;
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
 public class AptSourcesConfigurationFile extends SyntheticFile {
-	private static final Logger log = Logger.getLogger(AptSourcesConfigurationFile.class);
+	private static final Logger log = LoggerFactory.getLogger(AptSourcesConfigurationFile.class);
 
 	// Softlayer mirror is currently out of date (June 8 2012)
 	// apt-get update can't cope with one out of date mirror, even if there's another one that is... ?

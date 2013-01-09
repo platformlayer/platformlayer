@@ -1,10 +1,10 @@
 package org.platformlayer.ops.schedule;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.core.model.Action;
 
 public abstract class OpsPeriodicTask {
-	static final Logger log = Logger.getLogger(OpsPeriodicTask.class);
+	static final Logger log = LoggerFactory.getLogger(OpsPeriodicTask.class);
 
 	final JobScheduleCalculator jobSchedule;
 

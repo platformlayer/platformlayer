@@ -2,7 +2,6 @@ package org.platformlayer.service.openldap.ops;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
@@ -13,9 +12,12 @@ import org.platformlayer.ops.networks.PublicEndpoint;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.openldap.model.LdapService;
 import org.platformlayer.service.openldap.ops.ldap.LdapMasterPassword;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LdapServiceController extends OpsTreeBase {
-	static final Logger log = Logger.getLogger(LdapServiceController.class);
+	private static final Logger log = LoggerFactory.getLogger(LdapServiceController.class);
+
 	public static final int PORT = 389;
 
 	@Handler

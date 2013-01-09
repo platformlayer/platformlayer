@@ -2,7 +2,7 @@ package org.platformlayer.xaas.web.jaxrs;
 
 import java.util.Collection;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.core.model.Action;
 
 import com.fasterxml.jackson.databind.DeserializationConfig;
@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.jsontype.impl.StdTypeResolverBuilder;
 
 public class PlatformLayerTypeResolverBuilder extends StdTypeResolverBuilder {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(PlatformLayerTypeResolverBuilder.class);
+	private static final Logger log = LoggerFactory.getLogger(PlatformLayerTypeResolverBuilder.class);
 
 	@Override
 	public TypeDeserializer buildTypeDeserializer(DeserializationConfig config, JavaType baseType,

@@ -2,7 +2,6 @@ package org.platformlayer.service.platformlayer.ops.backend.db;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.ResourceUtils;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
@@ -11,9 +10,12 @@ import org.platformlayer.ops.postgres.CreateUser;
 import org.platformlayer.ops.postgres.DatabaseConnection;
 import org.platformlayer.ops.postgres.RunScript;
 import org.platformlayer.ops.tree.OpsTreeBase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PlatformLayerDatabaseController extends OpsTreeBase {
-	static final Logger log = Logger.getLogger(PlatformLayerDatabaseController.class);
+
+	private static final Logger log = LoggerFactory.getLogger(PlatformLayerDatabaseController.class);
 
 	@Handler
 	public void handler() {

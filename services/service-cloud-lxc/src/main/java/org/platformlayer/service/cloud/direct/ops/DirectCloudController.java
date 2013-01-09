@@ -2,7 +2,7 @@ package org.platformlayer.service.cloud.direct.ops;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.core.model.InstanceBase;
 import org.platformlayer.core.model.MachineCloudBase;
 import org.platformlayer.core.model.PublicEndpointBase;
@@ -18,7 +18,7 @@ import org.platformlayer.service.cloud.direct.model.DirectInstance;
 import org.platformlayer.service.cloud.direct.model.DirectPublicEndpoint;
 
 public class DirectCloudController extends OpsTreeBase implements CloudController {
-	static final Logger log = Logger.getLogger(DirectCloudController.class);
+	static final Logger log = LoggerFactory.getLogger(DirectCloudController.class);
 
 	@Handler
 	public void handler() {

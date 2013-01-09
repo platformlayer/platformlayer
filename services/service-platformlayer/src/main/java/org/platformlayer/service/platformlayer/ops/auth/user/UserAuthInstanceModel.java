@@ -3,7 +3,6 @@ package org.platformlayer.service.platformlayer.ops.auth.user;
 import java.io.File;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsContext;
@@ -11,10 +10,14 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.java.JavaCommandBuilder;
 import org.platformlayer.service.platformlayer.model.UserAuthService;
 import org.platformlayer.service.platformlayer.ops.auth.CommonAuthTemplateData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UserAuthInstanceModel extends CommonAuthTemplateData {
-	static final Logger log = Logger.getLogger(UserAuthInstanceModel.class);
 
+	private static final Logger log = LoggerFactory.getLogger(UserAuthInstanceModel.class);
+
+	@Override
 	public UserAuthService getModel() {
 		UserAuthService model = OpsContext.get().getInstance(UserAuthService.class);
 		return model;

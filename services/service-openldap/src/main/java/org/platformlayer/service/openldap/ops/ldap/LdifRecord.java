@@ -4,8 +4,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.ops.ldap.LdapDN;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.HashMultimap;
@@ -14,7 +15,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 public class LdifRecord {
-	static final Logger log = Logger.getLogger(LdifRecord.class);
+
+	private static final Logger log = LoggerFactory.getLogger(LdifRecord.class);
 
 	final LdapDN ldapDn;
 	final List<String> objectClasses;

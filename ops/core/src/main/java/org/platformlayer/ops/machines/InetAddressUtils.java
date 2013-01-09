@@ -9,14 +9,14 @@ import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.ops.networks.IpRange;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 
 public class InetAddressUtils {
-	private static final Logger log = Logger.getLogger(InetAddressUtils.class);
+	private static final Logger log = LoggerFactory.getLogger(InetAddressUtils.class);
 
 	public static final Predicate<? super InetAddress> IS_IPV6 = new Predicate<InetAddress>() {
 		@Override

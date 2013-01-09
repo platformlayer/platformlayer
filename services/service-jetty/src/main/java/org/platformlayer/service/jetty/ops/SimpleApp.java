@@ -3,7 +3,6 @@ package org.platformlayer.service.jetty.ops;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
 import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
@@ -12,10 +11,12 @@ import org.platformlayer.ops.filesystem.DownloadFileByHash;
 import org.platformlayer.ops.filesystem.ManagedSymlink;
 import org.platformlayer.ops.filesystem.TemplatedFile;
 import org.platformlayer.ops.tree.OpsTreeBase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SimpleApp extends OpsTreeBase {
-	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(SimpleApp.class);
+
+	private static final Logger log = LoggerFactory.getLogger(SimpleApp.class);
 
 	public String key;
 	public String source;

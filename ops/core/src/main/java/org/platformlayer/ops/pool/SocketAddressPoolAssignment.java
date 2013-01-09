@@ -4,13 +4,13 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.ops.networks.AddressModel;
 
 import com.google.common.net.InetAddresses;
 
 public class SocketAddressPoolAssignment extends PoolAssignment<InetSocketAddress> {
-	private static final Logger log = Logger.getLogger(SocketAddressPoolAssignment.class);
+	private static final Logger log = LoggerFactory.getLogger(SocketAddressPoolAssignment.class);
 
 	@Override
 	protected InetSocketAddress map(Properties properties) {

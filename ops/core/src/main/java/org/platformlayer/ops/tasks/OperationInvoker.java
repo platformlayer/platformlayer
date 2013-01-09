@@ -7,7 +7,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-import org.apache.log4j.Logger;
+import org.slf4j.*;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.ops.BindingScope;
@@ -18,7 +18,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
 public class OperationInvoker {
-	static final Logger log = Logger.getLogger(OperationInvoker.class);
+	static final Logger log = LoggerFactory.getLogger(OperationInvoker.class);
 	@Inject
 	Provider<MethodInvoker> invokerProvider;
 
