@@ -13,11 +13,6 @@
     <name>PlatformLayer :: Shared :: Core Model</name>
 
     <dependencies>
-        <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-user</artifactId>
-            <scope>provided</scope>
-        </dependency>
 
         <dependency>
             <groupId>com.google.guava</groupId>

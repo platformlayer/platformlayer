@@ -45,6 +45,18 @@ public class PlatformLayerKey {
 		id = null;
 	}
 
+	@Deprecated
+	// For JAXB
+	public PlatformLayerKey(String s) {
+		PlatformLayerKey key = parse(s);
+
+		this.host = key.host;
+		this.project = key.project;
+		this.serviceType = key.serviceType;
+		this.itemType = key.itemType;
+		this.id = key.id;
+	}
+
 	@XmlValue
 	protected String getValue() {
 		return getUrl();

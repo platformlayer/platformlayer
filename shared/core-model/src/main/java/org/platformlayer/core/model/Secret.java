@@ -12,9 +12,17 @@ public class Secret {
 	@XmlValue
 	public String value;
 
+	public Secret() {
+	}
+
+	@Deprecated
+	// For JAXB
+	public Secret(String s) {
+		this.value = s;
+	}
+
 	public static Secret build(String s) {
-		Secret secret = new Secret();
-		secret.value = s;
+		Secret secret = new Secret(s);
 		return secret;
 	}
 
