@@ -89,4 +89,9 @@ public class DnsRecordViewImpl extends ItemViewImpl<DnsRecord> implements DnsRec
 		activity.doSave(info);
 	}
 
+	@Override
+	public String getViewTitle() {
+		return DnsRecordPlace.LABEL;
+	}
+
 }

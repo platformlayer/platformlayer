@@ -7,13 +7,15 @@ import org.platformlayer.service.jetty.client.JettyPlugin;
 
 public class JettyServicePlace extends JettyPlace {
 
+	public static final String LABEL = "Jetty Service";
+
 	public JettyServicePlace(JettyPlace parent, String id) {
 		super(parent, id);
 	}
 
 	@Override
 	public String getLabel() {
-		return "Jetty Service";
+		return LABEL;
 	}
 
 	@Override

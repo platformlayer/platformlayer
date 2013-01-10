@@ -99,4 +99,9 @@ public class JettyServiceViewImpl extends ItemViewImpl<JettyService> implements 
 		activity.doSave(info);
 	}
 
+	@Override
+	public String getViewTitle() {
+		return JettyServicePlace.LABEL;
+	}
+
 }

@@ -5,8 +5,6 @@
 
     <g:HTMLPanel>
         <pl:Form ui:field="form">
-            <h1>DNS Record</h1>
-
             <fieldset>
                 <pl:ControlGroup ui:field="dnsName">
                     <label class="control-label" for="dnsName">
