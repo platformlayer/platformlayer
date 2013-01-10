@@ -61,6 +61,8 @@ public class GuiceDataSourceProvider implements Provider<DataSource> {
 		// Track statistics
 		pooledDataSource.setStatisticsEnabled(true);
 
+		pooledDataSource.setConnectionHook(new BoneCPConnectionHook(key));
+
 		databaseStatistics.register(key, pooledDataSource);
 
 		log.warn("Building data source for " + jdbcConfig.jdbcUrl);
