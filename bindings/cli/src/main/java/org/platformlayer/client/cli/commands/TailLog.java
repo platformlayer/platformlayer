@@ -13,7 +13,6 @@ import org.platformlayer.jobs.model.JobLog;
 import org.platformlayer.jobs.model.JobLogLine;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 
 public class TailLog extends PlatformLayerCommandRunnerBase {
 	@Argument(index = 0)
@@ -30,14 +29,14 @@ public class TailLog extends PlatformLayerCommandRunnerBase {
 	public Object runCommand() throws PlatformLayerClientException, InterruptedException {
 		PlatformLayerClient client = getPlatformLayerClient();
 
-		List<JobLog> logs = Lists.newArrayList();
+		// TODO: System.out isn't quite right
+		JobLogPrinter jobLogPrinter = new JobLogPrinter(new PrintWriter(System.out));
 
 		if (Strings.isNullOrEmpty(executionId)) {
 			JobExecutionList jobExecutions = client.listJobExecutions(jobId);
 
 			JobExecutionData last = null;
 
-			// TODO: Fix 1+N slowness...
 			for (JobExecutionData execution : jobExecutions.getRuns()) {
 				if (execution.getState() == JobState.PRESTART) {
 					continue;
@@ -52,13 +51,6 @@ public class TailLog extends PlatformLayerCommandRunnerBase {
 					last = execution;
 					continue;
 				}
-				// String executionId = execution.getExecutionId();
-				// try {
-				// JobLog jobLog = client.getJobExecutionLog(jobId, executionId);
-				// logs.add(jobLog);
-				// } catch (PlatformLayerClientNotFoundException e) {
-				// // TODO: Warn?
-				// }
 			}
 
 			if (last != null) {
@@ -66,14 +58,30 @@ public class TailLog extends PlatformLayerCommandRunnerBase {
 			}
 		}
 
+		// TODO: What if executionId == null? Also retries..
+		JobLog previousJobLog = null;
+		int jobLogOffset = 0;
+
 		while (true) {
 			// TODO: Only fetch tail
 			JobLog jobLog = client.getJobExecutionLog(jobId, executionId);
+			if (previousJobLog == null) {
+				jobLogPrinter.startJobLog(jobLog);
+			}
 
 			List<JobLogLine> lines = jobLog.getLines();
-			for (JobLogLine line : lines) {
-				System.out.println(line.getMessage());
+
+			if (jobLogOffset < lines.size()) {
+				for (JobLogLine line : lines.subList(jobLogOffset, lines.size())) {
+					jobLogPrinter.write(line);
+				}
 			}
+
+			jobLogPrinter.flush();
+
+			jobLogOffset = lines.size();
+			previousJobLog = jobLog;
+
 			Thread.sleep(1000);
 		}
 	}
