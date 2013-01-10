@@ -144,6 +144,7 @@ public class PlatformLayerAuthAdminClient implements AuthenticationTokenValidato
 				// Not found => invalid token
 				return null;
 			}
+			log.warn("Error while validating token", e);
 			throw new IllegalArgumentException("Error while validating token", e);
 		}
 	}
@@ -186,6 +187,7 @@ public class PlatformLayerAuthAdminClient implements AuthenticationTokenValidato
 				// Not found => invalid token
 				return null;
 			}
+			log.warn("Error while validating credentials", e);
 			throw new IllegalArgumentException("Error while validating credentials", e);
 		}
 	}
