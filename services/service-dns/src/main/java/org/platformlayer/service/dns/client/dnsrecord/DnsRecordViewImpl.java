@@ -2,7 +2,6 @@ package org.platformlayer.service.dns.client.dnsrecord;
 
 import javax.inject.Singleton;
 
-import org.platformlayer.gwt.client.alerts.Alert;
 import org.platformlayer.gwt.client.ui.ItemViewImpl;
 import org.platformlayer.gwt.client.ui.ViewHandler;
 import org.platformlayer.gwt.client.widgets.ControlGroup;
@@ -11,6 +10,7 @@ import org.platformlayer.service.dns.model.DnsRecord;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
+import com.google.gwt.editor.client.EditorDriver;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -46,11 +46,6 @@ public class DnsRecordViewImpl extends ItemViewImpl<DnsRecord> implements DnsRec
 	private DnsRecord model;
 
 	@Override
-	public void addAlert(Alert alert, String field) {
-		form.addAlert(alert, field);
-	}
-
-	@Override
 	public void start(ViewHandler activity) {
 		super.start(activity);
 
@@ -71,27 +66,13 @@ public class DnsRecordViewImpl extends ItemViewImpl<DnsRecord> implements DnsRec
 	}
 
 	@Override
-	protected void doSave() {
-		form.clearAlerts();
-
-		DnsRecord info = driver.flush();
-		if (driver.hasErrors()) {
-			// A sub-editor reported errors
-			// TODO: handle this better
-			return;
-		}
-
-		// if (Strings.isNullOrEmpty(card.getExpirationMonth())) {
-		// alerts.add(AlertLevel.Error, "Expiration month is required");
-		// return;
-		// }
-
-		activity.doSave(info);
+	public String getViewTitle() {
+		return DnsRecordPlace.LABEL;
 	}
 
 	@Override
-	public String getViewTitle() {
-		return DnsRecordPlace.LABEL;
+	protected EditorDriver<DnsRecord> getDriver() {
+		return driver;
 	}
 
 }

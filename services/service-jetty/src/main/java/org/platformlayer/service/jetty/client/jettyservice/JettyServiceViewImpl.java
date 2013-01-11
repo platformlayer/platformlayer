@@ -11,6 +11,7 @@ import org.platformlayer.service.jetty.model.JettyService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
+import com.google.gwt.editor.client.EditorDriver;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -81,27 +82,13 @@ public class JettyServiceViewImpl extends ItemViewImpl<JettyService> implements 
 	}
 
 	@Override
-	protected void doSave() {
-		form.clearAlerts();
-
-		JettyService info = driver.flush();
-		if (driver.hasErrors()) {
-			// A sub-editor reported errors
-			// TODO: handle this better
-			return;
-		}
-
-		// if (Strings.isNullOrEmpty(card.getExpirationMonth())) {
-		// alerts.add(AlertLevel.Error, "Expiration month is required");
-		// return;
-		// }
-
-		activity.doSave(info);
+	public String getViewTitle() {
+		return JettyServicePlace.LABEL;
 	}
 
 	@Override
-	public String getViewTitle() {
-		return JettyServicePlace.LABEL;
+	protected EditorDriver<JettyService> getDriver() {
+		return driver;
 	}
 
 }
