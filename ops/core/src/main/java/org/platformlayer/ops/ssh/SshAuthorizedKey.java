@@ -30,14 +30,21 @@ public class SshAuthorizedKey {
 		}
 	}
 
-	public static void ensureSshAuthorization(OpsTarget target, String user, PublicKey sshPublicKey)
-			throws OpsException {
+	public static File getDefaultHomedir(String user) {
 		File homeDir;
 		if (user.equals("root")) {
 			homeDir = new File("/root");
 		} else {
 			homeDir = new File("/home/" + user);
 		}
+
+		return homeDir;
+	}
+
+	public static void ensureSshAuthorization(OpsTarget target, String user, PublicKey sshPublicKey)
+			throws OpsException {
+
+		File homeDir = getDefaultHomedir(user);
 
 		File sshDir = new File(homeDir, ".ssh");
 		if (target.getFilesystemInfoFile(sshDir) == null) {

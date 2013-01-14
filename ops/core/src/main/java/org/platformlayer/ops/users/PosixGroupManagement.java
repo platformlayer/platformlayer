@@ -47,27 +47,38 @@ public class PosixGroupManagement {
 
 		return groups;
 	}
-	// public static List<User> getUsers(OpsServer server) throws OpsException {
-	// if (server == null)
-	// throw new IllegalArgumentException("Server cannot be null");
-	//
-	// Agent agent = server.getAgent();
-	// String passwdFile = agent.downloadTextFile(new FilePath("/etc/passwd"), true);
-	// int lineNumber = 0;
-	//
-	// List<User> users = new ArrayList<User>();
-	// for (String line : passwdFile.split("\n")) {
-	// lineNumber++;
-	// line = line.trim();
-	//
-	// // Ignore comments
-	// if (line.startsWith("#"))
-	// continue;
-	//
-	// User user = User.buildFromPasswdLine(server.getOpsSystem(), line);
-	// users.add(user);
-	// }
-	//
-	// return users;
-	// }
+
+	public static class User {
+		final List<String> tokens;
+
+		public User(List<String> tokens) {
+			this.tokens = tokens;
+		}
+
+	}
+
+	public static Map<String, User> readUsers(OpsTarget target) throws OpsException {
+		File passwdFile = new File("/etc/passwd");
+		String passwd = target.readTextFile(passwdFile);
+
+		Map<String, User> users = Maps.newHashMap();
+		for (String line : Splitter.on("\n").split(passwd)) {
+			line = line.trim();
+
+			// Ignore comments
+			if (line.startsWith("#"))
+				continue;
+
+			List<String> tokens = Lists.newArrayList(Splitter.on(':').split(line));
+			if (tokens.isEmpty())
+				continue;
+
+			String name = tokens.get(0);
+
+			User user = new User(tokens);
+			users.put(name, user);
+		}
+
+		return users;
+	}
 }
