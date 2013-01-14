@@ -693,26 +693,44 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 			throws OpsException {
 		FederationConfiguration federationMapConfig = new FederationConfiguration();
 
-		for (FederatedService service : localClient.listItems(FederatedService.class)) {
-			PlatformLayerConnectionConfiguration config = new PlatformLayerConnectionConfiguration();
-			config.key = service.getKey();
-			config.secret = service.getSecret();
-			config.authenticationEndpoint = service.getServer();
-			config.tenant = service.getTenant();
-			config.username = service.getUsername();
-			config.platformlayerEndpoint = service.getServer();
+		String federationNamespace = "http://platformlayer.org/service/federation/v1.0";
+		boolean federationEnabled = isServiceEnabled(localClient, federationNamespace);
 
-			federationMapConfig.systems.add(config);
+		if (federationEnabled) {
+			for (FederatedService service : localClient.listItems(FederatedService.class)) {
+				PlatformLayerConnectionConfiguration config = new PlatformLayerConnectionConfiguration();
+				config.key = service.getKey();
+				config.secret = service.getSecret();
+				config.authenticationEndpoint = service.getServer();
+				config.tenant = service.getTenant();
+				config.username = service.getUsername();
+				config.platformlayerEndpoint = service.getServer();
+
+				federationMapConfig.systems.add(config);
+			}
+
+			for (FederatedServiceMap map : localClient.listItems(FederatedServiceMap.class)) {
+				FederationRule rule = new FederationRule();
+				rule.target = map.getTarget();
+				rule.serviceType = map.getServiceType();
+
+				federationMapConfig.rules.add(rule);
+			}
 		}
 
-		for (FederatedServiceMap map : localClient.listItems(FederatedServiceMap.class)) {
-			FederationRule rule = new FederationRule();
-			rule.target = map.getTarget();
-			rule.serviceType = map.getServiceType();
-
-			federationMapConfig.rules.add(rule);
-		}
 		return federationMapConfig;
+	}
+
+	private static boolean isServiceEnabled(TypedPlatformLayerClient localClient, String namespace)
+			throws PlatformLayerClientException {
+		Collection<ServiceInfo> services = localClient.listServices(true);
+		boolean found = false;
+		for (ServiceInfo service : services) {
+			if (namespace.equals(service.getNamespace())) {
+				found = true;
+			}
+		}
+		return found;
 	}
 
 	@Override
