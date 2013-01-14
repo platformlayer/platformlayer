@@ -10,7 +10,6 @@ import java.util.Map.Entry;
 import javax.inject.Inject;
 import javax.servlet.DispatcherType;
 
-import org.slf4j.*;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
@@ -30,6 +29,8 @@ import org.platformlayer.ops.schedule.Scheduler;
 import org.platformlayer.web.GuiceServletConfig;
 import org.platformlayer.xaas.GuiceXaasConfig;
 import org.platformlayer.xaas.PlatformLayerServletModule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fathomdb.crypto.CertificateAndKey;
 import com.fathomdb.crypto.KeyStoreUtils;
@@ -143,6 +144,8 @@ class StandaloneXaasWebserver {
 			context.setWar(war.getAbsolutePath());
 			context.setContextPath(contextPath);
 			contexts.addHandler(context);
+
+			context.addFilter(GwtCacheHeaderFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
 		}
 
 		server.setHandler(contexts);
