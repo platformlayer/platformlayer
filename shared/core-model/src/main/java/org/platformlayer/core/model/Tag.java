@@ -38,6 +38,8 @@ public class Tag /* implements IsTag */{
 
 	public static final UuidTagKey UUID = new UuidTagKey("uuid");
 
+	public static final StringTagKey SSH_KEY = new StringTagKey("sshkey");
+
 	// public static final String IMAGE_TYPE = "platformlayer.org__type";
 
 	public Tag() {

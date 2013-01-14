@@ -66,6 +66,18 @@ public class JenkinsServiceController extends OpsTreeBase {
 
 		vm.addChild(SimpleFile.build(getClass(), new File("/etc/default/jenkins")));
 
+		vm.addChild(EnsureJenkinsSshKey.class);
+
+		{
+			// Adding a known-host entry for github.com doesn't reduce security (?)
+			EnsureKnownHost knownHost = vm.addChild(EnsureKnownHost.class);
+			knownHost.user = "jenkins";
+			knownHost.homeDir = new File("/var/lib/jenkins");
+			knownHost.host = "github.com";
+			knownHost.algorithm = "ssh-rsa";
+			knownHost.key = "AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==";
+		}
+
 		// Collectd not in wheezy??
 		// instance.addChild(CollectdCollector.build());
 
