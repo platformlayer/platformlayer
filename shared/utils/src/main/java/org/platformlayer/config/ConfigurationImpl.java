@@ -128,7 +128,6 @@ public class ConfigurationImpl implements Configuration {
 		return basePath;
 	}
 
-	@Override
 	public boolean isExplicitlyBound(Class<?> clazz) {
 		String key = "bind." + clazz.getName();
 		String value = find(key);

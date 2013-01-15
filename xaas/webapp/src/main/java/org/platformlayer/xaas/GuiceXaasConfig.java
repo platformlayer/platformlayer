@@ -14,6 +14,7 @@ import org.platformlayer.auth.AuthenticationTokenValidator;
 import org.platformlayer.auth.client.PlatformLayerAuthenticationClient;
 import org.platformlayer.auth.system.PlatformLayerAuthAdminClient;
 import org.platformlayer.auth.system.PlatformlayerAuthenticationService;
+import org.platformlayer.config.ConfigurationImpl;
 import org.platformlayer.crypto.EncryptionStore;
 import org.platformlayer.crypto.KeyStoreEncryptionStore;
 import org.platformlayer.guice.xaas.JdbcManagedItemRepository;
@@ -56,15 +57,14 @@ import org.platformlayer.xaas.services.ServiceProviderDictionary;
 import org.platformlayer.xaas.web.jaxrs.JaxbContextHelper;
 import org.platformlayer.xaas.web.resources.ItemServiceImpl;
 
-import com.fathomdb.Configuration;
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 
 public class GuiceXaasConfig extends AbstractModule {
 
-	final Configuration configuration;
+	final ConfigurationImpl configuration;
 
-	public GuiceXaasConfig(Configuration configuration) {
+	public GuiceXaasConfig(ConfigurationImpl configuration) {
 		super();
 		this.configuration = configuration;
 	}
