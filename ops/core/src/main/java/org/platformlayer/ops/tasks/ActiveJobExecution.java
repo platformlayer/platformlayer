@@ -1,5 +1,6 @@
 package org.platformlayer.ops.tasks;
 
+import org.platformlayer.TimeSpan;
 import org.platformlayer.common.JobState;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.PlatformLayerKey;
@@ -29,4 +30,6 @@ public interface ActiveJobExecution {
 	void recordJobEnd() throws OpsException;
 
 	JobExecutionData getJobExecution();
+
+	void enqueueRetry(TimeSpan delay) throws OpsException;
 }

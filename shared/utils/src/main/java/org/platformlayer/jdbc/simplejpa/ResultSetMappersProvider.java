@@ -9,7 +9,7 @@ public class ResultSetMappersProvider implements Provider<ResultSetMappers> {
 
 	private ResultSetMappers resultSetMappers;
 
-	private List<Class> modelClasses = Lists.newArrayList();
+	private final List<Class> modelClasses = Lists.newArrayList();
 
 	@Override
 	public ResultSetMappers get() {
@@ -40,8 +40,14 @@ public class ResultSetMappersProvider implements Provider<ResultSetMappers> {
 			provider.add(clazz);
 		}
 
-		provider.seal();
+		// provider.seal();
 
 		return provider;
+	}
+
+	public void addAll(Class<?>... classes) {
+		for (Class<?> clazz : classes) {
+			add(clazz);
+		}
 	}
 }

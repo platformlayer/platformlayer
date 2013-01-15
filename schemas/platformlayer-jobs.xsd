@@ -3,7 +3,7 @@
 
   <xs:import namespace="http://platformlayer.org/core/v1.0" schemaLocation="platformlayer-core.xsd"/>
 
-  <xs:import schemaLocation="schema4.xsd"/>
+  <xs:import schemaLocation="schema6.xsd"/>
 
   <xs:element name="job" type="tns:jobData"/>
 
@@ -28,12 +28,14 @@
       <xs:element name="message" type="xs:string" minOccurs="0"/>
       <xs:element name="level" type="xs:int"/>
       <xs:element name="exception" type="tns:jobLogExceptionInfo" minOccurs="0"/>
+      <xs:element name="type" type="xs:string" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="jobLogExceptionInfo">
     <xs:sequence>
       <xs:element name="info" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="inner" type="tns:jobLogExceptionInfo" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 

@@ -7,8 +7,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.slf4j.*;
 import org.platformlayer.TimeSpan;
+import org.platformlayer.images.model.ConfigurePackage;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.CommandEnvironment;
 import org.platformlayer.ops.FileUpload;
@@ -18,7 +18,8 @@ import org.platformlayer.ops.process.ProcessExecution;
 import org.platformlayer.ops.process.ProcessExecutionException;
 import org.platformlayer.ops.proxy.HttpProxyHelper;
 import org.platformlayer.ops.proxy.HttpProxyHelper.Usage;
-import org.platformlayer.service.imagefactory.v1.ConfigurePackage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Joiner;

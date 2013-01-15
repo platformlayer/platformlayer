@@ -8,7 +8,6 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-import com.fathomdb.Utf8;
 import org.platformlayer.ops.ChrootOpsTarget;
 import org.platformlayer.ops.FileUpload;
 import org.platformlayer.ops.Handler;
@@ -21,6 +20,7 @@ import org.platformlayer.ops.networks.InterfaceModel;
 import org.platformlayer.ops.ssh.SshAuthorizedKey;
 import org.platformlayer.service.cloud.direct.model.DirectHost;
 
+import com.fathomdb.Utf8;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -119,12 +119,18 @@ public class LxcBootstrap {
 
 	void setupInittab() throws OpsException {
 		File file = new File(getRoot(), "etc/inittab");
-		FileUpload.upload(getTarget(), file, runTemplate("etc.inittab"));
+		if (getTarget().readTextFile(file) == null) {
+			// Only for the initial build
+			FileUpload.upload(getTarget(), file, runTemplate("etc.inittab"));
+		}
 	}
 
 	private void setupResolveConf() throws OpsException {
 		File file = new File(getRoot(), "etc/resolv.conf");
-		FileUpload.upload(getTarget(), file, runTemplate("etc.resolv.conf"));
+		if (getTarget().readTextFile(file) == null) {
+			// Only for the initial build
+			FileUpload.upload(getTarget(), file, runTemplate("etc.resolv.conf"));
+		}
 	}
 
 	// private void setupAutostart() throws OpsException {

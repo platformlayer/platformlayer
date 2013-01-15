@@ -7,7 +7,6 @@ import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.TemplatedFile;
-import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.networks.PublicEndpoint;
 import org.platformlayer.ops.packages.PackageDependency;
@@ -31,8 +30,7 @@ public class MemcacheServerController extends OpsTreeBase {
 	protected void addChildren() throws OpsException {
 		MemcacheServer model = OpsContext.get().getInstance(MemcacheServer.class);
 
-		InstanceBuilder instance = InstanceBuilder.build(model.dnsName,
-				DiskImageRecipeBuilder.buildDiskImageRecipe(this));
+		InstanceBuilder instance = InstanceBuilder.build(model.dnsName, this);
 
 		// TODO: Memory _really_ needs to be configurable here!
 		instance.publicPorts.add(MEMCACHE_PORT);

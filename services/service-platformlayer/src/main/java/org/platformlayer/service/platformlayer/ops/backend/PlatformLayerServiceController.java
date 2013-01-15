@@ -2,7 +2,6 @@ package org.platformlayer.service.platformlayer.ops.backend;
 
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.networks.PublicEndpoint;
 import org.platformlayer.ops.tree.OpsTreeBase;
@@ -31,7 +30,7 @@ public class PlatformLayerServiceController extends OpsTreeBase {
 
 		InstanceBuilder vm;
 		{
-			vm = InstanceBuilder.build(dnsName, DiskImageRecipeBuilder.buildDiskImageRecipe(this));
+			vm = InstanceBuilder.build(dnsName, this);
 			vm.publicPorts.add(port);
 			vm.hostPolicy.configureCluster(template.getPlacementKey());
 

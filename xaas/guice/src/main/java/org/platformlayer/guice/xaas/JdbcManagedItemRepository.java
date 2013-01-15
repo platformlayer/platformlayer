@@ -13,7 +13,6 @@ import javax.inject.Provider;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
-import org.slf4j.*;
 import org.platformlayer.Filter;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.TagFilter;
@@ -43,6 +42,7 @@ import org.platformlayer.xaas.services.ModelClass;
 import org.platformlayer.xaas.services.ServiceProvider;
 import org.platformlayer.xaas.services.ServiceProviderDictionary;
 import org.platformlayer.xml.JaxbHelper;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fathomdb.Utf8;
@@ -547,6 +547,10 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 				throw new IllegalStateException("Unexpected number of rows inserted");
 			}
 		}
+
+		public int getProjectCode() throws SQLException {
+			return getAtomValue(ProjectId.class);
+		}
 	}
 
 	@Override
@@ -678,6 +682,22 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 		} finally {
 			db.close();
 		}
+	}
+
+	@Override
+	@JdbcTransaction
+	public int getProjectCode(ProjectId project) throws RepositoryException {
+		DbHelper db = new DbHelper(project);
+
+		try {
+			int atomValue = db.getProjectCode();
+			return atomValue;
+		} catch (SQLException e) {
+			throw new RepositoryException("Error running query", e);
+		} finally {
+			db.close();
+		}
+
 	}
 
 	@Override

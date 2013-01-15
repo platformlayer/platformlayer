@@ -2,7 +2,6 @@ package org.platformlayer.ops.tasks;
 
 import java.util.List;
 
-import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ids.ProjectId;
@@ -23,14 +22,12 @@ public interface JobRegistry {
 
 	JobData getJob(PlatformLayerKey jobKey) throws OpsException;
 
-	List<JobData> listJobs(ProjectId project);
+	List<JobData> listRecentJobs(ProjectId project);
 
-	JobExecutionData enqueueOperation(Action action, ProjectAuthorization projectAuthorization, PlatformLayerKey itemKey)
+	JobData enqueueOperation(Action action, ProjectAuthorization projectAuthorization, PlatformLayerKey itemKey)
 			throws OpsException;
-
-	void enqueueRetry(ActiveJobExecution activeJob, TimeSpan delay) throws OpsException;
 
 	ActiveJobExecution startSystemJob(ServiceType serviceType, ProjectAuthorization authentication);
 
-	JobExecutionList listExecutions(ProjectId project);
+	JobExecutionList listRecentExecutions(ProjectId project);
 }

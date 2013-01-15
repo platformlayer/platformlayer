@@ -6,7 +6,6 @@ import java.util.concurrent.Callable;
 import javax.inject.Inject;
 import javax.ws.rs.WebApplicationException;
 
-import org.slf4j.*;
 import org.platformlayer.ApplicationMode;
 import org.platformlayer.CheckedCallable;
 import org.platformlayer.RepositoryException;
@@ -34,6 +33,8 @@ import org.platformlayer.ops.backups.BackupContext;
 import org.platformlayer.ops.backups.BackupHelpers;
 import org.platformlayer.xaas.repository.ManagedItemRepository;
 import org.platformlayer.xaas.services.ServiceProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fathomdb.io.IoUtils;
 import com.google.common.collect.Lists;
@@ -168,7 +169,7 @@ public class OperationWorker implements Callable<Object> {
 
 				log.warn("Scheduling retry in " + retry);
 
-				opsSystem.getJobRegistry().enqueueRetry(activeJob, retry);
+				activeJob.enqueueRetry(retry);
 
 				return null;
 			} finally {
@@ -193,6 +194,10 @@ public class OperationWorker implements Callable<Object> {
 		} finally {
 			scope.pop();
 		}
+	}
+
+	public ActiveJobExecution getActiveJob() {
+		return activeJob;
 	}
 
 }

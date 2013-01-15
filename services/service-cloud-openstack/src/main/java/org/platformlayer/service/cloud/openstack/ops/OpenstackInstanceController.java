@@ -10,7 +10,7 @@ import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsProvider;
-import org.platformlayer.ops.helpers.ImageFactory;
+import org.platformlayer.ops.instances.ImageFactory;
 import org.platformlayer.ops.tagger.Tagger;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.openstack.model.OpenstackInstance;

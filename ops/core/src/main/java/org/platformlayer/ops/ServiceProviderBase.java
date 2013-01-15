@@ -71,7 +71,7 @@ public abstract class ServiceProviderBase implements ServiceProvider {
 		return models;
 	}
 
-	protected List<? extends ModelClass<?>> buildModels() {
+	protected List<ModelClass<?>> buildModels() {
 		List<ModelClass<?>> modelClasses = Lists.newArrayList();
 		for (AnnotatedClass clazz : discovery.findAnnotatedClasses(Controller.class)) {
 			ModelClass<?> modelClass = asModelClass((Class<? extends ItemBase>) clazz.getSubjectClass());
@@ -132,7 +132,7 @@ public abstract class ServiceProviderBase implements ServiceProvider {
 	public void beforeDeleteItem(ItemBase managedItem) throws OpsException {
 	}
 
-	private ModelClass<?> asModelClass(Class<? extends ItemBase> clazz) {
+	protected ModelClass<?> asModelClass(Class<? extends ItemBase> clazz) {
 		Class<? extends ServiceProviderBase> myClass = getClass();
 		Package myPackage = myClass.getPackage();
 
@@ -202,7 +202,7 @@ public abstract class ServiceProviderBase implements ServiceProvider {
 
 	boolean initialized;
 
-	void ensureInitialized() throws OpsException {
+	protected void ensureInitialized() throws OpsException {
 		if (initialized) {
 			return;
 		}

@@ -2,19 +2,18 @@ package org.platformlayer.service.jenkins.ops;
 
 import java.io.File;
 
+import org.platformlayer.images.model.Repository;
+import org.platformlayer.images.model.RepositoryKey;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.backups.BackupDirectory;
 import org.platformlayer.ops.filesystem.SimpleFile;
-import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.java.JavaVirtualMachine;
 import org.platformlayer.ops.networks.PublicEndpoint;
 import org.platformlayer.ops.packages.PackageDependency;
 import org.platformlayer.ops.tree.OpsTreeBase;
-import org.platformlayer.service.imagefactory.v1.Repository;
-import org.platformlayer.service.imagefactory.v1.RepositoryKey;
 import org.platformlayer.service.jenkins.model.JenkinsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +34,7 @@ public class JenkinsServiceController extends OpsTreeBase {
 		InstanceBuilder vm;
 
 		{
-			vm = InstanceBuilder.build(model.dnsName, DiskImageRecipeBuilder.buildDiskImageRecipe(this));
+			vm = InstanceBuilder.build(model.dnsName, this);
 			vm.publicPorts.add(PORT);
 
 			vm.hostPolicy.allowRunInContainer = true;

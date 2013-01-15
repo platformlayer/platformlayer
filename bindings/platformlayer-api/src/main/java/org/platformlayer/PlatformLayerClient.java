@@ -1,27 +1,30 @@
 package org.platformlayer;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.platformlayer.common.UntypedItem;
 import org.platformlayer.common.UntypedItemCollection;
 import org.platformlayer.core.model.Action;
+import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ServiceInfo;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.core.model.Tags;
 import org.platformlayer.ids.ProjectId;
+import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobDataList;
-import org.platformlayer.jobs.model.JobExecutionData;
 import org.platformlayer.jobs.model.JobExecutionList;
 import org.platformlayer.jobs.model.JobLog;
 import org.platformlayer.metrics.model.MetricDataStream;
 import org.platformlayer.metrics.model.MetricInfoCollection;
 import org.platformlayer.metrics.model.MetricQuery;
+import org.platformlayer.ops.OpsException;
 
 public interface PlatformLayerClient {
 	// Actions
-	public JobExecutionData doAction(PlatformLayerKey key, Action action) throws PlatformLayerClientException;
+	public JobData doAction(PlatformLayerKey key, Action action) throws PlatformLayerClientException;
 
 	// Item CRUD
 	// public <T> Iterable<T> listItems(Class<T> clazz) throws PlatformLayerClientException;
@@ -45,18 +48,24 @@ public interface PlatformLayerClient {
 	public UntypedItem putItemByTag(PlatformLayerKey key, Tag uniqueTag, String data, Format dataFormat)
 			throws PlatformLayerClientException;
 
+	public <T extends ItemBase> T putItemByTag(T item, Tag uniqueTag) throws OpsException;
+
 	// public <T> T putItem(T item) throws PlatformLayerClientException;
 
-	public JobExecutionData deleteItem(PlatformLayerKey key) throws PlatformLayerClientException;
+	public JobData deleteItem(PlatformLayerKey key) throws PlatformLayerClientException;
 
 	// Item Crud - Untyped
 	public UntypedItem getItemUntyped(PlatformLayerKey key) throws PlatformLayerClientException;
 
 	public UntypedItemCollection listItemsUntyped(PlatformLayerKey path) throws PlatformLayerClientException;
 
+	public <T> List<T> listItems(Class<T> clazz) throws PlatformLayerClientException, OpsException;
+
 	public UntypedItemCollection listRoots() throws PlatformLayerClientException;
 
 	public UntypedItemCollection listChildren(PlatformLayerKey parent) throws PlatformLayerClientException;
+
+	public List<ItemBase> listChildrenTyped(PlatformLayerKey parent) throws OpsException;
 
 	// Tags
 	public Tags changeTags(PlatformLayerKey key, TagChanges tagChanges) throws PlatformLayerClientException;
@@ -92,5 +101,9 @@ public interface PlatformLayerClient {
 	public PlatformLayerEndpointInfo getEndpointInfo(PlatformLayerKey item);
 
 	public JobExecutionList listJobExecutions(String jobId) throws PlatformLayerClientException;
+
+	public <T> T findItem(PlatformLayerKey key, Class<T> itemClass) throws OpsException;
+
+	public <T> T findItem(PlatformLayerKey key) throws OpsException;
 
 }

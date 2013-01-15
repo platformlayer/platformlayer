@@ -3,10 +3,10 @@ package org.platformlayer.ops.cas.jenkins;
 import java.net.URI;
 import java.util.List;
 
-import org.slf4j.*;
 import org.platformlayer.cas.CasLocation;
 import org.platformlayer.cas.CasStore;
 import org.platformlayer.cas.CasStoreObject;
+import org.platformlayer.cas.CasStoreInfo;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.cas.OpsCasLocation;
 import org.platformlayer.ops.cas.jenkins.JenkinsClient.BuildId;
@@ -14,6 +14,8 @@ import org.platformlayer.ops.cas.jenkins.JenkinsClient.BuildInfo;
 import org.platformlayer.ops.cas.jenkins.JenkinsClient.BuildInfo.ArtifactInfo;
 import org.platformlayer.ops.cas.jenkins.JenkinsClient.FingerprintInfo;
 import org.platformlayer.ops.networks.NetworkPoint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fathomdb.hash.Md5Hash;
 
@@ -22,7 +24,10 @@ public class JenkinsCasStore implements CasStore {
 
 	final JenkinsClient client;
 
-	public JenkinsCasStore(JenkinsClient client) {
+	private final CasStoreInfo options;
+
+	public JenkinsCasStore(CasStoreInfo options, JenkinsClient client) {
+		this.options = options;
 		this.client = client;
 	}
 
@@ -120,6 +125,11 @@ public class JenkinsCasStore implements CasStore {
 	@Override
 	public int estimateDistance(CasLocation target) throws OpsException {
 		return getLocation().estimateDistance(target);
+	}
+
+	@Override
+	public CasStoreInfo getOptions() {
+		return options;
 	}
 
 }

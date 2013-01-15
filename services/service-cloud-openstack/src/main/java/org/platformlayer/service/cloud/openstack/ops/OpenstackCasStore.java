@@ -11,6 +11,7 @@ import org.openstack.model.storage.StorageObject;
 import org.platformlayer.cas.CasLocation;
 import org.platformlayer.cas.CasStore;
 import org.platformlayer.cas.CasStoreObject;
+import org.platformlayer.cas.CasStoreInfo;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.cas.OpsCasObjectBase;
@@ -27,7 +28,10 @@ public class OpenstackCasStore implements CasStore {
 	final String containerName;
 	final OpenstackCredentials credentials;
 
-	public OpenstackCasStore(OpenstackCredentials credentials, String containerName) {
+	private final CasStoreInfo options;
+
+	public OpenstackCasStore(CasStoreInfo options, OpenstackCredentials credentials, String containerName) {
+		this.options = options;
 		this.credentials = credentials;
 		this.containerName = containerName;
 	}
@@ -112,6 +116,11 @@ public class OpenstackCasStore implements CasStore {
 		// TODO: Fix
 		log.warn("Hard-coding distance from Openstack CAS as 4");
 		return 4;
+	}
+
+	@Override
+	public CasStoreInfo getOptions() {
+		return options;
 	}
 
 }

@@ -18,6 +18,7 @@ import org.platformlayer.auth.AuthenticationToken;
 import org.platformlayer.auth.AuthenticationTokenValidator;
 import org.platformlayer.auth.PlatformlayerAuthenticationToken;
 import org.platformlayer.model.AuthenticationCredentials;
+import org.platformlayer.ops.DirectAuthentication;
 
 public class OpsAuthenticationFilter implements Filter {
 	static final Logger log = LoggerFactory.getLogger(OpsAuthenticationFilter.class);

@@ -13,7 +13,6 @@ import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.ManagedDirectory;
 import org.platformlayer.ops.filesystem.TemplatedFile;
-import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.ldap.LdapDN;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
@@ -116,7 +115,7 @@ public class GitServerController extends OpsTreeBase implements TemplateDataSour
 	protected void addChildren() throws OpsException {
 		GitService model = OpsContext.get().getInstance(GitService.class);
 
-		InstanceBuilder vm = InstanceBuilder.build(model.dnsName, DiskImageRecipeBuilder.buildDiskImageRecipe(this));
+		InstanceBuilder vm = InstanceBuilder.build(model.dnsName, this);
 		addChild(vm);
 
 		vm.addChild(PackageDependency.build("apache2"));

@@ -1,8 +1,9 @@
 package org.platformlayer.ops.packages;
 
+import org.platformlayer.images.model.DiskImageRecipe;
+import org.platformlayer.images.model.OperatingSystemRecipe;
 import org.platformlayer.ops.Handler;
-import org.platformlayer.service.imagefactory.v1.DiskImageRecipe;
-import org.platformlayer.service.imagefactory.v1.OperatingSystemRecipe;
+import org.platformlayer.ops.instances.HasDiskImageRecipe;
 
 public class RecipeOperatingSystem implements HasDiskImageRecipe {
 

@@ -10,14 +10,13 @@ import javax.inject.Provider;
 import javax.xml.bind.UnmarshalException;
 
 import org.platformlayer.ResourceUtils;
+import org.platformlayer.images.model.ConfigurePackage;
+import org.platformlayer.images.model.DiskImageRecipe;
+import org.platformlayer.images.model.Repository;
+import org.platformlayer.images.model.RepositoryKey;
 import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.packages.HasDiskImageRecipe;
 import org.platformlayer.ops.tree.OpsTreeVisitor;
-import org.platformlayer.service.imagefactory.v1.ConfigurePackage;
-import org.platformlayer.service.imagefactory.v1.DiskImageRecipe;
-import org.platformlayer.service.imagefactory.v1.Repository;
-import org.platformlayer.service.imagefactory.v1.RepositoryKey;
 import org.platformlayer.xml.JaxbHelper;
 
 import com.google.common.base.Objects;

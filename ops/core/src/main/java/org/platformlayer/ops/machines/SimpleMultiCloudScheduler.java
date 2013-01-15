@@ -4,14 +4,14 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.slf4j.*;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.core.model.MachineCloudBase;
 import org.platformlayer.ops.MachineCreationRequest;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.service.machines.direct.v1.DirectCloud;
 import org.platformlayer.service.machines.openstack.v1.OpenstackCloud;
 import org.platformlayer.service.machines.raw.v1.RawCloud;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
@@ -82,7 +82,7 @@ public class SimpleMultiCloudScheduler implements MultiCloudScheduler {
 		float cost;
 		if (candidate.getClass().getSimpleName().equals(RawCloud.class.getSimpleName())) {
 			cost = 100;
-		} else if (candidate.getClass().getSimpleName().equals(DirectCloud.class.getSimpleName())) {
+		} else if (candidate.getClass().getSimpleName().equals("DirectCloud" /* DirectCloud.class.getSimpleName() */)) {
 			cost = 10;
 		} else if (candidate.getClass().getSimpleName().equals(OpenstackCloud.class.getSimpleName())) {
 			cost = 50;

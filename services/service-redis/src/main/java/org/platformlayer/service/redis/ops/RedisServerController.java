@@ -7,7 +7,6 @@ import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.TemplatedFile;
-import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.networks.PublicEndpoint;
 import org.platformlayer.ops.packages.PackageDependency;
@@ -34,7 +33,7 @@ public class RedisServerController extends OpsTreeBase {
 		InstanceBuilder vm;
 
 		{
-			vm = InstanceBuilder.build(model.dnsName, DiskImageRecipeBuilder.buildDiskImageRecipe(this));
+			vm = InstanceBuilder.build(model.dnsName, this);
 
 			// TODO: Memory _really_ needs to be configurable here!
 			vm.publicPorts.add(PORT);

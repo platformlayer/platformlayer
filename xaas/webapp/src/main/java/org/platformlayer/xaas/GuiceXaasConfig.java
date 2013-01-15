@@ -16,10 +16,8 @@ import org.platformlayer.auth.system.PlatformLayerAuthAdminClient;
 import org.platformlayer.auth.system.PlatformlayerAuthenticationService;
 import org.platformlayer.crypto.EncryptionStore;
 import org.platformlayer.crypto.KeyStoreEncryptionStore;
-import org.platformlayer.guice.xaas.ItemEntity;
 import org.platformlayer.guice.xaas.JdbcManagedItemRepository;
 import org.platformlayer.guice.xaas.JdbcServiceAuthorizationRepository;
-import org.platformlayer.guice.xaas.TagEntity;
 import org.platformlayer.http.HttpStrategy;
 import org.platformlayer.http.apache.InstrumentedApacheHttpStrategy;
 import org.platformlayer.inject.GuiceObjectInjector;
@@ -27,6 +25,7 @@ import org.platformlayer.inject.ObjectInjector;
 import org.platformlayer.jdbc.GuiceDataSourceProvider;
 import org.platformlayer.jdbc.simplejpa.ResultSetMappers;
 import org.platformlayer.jdbc.simplejpa.ResultSetMappersProvider;
+import org.platformlayer.ops.ItemService;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.backups.BackupContextFactory;
@@ -37,14 +36,13 @@ import org.platformlayer.ops.guice.OpsContextProvider;
 import org.platformlayer.ops.jobstore.FilesystemJobLogStore;
 import org.platformlayer.ops.jobstore.JobLogStore;
 import org.platformlayer.ops.jobstore.PersistentJobRegistry;
+import org.platformlayer.ops.jobstore.SimpleOperationQueue;
 import org.platformlayer.ops.jobstore.jdbc.JdbcJobRepository;
-import org.platformlayer.ops.jobstore.jdbc.JobEntity;
-import org.platformlayer.ops.jobstore.jdbc.JobExecutionEntity;
-import org.platformlayer.ops.schedule.jdbc.SchedulerRecordEntity;
 import org.platformlayer.ops.ssh.ISshContext;
 import org.platformlayer.ops.tasks.JobRegistry;
 import org.platformlayer.ops.tasks.OperationQueue;
-import org.platformlayer.ops.tasks.SimpleOperationQueue;
+import org.platformlayer.ops.templates.FreemarkerTemplateEngine;
+import org.platformlayer.ops.templates.TemplateEngine;
 import org.platformlayer.ssh.mina.MinaSshContext;
 import org.platformlayer.xaas.discovery.AnnotationDiscovery;
 import org.platformlayer.xaas.discovery.JerseyAnnotationDiscovery;
@@ -56,15 +54,30 @@ import org.platformlayer.xaas.services.AnnotationServiceProviderDictionary;
 import org.platformlayer.xaas.services.ChangeQueue;
 import org.platformlayer.xaas.services.ServiceProviderDictionary;
 import org.platformlayer.xaas.web.jaxrs.JaxbContextHelper;
+import org.platformlayer.xaas.web.resources.ItemServiceImpl;
 
+import com.fathomdb.Configuration;
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 
 public class GuiceXaasConfig extends AbstractModule {
 
+	final Configuration configuration;
+
+	public GuiceXaasConfig(Configuration configuration) {
+		super();
+		this.configuration = configuration;
+	}
+
 	@Override
 	protected void configure() {
 		bind(EncryptionStore.class).toProvider(KeyStoreEncryptionStore.Provider.class);
+
+		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+		FreemarkerTemplateEngine freemarker = new FreemarkerTemplateEngine(classLoader);
+		bind(TemplateEngine.class).toInstance(freemarker);
+
+		bind(ItemService.class).to(ItemServiceImpl.class);
 
 		bind(ISshContext.class).to(MinaSshContext.class);
 
@@ -79,9 +92,8 @@ public class GuiceXaasConfig extends AbstractModule {
 		bind(JobLogStore.class).toInstance(new FilesystemJobLogStore(jobLogStoreBaseDir));
 
 		// TODO: Split off scheduler
-		bind(ResultSetMappers.class).toProvider(
-				ResultSetMappersProvider.build(ItemEntity.class, TagEntity.class, SchedulerRecordEntity.class,
-						JobEntity.class, JobExecutionEntity.class));
+		bind(ResultSetMappersProvider.class).asEagerSingleton();
+		bind(ResultSetMappers.class).toProvider(ResultSetMappersProvider.class).in(Scopes.SINGLETON);
 
 		bind(DataSource.class).toProvider(GuiceDataSourceProvider.bind("platformlayer.jdbc.")).asEagerSingleton();
 
@@ -113,7 +125,9 @@ public class GuiceXaasConfig extends AbstractModule {
 		bind(JaxbContextHelper.class).asEagerSingleton();
 		bind(JAXBContext.class).toProvider(JaxbContextHelper.class);
 
-		bind(OperationQueue.class).to(SimpleOperationQueue.class).asEagerSingleton();
+		if (!configuration.isExplicitlyBound(OperationQueue.class)) {
+			bind(OperationQueue.class).to(SimpleOperationQueue.class).asEagerSingleton();
+		}
 
 		bind(ObjectInjector.class).to(GuiceObjectInjector.class);
 

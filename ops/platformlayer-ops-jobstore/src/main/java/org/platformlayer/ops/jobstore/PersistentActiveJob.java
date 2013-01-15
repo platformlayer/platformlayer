@@ -2,6 +2,7 @@ package org.platformlayer.ops.jobstore;
 
 import java.util.Date;
 
+import org.platformlayer.TimeSpan;
 import org.platformlayer.common.JobState;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.PlatformLayerKey;
@@ -12,6 +13,7 @@ import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.log.JobLogger;
 import org.platformlayer.ops.tasks.ActiveJobExecution;
+import org.platformlayer.ops.tasks.OperationQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,14 +33,14 @@ public class PersistentActiveJob implements ActiveJobExecution {
 
 	private final ServiceType serviceType;
 
-	private final PersistentJobRegistry registry;
+	private final OperationQueue operationQueue;
 
 	private final Date startedAt;
 
-	public PersistentActiveJob(PersistentJobRegistry registry, ProjectAuthorization authentication,
+	public PersistentActiveJob(OperationQueue operationQueue, ProjectAuthorization authentication,
 			JobExecutionData jobExecution) {
 		super();
-		this.registry = registry;
+		this.operationQueue = operationQueue;
 		this.authentication = authentication;
 		this.jobData = jobExecution.getJob();
 		this.jobExecution = jobExecution;
@@ -52,7 +54,7 @@ public class PersistentActiveJob implements ActiveJobExecution {
 
 	public PersistentActiveJob(ServiceType serviceType, ProjectAuthorization authentication, String executionId) {
 		super();
-		this.registry = null;
+		this.operationQueue = null;
 		this.serviceType = serviceType;
 		this.authentication = authentication;
 		this.jobData = null;
@@ -117,7 +119,9 @@ public class PersistentActiveJob implements ActiveJobExecution {
 			return;
 		}
 
-		registry.jobFinished(this);
+		if (operationQueue != null) {
+			operationQueue.jobFinished(this.jobExecution, this.getState(), this.getLogger());
+		}
 	}
 
 	public Date getStartedAt() {
@@ -127,6 +131,11 @@ public class PersistentActiveJob implements ActiveJobExecution {
 	@Override
 	public JobExecutionData getJobExecution() {
 		return jobExecution;
+	}
+
+	@Override
+	public void enqueueRetry(TimeSpan delay) throws OpsException {
+		operationQueue.submitRetry(getProjectAuthorization(), jobData, delay);
 	}
 
 }

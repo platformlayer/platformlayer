@@ -13,6 +13,7 @@ import org.platformlayer.auth.AuthenticationService;
 import org.platformlayer.auth.AuthenticationTokenValidator;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ServiceInfo;
+import org.platformlayer.core.model.ServiceInfoCollection;
 import org.platformlayer.crypto.EncryptionStore;
 import org.platformlayer.crypto.OpenSshUtils;
 import org.platformlayer.http.HttpStrategy;
@@ -289,5 +290,12 @@ public class OpsSystem {
 
 	public HttpStrategy getHttpStrategy() {
 		return httpStrategy;
+	}
+
+	public ServiceInfoCollection listServices() {
+		ServiceInfoCollection collection = new ServiceInfoCollection();
+		collection.services = Lists.newArrayList();
+		collection.services.addAll(serviceDictionary.getAllServices());
+		return collection;
 	}
 }

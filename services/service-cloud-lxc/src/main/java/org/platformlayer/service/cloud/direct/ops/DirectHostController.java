@@ -5,14 +5,24 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import org.slf4j.*;
+import org.platformlayer.cas.CasStore;
+import org.platformlayer.cas.CasStoreInfo;
+import org.platformlayer.ids.ServiceType;
+import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
+import org.platformlayer.ops.Machine;
+import org.platformlayer.ops.OpaqueMachine;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.bootstrap.InstanceBootstrap;
+import org.platformlayer.ops.cas.CasStoreProvider;
+import org.platformlayer.ops.cas.OpsCasTarget;
+import org.platformlayer.ops.cas.filesystem.FilesystemCasStore;
 import org.platformlayer.ops.dns.DnsResolver;
 import org.platformlayer.ops.filesystem.ManagedDirectory;
 import org.platformlayer.ops.helpers.ServiceContext;
+import org.platformlayer.ops.helpers.SshKeys;
 import org.platformlayer.ops.images.direct.PeerToPeerCopy;
 import org.platformlayer.ops.machines.PlatformLayerCloudContext;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
@@ -21,8 +31,10 @@ import org.platformlayer.ops.packages.PackageDependency;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.direct.model.DirectHost;
 import org.platformlayer.service.cloud.direct.ops.kvm.host.KvmHost;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class DirectHostController extends OpsTreeBase {
+public class DirectHostController extends OpsTreeBase implements CasStoreProvider {
 	static final Logger log = LoggerFactory.getLogger(DirectHostController.class);
 
 	public static final File LXC_INSTANCE_DIR = new File("/var/instances/lxc");
@@ -40,8 +52,14 @@ public class DirectHostController extends OpsTreeBase {
 	@Inject
 	OpsContext ops;
 
+	@Bound
+	DirectHost model;
+
+	@Inject
+	SshKeys sshKeys;
+
 	@Handler
-	public void handler(DirectHost lxcHost) throws OpsException, IOException {
+	public void handler() throws OpsException, IOException {
 		// String instanceId = lxcHost.getTags().findUnique(Tag.INSTANCE_ID);
 		// if (instanceId == null) {
 		// MachineCreationRequest request = new MachineCreationRequest();
@@ -64,8 +82,6 @@ public class DirectHostController extends OpsTreeBase {
 
 	@Override
 	protected void addChildren() throws OpsException {
-		DirectHost model = OpsContext.get().getInstance(DirectHost.class);
-
 		// if (Strings.isEmpty(model.dnsName)) {
 		// throw new IllegalArgumentException("dnsName must be specified");
 		// }
@@ -113,6 +129,25 @@ public class DirectHostController extends OpsTreeBase {
 		host.addChild(PackageDependency.build("bridge-utils"));
 
 		host.addChild(NetworkBridge.class);
+	}
+
+	@Override
+	public CasStore getCasStore() throws OpsException {
+		// TODO: Getting the IP like this is evil
+		NetworkPoint targetAddress;
+		// if (host.getIpv6() != null) {
+		// IpRange ipv6Range = IpV6Range.parse(host.getIpv6());
+		// targetAddress = NetworkPoint.forPublicHostname(ipv6Range.getGatewayAddress());
+		// } else {
+		targetAddress = NetworkPoint.forPublicHostname(model.host);
+		// }
+
+		Machine machine = new OpaqueMachine(targetAddress);
+		OpsTarget machineTarget = machine.getTarget(sshKeys.findOtherServiceKey(new ServiceType("machines-direct")));
+
+		CasStoreInfo casStoreOptions = new CasStoreInfo(true);
+		FilesystemCasStore store = new FilesystemCasStore(casStoreOptions, new OpsCasTarget(machineTarget));
+		return store;
 	}
 
 }

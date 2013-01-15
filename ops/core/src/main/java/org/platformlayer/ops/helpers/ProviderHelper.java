@@ -5,7 +5,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.platformlayer.common.UntypedItem;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ServiceInfo;
@@ -101,15 +100,16 @@ public class ProviderHelper {
 			}
 		}
 
-		for (UntypedItem untypedItem : platformLayer.listChildren(parent).getItems()) {
-			Object item = platformLayer.promoteToTyped(untypedItem);
+		for (ItemBase item : platformLayer.listChildrenTyped(parent)) {
+			// Object item = platformLayer.promoteToTyped(untypedItem);
 			ModelClass<?> modelClass = modelClasses.get(item.getClass());
 
 			if (modelClass != null) {
-				providers.add(new ProviderOf<T>(modelClass, (ItemBase) item));
+				providers.add(new ProviderOf<T>(modelClass, item));
 			}
 		}
 
 		return providers;
 	}
+
 }

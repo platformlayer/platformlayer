@@ -30,7 +30,7 @@ public class JobsCollectionResource extends XaasResourceBase {
 	@Path("runs")
 	@Produces({ XML, JSON })
 	public JobExecutionList getExecutions() throws OpsException {
-		JobExecutionList executions = jobRegistry.listExecutions(getProject());
+		JobExecutionList executions = jobRegistry.listRecentExecutions(getProject());
 		return executions;
 	}
 
@@ -51,7 +51,7 @@ public class JobsCollectionResource extends XaasResourceBase {
 	@GET
 	@Produces({ XML, JSON })
 	public JobDataList getActiveJobs() {
-		List<JobData> jobList = jobRegistry.listJobs(getProject());
+		List<JobData> jobList = jobRegistry.listRecentJobs(getProject());
 		JobDataList jobs = JobDataList.create();
 		jobs.jobs = Lists.newArrayList();
 		for (JobData jobData : jobList) {

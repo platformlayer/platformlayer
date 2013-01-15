@@ -5,7 +5,6 @@ import java.io.IOException;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.metrics.MetricsInstance;
 import org.platformlayer.ops.tree.OpsTreeBase;
@@ -29,7 +28,7 @@ public class NexusServiceController extends OpsTreeBase {
 		InstanceBuilder vm;
 
 		{
-			vm = InstanceBuilder.build(model.dnsName, DiskImageRecipeBuilder.buildDiskImageRecipe(this));
+			vm = InstanceBuilder.build(model.dnsName, this);
 			vm.minimumMemoryMb = 2048;
 			addChild(vm);
 		}

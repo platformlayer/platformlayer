@@ -26,8 +26,8 @@ import org.platformlayer.ids.ItemType;
 import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceType;
+import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobDataList;
-import org.platformlayer.jobs.model.JobExecutionData;
 import org.platformlayer.jobs.model.JobExecutionList;
 import org.platformlayer.jobs.model.JobLog;
 import org.platformlayer.metrics.model.JsonMetricDataStream;
@@ -55,7 +55,9 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 
 	private final PlatformLayerHttpTransport httpClient;
 
-	private HttpPlatformLayerClient(PlatformLayerHttpTransport httpClient, ProjectId projectId) {
+	private HttpPlatformLayerClient(TypedItemMapper mapper, PlatformLayerHttpTransport httpClient, ProjectId projectId) {
+		super(mapper);
+
 		this.httpClient = httpClient;
 		this.projectId = projectId;
 	}
@@ -122,8 +124,9 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 			url += "/";
 		}
 
-		return new HttpPlatformLayerClient(new PlatformLayerHttpTransport(httpStrategy, url, authenticator, trustKeys),
-				projectId);
+		TypedItemMapper mapper = null;
+		return new HttpPlatformLayerClient(mapper, new PlatformLayerHttpTransport(httpStrategy, url, authenticator,
+				trustKeys), projectId);
 	}
 
 	@Override
@@ -268,10 +271,10 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 	// }
 
 	@Override
-	public JobExecutionData deleteItem(PlatformLayerKey key) throws PlatformLayerClientException {
+	public JobData deleteItem(PlatformLayerKey key) throws PlatformLayerClientException {
 		String relativePath = buildRelativePath(key);
 
-		JobExecutionData retval = doRequest("DELETE", relativePath, JobExecutionData.class, Format.XML, null, null);
+		JobData retval = doRequest("DELETE", relativePath, JobData.class, Format.XML, null, null);
 		return retval;
 	}
 
@@ -416,11 +419,10 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
-	public JobExecutionData doAction(PlatformLayerKey key, Action action) throws PlatformLayerClientException {
+	public JobData doAction(PlatformLayerKey key, Action action) throws PlatformLayerClientException {
 		String relativePath = buildRelativePath(key) + "/actions";
 
-		JobExecutionData retval = doRequest("POST", relativePath, JobExecutionData.class, Format.XML, action,
-				Format.XML);
+		JobData retval = doRequest("POST", relativePath, JobData.class, Format.XML, action, Format.XML);
 		return retval;
 	}
 

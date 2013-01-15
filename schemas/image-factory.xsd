@@ -41,13 +41,6 @@
     </xs:complexContent>
   </xs:complexType>
 
-  <xs:complexType name="operatingSystemRecipe">
-    <xs:sequence>
-      <xs:element name="distribution" type="xs:string" minOccurs="0"/>
-      <xs:element name="version" type="xs:string" minOccurs="0"/>
-    </xs:sequence>
-  </xs:complexType>
-
   <xs:complexType name="diskImageRecipe">
     <xs:complexContent>
       <xs:extension base="ns1:itemBase">
@@ -60,6 +53,13 @@
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="operatingSystemRecipe">
+    <xs:sequence>
+      <xs:element name="distribution" type="xs:string" minOccurs="0"/>
+      <xs:element name="version" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
   </xs:complexType>
 </xs:schema>
 

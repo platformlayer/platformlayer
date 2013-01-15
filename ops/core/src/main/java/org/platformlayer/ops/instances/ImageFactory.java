@@ -1,4 +1,4 @@
-package org.platformlayer.ops.helpers;
+package org.platformlayer.ops.instances;
 
 import java.util.Arrays;
 import java.util.List;
@@ -10,6 +10,8 @@ import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.MachineCloudBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
+import org.platformlayer.images.model.DiskImage;
+import org.platformlayer.images.model.DiskImageRecipe;
 import org.platformlayer.ops.CloudContext;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
@@ -17,8 +19,6 @@ import org.platformlayer.ops.images.CloudImage;
 import org.platformlayer.ops.images.ImageFormat;
 import org.platformlayer.ops.images.ImageStore;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
-import org.platformlayer.service.imagefactory.v1.DiskImage;
-import org.platformlayer.service.imagefactory.v1.DiskImageRecipe;
 import org.platformlayer.xml.JaxbHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

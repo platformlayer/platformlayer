@@ -5,7 +5,6 @@ import java.io.IOException;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.java.JavaVirtualMachine;
 import org.platformlayer.ops.metrics.MetricsInstance;
@@ -28,8 +27,7 @@ public class TomcatServiceController extends OpsTreeBase {
 	protected void addChildren() throws OpsException {
 		TomcatService model = OpsContext.get().getInstance(TomcatService.class);
 
-		InstanceBuilder instance = InstanceBuilder.build(model.dnsName,
-				DiskImageRecipeBuilder.buildDiskImageRecipe(this));
+		InstanceBuilder instance = InstanceBuilder.build(model.dnsName, this);
 		instance.minimumMemoryMb = 2048;
 		addChild(instance);
 

@@ -17,7 +17,7 @@ import org.platformlayer.core.model.ConfigureAction;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ValidateAction;
-import org.platformlayer.jobs.model.JobExecutionData;
+import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.tasks.JobRegistry;
 import org.platformlayer.xaas.services.ServiceProviderDictionary;
@@ -35,14 +35,14 @@ public class ActionsResource extends XaasResourceBase {
 	@POST
 	@Consumes({ XML })
 	@Produces({ XML, JSON })
-	public JobExecutionData doActionXml(Action action) throws RepositoryException, OpsException {
+	public JobData doActionXml(Action action) throws RepositoryException, OpsException {
 		return doAction(action);
 	}
 
 	@POST
 	@Consumes({ JSON })
 	@Produces({ XML, JSON })
-	public JobExecutionData doActionJson(String json) throws IOException, RepositoryException, OpsException {
+	public JobData doActionJson(String json) throws IOException, RepositoryException, OpsException {
 		JSONObject jsonObject;
 		String actionType = null;
 		try {
@@ -85,7 +85,7 @@ public class ActionsResource extends XaasResourceBase {
 	@Inject
 	ServiceProviderDictionary serviceProviderDictionary;
 
-	private JobExecutionData doAction(Action action) throws RepositoryException, OpsException {
+	private JobData doAction(Action action) throws RepositoryException, OpsException {
 		boolean fetchTags = true;
 		// Check we can get the item
 		ItemBase managedItem = getManagedItem(fetchTags);

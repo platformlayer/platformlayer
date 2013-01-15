@@ -7,7 +7,7 @@ import org.platformlayer.PlatformLayerClientException;
 import org.platformlayer.client.cli.model.ItemPath;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.PlatformLayerKey;
-import org.platformlayer.jobs.model.JobExecutionData;
+import org.platformlayer.jobs.model.JobData;
 
 public abstract class ActionCommandBase extends PlatformLayerCommandRunnerBase {
 
@@ -15,19 +15,19 @@ public abstract class ActionCommandBase extends PlatformLayerCommandRunnerBase {
 		super(actionName, "item");
 	}
 
-	protected JobExecutionData runAction(ItemPath path, Action action) throws PlatformLayerClientException {
+	protected JobData runAction(ItemPath path, Action action) throws PlatformLayerClientException {
 		PlatformLayerClient client = getPlatformLayerClient();
 
 		PlatformLayerKey key = path.resolve(getContext());
 
-		JobExecutionData ret = client.doAction(key, action);
+		JobData ret = client.doAction(key, action);
 		return ret;
 	}
 
 	@Override
 	public void formatRaw(Object o, PrintWriter writer) {
-		JobExecutionData jobData = (JobExecutionData) o;
-		writer.println(jobData.getJobKey().getItemId().getKey() + "/" + jobData.getExecutionId());
+		JobData jobData = (JobData) o;
+		writer.println(jobData.getJobId());
 	}
 
 }

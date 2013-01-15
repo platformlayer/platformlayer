@@ -10,7 +10,6 @@ import org.platformlayer.common.UntypedItem;
 import org.platformlayer.common.UntypedItemCollection;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.ItemBase;
-import org.platformlayer.core.model.ManagedItemCollection;
 import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ServiceInfo;
@@ -19,8 +18,8 @@ import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.core.model.Tags;
 import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.ids.ProjectId;
+import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobDataList;
-import org.platformlayer.jobs.model.JobExecutionData;
 import org.platformlayer.jobs.model.JobExecutionList;
 import org.platformlayer.jobs.model.JobLog;
 import org.platformlayer.metrics.model.MetricDataStream;
@@ -85,24 +84,15 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 		return item;
 	}
 
+	@Override
 	public <T> T findItem(PlatformLayerKey path, Class<T> itemClass) throws OpsException {
-		UntypedItem cloudItemUntyped = platformLayerClient.getItemUntyped(path);
-		if (cloudItemUntyped == null) {
-			return null;
-		}
-
-		return promoteToTyped(cloudItemUntyped, itemClass);
+		return platformLayerClient.findItem(path, itemClass);
 	}
 
 	public <T> T findItem(String id, Class<T> itemClass) throws OpsException {
 		PlatformLayerKey key = toKey(itemClass, id);
 
-		UntypedItem item = platformLayerClient.getItemUntyped(key);
-		if (item == null) {
-			return null;
-		}
-
-		return promoteToTyped(item, itemClass);
+		return findItem(key, itemClass);
 	}
 
 	public <T> PlatformLayerKey toKey(Class<T> itemClass, String id) throws PlatformLayerClientException {
@@ -114,29 +104,18 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 		return key;
 	}
 
+	@Override
 	public <T> T findItem(PlatformLayerKey path) throws OpsException {
-		UntypedItem cloudItemUntyped = platformLayerClient.getItemUntyped(path);
-		if (cloudItemUntyped == null) {
-			return null;
-		}
-
-		return promoteToTyped(cloudItemUntyped);
+		return platformLayerClient.findItem(path);
 	}
 
 	/**
 	 * If using directly, consider using OwnedItem instead
 	 */
+	@Override
 	@Deprecated
 	public <T extends ItemBase> T putItemByTag(T item, Tag uniqueTag) throws OpsException {
-		JaxbHelper jaxbHelper = PlatformLayerClientBase.toJaxbHelper(item);
-
-		String xml = PlatformLayerClientBase.serialize(jaxbHelper, item);
-		PlatformLayerKey key = PlatformLayerClientBase.toKey(jaxbHelper, item, platformLayerClient.listServices(true));
-
-		UntypedItem ret = platformLayerClient.putItemByTag(key, uniqueTag, xml, Format.XML);
-		Class<T> itemClass = (Class<T>) item.getClass();
-		return promoteToTyped(ret, itemClass);
-
+		return platformLayerClient.putItemByTag(item, uniqueTag);
 	}
 
 	/**
@@ -161,7 +140,7 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 	// }
 
 	@Override
-	public JobExecutionData deleteItem(PlatformLayerKey key) throws PlatformLayerClientException {
+	public JobData deleteItem(PlatformLayerKey key) throws PlatformLayerClientException {
 		return platformLayerClient.deleteItem(key);
 	}
 
@@ -193,6 +172,7 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 		return listItems(clazz, filter);
 	}
 
+	@Override
 	public <T> List<T> listItems(Class<T> clazz) throws OpsException {
 		return listItems(clazz, false);
 	}
@@ -205,17 +185,18 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 	}
 
 	public <T> List<T> listItems(Class<T> clazz, Filter filter) throws OpsException {
-		JaxbHelper jaxbHelper = PlatformLayerClientBase.toJaxbHelper(clazz, ManagedItemCollection.class);
-		PlatformLayerKey path = PlatformLayerClientBase.toKey(jaxbHelper, null, platformLayerClient.listServices(true));
+		// JaxbHelper jaxbHelper = PlatformLayerClientBase.toJaxbHelper(clazz, ManagedItemCollection.class);
+		// PlatformLayerKey path = PlatformLayerClientBase.toKey(jaxbHelper, null,
+		// platformLayerClient.listServices(true));
+		//
+		// List<T> items = Lists.newArrayList();
+		//
+		// for (UntypedItem untypedItem : untypedItems.getItems()) {
+		// T item = promoteToTyped(untypedItem, clazz);
+		// items.add(item);
+		// }
 
-		UntypedItemCollection untypedItems = this.platformLayerClient.listItemsUntyped(path);
-
-		List<T> items = Lists.newArrayList();
-
-		for (UntypedItem untypedItem : untypedItems.getItems()) {
-			T item = promoteToTyped(untypedItem, clazz);
-			items.add(item);
-		}
+		List<T> items = this.platformLayerClient.listItems(clazz);
 
 		if (filter != null) {
 			// TODO: Do filtering server-side
@@ -242,7 +223,7 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 	}
 
 	@Override
-	public JobExecutionData doAction(PlatformLayerKey key, Action action) throws PlatformLayerClientException {
+	public JobData doAction(PlatformLayerKey key, Action action) throws PlatformLayerClientException {
 		return platformLayerClient.doAction(key, action);
 	}
 
@@ -284,6 +265,11 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 	@Override
 	public UntypedItemCollection listChildren(PlatformLayerKey parent) throws PlatformLayerClientException {
 		return platformLayerClient.listChildren(parent);
+	}
+
+	@Override
+	public List<ItemBase> listChildrenTyped(PlatformLayerKey parent) throws OpsException {
+		return platformLayerClient.listChildrenTyped(parent);
 	}
 
 	@Override

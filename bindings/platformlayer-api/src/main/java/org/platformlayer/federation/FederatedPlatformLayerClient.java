@@ -13,6 +13,7 @@ import org.platformlayer.PlatformLayerClientBase;
 import org.platformlayer.PlatformLayerClientException;
 import org.platformlayer.PlatformLayerClientNotFoundException;
 import org.platformlayer.PlatformLayerEndpointInfo;
+import org.platformlayer.TypedItemMapper;
 import org.platformlayer.TypedPlatformLayerClient;
 import org.platformlayer.UntypedItemXml;
 import org.platformlayer.common.UntypedItem;
@@ -20,6 +21,7 @@ import org.platformlayer.common.UntypedItemCollection;
 import org.platformlayer.common.UntypedItemCollectionBase;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.ItemBase;
+import org.platformlayer.core.model.ManagedItemCollection;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ServiceInfo;
 import org.platformlayer.core.model.Tag;
@@ -36,7 +38,6 @@ import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobDataList;
-import org.platformlayer.jobs.model.JobExecutionData;
 import org.platformlayer.jobs.model.JobExecutionList;
 import org.platformlayer.jobs.model.JobLog;
 import org.platformlayer.metrics.model.MetricDataStream;
@@ -67,8 +68,10 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 
 	final ProjectId defaultProject;
 
-	public FederatedPlatformLayerClient(ProjectId defaultProject, FederationMap federationMap,
+	public FederatedPlatformLayerClient(TypedItemMapper mapper, ProjectId defaultProject, FederationMap federationMap,
 			ForkJoinStrategy forkJoinPool) {
+		super(mapper);
+
 		this.defaultProject = defaultProject;
 		this.federationMap = federationMap;
 		this.forkJoinPool = forkJoinPool;
@@ -217,6 +220,23 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 		}
 	}
 
+	static class ListItemsTyped<T> extends HostFunction<List<T>> {
+		private final Class<T> clazz;
+
+		public ListItemsTyped(Class<T> clazz) {
+			this.clazz = clazz;
+		}
+
+		@Override
+		public List<T> apply(final ChildClient child) throws PlatformLayerClientException {
+			try {
+				return child.client.listItems(clazz);
+			} catch (OpsException e) {
+				throw new PlatformLayerClientException("Error listing items", e);
+			}
+		}
+	}
+
 	static class ListChildren extends HostFunction<UntypedItemCollection> {
 		final PlatformLayerKey parent;
 
@@ -303,13 +323,13 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	static class AddHostTyped<T> extends HostFunction<Iterable<T>> {
-		final HostFunction<Iterable<T>> inner;
+		final HostFunction<? extends Iterable<T>> inner;
 
-		public AddHostTyped(HostFunction<Iterable<T>> inner) {
+		public AddHostTyped(HostFunction<? extends Iterable<T>> inner) {
 			this.inner = inner;
 		}
 
-		public static <T> AddHostTyped<T> wrap(HostFunction<Iterable<T>> inner) {
+		public static <T> AddHostTyped<T> wrap(HostFunction<? extends Iterable<T>> inner) {
 			return new AddHostTyped<T>(inner);
 		}
 
@@ -359,6 +379,14 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 		return doListConcatenationUntyped(getChildClients(path), AddHostUntyped.wrap(new ListItemsUntyped(path)));
 	}
 
+	@Override
+	public <T> List<T> listItems(final Class<T> clazz) throws PlatformLayerClientException {
+		JaxbHelper jaxbHelper = PlatformLayerClientBase.toJaxbHelper(clazz, ManagedItemCollection.class);
+		PlatformLayerKey path = PlatformLayerClientBase.toKey(jaxbHelper, null, listServices(true));
+
+		return doListConcatenationTyped(getChildClients(path), AddHostTyped.wrap(new ListItemsTyped<T>(clazz)));
+	}
+
 	private <V> Iterable<V> doListConcatenation(Iterable<ChildClient> childClients, HostFunction<Iterable<V>> function)
 			throws PlatformLayerClientException {
 		try {
@@ -372,6 +400,15 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 			HostFunction<UntypedItemCollection> function) throws PlatformLayerClientException {
 		try {
 			return ListConcatentation.joinListsUntypedItems(forkJoinPool, childClients, function);
+		} catch (ExecutionException e) {
+			throw new PlatformLayerClientException("Error while building item list", e);
+		}
+	}
+
+	private <T> List<T> doListConcatenationTyped(Iterable<ChildClient> childClients,
+			HostFunction<? extends Iterable<T>> function) throws PlatformLayerClientException {
+		try {
+			return ListConcatentation.joinListsTypedItems(forkJoinPool, childClients, function);
 		} catch (ExecutionException e) {
 			throw new PlatformLayerClientException("Error while building item list", e);
 		}
@@ -427,9 +464,9 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
-	public JobExecutionData deleteItem(PlatformLayerKey key) throws PlatformLayerClientException {
+	public JobData deleteItem(PlatformLayerKey key) throws PlatformLayerClientException {
 		MappedPlatformLayerKey mapped = mapToChild(key);
-		JobExecutionData jobData = mapped.child.client.deleteItem(key);
+		JobData jobData = mapped.child.client.deleteItem(key);
 		return mapped.child.setHost(jobData);
 	}
 
@@ -451,9 +488,9 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
-	public JobExecutionData doAction(PlatformLayerKey key, Action action) throws PlatformLayerClientException {
+	public JobData doAction(PlatformLayerKey key, Action action) throws PlatformLayerClientException {
 		MappedPlatformLayerKey mapped = mapToChild(key);
-		JobExecutionData result = mapped.child.client.doAction(mapped.key, action);
+		JobData result = mapped.child.client.doAction(mapped.key, action);
 		return mapped.child.setHost(result);
 	}
 
@@ -673,7 +710,8 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 	public static PlatformLayerClient build(ProjectId defaultProject, FederationMap federationMap) throws OpsException {
 		ForkJoinStrategy forkJoinPool = new FakeForkJoinStrategy();
 
-		return new FederatedPlatformLayerClient(defaultProject, federationMap, forkJoinPool);
+		TypedItemMapper mapper = null;
+		return new FederatedPlatformLayerClient(mapper, defaultProject, federationMap, forkJoinPool);
 	}
 
 	// public static FederationMap buildFederationMap(HttpStrategy httpStrategy, TypedPlatformLayerClient localClient,

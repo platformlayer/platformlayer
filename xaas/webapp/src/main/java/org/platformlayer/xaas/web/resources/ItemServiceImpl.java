@@ -3,6 +3,7 @@ package org.platformlayer.xaas.web.resources;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.platformlayer.CheckedCallable;
 import org.platformlayer.Filter;
@@ -17,8 +18,9 @@ import org.platformlayer.core.model.Tag;
 import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceType;
-import org.platformlayer.jobs.model.JobExecutionData;
+import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.model.ProjectAuthorization;
+import org.platformlayer.ops.ItemService;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsSystem;
@@ -36,6 +38,7 @@ import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import com.google.inject.Injector;
 
+@Singleton
 public class ItemServiceImpl implements ItemService {
 	@Inject
 	protected ManagedItemRepository repository;
@@ -303,7 +306,7 @@ public class ItemServiceImpl implements ItemService {
 				}
 
 				itemKey = newItem.getKey();
-				JobExecutionData jobKey = changeQueue.notifyChange(auth, itemKey, ManagedItemState.CREATION_REQUESTED);
+				JobData jobKey = changeQueue.notifyChange(auth, itemKey, ManagedItemState.CREATION_REQUESTED);
 				// returnJobKey(jobKey);
 
 				return newItem;
@@ -346,7 +349,7 @@ public class ItemServiceImpl implements ItemService {
 	}
 
 	@Override
-	public JobExecutionData deleteItem(final ProjectAuthorization auth, final PlatformLayerKey targetItemKey)
+	public JobData deleteItem(final ProjectAuthorization auth, final PlatformLayerKey targetItemKey)
 			throws OpsException {
 		SecretProvider secretProvider = SecretProvider.from(auth);
 
@@ -372,19 +375,18 @@ public class ItemServiceImpl implements ItemService {
 
 		final OpsContext opsContext = buildTemporaryOpsContext(targetItemKey.getServiceType(), auth);
 
-		JobExecutionData jobKey = OpsContext.runInContext(opsContext,
-				new CheckedCallable<JobExecutionData, Exception>() {
-					@Override
-					public JobExecutionData call() throws Exception {
-						try {
-							repository.changeState(targetItemKey, ManagedItemState.DELETE_REQUESTED);
-						} catch (RepositoryException e) {
-							throw new OpsException("Error writing object to database", e);
-						}
+		JobData jobKey = OpsContext.runInContext(opsContext, new CheckedCallable<JobData, Exception>() {
+			@Override
+			public JobData call() throws Exception {
+				try {
+					repository.changeState(targetItemKey, ManagedItemState.DELETE_REQUESTED);
+				} catch (RepositoryException e) {
+					throw new OpsException("Error writing object to database", e);
+				}
 
-						return changeQueue.notifyChange(auth, targetItemKey, ManagedItemState.DELETE_REQUESTED);
-					}
-				});
+				return changeQueue.notifyChange(auth, targetItemKey, ManagedItemState.DELETE_REQUESTED);
+			}
+		});
 		return jobKey;
 	}
 
@@ -402,8 +404,8 @@ public class ItemServiceImpl implements ItemService {
 		boolean fetchTags = true;
 		T managedItem;
 		try {
-			managedItem = Casts.checkedCast(
-					repository.getManagedItem(modelKey, fetchTags, SecretProvider.from(auth)), itemClass);
+			managedItem = Casts.checkedCast(repository.getManagedItem(modelKey, fetchTags, SecretProvider.from(auth)),
+					itemClass);
 		} catch (RepositoryException e) {
 			throw new OpsException("Error fetching item from database", e);
 		}

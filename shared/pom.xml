@@ -26,6 +26,5 @@
         <module>model-shared</module>
         <module>metrics-client</module>
     </modules>
-
 </project>
 

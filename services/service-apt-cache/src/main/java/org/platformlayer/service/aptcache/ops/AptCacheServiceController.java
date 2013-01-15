@@ -12,7 +12,6 @@ import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.SimpleFile;
 import org.platformlayer.ops.helpers.InstanceHelpers;
-import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.networks.PublicEndpoint;
@@ -44,8 +43,7 @@ public class AptCacheServiceController extends OpsTreeBase implements HttpProxyC
 		// TODO: Create endpoint with default port; maybe default to closed?
 		// model.dnsName
 
-		InstanceBuilder instance = InstanceBuilder.build(model.dnsName,
-				DiskImageRecipeBuilder.buildDiskImageRecipe(this));
+		InstanceBuilder instance = InstanceBuilder.build(model.dnsName, this);
 		instance.hostPolicy.allowRunInContainer = true;
 		addChild(instance);
 

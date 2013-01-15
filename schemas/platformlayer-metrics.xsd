@@ -59,7 +59,9 @@
   <xs:complexType name="metricQuery">
     <xs:sequence>
       <xs:element name="filters" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="projections" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="item" type="ns1:platformLayerKey" minOccurs="0"/>
+      <xs:element name="flatten" type="xs:boolean"/>
     </xs:sequence>
   </xs:complexType>
 

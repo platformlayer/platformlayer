@@ -2,16 +2,12 @@ package org.platformlayer.ops.jobstore;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.platformlayer.RepositoryException;
-import org.platformlayer.TimeSpan;
-import org.platformlayer.common.JobState;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ids.ManagedItemId;
@@ -24,18 +20,14 @@ import org.platformlayer.jobs.model.JobLog;
 import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsSystem;
-import org.platformlayer.ops.log.JobLogger;
 import org.platformlayer.ops.tasks.ActiveJobExecution;
 import org.platformlayer.ops.tasks.JobRegistry;
 import org.platformlayer.ops.tasks.OperationQueue;
-import org.platformlayer.ops.tasks.OperationWorker;
 import org.platformlayer.ops.tasks.OpsContextBuilder;
 import org.platformlayer.xaas.repository.JobRepository;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 @Singleton
 public class PersistentJobRegistry implements JobRegistry {
@@ -48,9 +40,6 @@ public class PersistentJobRegistry implements JobRegistry {
 	@Inject
 	JobLogStore jobLogStore;
 
-	final Map<PlatformLayerKey, ActiveJobExecution> activeJobs = Maps.newHashMap();
-	final LinkedList<JobExecutionData> recentJobs = Lists.newLinkedList();
-
 	@Inject
 	OpsContextBuilder opsContextBuilder;
 
@@ -58,7 +47,7 @@ public class PersistentJobRegistry implements JobRegistry {
 	OperationQueue operationQueue;
 
 	@Override
-	public JobExecutionData enqueueOperation(Action action, ProjectAuthorization auth, PlatformLayerKey targetItem)
+	public JobData enqueueOperation(Action action, ProjectAuthorization auth, PlatformLayerKey targetItem)
 			throws OpsException {
 		ProjectId projectId;
 		try {
@@ -78,82 +67,14 @@ public class PersistentJobRegistry implements JobRegistry {
 			throw new OpsException("Error inserting job", e);
 		}
 
-		Date startedAt = new Date();
-		String executionId;
-		try {
-			executionId = repository.insertExecution(jobData.key, startedAt);
-		} catch (RepositoryException e) {
-			throw new OpsException("Error inserting job execution into repository", e);
-		}
+		operationQueue.submit(auth, jobData);
 
-		JobExecutionData execution = new JobExecutionData();
-		execution.job = jobData;
-		execution.jobKey = jobData.getJobKey();
-		execution.startedAt = startedAt;
-		execution.executionId = executionId;
-		execution.state = JobState.PRESTART;
-
-		PersistentActiveJob activeJob = new PersistentActiveJob(this, auth, execution);
-		activeJobs.put(execution.jobKey, activeJob);
-
-		OperationWorker operationWorker = new OperationWorker(opsSystem, activeJob);
-		operationQueue.submit(operationWorker);
-		return execution;
+		return jobData;
 	}
 
 	@Override
-	public void enqueueRetry(ActiveJobExecution activeJob, TimeSpan delay) throws OpsException {
-		JobData jobData = activeJob.getJobExecution().getJob();
-
-		Date startedAt = new Date();
-		String executionId;
-		try {
-			executionId = repository.insertExecution(jobData.key, startedAt);
-		} catch (RepositoryException e) {
-			throw new OpsException("Error inserting job execution into repository", e);
-		}
-
-		JobExecutionData execution = new JobExecutionData();
-		execution.job = jobData;
-		execution.jobKey = jobData.getJobKey();
-		execution.startedAt = startedAt;
-		execution.executionId = executionId;
-		execution.state = JobState.PRESTART;
-
-		PersistentActiveJob retryJob = new PersistentActiveJob(this, activeJob.getProjectAuthorization(), execution);
-		OperationWorker operationWorker = new OperationWorker(opsSystem, retryJob);
-		operationQueue.submitRetry(operationWorker, delay);
-
-		// ???
-		activeJobs.put(execution.jobKey, retryJob);
-	}
-
-	private static final int RECENT_JOB_COUNT = 100;
-
-	@Override
-	public List<JobData> listJobs(ProjectId projectId) {
-		List<JobData> ret = Lists.newArrayList();
-
-		synchronized (activeJobs) {
-			for (ActiveJobExecution job : activeJobs.values()) {
-				if (!Objects.equal(job.getTargetItemKey().getProject(), projectId)) {
-					continue;
-				}
-				JobExecutionData execution = job.getJobExecution();
-				ret.add(execution.getJob());
-			}
-		}
-
-		synchronized (recentJobs) {
-			for (JobExecutionData job : recentJobs) {
-				if (!job.getJobKey().getProject().equals(projectId)) {
-					continue;
-				}
-				ret.add(job.getJob());
-			}
-		}
-
-		return ret;
+	public List<JobData> listRecentJobs(ProjectId projectId) {
+		return operationQueue.listRecentJobs(projectId);
 	}
 
 	// @Override
@@ -197,17 +118,20 @@ public class PersistentJobRegistry implements JobRegistry {
 
 	@Override
 	public JobLog getJobLog(PlatformLayerKey jobKey, String executionId, int logSkip) throws OpsException {
-		ActiveJobExecution activeJobExecution = activeJobs.get(jobKey);
-		if (activeJobExecution != null) {
-			SimpleJobLogger logger = (SimpleJobLogger) activeJobExecution.getLogger();
-			JobLog log = new JobLog();
-			log.lines = Lists.newArrayList(Iterables.skip(logger.getLogEntries(), logSkip));
-			log.execution = activeJobExecution.getJobExecution();
-			return log;
-		}
 
 		JobExecutionData execution = findExecution(jobKey, executionId);
+
 		Date startedAt = execution.getStartedAt();
+		if (execution.getEndedAt() == null) {
+			JobLog log = operationQueue.getActiveJobLog(jobKey, executionId);
+			if (log != null) {
+				JobLog ret = new JobLog();
+				ret.lines = Lists.newArrayList(Iterables.skip(log.lines, logSkip));
+				ret.execution = log.execution;
+				return ret;
+			}
+		}
+
 		try {
 			JobLog log = jobLogStore.getJobLog(startedAt, jobKey, executionId, logSkip);
 			if (log != null) {
@@ -252,59 +176,8 @@ public class PersistentJobRegistry implements JobRegistry {
 		return new PersistentActiveJob(serviceType, authentication, executionId);
 	}
 
-	void jobFinished(PersistentActiveJob persistentActiveJob) throws OpsException {
-		JobExecutionData jobData = persistentActiveJob.getJobExecution();
-		PlatformLayerKey jobKey = jobData.getJobKey();
-		String executionId = persistentActiveJob.getExecutionId();
-
-		Date startTime = persistentActiveJob.getStartedAt();
-		Date endTime = new Date();
-
-		synchronized (activeJobs) {
-			activeJobs.remove(jobKey);
-		}
-
-		synchronized (recentJobs) {
-			recentJobs.push(jobData);
-			if (recentJobs.size() > RECENT_JOB_COUNT) {
-				recentJobs.pop();
-			}
-		}
-
-		try {
-			JobLogger logger = persistentActiveJob.getLogger();
-			jobLogStore.saveJobLog(jobKey, executionId, startTime, logger);
-			repository.recordJobEnd(jobKey, executionId, endTime, persistentActiveJob.getState());
-		} catch (RepositoryException e) {
-			throw new OpsException("Error writing job to repository", e);
-		} catch (Exception e) {
-			throw new OpsException("Error writing job log", e);
-		}
-
-	}
-
 	@Override
-	public JobExecutionList listExecutions(ProjectId projectId) {
-		JobExecutionList ret = JobExecutionList.create();
-
-		synchronized (activeJobs) {
-			for (ActiveJobExecution job : activeJobs.values()) {
-				if (!Objects.equal(job.getTargetItemKey().getProject(), projectId)) {
-					continue;
-				}
-				ret.add(job.getJobExecution());
-			}
-		}
-
-		synchronized (recentJobs) {
-			for (JobExecutionData jobExecution : recentJobs) {
-				if (!jobExecution.getJobKey().getProject().equals(projectId)) {
-					continue;
-				}
-				ret.add(jobExecution);
-			}
-		}
-
-		return ret;
+	public JobExecutionList listRecentExecutions(ProjectId projectId) {
+		return operationQueue.listRecentExecutions(projectId);
 	}
 }

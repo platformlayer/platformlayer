@@ -1,8 +1,7 @@
-package org.platformlayer.xaas;
+package org.platformlayer.ops;
 
 import java.util.List;
 
-import org.slf4j.*;
 import org.platformlayer.auth.AuthenticationToken;
 import org.platformlayer.auth.DirectAuthenticationToken;
 import org.platformlayer.crypto.CryptoUtils;
@@ -10,6 +9,8 @@ import org.platformlayer.model.Authentication;
 import org.platformlayer.model.AuthenticationCredentials;
 import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.model.RoleId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fathomdb.crypto.CryptoKey;
 import com.fathomdb.crypto.FathomdbCrypto;
@@ -93,46 +94,47 @@ public class DirectAuthentication implements AuthenticationCredentials, ProjectA
 					return null;
 				}
 
-				project = new ProjectAuthorization() {
-					@Override
-					public boolean isLocked() {
-						return secret == null;
-					}
-
-					@Override
-					public CryptoKey getProjectSecret() {
-						return secret;
-					}
-
-					@Override
-					public int getId() {
-						return projectId;
-					}
-
-					@Override
-					public String getName() {
-						return projectKey;
-					}
-
-					@Override
-					public Authentication getUser() {
-						throw new UnsupportedOperationException();
-					}
-
-					@Override
-					public List<RoleId> getRoles() {
-						throw new UnsupportedOperationException();
-					}
-				};
+				return build(projectKey, projectId, secret);
 			}
 		}
 
-		if (project == null) {
-			return null;
-		}
+		return null;
+	}
+
+	public static DirectAuthentication build(final String projectKey, final int projectId, final CryptoKey projectSecret) {
+		ProjectAuthorization project = new ProjectAuthorization() {
+			@Override
+			public boolean isLocked() {
+				return projectSecret == null;
+			}
+
+			@Override
+			public CryptoKey getProjectSecret() {
+				return projectSecret;
+			}
+
+			@Override
+			public int getId() {
+				return projectId;
+			}
+
+			@Override
+			public String getName() {
+				return projectKey;
+			}
+
+			@Override
+			public Authentication getUser() {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public List<RoleId> getRoles() {
+				throw new UnsupportedOperationException();
+			}
+		};
 
 		return new DirectAuthentication(project);
-
 	}
 
 	@Override

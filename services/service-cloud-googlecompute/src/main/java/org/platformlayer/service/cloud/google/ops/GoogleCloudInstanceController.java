@@ -13,7 +13,7 @@ import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsProvider;
 import org.platformlayer.ops.bootstrap.ConfigureSshd;
-import org.platformlayer.ops.helpers.ImageFactory;
+import org.platformlayer.ops.instances.ImageFactory;
 import org.platformlayer.ops.ssh.SshAuthorizedKey;
 import org.platformlayer.ops.tagger.Tagger;
 import org.platformlayer.ops.tree.OpsTreeBase;

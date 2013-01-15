@@ -9,7 +9,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
-import org.slf4j.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Singleton;
 
@@ -23,17 +24,39 @@ public class FreemarkerTemplateEngine implements TemplateEngine {
 
 	Configuration cfg;
 
+	public FreemarkerTemplateEngine(ClassLoader classLoader) {
+		cfg = new Configuration();
+
+		File baseDir = new File(System.getProperty("user.dir"));
+		cfg.setTemplateLoader(new MyTemplateLoader(classLoader, baseDir));
+
+		// Don't put commas into numbers!!
+		cfg.setNumberFormat("0.############");
+
+		// try {
+		// cfg.setDirectoryForTemplateLoading(AppConfiguration.INSTANCE.getAppDirectory());
+		// } catch (IOException e) {
+		// throw new RuntimeException("Failed to set freemarker load directory", e);
+		// }
+
+		// Specify how templates will see the data-model. This is an advanced
+		// topic...
+		// but just use this:
+		PlatformLayerObjectWrapper objectWrapper = new PlatformLayerObjectWrapper();
+		cfg.setObjectWrapper(objectWrapper);
+	}
+
 	class MyTemplateLoader extends URLTemplateLoader {
 		final File baseDir;
+		final ClassLoader classLoader;
 
-		public MyTemplateLoader(File baseDir) {
+		String prefix = "";
+
+		public MyTemplateLoader(ClassLoader classLoader, File baseDir) {
 			this.baseDir = baseDir;
 
-			classLoader = FreemarkerTemplateEngine.class.getClassLoader();
+			this.classLoader = classLoader;
 		}
-
-		ClassLoader classLoader;
-		String prefix = "";
 
 		@Override
 		protected URL getURL(String name) {
@@ -51,28 +74,6 @@ public class FreemarkerTemplateEngine implements TemplateEngine {
 			}
 			return url;
 		}
-	}
-
-	public FreemarkerTemplateEngine() {
-		cfg = new Configuration();
-
-		File baseDir = new File(System.getProperty("user.dir"));
-		cfg.setTemplateLoader(new MyTemplateLoader(baseDir));
-
-		// Don't put commas into numbers!!
-		cfg.setNumberFormat("0.############");
-
-		// try {
-		// cfg.setDirectoryForTemplateLoading(AppConfiguration.INSTANCE.getAppDirectory());
-		// } catch (IOException e) {
-		// throw new RuntimeException("Failed to set freemarker load directory", e);
-		// }
-
-		// Specify how templates will see the data-model. This is an advanced
-		// topic...
-		// but just use this:
-		PlatformLayerObjectWrapper objectWrapper = new PlatformLayerObjectWrapper();
-		cfg.setObjectWrapper(objectWrapper);
 	}
 
 	private Template getTemplate(String templateName) throws IOException {

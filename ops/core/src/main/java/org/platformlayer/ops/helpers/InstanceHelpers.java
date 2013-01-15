@@ -6,7 +6,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-import org.slf4j.*;
 import org.platformlayer.core.model.InstanceBase;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.ids.ServiceType;
@@ -20,6 +19,8 @@ import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.machines.ServiceProviderHelpers;
 import org.platformlayer.xaas.services.ModelClass;
 import org.platformlayer.xaas.services.ServiceProviderDictionary;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class InstanceHelpers {
 	static final Logger log = LoggerFactory.getLogger(InstanceHelpers.class);

@@ -7,7 +7,6 @@ import java.util.Map;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.packages.PackageDependency;
 import org.platformlayer.ops.templates.TemplateDataSource;
@@ -32,8 +31,7 @@ public class GitlabServiceController extends OpsTreeBase implements TemplateData
 	protected void addChildren() throws OpsException {
 		GitlabService model = OpsContext.get().getInstance(GitlabService.class);
 
-		InstanceBuilder instance = InstanceBuilder.build(model.dnsName,
-				DiskImageRecipeBuilder.buildDiskImageRecipe(this));
+		InstanceBuilder instance = InstanceBuilder.build(model.dnsName, this);
 		addChild(instance);
 
 		instance.addChildren(PackageDependency

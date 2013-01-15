@@ -2,10 +2,10 @@ package org.platformlayer.ops.cas.filesystem;
 
 import java.io.File;
 
-import org.slf4j.*;
 import org.platformlayer.cas.CasLocation;
 import org.platformlayer.cas.CasStore;
 import org.platformlayer.cas.CasStoreObject;
+import org.platformlayer.cas.CasStoreInfo;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsException;
@@ -16,6 +16,8 @@ import org.platformlayer.ops.cas.OpsCasTarget;
 import org.platformlayer.ops.filesystem.FilesystemInfo;
 import org.platformlayer.ops.images.direct.PeerToPeerCopy;
 import org.platformlayer.ops.networks.NetworkPoint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fathomdb.hash.Md5Hash;
 
@@ -28,7 +30,10 @@ public class FilesystemCasStore implements CasStore {
 
 	final OpsTarget host;
 
-	public FilesystemCasStore(OpsCasTarget destTarget) {
+	private final CasStoreInfo info;
+
+	public FilesystemCasStore(CasStoreInfo info, OpsCasTarget destTarget) {
+		this.info = info;
 		this.host = destTarget.getOpsTarget();
 	}
 
@@ -147,5 +152,10 @@ public class FilesystemCasStore implements CasStore {
 	@Override
 	public String toString() {
 		return "FilesystemCasStore [host=" + host + "]";
+	}
+
+	@Override
+	public CasStoreInfo getOptions() {
+		return info;
 	}
 }

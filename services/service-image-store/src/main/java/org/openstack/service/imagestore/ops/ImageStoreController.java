@@ -14,7 +14,6 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.helpers.ServiceContext;
 import org.platformlayer.ops.helpers.SshKey;
-import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.metrics.MetricsInstance;
 import org.platformlayer.ops.networks.NetworkPoint;
@@ -88,8 +87,7 @@ public class ImageStoreController extends OpsTreeBase {
 	}
 
 	protected void addChildrenGlance(ImageStore model) throws OpsException {
-		InstanceBuilder instance = InstanceBuilder.build(model.dnsName,
-				DiskImageRecipeBuilder.buildDiskImageRecipe(this));
+		InstanceBuilder instance = InstanceBuilder.build(model.dnsName, this);
 		addChild(instance);
 
 		// We’ll stick with glance using SQLite (for now)

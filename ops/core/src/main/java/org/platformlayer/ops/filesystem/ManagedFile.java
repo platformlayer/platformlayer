@@ -116,6 +116,7 @@ public abstract class ManagedFile extends ManagedFilesystemItem implements HasDe
 				}
 
 				if (!Objects.equal(remoteMd5, sourceMd5)) {
+					String remote = target.readTextFile(filePath);
 					Md5Hash debugSourceMd5 = getSourceMd5(target);
 					debugSourceMd5 = getSourceMd5(target);
 					log.debug("debugSourceMd5: " + debugSourceMd5 + " vs " + remoteMd5);

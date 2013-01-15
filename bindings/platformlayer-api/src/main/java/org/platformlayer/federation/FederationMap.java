@@ -255,4 +255,8 @@ public class FederationMap {
 		rules.add(rule);
 	}
 
+	public boolean isEmpty() {
+		return rules.isEmpty() && targetMap.isEmpty();
+	}
+
 }

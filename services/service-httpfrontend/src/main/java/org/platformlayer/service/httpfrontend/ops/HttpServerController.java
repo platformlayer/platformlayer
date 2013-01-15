@@ -5,7 +5,6 @@ import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.networks.PublicEndpoint;
 import org.platformlayer.ops.tree.OpsTreeBase;
@@ -25,7 +24,7 @@ public class HttpServerController extends OpsTreeBase {
 	protected void addChildren() throws OpsException {
 		HttpServer model = OpsContext.get().getInstance(HttpServer.class);
 
-		InstanceBuilder vm = InstanceBuilder.build(model.dnsName, DiskImageRecipeBuilder.buildDiskImageRecipe(this));
+		InstanceBuilder vm = InstanceBuilder.build(model.dnsName, this);
 		vm.addTagToManaged = true;
 		vm.publicPorts.add(HttpHelpers.PORT);
 

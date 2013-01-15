@@ -12,7 +12,7 @@
     <name>PlatformLayer :: Services :: Cloud :: LXC</name>
 
     <dependencies>
-       <dependency>
+        <dependency>
             <groupId>org.platformlayer</groupId>
             <artifactId>service-base</artifactId>
         </dependency>

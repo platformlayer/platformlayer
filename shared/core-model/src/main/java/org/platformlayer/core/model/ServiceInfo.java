@@ -6,6 +6,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.google.common.collect.Lists;
+
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ServiceInfo {
@@ -27,6 +29,9 @@ public class ServiceInfo {
 	}
 
 	public List<String> getItemTypes() {
+		if (itemTypes == null) {
+			itemTypes = Lists.newArrayList();
+		}
 		return itemTypes;
 	}
 

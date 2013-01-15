@@ -16,7 +16,6 @@ import org.platformlayer.ops.databases.DatabaseTarget;
 import org.platformlayer.ops.databases.TunneledDatabaseTarget;
 import org.platformlayer.ops.filesystem.TemplatedFile;
 import org.platformlayer.ops.helpers.InstanceHelpers;
-import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.machines.InetAddressUtils;
 import org.platformlayer.ops.metrics.MetricsInstance;
@@ -45,8 +44,7 @@ public class PostgresqlServerController extends OpsTreeBase implements Database 
 		PostgresqlTemplateVariables template = injected(PostgresqlTemplateVariables.class);
 		PostgresqlServer model = template.getModel();
 
-		InstanceBuilder instance = InstanceBuilder.build(model.dnsName,
-				DiskImageRecipeBuilder.buildDiskImageRecipe(this));
+		InstanceBuilder instance = InstanceBuilder.build(model.dnsName, this);
 		// TODO: Memory _really_ needs to be configurable here!
 		instance.publicPorts.add(5432);
 

@@ -14,13 +14,17 @@ mvn generate-resources
 
 # Copy the schemas from the target directories
 pushd schemas
-cp ../shared/core-model/target/generated-resources/schemagen/schema1.xsd platformlayer-metrics.xsd
-cp ../shared/core-model/target/generated-resources/schemagen/schema2.xsd platformlayer-jobs.xsd
-cp ../shared/core-model/target/generated-resources/schemagen/schema3.xsd platformlayer-core.xsd
+cp ../shared/core-model/target/generated-resources/schemagen/schema1.xsd platformlayer-instancesupervisor.xsd
+cp ../shared/core-model/target/generated-resources/schemagen/schema2.xsd platformlayer-imagefactory.xsd
+cp ../shared/core-model/target/generated-resources/schemagen/schema3.xsd platformlayer-metrics.xsd
+cp ../shared/core-model/target/generated-resources/schemagen/schema4.xsd platformlayer-jobs.xsd
+cp ../shared/core-model/target/generated-resources/schemagen/schema5.xsd platformlayer-core.xsd
 
-find *.xsd -name "platformlayer-*.xsd" | xargs sed -i 's/schema1.xsd/platformlayer-metrics.xsd/g'
-find *.xsd -name "platformlayer-*.xsd" | xargs sed -i 's/schema2.xsd/platformlayer-jobs.xsd/g'
-find *.xsd -name "platformlayer-*.xsd" | xargs sed -i 's/schema3.xsd/platformlayer-core.xsd/g'
+find *.xsd -name "platformlayer-*.xsd" | xargs sed -i 's/schema1.xsd/platformlayer-instancesupervisor.xsd/g'
+find *.xsd -name "platformlayer-*.xsd" | xargs sed -i 's/schema2.xsd/platformlayer-imagefactory.xsd/g'
+find *.xsd -name "platformlayer-*.xsd" | xargs sed -i 's/schema3.xsd/platformlayer-metrics.xsd/g'
+find *.xsd -name "platformlayer-*.xsd" | xargs sed -i 's/schema4.xsd/platformlayer-jobs.xsd/g'
+find *.xsd -name "platformlayer-*.xsd" | xargs sed -i 's/schema5.xsd/platformlayer-core.xsd/g'
 
 cp ../services/service-federation/target/generated-resources/schemagen/schema1.xsd federation.xsd
 cp ../services/service-dns/target/generated-resources/schemagen/schema1.xsd dns.xsd

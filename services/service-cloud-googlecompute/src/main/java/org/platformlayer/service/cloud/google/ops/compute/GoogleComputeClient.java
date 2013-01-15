@@ -12,12 +12,12 @@ import java.util.concurrent.TimeoutException;
 import org.platformlayer.ExceptionUtils;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.crypto.OpenSshUtils;
+import org.platformlayer.images.model.DiskImageRecipe;
+import org.platformlayer.images.model.OperatingSystemRecipe;
 import org.platformlayer.ops.MachineCreationRequest;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.service.cloud.google.model.GoogleCloud;
-import org.platformlayer.service.imagefactory.v1.DiskImageRecipe;
-import org.platformlayer.service.imagefactory.v1.OperatingSystemRecipe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

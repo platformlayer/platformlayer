@@ -6,7 +6,6 @@ import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.firewall.Protocol;
-import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.networks.PublicEndpoint;
 import org.platformlayer.ops.tree.OpsTreeBase;
@@ -26,7 +25,7 @@ public class DnsServerController extends OpsTreeBase {
 
 	@Override
 	protected void addChildren() throws OpsException {
-		InstanceBuilder vm = InstanceBuilder.build(model.dnsName, DiskImageRecipeBuilder.buildDiskImageRecipe(this));
+		InstanceBuilder vm = InstanceBuilder.build(model.dnsName, this);
 
 		// TODO: Do we need a DnsCluster concept?
 		// For now, we fake it

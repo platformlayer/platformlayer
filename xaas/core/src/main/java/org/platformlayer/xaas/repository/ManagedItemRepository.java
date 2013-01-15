@@ -39,5 +39,7 @@ public interface ManagedItemRepository {
 
 	List<ItemBase> listAll(ProjectId project, Filter filter, SecretProvider secretProvider) throws RepositoryException;
 
+	int getProjectCode(ProjectId project) throws RepositoryException;
+
 	// <T> T persist(Managed<T> managedItem);
 }

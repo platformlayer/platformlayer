@@ -14,7 +14,6 @@ import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.http.HttpBackend;
-import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.metrics.MetricsInstance;
 import org.platformlayer.ops.networks.HasPorts;
@@ -52,7 +51,7 @@ public class JettyServiceController extends OpsTreeBase implements HasPorts, Htt
 
 		InstanceBuilder vm;
 		{
-			vm = InstanceBuilder.build(dnsName, DiskImageRecipeBuilder.buildDiskImageRecipe(this));
+			vm = InstanceBuilder.build(dnsName, this);
 			vm.publicPorts.addAll(ports);
 			// vm.hostPolicy.configureCluster(template.getPlacementKey());
 

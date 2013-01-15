@@ -7,7 +7,6 @@ import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.networks.PublicEndpoint;
 import org.platformlayer.ops.packages.PackageDependency;
@@ -30,8 +29,7 @@ public class WordpressServiceController extends OpsTreeBase {
 	protected void addChildren() throws OpsException {
 		WordpressService model = OpsContext.get().getInstance(WordpressService.class);
 
-		InstanceBuilder instance = InstanceBuilder.build(model.dnsName,
-				DiskImageRecipeBuilder.buildDiskImageRecipe(this));
+		InstanceBuilder instance = InstanceBuilder.build(model.dnsName, this);
 		// instance.minimumMemoryMb = 2048;
 		addChild(instance);
 

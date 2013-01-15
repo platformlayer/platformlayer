@@ -8,15 +8,12 @@ import javax.inject.Inject;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.slf4j.*;
 import org.platformlayer.cas.CasLocation;
 import org.platformlayer.cas.CasPickClosestStore;
 import org.platformlayer.cas.CasStore;
+import org.platformlayer.cas.CasStoreInfo;
 import org.platformlayer.cas.CasStoreMap;
 import org.platformlayer.cas.CasStoreObject;
-import org.platformlayer.ids.ServiceType;
-import org.platformlayer.ops.Machine;
-import org.platformlayer.ops.OpaqueMachine;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.cas.filesystem.FilesystemCasStore;
@@ -26,8 +23,7 @@ import org.platformlayer.ops.helpers.ProviderHelper;
 import org.platformlayer.ops.helpers.ProviderHelper.ProviderOf;
 import org.platformlayer.ops.helpers.SshKeys;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
-import org.platformlayer.ops.networks.NetworkPoint;
-import org.platformlayer.service.machines.direct.v1.DirectHost;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CasStoreHelper {
@@ -52,7 +48,7 @@ public class CasStoreHelper {
 		} catch (URISyntaxException e) {
 			throw new IllegalArgumentException("Error parsing URI", e);
 		}
-		return new JenkinsCasStore(jenkinsClient);
+		return new JenkinsCasStore(new CasStoreInfo(false), jenkinsClient);
 	}
 
 	public CasStoreMap getCasStoreMap(OpsTarget target) throws OpsException {
@@ -60,7 +56,8 @@ public class CasStoreHelper {
 		// if (this.casStores == null) {
 		CasStoreMap casStores = new CasStoreMap();
 
-		FilesystemCasStore filesystemCasStore = new FilesystemCasStore(new OpsCasTarget(target));
+		FilesystemCasStore filesystemCasStore = new FilesystemCasStore(new CasStoreInfo(false),
+				new OpsCasTarget(target));
 		casStores.addPrimary(filesystemCasStore);
 
 		// TODO: Don't hard-code
@@ -70,28 +67,11 @@ public class CasStoreHelper {
 		for (ProviderOf<CasStoreProvider> casStoreProvider : providers.listItemsProviding(CasStoreProvider.class)) {
 			CasStore casStore = casStoreProvider.get().getCasStore();
 			casStores.addSecondary(casStore);
-		}
 
-		// TODO: This is evil
-		for (DirectHost host : platformLayer.listItems(DirectHost.class)) {
-			// TODO: Getting the IP like this is also evil
-			NetworkPoint targetAddress;
-			// if (host.getIpv6() != null) {
-			// IpRange ipv6Range = IpV6Range.parse(host.getIpv6());
-			// targetAddress = NetworkPoint.forPublicHostname(ipv6Range.getGatewayAddress());
-			// } else {
-			targetAddress = NetworkPoint.forPublicHostname(host.getHost());
-			// }
-
-			Machine machine = new OpaqueMachine(targetAddress);
-			OpsTarget machineTarget = machine
-					.getTarget(sshKeys.findOtherServiceKey(new ServiceType("machines-direct")));
-
-			FilesystemCasStore store = new FilesystemCasStore(new OpsCasTarget(machineTarget));
-			casStores.addSecondary(store);
-
-			// Use this as a staging store i.e. we can upload files to here instead of to the VM
-			casStores.addStagingStore(store);
+			if (casStore.getOptions().isStaging()) {
+				// Use this as a staging store i.e. we can upload files to here instead of to the VM
+				casStores.addStagingStore(casStore);
+			}
 		}
 
 		// this.casStores = casStores;

@@ -9,6 +9,7 @@ import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.core.model.Tags;
 import org.platformlayer.crypto.OpenSshUtils;
+import org.platformlayer.instances.model.PersistentInstance;
 import org.platformlayer.ops.CloudContext;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.Machine;
@@ -19,7 +20,6 @@ import org.platformlayer.ops.OpsProvider;
 import org.platformlayer.ops.machines.PlatformLayerCloudHelpers;
 import org.platformlayer.ops.tagger.Tagger;
 import org.platformlayer.ops.tree.OpsTreeBase;
-import org.platformlayer.service.instancesupervisor.model.PersistentInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

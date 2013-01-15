@@ -2,17 +2,16 @@ package org.platformlayer.service.desktop.ops;
 
 import java.io.IOException;
 
+import org.platformlayer.images.model.OperatingSystemRecipe;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.networks.PublicEndpoint;
 import org.platformlayer.ops.packages.PackageDependency;
 import org.platformlayer.ops.packages.RecipeOperatingSystem;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.desktop.model.Desktop;
-import org.platformlayer.service.imagefactory.v1.OperatingSystemRecipe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,8 +27,7 @@ public class DesktopController extends OpsTreeBase {
 	protected void addChildren() throws OpsException {
 		Desktop model = OpsContext.get().getInstance(Desktop.class);
 
-		InstanceBuilder instance = InstanceBuilder.build(model.dnsName,
-				DiskImageRecipeBuilder.buildDiskImageRecipe(this));
+		InstanceBuilder instance = InstanceBuilder.build(model.dnsName, this);
 		instance.publicPorts.add(22);
 
 		instance.hostPolicy.allowRunInContainer = true;

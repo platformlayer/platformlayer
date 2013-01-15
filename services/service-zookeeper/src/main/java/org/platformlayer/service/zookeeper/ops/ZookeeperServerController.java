@@ -8,7 +8,6 @@ import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.firewall.Transport;
-import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.networks.IpsecHelpers;
 import org.platformlayer.ops.networks.PublicEndpoint;
@@ -40,7 +39,7 @@ public class ZookeeperServerController extends OpsTreeBase {
 		// A per-instance name (for convenience)
 		String dnsName = ZookeeperUtils.buildDnsName(model);
 
-		InstanceBuilder vm = InstanceBuilder.build(dnsName, DiskImageRecipeBuilder.buildDiskImageRecipe(this));
+		InstanceBuilder vm = InstanceBuilder.build(dnsName, this);
 		vm.publicPorts.add(port);
 		vm.publicPorts.add(ZookeeperConstants.ZK_SYSTEM_PORT_1);
 		vm.publicPorts.add(ZookeeperConstants.ZK_SYSTEM_PORT_2);

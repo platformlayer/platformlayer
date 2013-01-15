@@ -21,6 +21,12 @@ import org.platformlayer.core.model.MachineCloudBase;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.core.model.Tags;
+import org.platformlayer.images.model.ConfigurePackage;
+import org.platformlayer.images.model.DiskImage;
+import org.platformlayer.images.model.DiskImageRecipe;
+import org.platformlayer.images.model.OperatingSystemRecipe;
+import org.platformlayer.images.model.Repository;
+import org.platformlayer.images.model.RepositoryKey;
 import org.platformlayer.ops.ChrootOpsTarget;
 import org.platformlayer.ops.CloudContext;
 import org.platformlayer.ops.Command;
@@ -48,12 +54,6 @@ import org.platformlayer.ops.proxy.HttpProxyHelper;
 import org.platformlayer.ops.proxy.HttpProxyHelper.Usage;
 import org.platformlayer.service.imagefactory.OperatingSystem;
 import org.platformlayer.service.imagefactory.OperatingSystem.Distribution;
-import org.platformlayer.service.imagefactory.model.ConfigurePackage;
-import org.platformlayer.service.imagefactory.model.DiskImage;
-import org.platformlayer.service.imagefactory.model.DiskImageRecipe;
-import org.platformlayer.service.imagefactory.model.OperatingSystemRecipe;
-import org.platformlayer.service.imagefactory.model.Repository;
-import org.platformlayer.service.imagefactory.model.RepositoryKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -627,9 +627,9 @@ public class DiskImageController {
 			return;
 		}
 
-		List<org.platformlayer.service.imagefactory.v1.ConfigurePackage> list = Lists.newArrayList();
+		List<ConfigurePackage> list = Lists.newArrayList();
 		for (ConfigurePackage configurePackage : configurePackages) {
-			org.platformlayer.service.imagefactory.v1.ConfigurePackage model = new org.platformlayer.service.imagefactory.v1.ConfigurePackage();
+			ConfigurePackage model = new ConfigurePackage();
 			model.setPackageName(configurePackage.packageName);
 			model.setType(configurePackage.type);
 			model.setKey(configurePackage.key);
@@ -699,4 +699,5 @@ public class DiskImageController {
 			throw new OpsException("Timeout while waiting for address", e);
 		}
 	}
+
 }

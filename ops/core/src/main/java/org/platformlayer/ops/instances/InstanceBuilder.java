@@ -15,6 +15,8 @@ import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.Tags;
+import org.platformlayer.images.model.DiskImageRecipe;
+import org.platformlayer.instances.model.PersistentInstance;
 import org.platformlayer.ops.CloudContext;
 import org.platformlayer.ops.CustomRecursor;
 import org.platformlayer.ops.Handler;
@@ -25,7 +27,6 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.bootstrap.InstanceBootstrap;
 import org.platformlayer.ops.dns.DnsResolver;
-import org.platformlayer.ops.helpers.ImageFactory;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.helpers.InstanceSupervisor;
 import org.platformlayer.ops.helpers.ServiceContext;
@@ -34,8 +35,6 @@ import org.platformlayer.ops.helpers.SshKeys;
 import org.platformlayer.ops.machines.PlatformLayerCloudHelpers;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.tree.OpsTreeBase;
-import org.platformlayer.service.imagefactory.v1.DiskImageRecipe;
-import org.platformlayer.service.instancesupervisor.v1.PersistentInstance;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -223,6 +222,11 @@ public class InstanceBuilder extends OpsTreeBase implements CustomRecursor {
 		instance.dnsName = dnsName;
 		instance.diskImageRecipe = diskImageRecipe;
 		return instance;
+	}
+
+	public static InstanceBuilder build(String dnsName, Object controller) throws OpsException {
+		Provider<DiskImageRecipe> diskImageRecipe = DiskImageRecipeBuilder.buildDiskImageRecipe(controller);
+		return build(dnsName, diskImageRecipe);
 	}
 
 	@Override

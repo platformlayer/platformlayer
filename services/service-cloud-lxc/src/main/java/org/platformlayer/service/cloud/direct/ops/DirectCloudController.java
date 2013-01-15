@@ -2,7 +2,6 @@ package org.platformlayer.service.cloud.direct.ops;
 
 import javax.inject.Inject;
 
-import org.slf4j.*;
 import org.platformlayer.core.model.InstanceBase;
 import org.platformlayer.core.model.MachineCloudBase;
 import org.platformlayer.core.model.PublicEndpointBase;
@@ -16,6 +15,8 @@ import org.platformlayer.ops.machines.StorageConfiguration;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.direct.model.DirectInstance;
 import org.platformlayer.service.cloud.direct.model.DirectPublicEndpoint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DirectCloudController extends OpsTreeBase implements CloudController {
 	static final Logger log = LoggerFactory.getLogger(DirectCloudController.class);
@@ -55,4 +56,5 @@ public class DirectCloudController extends OpsTreeBase implements CloudControlle
 	public PublicEndpointBase buildEndpointTemplate() {
 		return new DirectPublicEndpoint();
 	}
+
 }

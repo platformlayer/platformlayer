@@ -11,13 +11,19 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.UnmarshalException;
 
+import org.platformlayer.common.UntypedItem;
+import org.platformlayer.common.UntypedItemCollection;
+import org.platformlayer.core.model.ItemBase;
+import org.platformlayer.core.model.ManagedItemCollection;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ServiceInfo;
+import org.platformlayer.core.model.Tag;
 import org.platformlayer.ids.FederationKey;
 import org.platformlayer.ids.ItemType;
 import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceType;
+import org.platformlayer.ops.OpsException;
 import org.platformlayer.xml.JaxbHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,9 +33,13 @@ import com.google.common.collect.Lists;
 public abstract class PlatformLayerClientBase implements PlatformLayerClient {
 	static final Logger log = LoggerFactory.getLogger(PlatformLayerClientBase.class);
 
-	static Class<?>[] objectFactories = { org.platformlayer.service.dns.v1.ObjectFactory.class,
-			org.platformlayer.service.imagefactory.v1.ObjectFactory.class,
-			org.platformlayer.service.instancesupervisor.v1.ObjectFactory.class, };
+	static Class<?>[] objectFactories = { org.platformlayer.service.dns.v1.ObjectFactory.class, };
+
+	private final TypedItemMapper mapper;
+
+	public PlatformLayerClientBase(TypedItemMapper mapper) {
+		this.mapper = mapper;
+	}
 
 	public static <T> JaxbHelper toJaxbHelper(Class<?> clazz, Class<?>... extraClasses) {
 		List<Class<?>> extraClassesLists = Arrays.asList(extraClasses);
@@ -172,4 +182,86 @@ public abstract class PlatformLayerClientBase implements PlatformLayerClient {
 			throw new IllegalStateException("UTF-8 Encoding not found", e);
 		}
 	}
+
+	@Override
+	public <T> List<T> listItems(Class<T> clazz) throws OpsException {
+		JaxbHelper jaxbHelper = PlatformLayerClientBase.toJaxbHelper(clazz, ManagedItemCollection.class);
+		PlatformLayerKey path = PlatformLayerClientBase.toKey(jaxbHelper, null, listServices(true));
+
+		UntypedItemCollection untypedItems = listItemsUntyped(path);
+
+		List<T> items = Lists.newArrayList();
+
+		for (UntypedItem untypedItem : untypedItems.getItems()) {
+			T item = promoteToTyped(untypedItem, clazz);
+			items.add(item);
+		}
+
+		return items;
+	}
+
+	public <T> T promoteToTyped(UntypedItem untypedItem) throws PlatformLayerClientException {
+		if (mapper == null) {
+			throw new UnsupportedOperationException();
+		}
+		try {
+			return mapper.promoteToTyped(untypedItem);
+		} catch (OpsException e) {
+			throw new PlatformLayerClientException("Error parsing item", e);
+		}
+	}
+
+	public <T> T promoteToTyped(UntypedItem untypedItem, Class<T> itemClass) throws PlatformLayerClientException {
+		if (mapper == null) {
+			throw new UnsupportedOperationException();
+		}
+		try {
+			return mapper.promoteToTyped(untypedItem, itemClass);
+		} catch (OpsException e) {
+			throw new PlatformLayerClientException("Error parsing item", e);
+		}
+	}
+
+	@Override
+	public <T extends ItemBase> T putItemByTag(T item, Tag uniqueTag) throws OpsException {
+		JaxbHelper jaxbHelper = PlatformLayerClientBase.toJaxbHelper(item);
+
+		String xml = PlatformLayerClientBase.serialize(jaxbHelper, item);
+		PlatformLayerKey key = PlatformLayerClientBase.toKey(jaxbHelper, item, listServices(true));
+
+		UntypedItem ret = putItemByTag(key, uniqueTag, xml, Format.XML);
+		Class<T> itemClass = (Class<T>) item.getClass();
+		return promoteToTyped(ret, itemClass);
+	}
+
+	@Override
+	public List<ItemBase> listChildrenTyped(PlatformLayerKey parent) throws OpsException {
+		List<ItemBase> ret = Lists.newArrayList();
+		for (UntypedItem item : listChildren(parent).getItems()) {
+			ItemBase typedItem = promoteToTyped(item);
+			ret.add(typedItem);
+		}
+		return ret;
+	}
+
+	@Override
+	public <T> T findItem(PlatformLayerKey key, Class<T> itemClass) throws OpsException {
+		UntypedItem itemUntyped = getItemUntyped(key);
+		if (itemUntyped == null) {
+			return null;
+		}
+
+		return promoteToTyped(itemUntyped, itemClass);
+	}
+
+	@Override
+	public <T> T findItem(PlatformLayerKey key) throws OpsException {
+		UntypedItem itemUntyped = getItemUntyped(key);
+		if (itemUntyped == null) {
+			return null;
+		}
+
+		return promoteToTyped(itemUntyped);
+	}
+
 }

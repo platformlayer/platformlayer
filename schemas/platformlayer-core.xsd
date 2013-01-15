@@ -46,6 +46,32 @@
     </xs:sequence>
   </xs:complexType>
 
+  <xs:complexType name="itemBase">
+    <xs:sequence>
+      <xs:element name="key" type="tns:platformLayerKey" minOccurs="0"/>
+      <xs:element name="version" type="xs:long"/>
+      <xs:element name="state" type="tns:managedItemState" minOccurs="0"/>
+      <xs:element ref="tns:tags" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="platformLayerKey">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+
+  <xs:complexType name="tags">
+    <xs:sequence>
+      <xs:element name="tags" type="tns:tag" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="tag">
+    <xs:sequence>
+      <xs:element name="key" type="xs:string" minOccurs="0"/>
+      <xs:element name="value" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
   <xs:complexType name="action">
     <xs:sequence>
       <xs:element name="type" type="xs:string" minOccurs="0"/>
@@ -58,13 +84,6 @@
 
   <xs:complexType name="dateUtils">
     <xs:sequence/>
-  </xs:complexType>
-
-  <xs:complexType name="tag">
-    <xs:sequence>
-      <xs:element name="key" type="xs:string" minOccurs="0"/>
-      <xs:element name="value" type="xs:string" minOccurs="0"/>
-    </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="configureAction">
@@ -102,25 +121,6 @@
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
-  </xs:complexType>
-
-  <xs:complexType name="itemBase">
-    <xs:sequence>
-      <xs:element name="key" type="tns:platformLayerKey" minOccurs="0"/>
-      <xs:element name="version" type="xs:long"/>
-      <xs:element name="state" type="tns:managedItemState" minOccurs="0"/>
-      <xs:element ref="tns:tags" minOccurs="0"/>
-    </xs:sequence>
-  </xs:complexType>
-
-  <xs:simpleType name="platformLayerKey">
-    <xs:restriction base="xs:string"/>
-  </xs:simpleType>
-
-  <xs:complexType name="tags">
-    <xs:sequence>
-      <xs:element name="tags" type="tns:tag" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
-    </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="jobSchedule">

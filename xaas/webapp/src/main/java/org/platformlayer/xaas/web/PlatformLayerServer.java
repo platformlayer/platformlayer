@@ -8,14 +8,15 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
 public class PlatformLayerServer {
 	static final Logger log = LoggerFactory.getLogger(PlatformLayerServer.class);
 
-	private static URLClassLoader buildClassLoader(List<File> serviceDirs) {
+	public static URLClassLoader buildClassLoader(List<File> serviceDirs) {
 		List<URL> urls = new ArrayList<URL>();
 		for (File serviceDirBase : serviceDirs) {
 			// for Lists.newArrayList(classLoader.getURLs());
@@ -81,12 +82,12 @@ public class PlatformLayerServer {
 		}
 		URLClassLoader classLoader = buildClassLoader(serviceBases);
 
-		Class<?> mainClass = classLoader.loadClass("org.platformlayer.xaas.web.StandaloneXaasWebserver");
-		Method main = mainClass.getMethod("main", new Class[] { args.getClass() });
-
 		// well-behaved Java packages work relative to the
 		// context classloader. Others don't (like commons-logging)
 		Thread.currentThread().setContextClassLoader(classLoader);
+
+		Class<?> mainClass = classLoader.loadClass("org.platformlayer.xaas.web.StandaloneXaasWebserver");
+		Method main = mainClass.getMethod("main", new Class[] { args.getClass() });
 
 		main.invoke(null, new Object[] { args });
 

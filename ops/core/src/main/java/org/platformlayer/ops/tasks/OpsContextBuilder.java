@@ -4,9 +4,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.platformlayer.HttpPlatformLayerClient;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.RepositoryException;
+import org.platformlayer.TypedItemMapper;
 import org.platformlayer.TypedPlatformLayerClient;
 import org.platformlayer.auth.DirectAuthenticationToken;
 import org.platformlayer.auth.DirectAuthenticator;
@@ -20,6 +20,8 @@ import org.platformlayer.ids.FederationKey;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.model.ProjectAuthorization;
+import org.platformlayer.ops.DirectAuthentication;
+import org.platformlayer.ops.DirectPlatformLayerClient;
 import org.platformlayer.ops.MultitenantConfiguration;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
@@ -111,10 +113,16 @@ public class OpsContextBuilder {
 			}
 		}
 
-		federationMap.addDefault(defaultClient);
-
 		ProjectId runAsProjectId = new ProjectId(runAsProject.getName());
-		PlatformLayerClient platformLayerClient = FederatedPlatformLayerClient.build(runAsProjectId, federationMap);
+
+		PlatformLayerClient platformLayerClient;
+		if (federationMap.isEmpty()) {
+			platformLayerClient = defaultClient;
+		} else {
+			federationMap.addDefault(defaultClient);
+
+			platformLayerClient = FederatedPlatformLayerClient.build(runAsProjectId, federationMap);
+		}
 
 		ServiceConfiguration serviceConfiguration = new ServiceConfiguration(runAsProjectId, serviceType);
 
@@ -151,14 +159,21 @@ public class OpsContextBuilder {
 	}
 
 	private TypedPlatformLayerClient buildClient(ProjectAuthorization project) throws OpsException {
-		DirectAuthenticator directAuthenticator = buildDirectAuthenticator(project);
 		ProjectId projectId = new ProjectId(project.getName());
 
+		DirectAuthenticator directAuthenticator = buildDirectAuthenticator(project);
 		// TODO: Introduce a direct client for "loopback" (normal) calls?
 		String platformLayerUrl = OpsSystem.getPlatformLayerUrlBase();
 		List<String> trustKeys = opsSystem.getServerTrustKeys();
-		HttpPlatformLayerClient client = HttpPlatformLayerClient.build(httpStrategy, platformLayerUrl,
-				directAuthenticator, projectId, trustKeys);
+
+		PlatformLayerClient client;
+
+		// client = HttpPlatformLayerClient.build(httpStrategy, platformLayerUrl,
+		// directAuthenticator, projectId, trustKeys);
+
+		DirectAuthentication auth = new DirectAuthentication(project);
+		TypedItemMapper mapper = null;
+		client = new DirectPlatformLayerClient(mapper, opsSystem, projectId, auth);
 
 		return new PlatformLayerHelpers(client, serviceProviderHelpers);
 	}

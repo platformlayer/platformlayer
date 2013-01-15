@@ -1,17 +1,13 @@
-package org.platformlayer.xaas.web.resources;
+package org.platformlayer.ops;
 
 import java.util.List;
 
 import org.platformlayer.Filter;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
-import org.platformlayer.jobs.model.JobExecutionData;
+import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.model.ProjectAuthorization;
-import org.platformlayer.ops.OpsException;
 
-import com.google.inject.ImplementedBy;
-
-@ImplementedBy(ItemServiceImpl.class)
 public interface ItemService {
 	// List<ManagedItem<Object>> listItems(ModelKey modelKey) throws RepositoryException;
 
@@ -28,8 +24,7 @@ public interface ItemService {
 
 	<T extends ItemBase> List<T> findAll(ProjectAuthorization authentication, Class<T> itemClass) throws OpsException;
 
-	<T extends ItemBase> JobExecutionData deleteItem(ProjectAuthorization auth, PlatformLayerKey key)
-			throws OpsException;
+	<T extends ItemBase> JobData deleteItem(ProjectAuthorization auth, PlatformLayerKey key) throws OpsException;
 
 	List<ItemBase> findRoots(ProjectAuthorization authentication) throws OpsException;
 

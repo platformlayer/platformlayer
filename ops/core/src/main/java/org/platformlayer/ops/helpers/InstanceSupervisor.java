@@ -9,9 +9,9 @@ import org.platformlayer.StateFilter;
 import org.platformlayer.TagFilter;
 import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.core.model.Tag;
+import org.platformlayer.instances.model.PersistentInstance;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
-import org.platformlayer.service.instancesupervisor.v1.PersistentInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

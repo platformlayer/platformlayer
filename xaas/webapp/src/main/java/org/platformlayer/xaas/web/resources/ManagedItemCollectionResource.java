@@ -17,6 +17,7 @@ import org.platformlayer.RepositoryException;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.ManagedItemCollection;
 import org.platformlayer.ids.ManagedItemId;
+import org.platformlayer.ops.ItemService;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.xaas.services.ModelClass;
 

@@ -20,12 +20,18 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.platformlayer.cache.CacheModule;
+import org.platformlayer.config.ConfigurationImpl;
 import org.platformlayer.config.ConfigurationModule;
 import org.platformlayer.crypto.EncryptionStore;
+import org.platformlayer.guice.xaas.ItemEntity;
+import org.platformlayer.guice.xaas.TagEntity;
 import org.platformlayer.jdbc.JdbcGuiceModule;
+import org.platformlayer.jdbc.simplejpa.ResultSetMappersProvider;
 import org.platformlayer.metrics.NullMetricsModule;
+import org.platformlayer.ops.jobstore.jdbc.JobEntity;
+import org.platformlayer.ops.jobstore.jdbc.JobExecutionEntity;
 import org.platformlayer.ops.log.LogbackHook;
-import org.platformlayer.ops.schedule.Scheduler;
+import org.platformlayer.ops.schedule.jdbc.SchedulerRecordEntity;
 import org.platformlayer.web.GuiceServletConfig;
 import org.platformlayer.xaas.GuiceXaasConfig;
 import org.platformlayer.xaas.PlatformLayerServletModule;
@@ -54,24 +60,30 @@ class StandaloneXaasWebserver {
 	@Inject
 	EncryptionStore encryptionStore;
 
-	@Inject
-	Scheduler scheduler;
+	// @Inject
+	// Scheduler scheduler;
 
 	final Map<String, File> wars = Maps.newHashMap();
 
 	public static void main(String[] args) {
 		try {
+			ConfigurationImpl configuration = ConfigurationImpl.load();
+
 			List<Module> modules = Lists.newArrayList();
 			// modules.add(new GuiceOpsConfig());
 			modules.add(new NullMetricsModule());
-			modules.add(new GuiceXaasConfig());
-			modules.add(new ConfigurationModule());
+			modules.add(new GuiceXaasConfig(configuration));
+			modules.add(new ConfigurationModule(configuration));
 			modules.add(new CacheModule());
 			modules.add(new JdbcGuiceModule());
 			modules.add(new PlatformLayerServletModule());
 			modules.add(new PlatformlayerValidationModule());
 
 			Injector injector = Guice.createInjector(modules);
+
+			ResultSetMappersProvider provider = injector.getInstance(ResultSetMappersProvider.class);
+			provider.addAll(ItemEntity.class, TagEntity.class, SchedulerRecordEntity.class, JobEntity.class,
+					JobExecutionEntity.class);
 
 			StandaloneXaasWebserver server = injector.getInstance(StandaloneXaasWebserver.class);
 
@@ -158,7 +170,8 @@ class StandaloneXaasWebserver {
 			return false;
 		}
 
-		scheduler.start();
+		// scheduler.start();
+
 		return true;
 	}
 

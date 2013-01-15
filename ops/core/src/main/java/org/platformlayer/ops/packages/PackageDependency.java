@@ -4,16 +4,17 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.platformlayer.images.model.ConfigurePackage;
+import org.platformlayer.images.model.DiskImageRecipe;
+import org.platformlayer.images.model.Repository;
+import org.platformlayer.images.model.RepositoryKey;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.HasDescription;
 import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
-import org.platformlayer.service.imagefactory.v1.ConfigurePackage;
-import org.platformlayer.service.imagefactory.v1.DiskImageRecipe;
-import org.platformlayer.service.imagefactory.v1.Repository;
-import org.platformlayer.service.imagefactory.v1.RepositoryKey;
+import org.platformlayer.ops.instances.HasDiskImageRecipe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

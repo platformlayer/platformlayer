@@ -10,4 +10,6 @@ public interface CasStore {
 	Md5Hash findTag(String tag) throws OpsException;
 
 	int estimateDistance(CasLocation target) throws OpsException;
+
+	CasStoreInfo getOptions();
 }

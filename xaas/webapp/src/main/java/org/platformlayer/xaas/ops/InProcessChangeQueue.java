@@ -2,17 +2,18 @@ package org.platformlayer.xaas.ops;
 
 import javax.inject.Inject;
 
-import org.slf4j.*;
 import org.platformlayer.core.model.ConfigureAction;
 import org.platformlayer.core.model.DeleteAction;
 import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.core.model.PlatformLayerKey;
-import org.platformlayer.jobs.model.JobExecutionData;
+import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.tasks.JobRegistry;
 import org.platformlayer.xaas.repository.ManagedItemRepository;
 import org.platformlayer.xaas.services.ChangeQueue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class InProcessChangeQueue implements ChangeQueue {
 	static final Logger log = LoggerFactory.getLogger(InProcessChangeQueue.class);
@@ -24,7 +25,7 @@ public class InProcessChangeQueue implements ChangeQueue {
 	ManagedItemRepository repository;
 
 	@Override
-	public JobExecutionData notifyChange(ProjectAuthorization auth, PlatformLayerKey itemKey, ManagedItemState newState)
+	public JobData notifyChange(ProjectAuthorization auth, PlatformLayerKey itemKey, ManagedItemState newState)
 			throws OpsException {
 		switch (newState) {
 		case CREATION_REQUESTED: {

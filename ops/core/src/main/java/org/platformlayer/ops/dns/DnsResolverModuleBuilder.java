@@ -6,17 +6,18 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.slf4j.*;
-import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.helpers.InstanceHelpers;
+import org.platformlayer.ops.helpers.ProviderHelper;
+import org.platformlayer.ops.helpers.ProviderHelper.ProviderOf;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.packages.AsBlock;
 import org.platformlayer.ops.templates.TemplateDataSource;
-import org.platformlayer.service.dnsresolver.v1.DnsResolverService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
@@ -29,20 +30,21 @@ public class DnsResolverModuleBuilder implements TemplateDataSource {
 	@Inject
 	InstanceHelpers instances;
 
+	@Inject
+	ProviderHelper providers;
+
 	public boolean usePrivateResolvers = true;
 
 	@Override
 	public void buildTemplateModel(Map<String, Object> model) throws OpsException {
 		List<String> nameservers = Lists.newArrayList();
 
-		Iterable<DnsResolverService> dnsResolverServices = platformLayer.listItems(DnsResolverService.class);
-		for (DnsResolverService dnsResolverService : dnsResolverServices) {
-			Machine machine = instances.findMachine(dnsResolverService);
-			if (machine != null) {
-				List<InetAddress> addresses = machine.findAddresses(NetworkPoint.forTargetInContext(), 53);
-				for (InetAddress address : addresses) {
-					nameservers.add(address.getHostAddress());
-				}
+		for (ProviderOf<DnsResolverProvider> entry : providers.listItemsProviding(DnsResolverProvider.class)) {
+			DnsResolverProvider dnsResolverProvider = entry.get();
+			List<InetAddress> addresses = dnsResolverProvider.findAddresses(NetworkPoint.forTargetInContext());
+
+			for (InetAddress address : addresses) {
+				nameservers.add(address.getHostAddress());
 			}
 		}
 

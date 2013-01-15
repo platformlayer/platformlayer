@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.inject.Inject;
 
 import org.openstack.client.OpenstackCredentials;
+import org.platformlayer.cas.CasStoreInfo;
 import org.platformlayer.core.model.InstanceBase;
 import org.platformlayer.core.model.MachineCloudBase;
 import org.platformlayer.core.model.PublicEndpointBase;
@@ -80,7 +81,7 @@ public class OpenstackCloudController extends OpsTreeBase implements CloudContro
 				model.password.plaintext(), model.tenant);
 
 		String containerName = "platformlayer-artifacts";
-		return new OpenstackCasStore(credential, containerName);
+		return new OpenstackCasStore(new CasStoreInfo(false), credential, containerName);
 
 	}
 }

@@ -12,9 +12,8 @@ import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.ManagedItemCollection;
 import org.platformlayer.core.model.ServiceInfoCollection;
 import org.platformlayer.ids.ServiceType;
+import org.platformlayer.ops.ItemService;
 import org.platformlayer.ops.OpsException;
-
-import com.google.common.collect.Lists;
 
 public class ServicesCollectionResource extends XaasResourceBase {
 
@@ -100,13 +99,9 @@ public class ServicesCollectionResource extends XaasResourceBase {
 
 	@GET
 	@Produces({ XML, JSON })
-	public ServiceInfoCollection getMetadata() {
+	public ServiceInfoCollection listServices() {
 		// boolean management = isInRole(RoleId.ADMIN);
-
-		ServiceInfoCollection collection = new ServiceInfoCollection();
-		collection.services = Lists.newArrayList();
-		collection.services.addAll(serviceDictionary.getAllServices());
-		return collection;
+		return opsSystem.listServices();
 	}
 
 }

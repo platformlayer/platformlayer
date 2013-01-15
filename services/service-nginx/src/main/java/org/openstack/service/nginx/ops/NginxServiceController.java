@@ -6,7 +6,6 @@ import org.openstack.service.nginx.model.NginxService;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.networks.PublicEndpoint;
 import org.platformlayer.ops.packages.PackageDependency;
@@ -27,8 +26,7 @@ public class NginxServiceController extends OpsTreeBase {
 	protected void addChildren() throws OpsException {
 		NginxService model = OpsContext.get().getInstance(NginxService.class);
 
-		InstanceBuilder instance = InstanceBuilder.build(model.dnsName,
-				DiskImageRecipeBuilder.buildDiskImageRecipe(this));
+		InstanceBuilder instance = InstanceBuilder.build(model.dnsName, this);
 		instance.hostPolicy.allowRunInContainer = true;
 		instance.publicPorts.add(80);
 		instance.publicPorts.add(443);
