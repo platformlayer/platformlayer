@@ -22,12 +22,26 @@
             <artifactId>platformlayer-xaas-core</artifactId>
         </dependency>
 
+       <dependency>
+            <groupId>org.platformlayer</groupId>
+            <artifactId>platformlayer-distributed</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.platformlayer</groupId>
+            <artifactId>platformlayer-xaas-core</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.platformlayer</groupId>
@@ -83,7 +97,6 @@
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
         </dependency>
-
 
         <!-- Jackson is better at serializing collections than the built 
             in Jersey stuff -->
