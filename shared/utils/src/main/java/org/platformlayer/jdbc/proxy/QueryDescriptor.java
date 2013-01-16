@@ -152,7 +152,7 @@ class QueryDescriptor {
 			if (i == 0) {
 				sb.append(" WHERE ");
 			} else {
-				sb.append(", ");
+				sb.append(" AND ");
 			}
 			sb.append(columnName + "=?");
 			parameterMap.add(map.getFieldForColumn(columnName));
