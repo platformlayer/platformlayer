@@ -107,4 +107,8 @@ public class ResourceBase {
 		throw new WebApplicationException(Status.NOT_FOUND);
 	}
 
+	protected void raiseUnauthorized() {
+		throw new WebApplicationException(Status.UNAUTHORIZED);
+	}
+
 }
