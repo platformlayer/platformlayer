@@ -18,7 +18,6 @@ import javax.xml.bind.JAXBException;
 
 import org.platformlayer.CheckedCallable;
 import org.platformlayer.RepositoryException;
-import org.platformlayer.crypto.OpenSshUtils;
 import org.platformlayer.ids.ItemType;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
@@ -27,6 +26,7 @@ import org.platformlayer.xaas.services.ModelClass;
 import org.platformlayer.xaas.services.ServiceProvider;
 import org.platformlayer.xml.MemorySchemaOutputResolver;
 
+import com.fathomdb.crypto.OpenSshUtils;
 import com.google.common.collect.Lists;
 
 public class ServiceResource extends XaasResourceBase {

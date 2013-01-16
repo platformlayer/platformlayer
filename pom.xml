@@ -150,6 +150,12 @@
 
             <dependency>
                 <groupId>org.platformlayer</groupId>
+                <artifactId>service-dns</artifactId>
+                <version>${version.project}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.platformlayer</groupId>
                 <artifactId>platformlayer-ops-worker</artifactId>
                 <version>${version.project}</version>
             </dependency>
@@ -643,14 +649,14 @@
                 <artifactId>gwt-user</artifactId>
                 <version>${version.gwt}</version>
             </dependency>
-        
+
             <dependency>
                 <groupId>com.google.gwt</groupId>
                 <artifactId>gwt-elemental</artifactId>
                 <version>${version.gwt}</version>
             </dependency>
-            
-            
+
+
             <!-- Metrics -->
 
             <dependency>

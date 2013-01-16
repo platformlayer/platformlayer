@@ -8,7 +8,6 @@ import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.core.model.Tags;
-import org.platformlayer.crypto.OpenSshUtils;
 import org.platformlayer.instances.model.PersistentInstance;
 import org.platformlayer.ops.CloudContext;
 import org.platformlayer.ops.Handler;
@@ -23,6 +22,7 @@ import org.platformlayer.ops.tree.OpsTreeBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.crypto.OpenSshUtils;
 import com.google.common.collect.Lists;
 
 public class PersistentInstanceMapper extends OpsTreeBase {

@@ -7,7 +7,6 @@ import javax.inject.Inject;
 
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
-import org.platformlayer.crypto.OpenSshUtils;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
@@ -21,6 +20,8 @@ import org.platformlayer.service.cloud.google.model.GoogleCloudInstance;
 import org.platformlayer.service.cloud.google.ops.compute.GoogleComputeMachine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fathomdb.crypto.OpenSshUtils;
 
 public class GoogleCloudInstanceController extends OpsTreeBase {
 

@@ -20,7 +20,6 @@ import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.crypto.CertificateReader;
-import org.platformlayer.crypto.OpenSshUtils;
 import org.platformlayer.ops.FileUpload;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
@@ -33,6 +32,7 @@ import org.platformlayer.ops.tree.OpsTreeBase;
 import sun.security.x509.X500Name;
 
 import com.fathomdb.crypto.KeyStoreUtils;
+import com.fathomdb.crypto.OpenSshUtils;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 

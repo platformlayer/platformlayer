@@ -14,13 +14,13 @@ import org.platformlayer.UntypedItemXml;
 import org.platformlayer.client.cli.model.ItemPath;
 import org.platformlayer.common.UntypedItem;
 import org.platformlayer.core.model.PlatformLayerKey;
-import org.platformlayer.crypto.CryptoUtils;
 import org.platformlayer.xml.XmlHelper;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import com.fathomdb.cli.CliException;
 import com.fathomdb.io.NoCloseInputStream;
+import com.fathomdb.utils.Base64;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
@@ -57,7 +57,7 @@ public class SetProperty extends PlatformLayerCommandRunnerBase {
 			byte[] data = ByteStreams.toByteArray(stream);
 
 			if ("base64".equals(format)) {
-				value = CryptoUtils.toBase64(data);
+				value = Base64.encode(data);
 			} else {
 				value = new String(data);
 			}

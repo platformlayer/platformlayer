@@ -19,7 +19,6 @@ import javax.crypto.SecretKey;
 import org.platformlayer.auth.ProjectInfo;
 import org.platformlayer.auth.UserEntity;
 import org.platformlayer.crypto.CryptoUtils;
-import org.platformlayer.crypto.OpenSshUtils;
 import org.platformlayer.crypto.RsaUtils;
 import org.platformlayer.model.ProjectAuthorization;
 import org.slf4j.Logger;
@@ -27,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fathomdb.crypto.CryptoKey;
 import com.fathomdb.crypto.FathomdbCrypto;
+import com.fathomdb.crypto.OpenSshUtils;
 import com.fathomdb.hash.Md5Hash;
 import com.fathomdb.io.IoUtils;
 import com.google.common.io.ByteStreams;

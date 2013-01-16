@@ -60,6 +60,7 @@ public class ProviderHelper {
 			Object controller = model.getProvider().getController(item);
 			return (T) controller;
 		}
+
 	}
 
 	public <T> List<ProviderOf<T>> listItemsProviding(Class<T> serviceClass) throws OpsException {

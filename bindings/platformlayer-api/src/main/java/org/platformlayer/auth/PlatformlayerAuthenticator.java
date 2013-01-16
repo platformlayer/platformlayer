@@ -15,12 +15,13 @@ import org.platformlayer.auth.PlatformlayerAuthenticationToken;
 import org.platformlayer.auth.client.PlatformLayerAuthenticationClient;
 import org.platformlayer.auth.v1.AuthenticateResponse;
 import org.platformlayer.auth.v1.PasswordCredentials;
-import org.platformlayer.crypto.AcceptAllHostnameVerifier;
-import org.platformlayer.crypto.PublicKeyTrustManager;
 import org.platformlayer.http.HttpStrategy;
 import org.platformlayer.http.SslConfiguration;
 import org.platformlayer.rest.JreRestfulClient;
 import org.platformlayer.rest.RestfulClient;
+
+import com.fathomdb.crypto.ssl.AcceptAllHostnameVerifier;
+import com.fathomdb.crypto.ssl.PublicKeyTrustManager;
 
 public class PlatformlayerAuthenticator implements Authenticator {
 	final String username;

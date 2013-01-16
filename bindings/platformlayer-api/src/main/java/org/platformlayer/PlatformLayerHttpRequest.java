@@ -16,8 +16,6 @@ import javax.net.ssl.TrustManager;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.UnmarshalException;
 
-import org.platformlayer.crypto.AcceptAllHostnameVerifier;
-import org.platformlayer.crypto.PublicKeyTrustManager;
 import org.platformlayer.http.HttpRequest;
 import org.platformlayer.http.HttpResponse;
 import org.platformlayer.http.SslConfiguration;
@@ -28,6 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fathomdb.Casts;
+import com.fathomdb.crypto.ssl.AcceptAllHostnameVerifier;
+import com.fathomdb.crypto.ssl.PublicKeyTrustManager;
 import com.fathomdb.io.IoUtils;
 
 class PlatformLayerHttpRequest implements Closeable {

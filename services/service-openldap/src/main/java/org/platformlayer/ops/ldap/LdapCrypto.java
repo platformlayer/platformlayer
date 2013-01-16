@@ -5,6 +5,8 @@ import java.security.SecureRandom;
 
 import org.platformlayer.crypto.CryptoUtils;
 
+import com.fathomdb.utils.Base64;
+
 public class LdapCrypto {
 	static final SecureRandom secureRandom = new SecureRandom();
 
@@ -24,6 +26,6 @@ public class LdapCrypto {
 		System.arraycopy(digest, 0, digestAndSalt, 0, digest.length);
 		System.arraycopy(saltBytes, 0, digestAndSalt, digest.length, saltBytes.length);
 
-		return "{SSHA}" + CryptoUtils.toBase64(digestAndSalt);
+		return "{SSHA}" + Base64.encode(digestAndSalt);
 	}
 }

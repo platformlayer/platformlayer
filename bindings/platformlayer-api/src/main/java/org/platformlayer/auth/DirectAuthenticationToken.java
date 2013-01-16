@@ -1,10 +1,10 @@
 package org.platformlayer.auth;
 
-import org.platformlayer.crypto.CryptoUtils;
 import org.platformlayer.http.HttpRequest;
 
 import com.fathomdb.crypto.CryptoKey;
 import com.fathomdb.crypto.FathomdbCrypto;
+import com.fathomdb.utils.Base64;
 
 public class DirectAuthenticationToken implements AuthenticationToken {
 	public static final String PREFIX = "project:";
@@ -33,7 +33,7 @@ public class DirectAuthenticationToken implements AuthenticationToken {
 	@Override
 	public void populateRequest(HttpRequest httpRequest) {
 		httpRequest.setRequestHeader("X-Auth-Key", token);
-		httpRequest.setRequestHeader("X-Auth-Secret", CryptoUtils.toBase64(FathomdbCrypto.serialize(secret)));
+		httpRequest.setRequestHeader("X-Auth-Secret", Base64.encode(FathomdbCrypto.serialize(secret)));
 	}
 
 	public String getToken() {

@@ -15,9 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.platformlayer.Scope;
-import org.platformlayer.auth.AuthenticationToken;
 import org.platformlayer.auth.AuthenticationTokenValidator;
-import org.platformlayer.auth.PlatformlayerAuthenticationToken;
 import org.platformlayer.model.AuthenticationCredentials;
 import org.platformlayer.model.ProjectAuthorization;
 import org.slf4j.Logger;
@@ -35,12 +33,7 @@ public class AuthenticationFilter implements Filter {
 	protected AuthenticationCredentials findCredentials(HttpServletRequest httpRequest) throws Exception {
 		final String authToken = httpRequest.getHeader("X-Auth-Token");
 		if (authToken != null) {
-			AuthenticationCredentials creds = new AuthenticationCredentials() {
-				@Override
-				public AuthenticationToken getToken() {
-					return new PlatformlayerAuthenticationToken(authToken);
-				}
-			};
+			AuthenticationCredentials creds = new PlatformLayerAuthenticationCredentials(authToken);
 			return creds;
 		}
 

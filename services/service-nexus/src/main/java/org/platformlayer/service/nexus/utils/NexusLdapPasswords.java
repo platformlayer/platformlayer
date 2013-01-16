@@ -23,6 +23,8 @@ import javax.crypto.spec.PBEParameterSpec;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.platformlayer.crypto.CryptoUtils;
 
+import com.fathomdb.utils.Base64;
+
 /**
  * This code (should) reproduce the Nexus LDAP password encryption / decryption
  * 
@@ -90,7 +92,7 @@ public class NexusLdapPasswords {
 		baos.write(salt);
 		baos.write(ciphertext);
 
-		return CryptoUtils.toBase64(baos.toByteArray());
+		return Base64.encode(baos.toByteArray());
 	}
 
 	public String decrypt(String ciphertextString, String passphrase) throws IllegalBlockSizeException,
@@ -98,7 +100,7 @@ public class NexusLdapPasswords {
 			NoSuchPaddingException, InvalidAlgorithmParameterException, IOException {
 		ciphertextString = removeDecoration(ciphertextString);
 
-		byte[] ciphertextData = CryptoUtils.fromBase64(ciphertextString);
+		byte[] ciphertextData = Base64.decode(ciphertextString);
 		ByteArrayInputStream bais = new ByteArrayInputStream(ciphertextData);
 
 		int saltLen = bais.read();

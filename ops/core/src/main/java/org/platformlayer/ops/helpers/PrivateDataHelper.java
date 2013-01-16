@@ -13,7 +13,6 @@ import org.platformlayer.ApplicationMode;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.crypto.CertificateUtils;
 import org.platformlayer.crypto.KeyPairUtils;
-import org.platformlayer.crypto.OpenSshUtils;
 import org.platformlayer.crypto.RsaUtils;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceMetadataKey;
@@ -21,6 +20,7 @@ import org.platformlayer.ids.ServiceType;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.xaas.repository.ServiceAuthorizationService;
 
+import com.fathomdb.crypto.OpenSshUtils;
 import com.fathomdb.io.IoUtils;
 
 public class PrivateDataHelper {

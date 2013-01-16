@@ -9,7 +9,6 @@ import javax.inject.Inject;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
-import org.platformlayer.crypto.OpenSshUtils;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
@@ -35,6 +34,8 @@ import org.platformlayer.service.cloud.direct.ops.InstanceScript;
 import org.platformlayer.service.cloud.direct.ops.cloud.CloudMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fathomdb.crypto.OpenSshUtils;
 
 public class LxcInstanceController extends OpsTreeBase {
 

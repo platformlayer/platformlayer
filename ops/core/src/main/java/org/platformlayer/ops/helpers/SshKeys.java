@@ -4,13 +4,13 @@ import java.security.KeyPair;
 import java.security.PublicKey;
 
 import org.slf4j.*;
-import org.platformlayer.crypto.OpenSshUtils;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.ops.CloudContext;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.ServiceConfiguration;
 
+import com.fathomdb.crypto.OpenSshUtils;
 import com.google.inject.Inject;
 
 public class SshKeys {

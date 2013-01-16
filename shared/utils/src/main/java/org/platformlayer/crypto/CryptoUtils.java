@@ -22,8 +22,6 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-import net.iharder.Base64;
-
 import com.fathomdb.hash.Md5Hash;
 import com.fathomdb.hash.Sha1Hash;
 import com.fathomdb.io.ByteSource;
@@ -305,23 +303,6 @@ public class CryptoUtils {
 	// throw new CryptoException("Error while decrypting data", e);
 	// }
 	// }
-
-	public static String toBase64(byte[] data) {
-		String base64 = Base64.encodeBytes(data); // new sun.misc.BASE64Encoder().encode(data);
-		while (base64.endsWith("\r") || base64.endsWith("\n")) {
-			base64 = base64.substring(0, base64.length() - 1);
-		}
-		return base64;
-	}
-
-	public static byte[] fromBase64(String base64) {
-		try {
-			return Base64.decode(base64);
-			// return new sun.misc.BASE64Decoder().decodeBuffer(base64);
-		} catch (IOException e) {
-			throw new IllegalArgumentException("Error decoding base-64 encoded string", e);
-		}
-	}
 
 	public static byte[] toBytesUtf8(String s) {
 		try {

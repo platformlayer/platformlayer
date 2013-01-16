@@ -20,6 +20,7 @@ import org.platformlayer.metrics.Instrumented;
 import com.fathomdb.Configuration;
 import com.fathomdb.Utf8;
 import com.fathomdb.crypto.KeyDerivationFunctions;
+import com.fathomdb.utils.Base64;
 import com.google.common.io.ByteStreams;
 
 @Instrumented
@@ -68,7 +69,7 @@ public class SharedSecretTokenService implements TokenService {
 
 		try {
 			String base64 = unescapeBase64(token);
-			byte[] buffer = CryptoUtils.fromBase64(base64);
+			byte[] buffer = Base64.decode(base64);
 
 			ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
 			byte flags = (byte) bais.read();
@@ -174,7 +175,7 @@ public class SharedSecretTokenService implements TokenService {
 			throw new IllegalStateException();
 		}
 
-		String base64 = CryptoUtils.toBase64(baos.toByteArray());
+		String base64 = Base64.encode(baos.toByteArray());
 		String encoded = escapeBase64(base64);
 
 		return encoded;

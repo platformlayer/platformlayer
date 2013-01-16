@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fathomdb.Utf8;
+import com.fathomdb.utils.Base64;
 
 public class KeyParser {
 	private static final Logger log = LoggerFactory.getLogger(KeyParser.class);
@@ -102,7 +103,7 @@ public class KeyParser {
 		if (key == null) {
 			try {
 				// TODO: Check if looks like base64??
-				byte[] fromBase64 = CryptoUtils.fromBase64(s);
+				byte[] fromBase64 = Base64.decode(s);
 
 				key = parse(fromBase64);
 			} catch (Exception e) {
@@ -130,7 +131,7 @@ public class KeyParser {
 
 	private PrivateKey tryParsePemFormat(String data) {
 		try {
-			byte[] encoded = CryptoUtils.fromBase64(data);
+			byte[] encoded = Base64.decode(data);
 			PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(encoded);
 			KeyFactory kf = KeyFactory.getInstance("RSA");
 			PrivateKey privKey = kf.generatePrivate(keySpec);

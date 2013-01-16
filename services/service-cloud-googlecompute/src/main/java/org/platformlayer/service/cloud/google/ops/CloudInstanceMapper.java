@@ -11,7 +11,6 @@ import javax.inject.Inject;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.Tags;
-import org.platformlayer.crypto.OpenSshUtils;
 import org.platformlayer.ops.CustomRecursor;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.MachineCreationRequest;
@@ -32,6 +31,7 @@ import org.platformlayer.service.cloud.google.ops.compute.GoogleComputeMachine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.crypto.OpenSshUtils;
 import com.google.api.services.compute.model.Instance;
 import com.google.api.services.compute.model.Operation;
 import com.google.common.collect.Iterables;

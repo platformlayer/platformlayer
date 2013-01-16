@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.platformlayer.auth.v1.CertificateChainInfo;
 import org.platformlayer.auth.v1.CertificateInfo;
-import org.platformlayer.crypto.OpenSshUtils;
 
+import com.fathomdb.crypto.OpenSshUtils;
 import com.fathomdb.hash.Md5Hash;
 import com.fathomdb.utils.Hex;
 

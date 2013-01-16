@@ -15,7 +15,6 @@ import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ServiceInfo;
 import org.platformlayer.core.model.ServiceInfoCollection;
 import org.platformlayer.crypto.EncryptionStore;
-import org.platformlayer.crypto.OpenSshUtils;
 import org.platformlayer.http.HttpStrategy;
 import org.platformlayer.ids.ItemType;
 import org.platformlayer.ids.ModelKey;
@@ -30,6 +29,7 @@ import org.platformlayer.xaas.services.ServiceProviderDictionary;
 
 import com.fathomdb.Configuration;
 import com.fathomdb.crypto.CertificateAndKey;
+import com.fathomdb.crypto.OpenSshUtils;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.inject.Injector;

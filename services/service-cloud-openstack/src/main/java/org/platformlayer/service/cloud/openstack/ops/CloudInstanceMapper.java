@@ -16,7 +16,6 @@ import org.openstack.model.compute.Server;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.Tags;
-import org.platformlayer.crypto.OpenSshUtils;
 import org.platformlayer.ops.CustomRecursor;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.Machine;
@@ -38,6 +37,7 @@ import org.platformlayer.service.cloud.openstack.ops.openstack.OpenstackComputeM
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.crypto.OpenSshUtils;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 

@@ -1,4 +1,4 @@
-package org.platformlayer.xaas;
+package org.platformlayer.auth.client;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -6,15 +6,14 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.TrustManager;
 
-import org.platformlayer.auth.client.PlatformLayerAuthenticationClient;
-import org.platformlayer.crypto.AcceptAllHostnameVerifier;
-import org.platformlayer.crypto.PublicKeyTrustManager;
 import org.platformlayer.http.HttpStrategy;
 import org.platformlayer.http.SslConfiguration;
 import org.platformlayer.rest.JreRestfulClient;
 import org.platformlayer.rest.RestfulClient;
 
 import com.fathomdb.Configuration;
+import com.fathomdb.crypto.ssl.AcceptAllHostnameVerifier;
+import com.fathomdb.crypto.ssl.PublicKeyTrustManager;
 import com.google.common.base.Splitter;
 
 public class PlatformLayerAuthenticationClientProvider implements Provider<PlatformLayerAuthenticationClient> {

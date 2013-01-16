@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.platformlayer.auth.AuthenticationToken;
 import org.platformlayer.auth.DirectAuthenticationToken;
-import org.platformlayer.crypto.CryptoUtils;
 import org.platformlayer.model.Authentication;
 import org.platformlayer.model.AuthenticationCredentials;
 import org.platformlayer.model.ProjectAuthorization;
@@ -14,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fathomdb.crypto.CryptoKey;
 import com.fathomdb.crypto.FathomdbCrypto;
+import com.fathomdb.utils.Base64;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 
@@ -88,7 +88,7 @@ public class DirectAuthentication implements AuthenticationCredentials, ProjectA
 
 				final CryptoKey secret;
 				try {
-					secret = FathomdbCrypto.deserializeKey(CryptoUtils.fromBase64(authSecret));
+					secret = FathomdbCrypto.deserializeKey(Base64.decode(authSecret));
 				} catch (Exception e) {
 					log.debug("Error while deserializing user provided secret", e);
 					return null;

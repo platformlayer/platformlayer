@@ -12,6 +12,7 @@ import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.auth.AuthenticationService;
 import org.platformlayer.auth.AuthenticationTokenValidator;
 import org.platformlayer.auth.client.PlatformLayerAuthenticationClient;
+import org.platformlayer.auth.client.PlatformLayerAuthenticationClientProvider;
 import org.platformlayer.auth.system.PlatformLayerAuthAdminClient;
 import org.platformlayer.auth.system.PlatformlayerAuthenticationService;
 import org.platformlayer.config.ConfigurationImpl;

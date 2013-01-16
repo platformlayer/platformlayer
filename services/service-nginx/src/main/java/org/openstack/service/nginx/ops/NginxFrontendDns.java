@@ -4,9 +4,9 @@ import javax.inject.Inject;
 
 import org.openstack.service.nginx.model.NginxFrontend;
 import org.openstack.service.nginx.model.NginxService;
-import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
+import org.platformlayer.dns.model.DnsRecord;
 import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;

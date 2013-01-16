@@ -10,7 +10,6 @@ import java.util.Properties;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
-import org.platformlayer.crypto.OpenSshUtils;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
@@ -35,6 +34,7 @@ import org.platformlayer.service.cloud.direct.ops.DownloadImage;
 import org.platformlayer.service.cloud.direct.ops.kvm.monitor.KvmConfig.KvmDrive;
 import org.platformlayer.service.cloud.direct.ops.kvm.monitor.KvmConfig.KvmNic;
 
+import com.fathomdb.crypto.OpenSshUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Provider;
