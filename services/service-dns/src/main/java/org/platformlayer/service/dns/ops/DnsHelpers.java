@@ -9,6 +9,7 @@ import javax.inject.Inject;
 
 import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.EndpointInfo;
+import org.platformlayer.dns.model.DnsRecord;
 import org.platformlayer.ops.CloudContext;
 import org.platformlayer.ops.FileUpload;
 import org.platformlayer.ops.Machine;
@@ -18,7 +19,6 @@ import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.helpers.ServiceContext;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
-import org.platformlayer.service.dns.model.DnsRecord;
 import org.platformlayer.service.dns.model.DnsServer;
 import org.platformlayer.service.dns.model.DnsZone;
 import org.slf4j.Logger;

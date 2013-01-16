@@ -2,9 +2,9 @@ package org.platformlayer.service.dns.ops;
 
 import javax.inject.Inject;
 
+import org.platformlayer.dns.model.DnsRecord;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.service.dns.model.DnsRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -2,12 +2,12 @@ package org.platformlayer.service.dns.client.dnsrecordlist;
 
 import javax.inject.Singleton;
 
+import org.platformlayer.dns.model.DnsRecord;
 import org.platformlayer.gwt.client.NativeEvents;
 import org.platformlayer.gwt.client.ui.JsArrayTextColumn;
 import org.platformlayer.gwt.client.ui.JsTextColumn;
 import org.platformlayer.gwt.client.ui.ListViewImpl;
 import org.platformlayer.gwt.client.widgets.BoundTable;
-import org.platformlayer.service.dns.model.DnsRecord;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.ButtonElement;

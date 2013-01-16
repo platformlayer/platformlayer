@@ -33,7 +33,7 @@ import com.google.common.collect.Lists;
 public abstract class PlatformLayerClientBase implements PlatformLayerClient {
 	static final Logger log = LoggerFactory.getLogger(PlatformLayerClientBase.class);
 
-	static Class<?>[] objectFactories = { org.platformlayer.service.dns.v1.ObjectFactory.class, };
+	static Class<?>[] objectFactories = {};
 
 	private final TypedItemMapper mapper;
 

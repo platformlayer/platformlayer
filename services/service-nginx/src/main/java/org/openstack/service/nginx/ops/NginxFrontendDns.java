@@ -14,15 +14,14 @@ import org.platformlayer.ops.UniqueTag;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.tree.OwnedItem;
-import org.platformlayer.service.dns.v1.DnsRecord;
 
-public class NginxFrontendDns extends OwnedItem {
+public class NginxFrontendDns extends OwnedItem<DnsRecord> {
 
 	@Inject
 	InstanceHelpers instanceHelpers;
 
 	@Override
-	protected ItemBase buildItemTemplate() throws OpsException {
+	protected DnsRecord buildItemTemplate() throws OpsException {
 		// TODO: Idempotency etc
 		// Machine machine = OpsContext.get().getInstance(Machine.class);
 		NginxService nginxService = OpsContext.get().getInstance(NginxService.class);

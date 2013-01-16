@@ -2,11 +2,11 @@ package org.platformlayer.service.dns.client.dnsrecord;
 
 import javax.inject.Singleton;
 
+import org.platformlayer.dns.model.DnsRecord;
 import org.platformlayer.gwt.client.ui.ItemViewImpl;
 import org.platformlayer.gwt.client.ui.ViewHandler;
 import org.platformlayer.gwt.client.widgets.ControlGroup;
 import org.platformlayer.gwt.client.widgets.Form;
-import org.platformlayer.service.dns.model.DnsRecord;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;

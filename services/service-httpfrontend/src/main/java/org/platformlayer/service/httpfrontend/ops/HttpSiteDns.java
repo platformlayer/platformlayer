@@ -4,6 +4,7 @@ import javax.inject.Inject;
 
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
+import org.platformlayer.dns.model.DnsRecord;
 import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
@@ -11,7 +12,6 @@ import org.platformlayer.ops.UniqueTag;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.tree.OwnedItem;
-import org.platformlayer.service.dns.v1.DnsRecord;
 import org.platformlayer.service.httpfrontend.model.HttpServer;
 import org.platformlayer.service.httpfrontend.model.HttpSite;
 
