@@ -70,13 +70,12 @@ class StandaloneXaasWebserver {
 			ConfigurationImpl configuration = ConfigurationImpl.load();
 
 			List<Module> modules = Lists.newArrayList();
-			// modules.add(new GuiceOpsConfig());
 			modules.add(new NullMetricsModule());
 			modules.add(new GuiceXaasConfig(configuration));
 			modules.add(new ConfigurationModule(configuration));
 			modules.add(new CacheModule());
 			modules.add(new JdbcGuiceModule());
-			modules.add(new PlatformLayerServletModule());
+			modules.add(new PlatformLayerServletModule(configuration, "frontend"));
 			modules.add(new PlatformlayerValidationModule());
 
 			Injector injector = Guice.createInjector(modules);

@@ -21,7 +21,7 @@ public class BouncyCastleLoader {
 		return BouncyCastleProvider.PROVIDER_NAME;
 	}
 
-	private static void ensureLoaded() {
+	public static void ensureLoaded() {
 		synchronized (BouncyCastleLoader.class) {
 			if (provider == null) {
 				BouncyCastleProvider bc = new BouncyCastleProvider();

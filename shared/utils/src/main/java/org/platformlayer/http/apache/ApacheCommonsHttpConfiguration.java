@@ -38,7 +38,7 @@ public class ApacheCommonsHttpConfiguration implements HttpConfiguration {
 		return new ApacheCommonsHttpRequest(httpClient, method, uri);
 	}
 
-	private HttpClient buildHttpClient(SslConfiguration sslConfiguration) {
+	HttpClient buildHttpClient(SslConfiguration sslConfiguration) {
 		HttpParams httpParams = null;
 
 		if (sslConfiguration == null || sslConfiguration.isEmpty()) {
