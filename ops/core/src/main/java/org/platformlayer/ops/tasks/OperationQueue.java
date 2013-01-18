@@ -26,4 +26,8 @@ public interface OperationQueue {
 	void submitRetry(ProjectAuthorization auth, JobData jobData, TimeSpan delay) throws OpsException;
 
 	JobLog getActiveJobLog(PlatformLayerKey jobKey, String executionId);
+
+	void startJob(JobQueueEntry entity) throws OpsException;
+
+	JobQueueEntry take() throws OpsException;
 }

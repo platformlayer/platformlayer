@@ -1,16 +1,17 @@
 package org.platformlayer.ops.jobstore;
 
+import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.PriorityQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 
 import javax.inject.Inject;
 
+import org.platformlayer.PrimitiveComparators;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.common.JobState;
@@ -25,6 +26,7 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.log.JobLogger;
 import org.platformlayer.ops.tasks.ActiveJobExecution;
+import org.platformlayer.ops.tasks.JobQueueEntry;
 import org.platformlayer.ops.tasks.OperationWorker;
 
 import com.google.common.base.Objects;
@@ -38,23 +40,30 @@ public class SimpleOperationQueue extends OperationQueueBase {
 	@Inject
 	OpsSystem opsSystem;
 
-	// @Inject
-	// JobRegistry jobRegistry;
-
 	@Inject
 	JobLogStore jobLogStore;
 
-	final Timer timer = new Timer();
+	final PriorityQueue<QueuedJob> queue = new PriorityQueue<QueuedJob>(100, new Comparator<QueuedJob>() {
+		@Override
+		public int compare(QueuedJob o1, QueuedJob o2) {
+			long t1 = o1.timestamp;
+			long t2 = o2.timestamp;
+
+			return PrimitiveComparators.compare(t1, t2);
+		}
+	});
 
 	final Map<PlatformLayerKey, ActiveJobExecution> activeJobs = Maps.newHashMap();
 	final LinkedList<JobExecutionData> recentJobs = Lists.newLinkedList();
 
-	class QueuedJob implements Callable<Object> {
+	class QueuedJob implements Callable<Object>, JobQueueEntry {
 		final ProjectAuthorization auth;
 		final JobData jobData;
+		final long timestamp;
 
-		QueuedJob(ProjectAuthorization auth, JobData jobData) {
+		QueuedJob(long timestamp, ProjectAuthorization auth, JobData jobData) {
 			super();
+			this.timestamp = timestamp;
 			this.auth = auth;
 			this.jobData = jobData;
 		}
@@ -74,20 +83,23 @@ public class SimpleOperationQueue extends OperationQueueBase {
 
 	@Override
 	public void submit(ProjectAuthorization auth, JobData jobData) {
-		QueuedJob queuedJob = new QueuedJob(auth, jobData);
-		executorService.submit(queuedJob);
+		long timestamp = System.currentTimeMillis();
+
+		QueuedJob queuedJob = new QueuedJob(timestamp, auth, jobData);
+		synchronized (queue) {
+			queue.add(queuedJob);
+		}
 	}
 
 	@Override
 	public void submitRetry(ProjectAuthorization auth, JobData jobData, TimeSpan delay) {
-		final QueuedJob queuedJob = new QueuedJob(auth, jobData);
+		long timestamp = System.currentTimeMillis();
+		timestamp += delay.getTotalMilliseconds();
 
-		timer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				executorService.submit(queuedJob);
-			}
-		}, delay.getTotalMilliseconds());
+		final QueuedJob queuedJob = new QueuedJob(timestamp, auth, jobData);
+		synchronized (queue) {
+			queue.add(queuedJob);
+		}
 	}
 
 	@Override
@@ -184,6 +196,29 @@ public class SimpleOperationQueue extends OperationQueueBase {
 		}
 
 		return null;
+	}
+
+	@Override
+	public void startJob(JobQueueEntry entity) throws OpsException {
+		QueuedJob job = (QueuedJob) entity;
+		executorService.submit(job);
+	}
+
+	@Override
+	public JobQueueEntry take() throws OpsException {
+		synchronized (queue) {
+			QueuedJob job = queue.peek();
+			if (job == null) {
+				return null;
+			}
+
+			long now = System.currentTimeMillis();
+			if (now < job.timestamp) {
+				return null;
+			}
+
+			return queue.remove();
+		}
 	}
 
 }
