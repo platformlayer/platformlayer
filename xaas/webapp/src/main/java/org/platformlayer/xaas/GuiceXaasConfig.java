@@ -126,9 +126,7 @@ public class GuiceXaasConfig extends AbstractModule {
 		bind(JaxbContextHelper.class).asEagerSingleton();
 		bind(JAXBContext.class).toProvider(JaxbContextHelper.class);
 
-		if (!configuration.isExplicitlyBound(OperationQueue.class)) {
-			bind(OperationQueue.class).to(SimpleOperationQueue.class).asEagerSingleton();
-		}
+		bind(OperationQueue.class).to(SimpleOperationQueue.class).asEagerSingleton();
 
 		bind(ObjectInjector.class).to(GuiceObjectInjector.class);
 

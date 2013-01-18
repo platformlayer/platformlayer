@@ -128,10 +128,6 @@ public class ConfigurationImpl implements Configuration {
 		return basePath;
 	}
 
-	public boolean isExplicitlyBound(Class<?> clazz) {
-		String key = "bind." + clazz.getName();
-		String value = find(key);
-		return value != null;
-	}
+
 
 }

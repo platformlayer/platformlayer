@@ -28,9 +28,12 @@ import org.platformlayer.guice.xaas.TagEntity;
 import org.platformlayer.jdbc.JdbcGuiceModule;
 import org.platformlayer.jdbc.simplejpa.ResultSetMappersProvider;
 import org.platformlayer.metrics.NullMetricsModule;
+import org.platformlayer.ops.extensions.Extensions;
+import org.platformlayer.ops.jobrunner.JobPoller;
 import org.platformlayer.ops.jobstore.jdbc.JobEntity;
 import org.platformlayer.ops.jobstore.jdbc.JobExecutionEntity;
 import org.platformlayer.ops.log.LogbackHook;
+import org.platformlayer.ops.schedule.Scheduler;
 import org.platformlayer.ops.schedule.jdbc.SchedulerRecordEntity;
 import org.platformlayer.web.GuiceServletConfig;
 import org.platformlayer.xaas.GuiceXaasConfig;
@@ -42,7 +45,6 @@ import com.fathomdb.crypto.CertificateAndKey;
 import com.fathomdb.crypto.KeyStoreUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.servlet.GuiceFilter;
@@ -60,8 +62,11 @@ class StandaloneXaasWebserver {
 	@Inject
 	EncryptionStore encryptionStore;
 
-	// @Inject
-	// Scheduler scheduler;
+	@Inject
+	Scheduler scheduler;
+
+	@Inject
+	JobPoller jobPoller;
 
 	final Map<String, File> wars = Maps.newHashMap();
 
@@ -69,20 +74,24 @@ class StandaloneXaasWebserver {
 		try {
 			ConfigurationImpl configuration = ConfigurationImpl.load();
 
+			Extensions extensions = Extensions.load(configuration);
+
 			List<Module> modules = Lists.newArrayList();
 			modules.add(new NullMetricsModule());
 			modules.add(new GuiceXaasConfig(configuration));
 			modules.add(new ConfigurationModule(configuration));
 			modules.add(new CacheModule());
 			modules.add(new JdbcGuiceModule());
-			modules.add(new PlatformLayerServletModule(configuration, "frontend"));
+			modules.add(new PlatformLayerServletModule(extensions));
 			modules.add(new PlatformlayerValidationModule());
 
-			Injector injector = Guice.createInjector(modules);
+			Injector injector = extensions.createInjector(modules);
 
 			ResultSetMappersProvider provider = injector.getInstance(ResultSetMappersProvider.class);
 			provider.addAll(ItemEntity.class, TagEntity.class, SchedulerRecordEntity.class, JobEntity.class,
 					JobExecutionEntity.class);
+
+			extensions.addEntities(provider);
 
 			StandaloneXaasWebserver server = injector.getInstance(StandaloneXaasWebserver.class);
 
@@ -169,7 +178,9 @@ class StandaloneXaasWebserver {
 			return false;
 		}
 
-		// scheduler.start();
+		scheduler.start();
+
+		jobPoller.start();
 
 		return true;
 	}

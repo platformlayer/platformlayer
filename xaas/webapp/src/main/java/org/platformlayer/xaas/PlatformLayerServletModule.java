@@ -3,11 +3,11 @@ package org.platformlayer.xaas;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.Filter;
-
 import org.platformlayer.Scope;
 import org.platformlayer.ScopeFilter;
 import org.platformlayer.model.ProjectAuthorization;
+import org.platformlayer.ops.extensions.Extensions;
+import org.platformlayer.ops.extensions.HttpConfiguration;
 import org.platformlayer.web.CORSFilter;
 import org.platformlayer.xaas.web.jaxrs.MetricDataSourceWriter;
 import org.platformlayer.xaas.web.jaxrs.ObjectMapperProvider;
@@ -16,10 +16,7 @@ import org.platformlayer.xml.JsonHelper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.fathomdb.Configuration;
 import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Scopes;
@@ -28,13 +25,11 @@ import com.sun.jersey.guice.JerseyServletModule;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 
 public class PlatformLayerServletModule extends JerseyServletModule {
-	final Configuration configuration;
-	private final String appKey;
+	private final Extensions extensions;
 
-	public PlatformLayerServletModule(Configuration configuration, String appKey) {
+	public PlatformLayerServletModule(Extensions extensions) {
 		super();
-		this.configuration = configuration;
-		this.appKey = appKey;
+		this.extensions = extensions;
 	}
 
 	@Override
@@ -56,19 +51,12 @@ public class PlatformLayerServletModule extends JerseyServletModule {
 		bind(ScopeFilter.class).asEagerSingleton();
 		filter("/*").through(ScopeFilter.class);
 
-		String filters = configuration.find(appKey + ".filters");
-		if (!Strings.isNullOrEmpty(filters)) {
-			for (String filter : Splitter.on(',').split(filters)) {
-				Class<? extends Filter> filterClass;
-				try {
-					filterClass = (Class<? extends Filter>) Class.forName(filter);
-				} catch (ClassNotFoundException e) {
-					throw new IllegalStateException("Unable to load filter class: " + filter);
-				}
-				bind(filterClass).asEagerSingleton();
-				filter("/*").through(filterClass);
+		extensions.addFilters(new HttpConfiguration() {
+			@Override
+			public FilterKeyBindingBuilder filter(String urlPattern) {
+				return PlatformLayerServletModule.this.filter(urlPattern);
 			}
-		}
+		});
 
 		bind(ProjectAuthorization.class).toProvider(ScopeProjectAuthorizationProvider.class);
 		bind(Scope.class).toProvider(ScopeProvider.class);
