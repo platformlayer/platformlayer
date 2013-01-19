@@ -28,6 +28,11 @@
         </dependency>
 
         <dependency>
+            <groupId>com.fathomdb</groupId>
+            <artifactId>fathomdb-crypto</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
         </dependency>
