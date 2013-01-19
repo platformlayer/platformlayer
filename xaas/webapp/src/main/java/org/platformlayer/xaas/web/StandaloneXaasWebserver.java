@@ -41,6 +41,7 @@ import org.platformlayer.xaas.PlatformLayerServletModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.Configuration;
 import com.fathomdb.crypto.CertificateAndKey;
 import com.fathomdb.crypto.KeyStoreUtils;
 import com.google.common.collect.Lists;
@@ -67,6 +68,9 @@ class StandaloneXaasWebserver {
 
 	@Inject
 	JobPoller jobPoller;
+
+	@Inject
+	Configuration configuration;
 
 	final Map<String, File> wars = Maps.newHashMap();
 
@@ -136,6 +140,11 @@ class StandaloneXaasWebserver {
 
 			SslSelectChannelConnector connector = new SslSelectChannelConnector(sslContextFactory);
 			connector.setPort(PORT);
+			String host = configuration.lookup("http.host", null);
+			if (host != null) {
+				connector.setHost(host);
+			}
+
 			server.setConnectors(new Connector[] { connector });
 		}
 
@@ -178,9 +187,11 @@ class StandaloneXaasWebserver {
 			return false;
 		}
 
-		scheduler.start();
+		if (configuration.lookup("jobrunner.enabled", true)) {
+			scheduler.start();
 
-		jobPoller.start();
+			jobPoller.start();
+		}
 
 		return true;
 	}

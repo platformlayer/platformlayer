@@ -7,8 +7,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -267,16 +267,16 @@ public class MetricClient implements Closeable {
 		String project = configuration.get("metrics.report.project");
 
 		MetricTreeObject tags = new MetricTreeObject(null);
-		Properties tagProperties = configuration.getChildProperties("metrics.report.tags.");
+		Map<String, String> tagProperties = configuration.getChildProperties("metrics.report.tags.");
 		copyPropertiesToTree(tagProperties, tags.getSubtree("tags"));
 
 		return build(configuration, encryptionStore, project, tags, certificateAndKey);
 	}
 
-	private static void copyPropertiesToTree(Properties properties, MetricTreeObject dest) {
-		for (Entry<Object, Object> entry : properties.entrySet()) {
-			String key = (String) entry.getKey();
-			String value = (String) entry.getValue();
+	private static void copyPropertiesToTree(Map<String, String> properties, MetricTreeObject dest) {
+		for (Entry<String, String> entry : properties.entrySet()) {
+			String key = entry.getKey();
+			String value = entry.getValue();
 
 			List<String> tokens = Lists.newArrayList(Splitter.on('.').split(key));
 

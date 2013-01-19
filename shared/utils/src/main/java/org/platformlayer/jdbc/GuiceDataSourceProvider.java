@@ -50,9 +50,14 @@ public class GuiceDataSourceProvider implements Provider<DataSource> {
 		pooledDataSource.setUsername(jdbcConfig.username);
 		pooledDataSource.setPassword(jdbcConfig.password);
 
+		String sqlDebug = null;
+
 		if (jdbcConfig.extraProperties != null) {
-			String logSql = jdbcConfig.extraProperties.getProperty("sql.debug", "false");
-			pooledDataSource.setLogStatementsEnabled(Boolean.parseBoolean(logSql));
+			sqlDebug = jdbcConfig.extraProperties.get("sql.debug");
+		}
+
+		if (!Strings.isNullOrEmpty(sqlDebug)) {
+			pooledDataSource.setLogStatementsEnabled(Boolean.parseBoolean(sqlDebug));
 		}
 
 		// Enable statement caching

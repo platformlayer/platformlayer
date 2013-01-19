@@ -1,7 +1,7 @@
 package org.platformlayer.config;
 
+import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,7 @@ public class ConfigurationModule extends AbstractModule {
 		bind(Configuration.class).toInstance(configuration);
 
 		// TODO: Do we really need this??
-		configuration.bindProperties(binder());
+		// configuration.bindProperties(binder());
 
 		bindListener(Matchers.any(), new ConfigurationTypeListener(configuration));
 
@@ -41,15 +41,15 @@ public class ConfigurationModule extends AbstractModule {
 	}
 
 	private void doExplicitBindings(Configuration configuration) throws ClassNotFoundException {
-		Properties bindings = configuration.getChildProperties("bind.");
-		for (Entry<Object, Object> entry : bindings.entrySet()) {
-			String serviceKey = (String) entry.getKey();
+		Map<String, String> bindings = configuration.getChildProperties("bind.");
+		for (Entry<String, String> entry : bindings.entrySet()) {
+			String serviceKey = entry.getKey();
 
 			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
 			try {
 				Class service = classLoader.loadClass(serviceKey);
-				Class implementation = classLoader.loadClass((String) entry.getValue());
+				Class implementation = classLoader.loadClass(entry.getValue());
 				bind(service).to(implementation);
 			} catch (ClassNotFoundException e) {
 				log.warn("Unable to load class", e);

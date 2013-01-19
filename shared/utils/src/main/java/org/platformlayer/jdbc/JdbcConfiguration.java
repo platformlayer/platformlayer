@@ -2,20 +2,21 @@ package org.platformlayer.jdbc;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Properties;
+import java.util.Map;
 
 import com.fathomdb.Configuration;
 import com.fathomdb.properties.PropertyUtils;
+import com.google.common.collect.Maps;
 
 class JdbcConfiguration {
 	final String jdbcUrl;
 	final String username;
 	final String password;
 	final String driverClassName;
-	final Properties extraProperties;
+	final Map<String, String> extraProperties;
 
 	private JdbcConfiguration(String jdbcUrl, String username, String password, String driverClassName,
-			Properties extraProperties) {
+			Map<String, String> extraProperties) {
 		super();
 		this.jdbcUrl = jdbcUrl;
 		this.username = username;
@@ -43,7 +44,8 @@ class JdbcConfiguration {
 
 		String driverClassName = org.postgresql.Driver.class.getName();
 
-		Properties extraProperties = System.getProperties();
+		Map<String, String> extraProperties = Maps.newHashMap();
+		// Properties extraProperties = System.getProperties();
 
 		JdbcConfiguration jdbcConfig = new JdbcConfiguration(jdbcUrl, username, password, driverClassName,
 				extraProperties);
@@ -51,22 +53,24 @@ class JdbcConfiguration {
 		return jdbcConfig;
 	}
 
-	private static JdbcConfiguration fromProperties(Properties properties, String prefix) {
+	private static JdbcConfiguration fromProperties(Map<String, String> properties, String prefix) {
 		String keyPrefix = prefix;
 		if (keyPrefix == null) {
 			keyPrefix = "";
 		}
 
 		if (properties == null) {
-			properties = System.getProperties();
+			// Default to System.getProperties seems risky here...
+			throw new IllegalArgumentException();
+			// properties = PropertyUtils.toMap(System.getProperties());
 		}
 
-		String jdbcUrl = properties.getProperty(keyPrefix + "url");
-		String driverClassName = properties.getProperty(keyPrefix + "driverClassName");
-		String username = properties.getProperty(keyPrefix + "username");
-		String password = properties.getProperty(keyPrefix + "password");
+		String jdbcUrl = properties.get(keyPrefix + "url");
+		String driverClassName = properties.get(keyPrefix + "driverClassName");
+		String username = properties.get(keyPrefix + "username");
+		String password = properties.get(keyPrefix + "password");
 
-		Properties extraProperties = PropertyUtils.getChildProperties(properties, keyPrefix);
+		Map<String, String> extraProperties = PropertyUtils.getChildProperties(properties, keyPrefix);
 
 		JdbcConfiguration jdbcConfig = new JdbcConfiguration(jdbcUrl, username, password, driverClassName,
 				extraProperties);
@@ -83,7 +87,7 @@ class JdbcConfiguration {
 		if (simpleValue != null) {
 			return buildSimple(configuration, key);
 		} else {
-			Properties properties = configuration.getChildProperties(keyPrefix);
+			Map<String, String> properties = configuration.getChildProperties(keyPrefix);
 			return fromProperties(properties, "");
 		}
 	}

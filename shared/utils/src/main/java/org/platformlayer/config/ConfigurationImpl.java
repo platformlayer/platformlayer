@@ -2,23 +2,29 @@ package org.platformlayer.config;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fathomdb.Configuration;
 import com.fathomdb.properties.PropertyUtils;
-import com.google.inject.Binder;
-import com.google.inject.name.Names;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 public class ConfigurationImpl implements Configuration {
 	private static final Logger log = LoggerFactory.getLogger(ConfigurationImpl.class);
 
 	final File basePath;
-	final Properties properties;
+	final List<Map<String, String>> properties;
 
-	public ConfigurationImpl(File basePath, Properties properties) {
+	public ConfigurationImpl(File basePath, List<Map<String, String>> properties) {
 		this.basePath = basePath;
 		this.properties = properties;
 
@@ -43,18 +49,24 @@ public class ConfigurationImpl implements Configuration {
 
 	@Override
 	public String lookup(String key, String defaultValue) {
-		return properties.getProperty(key, defaultValue);
+		for (Map<String, String> propertyMap : properties) {
+			String value = propertyMap.get(key);
+			if (value != null) {
+				return value;
+			}
+		}
+		return defaultValue;
 	}
 
 	@Override
 	public int lookup(String key, int defaultValue) {
-		String s = properties.getProperty(key, "" + defaultValue);
+		String s = lookup(key, "" + defaultValue);
 		return Integer.parseInt(s);
 	}
 
-	public void bindProperties(Binder binder) {
-		Names.bindProperties(binder, properties);
-	}
+	// public void bindProperties(Binder binder) {
+	// Names.bindProperties(binder, properties);
+	// }
 
 	@Override
 	public String get(String key) {
@@ -72,8 +84,37 @@ public class ConfigurationImpl implements Configuration {
 	}
 
 	@Override
-	public Properties getChildProperties(String keyPrefix) {
-		return PropertyUtils.getChildProperties(properties, keyPrefix);
+	public Map<String, String> getChildProperties(String prefix) {
+		Map<String, String> children = Maps.newHashMap();
+
+		Set<String> keySet = getKeySet();
+		for (String key : keySet) {
+			if (!key.startsWith(prefix)) {
+				continue;
+			}
+
+			String suffix = key.substring(prefix.length());
+			children.put(suffix, lookup(key, null));
+		}
+
+		return children;
+	}
+
+	private Set<String> getKeySet() {
+		Set<String> keys = Sets.newHashSet();
+
+		for (Map<String, String> propertyMap : properties) {
+			for (Entry<String, String> entry : propertyMap.entrySet()) {
+				String key = entry.getKey();
+				if (entry.getValue() == null) {
+					keys.remove(key);
+				} else {
+					keys.add(key);
+				}
+			}
+		}
+
+		return keys;
 	}
 
 	public static ConfigurationImpl load() {
@@ -88,25 +129,50 @@ public class ConfigurationImpl implements Configuration {
 
 		File configFile = new File(configFilePath);
 
-		Properties systemProperties = new Properties();
-		systemProperties.putAll(System.getenv());
+		List<Map<String, String>> propertiesList = Lists.newArrayList();
 
-		Properties properties = new Properties(systemProperties);
-		if (configFile.exists()) {
-			try {
-				PropertyUtils.loadProperties(properties, configFile);
-			} catch (IOException e) {
-				throw new IllegalStateException("Error loading configuration file: " + configFile, e);
-			}
-		} else {
-			log.info("Configuration file not found; using environment variables");
+		{
+			Properties envVariables = new Properties();
+			envVariables.putAll(System.getenv());
+			propertiesList.add(PropertyUtils.toMap(envVariables));
 		}
 
-		return new ConfigurationImpl(configFile.getParentFile(), properties);
+		{
+
+			if (configFile.exists()) {
+				try {
+					Properties properties = new Properties();
+					PropertyUtils.loadProperties(properties, configFile);
+					propertiesList.add(PropertyUtils.toMap(properties));
+				} catch (IOException e) {
+					throw new IllegalStateException("Error loading configuration file: " + configFile, e);
+				}
+			} else {
+				log.warn("Configuration file not found");
+			}
+		}
+
+		{
+			Properties systemProperties = System.getProperties();
+
+			Map<String, String> confProperties = PropertyUtils.getChildProperties(
+					PropertyUtils.toMap(systemProperties), "conf.");
+			if (!confProperties.isEmpty()) {
+				propertiesList.add(confProperties);
+			}
+		}
+
+		propertiesList = Lists.reverse(propertiesList);
+
+		return new ConfigurationImpl(configFile.getParentFile(), propertiesList);
+	}
+
+	public static ConfigurationImpl from(File basePath, List<Map<String, String>> propertiesList) {
+		return new ConfigurationImpl(basePath, propertiesList);
 	}
 
 	public static ConfigurationImpl from(File basePath, Properties properties) {
-		return new ConfigurationImpl(basePath, properties);
+		return new ConfigurationImpl(basePath, Collections.singletonList(PropertyUtils.toMap(properties)));
 	}
 
 	@Override
@@ -128,6 +194,9 @@ public class ConfigurationImpl implements Configuration {
 		return basePath;
 	}
 
-
-
+	@Override
+	public boolean lookup(String key, boolean defaultValue) {
+		String s = lookup(key, Boolean.toString(defaultValue));
+		return Boolean.parseBoolean(s);
+	}
 }
