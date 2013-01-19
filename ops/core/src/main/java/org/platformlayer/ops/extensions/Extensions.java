@@ -39,6 +39,9 @@ public class Extensions {
 			for (String extension : Splitter.on(',').split(extensionList)) {
 				Class<? extends ExtensionModule> extensionClass;
 				try {
+					if (!extension.contains(".")) {
+						extension = "org.platformlayer.ops.extensions." + extension;
+					}
 					extensionClass = (Class<? extends ExtensionModule>) Class.forName(extension);
 				} catch (ClassNotFoundException e) {
 					throw new IllegalStateException("Unable to load extension class: " + extension, e);
