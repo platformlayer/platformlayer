@@ -15,4 +15,5 @@ public class StringTagKey extends TagKey<String> {
 	public Tag build(String t) {
 		return Tag.build(key, t);
 	}
+
 }

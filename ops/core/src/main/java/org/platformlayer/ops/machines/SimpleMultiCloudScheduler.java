@@ -49,6 +49,11 @@ public class SimpleMultiCloudScheduler implements MultiCloudScheduler {
 				for (MachineProvider candidate : clouds) {
 					float cost = candidate.getPrice(request);
 
+					if (cost == Float.POSITIVE_INFINITY) {
+						log.info("Cloud does not meet requirements: " + candidate);
+						continue;
+					}
+
 					if (cost < bestCost) {
 						bestCost = cost;
 						best = Lists.newArrayList();

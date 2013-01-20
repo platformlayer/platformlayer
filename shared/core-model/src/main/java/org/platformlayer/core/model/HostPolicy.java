@@ -41,4 +41,11 @@ public class HostPolicy {
 		this.scoreSameGroup = 10;
 		this.scoreSameItemType = -100;
 	}
+
+	public List<String> getPolicies() {
+		if (policies == null) {
+			policies = Lists.newArrayList();
+		}
+		return policies;
+	}
 }

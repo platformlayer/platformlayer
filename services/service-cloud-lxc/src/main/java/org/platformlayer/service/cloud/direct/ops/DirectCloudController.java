@@ -1,7 +1,10 @@
 package org.platformlayer.service.cloud.direct.ops;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
+import org.platformlayer.core.model.HostPolicyTag;
 import org.platformlayer.core.model.InstanceBase;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PublicEndpointBase;
@@ -19,6 +22,8 @@ import org.platformlayer.service.cloud.direct.model.DirectInstance;
 import org.platformlayer.service.cloud.direct.model.DirectPublicEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Joiner;
 
 public class DirectCloudController extends OpsTreeBase implements MachineProvider {
 	static final Logger log = LoggerFactory.getLogger(DirectCloudController.class);
@@ -69,6 +74,12 @@ public class DirectCloudController extends OpsTreeBase implements MachineProvide
 
 	@Override
 	public float getPrice(MachineCreationRequest request) {
+		List<String> unsatisfied = HostPolicyTag.satisfy(request.hostPolicy, model.getTags());
+		if (unsatisfied.isEmpty()) {
+			log.info("Cannot satisfy requirements: " + Joiner.on(",").join(unsatisfied));
+			return Float.POSITIVE_INFINITY;
+		}
+
 		return 10;
 	}
 
