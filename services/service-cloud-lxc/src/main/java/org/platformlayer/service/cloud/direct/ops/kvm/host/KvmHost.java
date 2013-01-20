@@ -7,7 +7,6 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.SimpleFile;
 import org.platformlayer.ops.packages.PackageDependency;
 import org.platformlayer.ops.service.ManagedService;
-import org.platformlayer.ops.supervisor.SupervisordInstall;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class KvmHost extends OpsTreeBase {
@@ -18,7 +17,7 @@ public class KvmHost extends OpsTreeBase {
 
 	@Override
 	protected void addChildren() throws OpsException {
-		addChild(injected(SupervisordInstall.class));
+		// addChild(injected(SupervisordInstall.class));
 
 		// To make config cd
 		addChild(PackageDependency.build("genisoimage"));

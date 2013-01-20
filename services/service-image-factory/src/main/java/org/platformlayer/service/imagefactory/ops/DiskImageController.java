@@ -17,7 +17,6 @@ import org.platformlayer.TimeSpan;
 import org.platformlayer.TimeoutPoll;
 import org.platformlayer.TimeoutPoll.PollFunction;
 import org.platformlayer.core.model.HostPolicy;
-import org.platformlayer.core.model.MachineCloudBase;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.core.model.Tags;
@@ -44,6 +43,7 @@ import org.platformlayer.ops.helpers.SshKey;
 import org.platformlayer.ops.images.CloudImage;
 import org.platformlayer.ops.images.ImageFormat;
 import org.platformlayer.ops.images.ImageStore;
+import org.platformlayer.ops.machines.MachineProvider;
 import org.platformlayer.ops.machines.PlatformLayerCloudHelpers;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.networks.NetworkPoint;
@@ -116,7 +116,7 @@ public class DiskImageController {
 		if (imageId == null) {
 			// Check for existing image
 
-			MachineCloudBase targetCloud = cloudHelpers.getCloud(image.cloud);
+			MachineProvider targetCloud = cloudHelpers.getCloud(image.cloud);
 			DiskImageRecipe recipe = platformLayer.getItem(image.recipeId, DiskImageRecipe.class);
 
 			ImageStore imageStore = cloud.getImageStore(targetCloud);
@@ -138,7 +138,7 @@ public class DiskImageController {
 		// Assume the worst...
 		opsContext.setFailure(true);
 
-		MachineCloudBase targetCloud = cloudHelpers.getCloud(image.cloud);
+		MachineProvider targetCloud = cloudHelpers.getCloud(image.cloud);
 		DiskImageRecipe recipe = platformLayer.getItem(image.recipeId, DiskImageRecipe.class);
 
 		OperatingSystem operatingSystem = getRequestedOperatingSystem(recipe);

@@ -14,11 +14,13 @@ import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.filesystem.ManagedDirectory;
+import org.platformlayer.ops.helpers.ProviderHelper;
 import org.platformlayer.ops.helpers.SshKeys;
 import org.platformlayer.ops.images.CloudImage;
 import org.platformlayer.ops.images.ImageFormat;
 import org.platformlayer.ops.images.ImageStore;
 import org.platformlayer.ops.instances.ImageFactory;
+import org.platformlayer.ops.machines.MachineProvider;
 import org.platformlayer.ops.machines.PlatformLayerCloudHelpers;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.direct.model.DirectCloud;
@@ -43,6 +45,9 @@ public class DownloadImage extends OpsTreeBase {
 	@Inject
 	ImageFactory imageFactory;
 
+	@Inject
+	ProviderHelper providers;
+
 	@Handler
 	public void handler(OpsTarget target) throws OpsException {
 		if (target.getFilesystemInfoFile(imageFile) == null) {
@@ -51,7 +56,8 @@ public class DownloadImage extends OpsTreeBase {
 				throw new IllegalStateException("Cloud instance not found");
 			}
 			ImageStore imageStore = cloudHelpers.getImageStore(cloud);
-			CloudImage imageInfo = imageFactory.getOrCreateImageId(cloud, imageFormats, recipeKey);
+			MachineProvider machineProvider = providers.toInterface(cloud, MachineProvider.class);
+			CloudImage imageInfo = imageFactory.getOrCreateImageId(machineProvider, imageFormats, recipeKey);
 
 			if (imageStore == null) {
 				throw new OpsException("Image store not configured");

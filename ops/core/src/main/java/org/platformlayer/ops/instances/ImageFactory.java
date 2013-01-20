@@ -7,7 +7,7 @@ import javax.inject.Inject;
 
 import org.platformlayer.PlatformLayerClientException;
 import org.platformlayer.TimeSpan;
-import org.platformlayer.core.model.MachineCloudBase;
+import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.images.model.DiskImage;
@@ -15,9 +15,11 @@ import org.platformlayer.images.model.DiskImageRecipe;
 import org.platformlayer.ops.CloudContext;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.helpers.ProviderHelper;
 import org.platformlayer.ops.images.CloudImage;
 import org.platformlayer.ops.images.ImageFormat;
 import org.platformlayer.ops.images.ImageStore;
+import org.platformlayer.ops.machines.MachineProvider;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.xml.JaxbHelper;
 import org.slf4j.Logger;
@@ -46,6 +48,9 @@ public class ImageFactory {
 
 	@Inject
 	OpsContext ops;
+
+	@Inject
+	ProviderHelper providers;
 
 	public DiskImageRecipe getOrCreateRecipe(DiskImageRecipe template) throws OpsException {
 		DiskImageRecipe best = null;
@@ -96,7 +101,7 @@ public class ImageFactory {
 		return best;
 	}
 
-	public CloudImage getOrCreateImageId(MachineCloudBase targetCloud, List<ImageFormat> formats,
+	public CloudImage getOrCreateImageId(MachineProvider targetCloud, List<ImageFormat> formats,
 			DiskImageRecipe recipeTemplate) throws OpsException {
 		DiskImageRecipe recipeItem = getOrCreateRecipe(recipeTemplate);
 		PlatformLayerKey recipeKey = recipeItem.getKey();
@@ -107,7 +112,13 @@ public class ImageFactory {
 	@Inject
 	CloudContext cloud;
 
-	public CloudImage getOrCreateImageId(MachineCloudBase targetCloud, List<ImageFormat> formats,
+	public CloudImage getOrCreateImageId(ItemBase targetCloud, List<ImageFormat> formats, PlatformLayerKey recipeKey)
+			throws OpsException {
+		MachineProvider machineProvider = providers.toInterface(targetCloud, MachineProvider.class);
+		return getOrCreateImageId(machineProvider, formats, recipeKey);
+	}
+
+	public CloudImage getOrCreateImageId(MachineProvider targetCloud, List<ImageFormat> formats,
 			PlatformLayerKey recipeKey) throws OpsException {
 		if (recipeKey == null) {
 			log.debug("Looking for bootstrap image");
@@ -130,7 +141,7 @@ public class ImageFactory {
 		String id = "image-" + recipeKey.getItemId().getKey();
 		imageTemplate.setKey(PlatformLayerKey.fromId(id));
 
-		PlatformLayerKey cloudKey = targetCloud.getKey();
+		PlatformLayerKey cloudKey = targetCloud.getModel().getKey();
 		imageTemplate.setCloud(cloudKey);
 
 		DiskImage image = getOrCreateImage(imageTemplate);

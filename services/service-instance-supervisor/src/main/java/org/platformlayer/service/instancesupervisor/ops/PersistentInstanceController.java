@@ -18,8 +18,7 @@ public class PersistentInstanceController extends OpsTreeBase {
 	@Override
 	protected void addChildren() throws OpsException {
 		{
-			PersistentInstanceMapper instance = injected(PersistentInstanceMapper.class);
-			addChild(instance);
+			PersistentInstanceMapper instance = addChild(PersistentInstanceMapper.class);
 		}
 
 		// This isn't the right place for DNS, now we have endpoints

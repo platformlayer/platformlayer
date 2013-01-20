@@ -7,13 +7,11 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
-import org.slf4j.*;
 import org.platformlayer.Filter;
 import org.platformlayer.StateFilter;
 import org.platformlayer.TagFilter;
 import org.platformlayer.core.model.InstanceBase;
 import org.platformlayer.core.model.ItemBase;
-import org.platformlayer.core.model.MachineCloudBase;
 import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.PublicEndpointBase;
@@ -26,16 +24,16 @@ import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.helpers.ProviderHelper;
+import org.platformlayer.ops.helpers.ProviderHelper.ProviderOf;
 import org.platformlayer.ops.helpers.SshKey;
 import org.platformlayer.ops.helpers.SshKeys;
 import org.platformlayer.ops.images.ImageStore;
 import org.platformlayer.ops.images.direct.DirectImageStore;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.xaas.services.ModelClass;
-import org.platformlayer.xml.XmlHelper;
-import org.platformlayer.xml.XmlHelper.ElementInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.fathomdb.Casts;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
@@ -80,8 +78,7 @@ public class PlatformLayerCloudHelpers {
 	}
 
 	public PublicEndpointBase createPublicEndpoint(InstanceBase instance, PlatformLayerKey parent) throws OpsException {
-		MachineCloudBase cloud = getCloud(instance.cloud);
-		CloudController cloudController = providers.toInterface(cloud, CloudController.class);
+		MachineProvider cloudController = getCloud(instance.cloud);
 
 		PublicEndpointBase endpoint = cloudController.buildEndpointTemplate();
 
@@ -103,11 +100,9 @@ public class PlatformLayerCloudHelpers {
 	}
 
 	InstanceBase buildInstanceTemplate(MachineCreationRequest request, PlatformLayerKey parent) throws OpsException {
-		MachineCloudBase targetCloud = scheduler.pickCloud(request);
+		MachineProvider targetCloud = scheduler.pickCloud(request);
 
-		CloudController targetCloudController = providers.toInterface(targetCloud, CloudController.class);
-
-		InstanceBase machine = targetCloudController.buildInstanceTemplate(request);
+		InstanceBase machine = targetCloud.buildInstanceTemplate(request);
 
 		machine.sshPublicKey = SshKeys.serialize(request.sshPublicKey);
 
@@ -125,7 +120,7 @@ public class PlatformLayerCloudHelpers {
 		if (parent != null) {
 			machine.getTags().add(Tag.buildParentTag(parent));
 		}
-		machine.cloud = targetCloud.getKey();
+		machine.cloud = targetCloud.getModel().getKey();
 		machine.hostPolicy = request.hostPolicy;
 
 		String id = request.hostname;
@@ -162,45 +157,33 @@ public class PlatformLayerCloudHelpers {
 		return machines;
 	}
 
-	public MachineCloudBase getCloud(PlatformLayerKey key) throws OpsException {
-		MachineCloudBase cloud = findCloud(key);
+	public MachineProvider getCloud(PlatformLayerKey key) throws OpsException {
+		MachineProvider cloud = findCloud(key);
 		if (cloud == null) {
 			throw new OpsException("Cannot find cloud: " + key);
 		}
 		return cloud;
 	}
 
-	private MachineCloudBase findCloud(PlatformLayerKey key) throws OpsException {
+	private MachineProvider findCloud(PlatformLayerKey key) throws OpsException {
 		ItemBase item = platformLayer.findItem(key);
-		return Casts.checkedCast(item, MachineCloudBase.class);
+		return providers.toInterface(item, MachineProvider.class);
 	}
 
-	public List<MachineCloudBase> findClouds() throws OpsException {
-		List<MachineCloudBase> clouds = Lists.newArrayList();
-
-		// TODO: Fix this (push down list? send base class in query?)
-		for (ModelClass<? extends MachineCloudBase> modelClass : serviceProviderHelpers
-				.getModelSubclasses(MachineCloudBase.class)) {
-			for (MachineCloudBase cloud : platformLayer.listItems(modelClass.getJavaClass())) {
-				clouds.add(cloud);
-			}
+	public List<MachineProvider> findClouds() throws OpsException {
+		List<MachineProvider> clouds = Lists.newArrayList();
+		for (ProviderOf<MachineProvider> p : providers.listItemsProviding(MachineProvider.class)) {
+			clouds.add(p.get());
 		}
-		// clouds.addAll(platformLayer.listItems(RawCloud.class, filter));
-		// clouds.addAll(platformLayer.listItems(DirectCloud.class, filter));
-		// clouds.addAll(platformLayer.listItems(OpenstackCloud.class, filter));
 		return clouds;
 	}
 
-	public ImageStore getImageStore(MachineCloudBase targetCloud) throws OpsException {
-		ElementInfo xmlElementInfo = XmlHelper.getXmlElementInfo(targetCloud.getClass());
+	public ImageStore getImageStore(MachineProvider targetCloud) throws OpsException {
+		return targetCloud.getImageStore();
+	}
 
-		ModelClass<?> modelClass = serviceProviderHelpers.getModelClass(xmlElementInfo);
-
-		Object controller = modelClass.getProvider().getController(modelClass.getJavaClass());
-		CloudController cloudController = (CloudController) controller;
-
-		MachineCloudBase modelCloud = (MachineCloudBase) serviceProviderHelpers.toModelType(modelClass, targetCloud);
-		return cloudController.getImageStore(modelCloud);
+	public ImageStore getImageStore(ItemBase item) throws OpsException {
+		return getImageStore(providers.toInterface(item, MachineProvider.class));
 	}
 
 	public ImageStore getGenericImageStore() throws OpsException {
@@ -243,16 +226,8 @@ public class PlatformLayerCloudHelpers {
 		return null;
 	}
 
-	public StorageConfiguration getStorageConfiguration(MachineCloudBase targetCloud) throws OpsException {
-		ElementInfo xmlElementInfo = XmlHelper.getXmlElementInfo(targetCloud.getClass());
-
-		ModelClass<?> modelClass = serviceProviderHelpers.getModelClass(xmlElementInfo);
-
-		Object controller = modelClass.getProvider().getController(modelClass.getJavaClass());
-		CloudController cloudController = (CloudController) controller;
-
-		MachineCloudBase modelCloud = (MachineCloudBase) serviceProviderHelpers.toModelType(modelClass, targetCloud);
-		return cloudController.getStorageConfiguration(modelCloud);
+	public StorageConfiguration getStorageConfiguration(MachineProvider targetCloud) throws OpsException {
+		return targetCloud.getStorageConfiguration();
 	}
 
 	public StorageConfiguration getStorageConfiguration(Machine machine) throws OpsException {
@@ -260,7 +235,7 @@ public class PlatformLayerCloudHelpers {
 
 		PlatformLayerKey cloudKey = instance.cloud;
 
-		MachineCloudBase cloud = getCloud(cloudKey);
+		MachineProvider cloud = getCloud(cloudKey);
 
 		return getStorageConfiguration(cloud);
 	}

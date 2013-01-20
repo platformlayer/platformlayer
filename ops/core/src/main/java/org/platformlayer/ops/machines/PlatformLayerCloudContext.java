@@ -4,10 +4,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.slf4j.*;
 import org.platformlayer.core.model.InstanceBase;
 import org.platformlayer.core.model.ItemBase;
-import org.platformlayer.core.model.MachineCloudBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.CloudContext;
@@ -16,6 +14,8 @@ import org.platformlayer.ops.MachineCreationRequest;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.images.ImageStore;
 import org.platformlayer.xaas.services.ModelClass;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PlatformLayerCloudContext implements CloudContext {
 	static final Logger log = LoggerFactory.getLogger(PlatformLayerCloudContext.class);
@@ -85,7 +85,7 @@ public class PlatformLayerCloudContext implements CloudContext {
 	}
 
 	@Override
-	public ImageStore getImageStore(MachineCloudBase targetCloud) throws OpsException {
+	public ImageStore getImageStore(MachineProvider targetCloud) throws OpsException {
 		ImageStore imageStore = cloudHelpers.getImageStore(targetCloud);
 		// UserInfo userInfo = OpsContext.get().getUserInfo();
 		// URL url = new URL(userInfo.getConfig().getRequiredString("image.url"));

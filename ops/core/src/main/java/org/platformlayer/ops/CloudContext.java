@@ -1,10 +1,10 @@
 package org.platformlayer.ops;
 
 import org.platformlayer.core.model.InstanceBase;
-import org.platformlayer.core.model.MachineCloudBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.images.ImageStore;
+import org.platformlayer.ops.machines.MachineProvider;
 
 import com.google.inject.ProvidedBy;
 
@@ -22,7 +22,7 @@ public interface CloudContext {
 	Machine refreshMachine(Machine machine) throws OpsException;
 
 	// Image services
-	ImageStore getImageStore(MachineCloudBase targetCloud) throws OpsException;
+	ImageStore getImageStore(MachineProvider targetCloud) throws OpsException;
 
 	// Misc
 	public void validate() throws OpsException;

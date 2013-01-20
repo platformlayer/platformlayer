@@ -41,7 +41,6 @@ import com.google.common.collect.Lists;
 
 public class InstanceBuilder extends OpsTreeBase implements CustomRecursor {
 	public String dnsName;
-	public Tags tags;
 	public Provider<DiskImageRecipe> diskImageRecipe;
 
 	public int minimumMemoryMb = 256;
@@ -156,6 +155,7 @@ public class InstanceBuilder extends OpsTreeBase implements CustomRecursor {
 		DiskImageRecipe recipe = imageFactory.getOrCreateRecipe(recipeTemplate);
 
 		PersistentInstance persistentInstanceTemplate = new PersistentInstance();
+
 		persistentInstanceTemplate.setDnsName(dnsName);
 		persistentInstanceTemplate.setSshPublicKey(SshKeys.serialize(sshKey.getKeyPair().getPublic()));
 		persistentInstanceTemplate.setSecurityGroup(securityGroup);
@@ -217,16 +217,28 @@ public class InstanceBuilder extends OpsTreeBase implements CustomRecursor {
 		return foundPersistentInstance;
 	}
 
-	public static InstanceBuilder build(String dnsName, Provider<DiskImageRecipe> diskImageRecipe) {
+	public static InstanceBuilder build(String dnsName, Provider<DiskImageRecipe> diskImageRecipe, Tags tags) {
 		InstanceBuilder instance = Injection.getInstance(InstanceBuilder.class);
 		instance.dnsName = dnsName;
 		instance.diskImageRecipe = diskImageRecipe;
+
+		if (tags != null) {
+			instance.hostPolicy.policies = Tag.HOST_POLICY.find(tags);
+		}
+
 		return instance;
 	}
 
+	@Deprecated
+	/* @Deprecated - Pass tags */
 	public static InstanceBuilder build(String dnsName, Object controller) throws OpsException {
+		Tags tags = null;
+		return build(dnsName, controller, tags);
+	}
+
+	public static InstanceBuilder build(String dnsName, Object controller, Tags tags) throws OpsException {
 		Provider<DiskImageRecipe> diskImageRecipe = DiskImageRecipeBuilder.buildDiskImageRecipe(controller);
-		return build(dnsName, diskImageRecipe);
+		return build(dnsName, diskImageRecipe, tags);
 	}
 
 	@Override

@@ -8,7 +8,6 @@ import java.util.Properties;
 
 import javax.inject.Inject;
 
-import com.fathomdb.Utf8;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
@@ -21,11 +20,10 @@ import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.service.httpfrontend.model.HttpServer;
 import org.platformlayer.service.httpfrontend.model.HttpSite;
-import org.platformlayer.service.machines.openstack.v1.OpenstackCloud;
 
+import com.fathomdb.Utf8;
 import com.fathomdb.properties.PropertyUtils;
 import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 public class HostConfigFile extends SyntheticFile {
@@ -67,25 +65,31 @@ public class HostConfigFile extends SyntheticFile {
 
 		URI backendUri = URI.create(site.backend);
 		if (backendUri.getScheme().equals("openstack")) {
-			OpenstackCloud cloud = platformLayer.findItem(backendUri.getHost(), OpenstackCloud.class);
-			if (cloud == null) {
-				throw new OpsException("Cannot find backend cloud: " + backendUri);
-			}
+			throw new UnsupportedOperationException();
 
-			properties.put("openstack.url", cloud.getEndpoint());
-			properties.put("openstack.user", cloud.getUsername());
-			properties.put("openstack.key", cloud.getPassword());
-			if (!Strings.isNullOrEmpty(cloud.getTenant())) {
-				properties.put("openstack.tenant", cloud.getTenant());
-			}
-
-			String container = backendUri.getPath();
-			if (container.startsWith("/")) {
-				container = container.substring(1);
-			}
-			properties.put("openstack.container", container);
-
-			properties.put("provider", "openstack");
+			// ItemBase cloudItem = platformLayer.findItem(backendUri.getHost());
+			// if (cloudItem == null) {
+			// throw new OpsException("Cannot find backend cloud: " + backendUri);
+			// }
+			//
+			// MachineProvider machineProvider = providers.toInterface(cloudItem, MachineProvider.class);
+			// StorageConfiguration storageConfiguration = machineProvider.getStorageConfiguration();
+			//
+			//
+			// properties.put("openstack.url", storageConfiguration.getEndpoint());
+			// properties.put("openstack.user", cloud.getUsername());
+			// properties.put("openstack.key", cloud.getPassword());
+			// if (!Strings.isNullOrEmpty(cloud.getTenant())) {
+			// properties.put("openstack.tenant", cloud.getTenant());
+			// }
+			//
+			// String container = backendUri.getPath();
+			// if (container.startsWith("/")) {
+			// container = container.substring(1);
+			// }
+			// properties.put("openstack.container", container);
+			//
+			// properties.put("provider", "openstack");
 		} else if (backendUri.getScheme().equals(PlatformLayerKey.SCHEME)) {
 			PlatformLayerKey key = PlatformLayerKey.parse(site.backend);
 

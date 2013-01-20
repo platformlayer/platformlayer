@@ -3,30 +3,35 @@ package org.platformlayer.service.cloud.google.ops;
 import java.io.IOException;
 
 import org.platformlayer.core.model.InstanceBase;
-import org.platformlayer.core.model.MachineCloudBase;
+import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PublicEndpointBase;
+import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.MachineCreationRequest;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.images.ImageStore;
-import org.platformlayer.ops.machines.CloudController;
+import org.platformlayer.ops.machines.MachineProvider;
 import org.platformlayer.ops.machines.StorageConfiguration;
 import org.platformlayer.ops.tree.OpsTreeBase;
+import org.platformlayer.service.cloud.google.model.GoogleCloud;
 import org.platformlayer.service.cloud.google.model.GoogleCloudInstance;
 import org.platformlayer.service.cloud.google.model.GoogleCloudPublicEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GoogleCloudController extends OpsTreeBase implements CloudController {
+public class GoogleCloudController extends OpsTreeBase implements MachineProvider {
 
 	private static final Logger log = LoggerFactory.getLogger(GoogleCloudController.class);
+
+	@Bound
+	GoogleCloud model;
 
 	@Handler
 	public void handler() throws OpsException, IOException {
 	}
 
 	@Override
-	public ImageStore getImageStore(MachineCloudBase cloudObject) throws OpsException {
+	public ImageStore getImageStore() throws OpsException {
 		throw new UnsupportedOperationException();
 
 		// GoogleCloud cloud = (GoogleCloud) cloudObject;
@@ -39,7 +44,7 @@ public class GoogleCloudController extends OpsTreeBase implements CloudControlle
 	}
 
 	@Override
-	public StorageConfiguration getStorageConfiguration(MachineCloudBase cloudObject) throws OpsException {
+	public StorageConfiguration getStorageConfiguration() throws OpsException {
 		throw new UnsupportedOperationException();
 
 		// GoogleCloud cloud = (GoogleCloud) cloudObject;
@@ -65,5 +70,15 @@ public class GoogleCloudController extends OpsTreeBase implements CloudControlle
 	@Override
 	public PublicEndpointBase buildEndpointTemplate() {
 		return new GoogleCloudPublicEndpoint();
+	}
+
+	@Override
+	public ItemBase getModel() {
+		return model;
+	}
+
+	@Override
+	public float getPrice(MachineCreationRequest request) {
+		return 50;
 	}
 }

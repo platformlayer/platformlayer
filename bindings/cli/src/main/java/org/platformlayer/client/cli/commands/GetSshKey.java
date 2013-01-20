@@ -9,7 +9,7 @@ import com.fathomdb.cli.autocomplete.AutoCompletor;
 import com.fathomdb.cli.autocomplete.SimpleAutoCompleter;
 
 public class GetSshKey extends PlatformLayerCommandRunnerBase {
-	@Argument(index = 0, required = true)
+	@Argument(index = 0, required = true, usage = "service type")
 	public String serviceType;
 
 	public GetSshKey() {
