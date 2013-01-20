@@ -7,6 +7,7 @@ import javax.inject.Inject;
 
 import org.platformlayer.cas.CasStore;
 import org.platformlayer.cas.CasStoreInfo;
+import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
@@ -28,6 +29,7 @@ import org.platformlayer.ops.machines.PlatformLayerCloudContext;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.packages.PackageDependency;
+import org.platformlayer.ops.supervisor.ServiceManager;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.direct.model.DirectHost;
 import org.platformlayer.service.cloud.direct.ops.kvm.host.KvmHost;
@@ -57,6 +59,9 @@ public class DirectHostController extends OpsTreeBase implements CasStoreProvide
 
 	@Inject
 	SshKeys sshKeys;
+
+	@Inject
+	ServiceManager serviceManager;
 
 	@Handler
 	public void handler() throws OpsException, IOException {
@@ -121,6 +126,11 @@ public class DirectHostController extends OpsTreeBase implements CasStoreProvide
 		host.addChild(PackageDependency.build("socat"));
 
 		host.addChild(PeerToPeerCopy.FirewallRules.class);
+
+		{
+			PlatformLayerKey owner = model.getKey();
+			serviceManager.addServiceInstall(owner, host);
+		}
 
 		host.addChild(KvmHost.class);
 

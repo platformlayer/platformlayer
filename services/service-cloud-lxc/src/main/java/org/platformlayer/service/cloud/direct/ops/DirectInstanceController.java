@@ -6,8 +6,8 @@ import java.io.IOException;
 import javax.inject.Inject;
 
 import org.platformlayer.core.model.HostPolicy;
+import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
-import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.instances.ImageFactory;
 import org.platformlayer.ops.tree.OpsTreeBase;
@@ -29,10 +29,11 @@ public class DirectInstanceController extends OpsTreeBase {
 	@Inject
 	ImageFactory imageFactory;
 
+	@Bound
+	DirectInstance model;
+
 	@Override
 	protected void addChildren() throws OpsException {
-		DirectInstance model = OpsContext.get().getInstance(DirectInstance.class);
-
 		HostPolicy hostPolicy = model.hostPolicy;
 		if (hostPolicy == null) {
 			hostPolicy = new HostPolicy();

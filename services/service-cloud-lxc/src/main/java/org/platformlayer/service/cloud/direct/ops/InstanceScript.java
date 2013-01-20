@@ -2,19 +2,19 @@ package org.platformlayer.service.cloud.direct.ops;
 
 import java.net.InetAddress;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Provider;
 
+import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.OpsProvider;
 import org.platformlayer.ops.filesystem.SyntheticFile;
 import org.platformlayer.ops.machines.InetAddressUtils;
 import org.platformlayer.ops.networks.AddressModel;
 import org.platformlayer.ops.networks.ScriptBuilder;
-import org.platformlayer.ops.supervisor.ManagedSupervisordInstance;
-import org.platformlayer.ops.supervisor.SupervisorProcessConfig;
+import org.platformlayer.ops.supervisor.StandardService;
 import org.platformlayer.service.cloud.direct.model.DirectHost;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 import com.fathomdb.Utf8;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.inject.util.Providers;
 
 public class InstanceScript extends SyntheticFile {
 
@@ -78,14 +77,32 @@ public class InstanceScript extends SyntheticFile {
 		return host.publicInterface;
 	}
 
-	public void configure(ManagedSupervisordInstance instance) {
-		SupervisorProcessConfig sup = new SupervisorProcessConfig(key);
-		Map<String, String> properties = sup.getProperties();
+	// public void configure(ManagedSupervisordInstance instance) {
+	// SupervisorProcessConfig sup = new SupervisorProcessConfig(key);
+	// Map<String, String> properties = sup.getProperties();
+	//
+	// Command command = Command.build(filePath.getAbsolutePath());
+	// properties.put("command", command.buildCommandString());
+	//
+	// instance.config = Providers.of(sup);
+	// }
 
+	public void configure(ItemBase owner, StandardService service) {
 		Command command = Command.build(filePath.getAbsolutePath());
-		properties.put("command", command.buildCommandString());
+		service.command = OpsProvider.of(command);
 
-		instance.config = Providers.of(sup);
+		service.key = key;
+		service.owner = owner.getKey();
+
+		// Map<String, String> env = template.getEnvironment();
+		// service.environment = Providers.of(env);
+		//
+		// service.instanceDir = instanceDir;
+		// service.key = template.getServiceKey();
+		//
+		// service.owner = template.getModel().getKey();
+		//
+		// service.matchExecutableName = template.getMatchExecutableName();
 	}
 
 }

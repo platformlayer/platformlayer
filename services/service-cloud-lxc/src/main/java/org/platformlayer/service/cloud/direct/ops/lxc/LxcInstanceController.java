@@ -22,7 +22,7 @@ import org.platformlayer.ops.images.ImageFormat;
 import org.platformlayer.ops.instances.ImageFactory;
 import org.platformlayer.ops.networks.AddressModel;
 import org.platformlayer.ops.pool.NetworkAddressPoolAssignment;
-import org.platformlayer.ops.supervisor.ManagedSupervisordInstance;
+import org.platformlayer.ops.supervisor.StandardService;
 import org.platformlayer.ops.tagger.Tagger;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.direct.model.DirectInstance;
@@ -153,8 +153,9 @@ public class LxcInstanceController extends OpsTreeBase {
 		}
 
 		{
-			ManagedSupervisordInstance supervisorInstance = instance.addChild(ManagedSupervisordInstance.class);
-			script.configure(supervisorInstance);
+			// ManagedSupervisordInstance service = instance.addChild(ManagedSupervisordInstance.class);
+			StandardService service = instance.addChild(StandardService.class);
+			script.configure(model, service);
 		}
 
 		{

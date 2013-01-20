@@ -8,14 +8,16 @@ import java.util.Map;
 
 import javax.inject.Provider;
 
+import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.TemplatedFile;
 import org.platformlayer.ops.networks.AddressModel;
-import org.platformlayer.ops.supervisor.ManagedSupervisordInstance;
+import org.platformlayer.ops.supervisor.StandardService;
 import org.platformlayer.ops.templates.TemplateDataSource;
 import org.platformlayer.ops.tree.OpsTreeBase;
+import org.platformlayer.service.cloud.direct.model.DirectInstance;
 import org.platformlayer.service.cloud.direct.ops.DirectHostController;
 import org.platformlayer.service.cloud.direct.ops.InstanceScript;
 import org.platformlayer.service.cloud.direct.ops.kvm.monitor.KvmConfig.KvmDrive;
@@ -24,6 +26,9 @@ import org.platformlayer.service.cloud.direct.ops.kvm.monitor.KvmConfig.KvmNic;
 import com.google.common.collect.Lists;
 
 public class ManagedKvmInstance extends OpsTreeBase {
+	@Bound
+	DirectInstance model;
+
 	public String id;
 	public File base;
 
@@ -81,8 +86,9 @@ public class ManagedKvmInstance extends OpsTreeBase {
 		}
 
 		{
-			ManagedSupervisordInstance supervisorInstance = addChild(ManagedSupervisordInstance.class);
-			script.configure(supervisorInstance);
+			// ManagedSupervisordInstance service = addChild(ManagedSupervisordInstance.class);
+			StandardService service = addChild(StandardService.class);
+			script.configure(model, service);
 		}
 	}
 
