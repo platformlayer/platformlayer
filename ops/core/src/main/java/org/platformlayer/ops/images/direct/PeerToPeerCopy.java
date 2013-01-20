@@ -15,7 +15,6 @@ import java.util.concurrent.TimeoutException;
 
 import javax.inject.Inject;
 
-import org.slf4j.*;
 import org.platformlayer.ExceptionUtils;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.ops.Command;
@@ -30,6 +29,8 @@ import org.platformlayer.ops.networks.IpRange;
 import org.platformlayer.ops.process.ProcessExecution;
 import org.platformlayer.ops.process.ProcessExecutionException;
 import org.platformlayer.ops.tree.OpsTreeBase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fathomdb.hash.Md5Hash;
 import com.fathomdb.utils.Hex;
@@ -39,6 +40,8 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 
 public class PeerToPeerCopy {
+	public static final int PORT = 1201;
+
 	public static class FirewallRules extends OpsTreeBase {
 		@SuppressWarnings("unused")
 		private static final Logger log = LoggerFactory.getLogger(FirewallRules.class);
@@ -60,8 +63,6 @@ public class PeerToPeerCopy {
 	}
 
 	static final Logger log = LoggerFactory.getLogger(PeerToPeerCopy.class);
-
-	public static final int PORT = 6666;
 
 	@Inject
 	ExecutorService executorService;
