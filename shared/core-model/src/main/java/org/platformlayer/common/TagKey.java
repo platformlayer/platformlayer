@@ -2,6 +2,7 @@ package org.platformlayer.common;
 
 import java.util.List;
 
+import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.Tags;
 
 import com.google.common.collect.Lists;
@@ -18,6 +19,16 @@ public abstract class TagKey<T> {
 
 	public String getKey() {
 		return key;
+	}
+
+	public Iterable<Tag> filter(Tags tags) {
+		List<Tag> matches = Lists.newArrayList();
+		for (Tag tag : tags) {
+			if (key.equals(tag.key)) {
+				matches.add(tag);
+			}
+		}
+		return matches;
 	}
 
 	public T findUnique(Tags tags) {

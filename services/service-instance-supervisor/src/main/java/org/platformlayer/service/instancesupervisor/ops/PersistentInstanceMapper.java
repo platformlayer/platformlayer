@@ -109,6 +109,8 @@ public class PersistentInstanceMapper extends OpsTreeBase {
 
 		Tags tags = new Tags();
 
+		tags.addAll(Tag.HOST_POLICY.filter(tags));
+
 		request.tags = tags;
 		if (model.securityGroup != null) {
 			request.securityGroups = Lists.newArrayList();

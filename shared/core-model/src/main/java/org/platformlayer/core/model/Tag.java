@@ -29,7 +29,7 @@ public class Tag /* implements IsTag */{
 	public static final KeyTagKey INSTANCE_KEY = new KeyTagKey("instancekey");
 	public static final AddressTagKey NETWORK_ADDRESS = new AddressTagKey("net.address");
 
-	public static final String HOST_POLICY = "host.policy";
+	public static final StringTagKey HOST_POLICY = new StringTagKey("host.policy");
 	public static final EndpointTagKey PUBLIC_ENDPOINT = new EndpointTagKey("public-endpoint");
 	public static final String UNIQUE_ID = "uniqueid";
 

@@ -1,8 +1,12 @@
 package org.platformlayer.core.model;
 
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import com.google.common.collect.Lists;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
@@ -21,6 +25,8 @@ public class HostPolicy {
 	public float scoreSameGroup;
 
 	public float scoreSameItemType;
+
+	public List<String> policies = Lists.newArrayList();
 
 	public void configureSpread(String placementKey) {
 		this.groupId = placementKey;
