@@ -1,7 +1,5 @@
 package org.platformlayer.ops.machines;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,20 +14,14 @@ import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.PublicEndpointBase;
 import org.platformlayer.core.model.Tag;
-import org.platformlayer.ids.ServiceType;
 import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.MachineCreationRequest;
-import org.platformlayer.ops.OpaqueMachine;
-import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.helpers.ProviderHelper;
 import org.platformlayer.ops.helpers.ProviderHelper.ProviderOf;
-import org.platformlayer.ops.helpers.SshKey;
 import org.platformlayer.ops.helpers.SshKeys;
 import org.platformlayer.ops.images.ImageStore;
-import org.platformlayer.ops.images.direct.DirectImageStore;
-import org.platformlayer.ops.networks.NetworkPoint;
+import org.platformlayer.ops.images.ImageStoreProvider;
 import org.platformlayer.xaas.services.ModelClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -187,40 +179,11 @@ public class PlatformLayerCloudHelpers {
 	}
 
 	public ImageStore getGenericImageStore() throws OpsException {
-		for (org.platformlayer.service.imagestore.v1.ImageStore imageStore : platformLayer
-				.listItems(org.platformlayer.service.imagestore.v1.ImageStore.class)) {
-			String endpoint = imageStore.getTags().findUnique("endpoint");
+		for (ProviderOf<ImageStoreProvider> p : providers.listItemsProviding(ImageStoreProvider.class)) {
+			ImageStore imageStore = p.get().getImageStore();
 
-			if (endpoint == null) {
-				log.warn("ImageStore not yet active: " + imageStore);
-				continue;
-			}
-			URI url;
-			try {
-				url = new URI(endpoint);
-			} catch (URISyntaxException e) {
-				throw new OpsException("Cannot parse endpoint: " + endpoint, e);
-			}
-			// if (url.getScheme().equals("glance")) {
-			// int port = url.getPort();
-			// if (port == -1)
-			// port = 9292;
-			// String glanceUrl = "http://" + url.getHost() + ":" + port + "/v1";
-			// GlanceImageStore glanceImageStore = new GlanceImageStore(glanceUrl);
-			// return glanceImageStore;
-			// } else
-
-			if (url.getScheme().equals("ssh")) {
-				String myAddress = url.getHost();
-				Machine machine = new OpaqueMachine(NetworkPoint.forPublicHostname(myAddress));
-				SshKey sshKey = sshKeys.findOtherServiceKey(new ServiceType("imagestore"));
-				OpsTarget target = machine.getTarget("imagestore", sshKey.getKeyPair());
-
-				DirectImageStore directImageStore = OpsContext.get().getInjector().getInstance(DirectImageStore.class);
-				directImageStore.connect(target);
-				return directImageStore;
-			} else {
-				throw new OpsException("Unknown protocol for endpoint: " + endpoint);
+			if (imageStore != null) {
+				return imageStore;
 			}
 		}
 		return null;

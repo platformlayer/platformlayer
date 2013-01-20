@@ -1,19 +1,25 @@
 package org.openstack.service.imagestore.ops;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.PublicKey;
 
 import javax.inject.Inject;
 
 import org.openstack.service.imagestore.model.ImageStore;
 import org.platformlayer.core.model.Tag;
+import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
+import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OpaqueMachine;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.helpers.ServiceContext;
 import org.platformlayer.ops.helpers.SshKey;
+import org.platformlayer.ops.images.ImageStoreProvider;
+import org.platformlayer.ops.images.direct.DirectImageStore;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.metrics.MetricsInstance;
 import org.platformlayer.ops.networks.NetworkPoint;
@@ -26,12 +32,15 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 
-public class ImageStoreController extends OpsTreeBase {
+public class ImageStoreController extends OpsTreeBase implements ImageStoreProvider {
 
 	private static final Logger log = LoggerFactory.getLogger(ImageStoreController.class);
 
 	@Inject
 	ServiceContext service;
+
+	@Bound
+	ImageStore model;
 
 	@Handler
 	public void handler() throws OpsException, IOException {
@@ -43,8 +52,6 @@ public class ImageStoreController extends OpsTreeBase {
 
 	@Override
 	protected void addChildren() throws OpsException {
-		ImageStore model = OpsContext.get().getInstance(ImageStore.class);
-
 		Tag tag;
 
 		boolean useGlance = isFlavorGlance(model);
@@ -95,5 +102,42 @@ public class ImageStoreController extends OpsTreeBase {
 		instance.addChild(ManagedService.build("glance"));
 
 		instance.addChild(MetricsInstance.class);
+	}
+
+	@Override
+	public org.platformlayer.ops.images.ImageStore getImageStore() throws OpsException {
+		String endpoint = model.getTags().findUnique("endpoint");
+		if (endpoint == null) {
+			log.warn("ImageStore not yet active: " + model);
+			return null;
+		}
+
+		URI url;
+		try {
+			url = new URI(endpoint);
+		} catch (URISyntaxException e) {
+			throw new OpsException("Cannot parse endpoint: " + endpoint, e);
+		}
+		// if (url.getScheme().equals("glance")) {
+		// int port = url.getPort();
+		// if (port == -1)
+		// port = 9292;
+		// String glanceUrl = "http://" + url.getHost() + ":" + port + "/v1";
+		// GlanceImageStore glanceImageStore = new GlanceImageStore(glanceUrl);
+		// return glanceImageStore;
+		// } else
+
+		if (url.getScheme().equals("ssh")) {
+			String myAddress = url.getHost();
+			Machine machine = new OpaqueMachine(NetworkPoint.forPublicHostname(myAddress));
+			SshKey sshKey = service.getSshKey();
+			OpsTarget target = machine.getTarget("imagestore", sshKey.getKeyPair());
+
+			DirectImageStore directImageStore = OpsContext.get().getInjector().getInstance(DirectImageStore.class);
+			directImageStore.connect(target);
+			return directImageStore;
+		} else {
+			throw new OpsException("Unknown protocol for endpoint: " + endpoint);
+		}
 	}
 }
