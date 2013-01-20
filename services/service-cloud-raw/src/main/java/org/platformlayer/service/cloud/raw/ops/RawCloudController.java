@@ -67,7 +67,7 @@ public class RawCloudController extends OpsTreeBase implements MachineProvider {
 	@Override
 	public float getPrice(MachineCreationRequest request) {
 		List<String> unsatisfied = HostPolicyTag.satisfy(request.hostPolicy, model.getTags());
-		if (unsatisfied.isEmpty()) {
+		if (!unsatisfied.isEmpty()) {
 			log.info("Cannot satisfy requirements: " + Joiner.on(",").join(unsatisfied));
 			return Float.POSITIVE_INFINITY;
 		}

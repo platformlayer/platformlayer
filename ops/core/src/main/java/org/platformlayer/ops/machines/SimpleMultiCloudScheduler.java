@@ -65,7 +65,7 @@ public class SimpleMultiCloudScheduler implements MultiCloudScheduler {
 				}
 
 				if (best.size() == 0) {
-					throw new IllegalStateException();
+					throw new OpsException("No clouds configured (that match requirements)");
 				}
 
 				if (best.size() != 1) {
