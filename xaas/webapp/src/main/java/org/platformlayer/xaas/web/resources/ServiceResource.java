@@ -72,6 +72,10 @@ public class ServiceResource extends XaasResourceBase {
 	public String getSshPublicKey() throws RepositoryException, OpsException, IOException {
 		final ServiceProvider serviceProvider = getServiceProvider();
 
+		if (serviceProvider == null) {
+			raiseNotFound();
+		}
+
 		OpsContextBuilder opsContextBuilder = opsContextBuilderFactory.get();
 		final OpsContext opsContext = opsContextBuilder.buildTemporaryOpsContext(serviceProvider.getServiceType(),
 				getProjectAuthorization());
