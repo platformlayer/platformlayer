@@ -1,5 +1,8 @@
 package org.platformlayer.ops.jobrunner;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import org.platformlayer.TimeSpan;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.tasks.JobQueueEntry;
@@ -19,6 +22,8 @@ public class JobPollerImpl implements JobPoller {
 
 	boolean ready;
 
+	ExecutorService executor = Executors.newCachedThreadPool();
+
 	private Thread thread;
 
 	@Override
@@ -36,12 +41,23 @@ public class JobPollerImpl implements JobPoller {
 			public void run() {
 				while (true) {
 					try {
-						JobQueueEntry entry = queue.take();
+						final JobQueueEntry entry = queue.take();
 
 						if (entry == null) {
 							TimeSpan.ONE_SECOND.doSafeSleep();
 						} else {
-							queue.startJob(entry);
+							executor.execute(new Runnable() {
+
+								@Override
+								public void run() {
+									try {
+										queue.startJob(entry);
+									} catch (Throwable t) {
+										log.warn("Uncaught error while running jobs", t);
+									}
+								}
+
+							});
 						}
 					} catch (Throwable t) {
 						log.warn("Ignoring error while polling for jobs", t);
