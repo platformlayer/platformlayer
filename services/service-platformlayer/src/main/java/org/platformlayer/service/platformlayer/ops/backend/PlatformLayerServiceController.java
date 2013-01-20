@@ -1,7 +1,9 @@
 package org.platformlayer.service.platformlayer.ops.backend;
 
+import org.platformlayer.EnumUtils;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.firewall.Transport;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.networks.PublicEndpoint;
 import org.platformlayer.ops.tree.OpsTreeBase;
@@ -59,6 +61,10 @@ public class PlatformLayerServiceController extends OpsTreeBase {
 
 			endpoint.tagItem = model.getKey();
 			endpoint.parentItem = model.getKey();
+
+			if (model.transport != null) {
+				endpoint.transport = EnumUtils.valueOfCaseInsensitive(Transport.class, model.transport);
+			}
 
 			vm.addChild(endpoint);
 		}

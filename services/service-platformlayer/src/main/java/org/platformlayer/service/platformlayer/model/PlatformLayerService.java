@@ -28,4 +28,6 @@ public class PlatformLayerService extends ItemBase {
 	public Secret multitenantPassword;
 
 	public PlatformLayerKey sslKey;
+
+	public String transport;
 }
