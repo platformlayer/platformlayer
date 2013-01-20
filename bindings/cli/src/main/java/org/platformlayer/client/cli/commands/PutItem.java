@@ -1,6 +1,7 @@
 package org.platformlayer.client.cli.commands;
 
 import java.io.PrintWriter;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,9 +16,15 @@ import org.platformlayer.common.UntypedItem;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 
+import com.fathomdb.cli.CliException;
+import com.google.common.collect.Lists;
+
 public class PutItem extends PlatformLayerCommandRunnerBase {
 	@Option(name = "-p", aliases = "--parent", usage = "parent")
 	public ItemPath parent;
+
+	@Option(name = "-tag", aliases = "--tag", usage = "tag")
+	public List<String> tags = Lists.newArrayList();
 
 	@Argument(index = 0)
 	public ItemPath path;
@@ -37,8 +44,7 @@ public class PutItem extends PlatformLayerCommandRunnerBase {
 		JSONObject jsonObject = new JSONObject(json);
 
 		PlatformLayerKey parentKey = null;
-		if (parent != null) {
-			parentKey = parent.resolve(getContext());
+		if (parent != null || !tags.isEmpty()) {
 
 			JSONObject tagsObject = null;
 			if (jsonObject.has("tags")) {
@@ -48,12 +54,6 @@ public class PutItem extends PlatformLayerCommandRunnerBase {
 				jsonObject.put("tags", tagsObject);
 			}
 
-			Tag parentTag = Tag.buildParentTag(parentKey);
-
-			JSONObject jsonTag = new JSONObject();
-			jsonTag.put("key", parentTag.getKey());
-			jsonTag.put("value", parentTag.getValue());
-
 			JSONArray tagsArray;
 			if (tagsObject.has("tags")) {
 				tagsArray = tagsObject.getJSONArray("tags");
@@ -62,7 +62,32 @@ public class PutItem extends PlatformLayerCommandRunnerBase {
 				tagsObject.put("tags", tagsArray);
 			}
 
-			tagsArray.put(jsonTag);
+			if (parent != null) {
+				parentKey = parent.resolve(getContext());
+				Tag parentTag = Tag.buildParentTag(parentKey);
+
+				JSONObject jsonTag = new JSONObject();
+				jsonTag.put("key", parentTag.getKey());
+				jsonTag.put("value", parentTag.getValue());
+
+				tagsArray.put(jsonTag);
+			}
+
+			for (String tag : tags) {
+				int equalsIndex = tag.indexOf('=');
+				if (equalsIndex == -1) {
+					throw new CliException("Expected tagname=tagvalue");
+				}
+
+				String tagName = tag.substring(0, equalsIndex);
+				String tagValue = tag.substring(equalsIndex + 1);
+
+				JSONObject jsonTag = new JSONObject();
+				jsonTag.put("key", tagName);
+				jsonTag.put("value", tagValue);
+
+				tagsArray.put(jsonTag);
+			}
 		}
 
 		PlatformLayerKey key = path.resolve(getContext());
