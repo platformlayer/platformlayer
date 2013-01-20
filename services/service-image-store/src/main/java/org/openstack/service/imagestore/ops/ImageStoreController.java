@@ -9,6 +9,7 @@ import javax.inject.Inject;
 
 import org.openstack.service.imagestore.model.ImageStore;
 import org.platformlayer.core.model.Tag;
+import org.platformlayer.ids.ServiceType;
 import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.Machine;
@@ -18,6 +19,7 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.helpers.ServiceContext;
 import org.platformlayer.ops.helpers.SshKey;
+import org.platformlayer.ops.helpers.SshKeys;
 import org.platformlayer.ops.images.ImageStoreProvider;
 import org.platformlayer.ops.images.direct.DirectImageStore;
 import org.platformlayer.ops.instances.InstanceBuilder;
@@ -41,6 +43,9 @@ public class ImageStoreController extends OpsTreeBase implements ImageStoreProvi
 
 	@Bound
 	ImageStore model;
+
+	@Inject
+	SshKeys sshKeys;
 
 	@Handler
 	public void handler() throws OpsException, IOException {
@@ -130,7 +135,8 @@ public class ImageStoreController extends OpsTreeBase implements ImageStoreProvi
 		if (url.getScheme().equals("ssh")) {
 			String myAddress = url.getHost();
 			Machine machine = new OpaqueMachine(NetworkPoint.forPublicHostname(myAddress));
-			SshKey sshKey = service.getSshKey();
+			// This is nasty; we're in the context of another service here...
+			SshKey sshKey = sshKeys.findOtherServiceKey(new ServiceType("imagestore"));
 			OpsTarget target = machine.getTarget("imagestore", sshKey.getKeyPair());
 
 			DirectImageStore directImageStore = OpsContext.get().getInjector().getInstance(DirectImageStore.class);
