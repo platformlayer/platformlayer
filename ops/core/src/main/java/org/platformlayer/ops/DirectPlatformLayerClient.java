@@ -235,6 +235,11 @@ public class DirectPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
+	public <T extends ItemBase> T putItem(T item) throws OpsException {
+		return itemService.putItem(auth, item, null);
+	}
+
+	@Override
 	public List<ItemBase> listChildrenTyped(PlatformLayerKey parentKey) throws OpsException {
 		Tag parentTag = Tag.buildParentTag(parentKey);
 		Filter filter = TagFilter.byTag(parentTag);

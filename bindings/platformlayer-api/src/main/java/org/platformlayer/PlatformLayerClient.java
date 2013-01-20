@@ -45,6 +45,8 @@ public interface PlatformLayerClient {
 	public UntypedItem putItem(PlatformLayerKey key, String data, Format dataFormat)
 			throws PlatformLayerClientException;
 
+	public <T extends ItemBase> T putItem(T item) throws OpsException;
+
 	public UntypedItem putItemByTag(PlatformLayerKey key, Tag uniqueTag, String data, Format dataFormat)
 			throws PlatformLayerClientException;
 

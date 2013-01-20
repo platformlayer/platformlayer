@@ -14,6 +14,7 @@ import org.platformlayer.auth.PlatformlayerAuthenticator;
 import org.platformlayer.common.UntypedItem;
 import org.platformlayer.common.UntypedItemCollection;
 import org.platformlayer.core.model.Action;
+import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ServiceInfo;
 import org.platformlayer.core.model.ServiceInfoCollection;
@@ -34,6 +35,7 @@ import org.platformlayer.metrics.model.JsonMetricDataStream;
 import org.platformlayer.metrics.model.MetricDataStream;
 import org.platformlayer.metrics.model.MetricInfoCollection;
 import org.platformlayer.metrics.model.MetricQuery;
+import org.platformlayer.ops.OpsException;
 import org.platformlayer.xml.JaxbHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -452,6 +454,20 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 		String relativePath = "jobs/" + jobId + "/runs";
 		JobExecutionList executions = doRequest("GET", relativePath, JobExecutionList.class, Format.XML, null, null);
 		return executions;
+	}
+
+	@Override
+	public <T extends ItemBase> T putItem(T item) throws OpsException {
+		JaxbHelper jaxbHelper = PlatformLayerClientBase.toJaxbHelper(item);
+
+		String xml = PlatformLayerClientBase.serialize(jaxbHelper, item);
+
+		PlatformLayerKey key = PlatformLayerClientBase.toKey(jaxbHelper, item, listServices(true));
+
+		UntypedItem created = putItem(key, xml, Format.XML);
+
+		Class<T> itemClass = (Class<T>) item.getClass();
+		return promoteToTyped(created, itemClass);
 	}
 
 	// protected String buildRelativePath(ServiceType serviceType, ItemType itemType) {

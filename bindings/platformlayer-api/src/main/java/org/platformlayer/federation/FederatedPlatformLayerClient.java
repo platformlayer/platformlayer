@@ -814,4 +814,9 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 		// return mapped.child.client.listJobExecutions(jobKey);
 	}
 
+	@Override
+	public <T extends ItemBase> T putItem(T item) throws OpsException {
+		throw new UnsupportedOperationException();
+	}
+
 }

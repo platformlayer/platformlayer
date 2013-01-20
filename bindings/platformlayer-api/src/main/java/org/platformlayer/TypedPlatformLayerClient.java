@@ -121,18 +121,10 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 	/**
 	 * Consider using putItemByTag instead (or OwnedItem) for idempotency
 	 */
+	@Override
 	@Deprecated
-	public <T> T putItem(T item) throws OpsException {
-		JaxbHelper jaxbHelper = PlatformLayerClientBase.toJaxbHelper(item);
-
-		String xml = PlatformLayerClientBase.serialize(jaxbHelper, item);
-
-		PlatformLayerKey key = PlatformLayerClientBase.toKey(jaxbHelper, item, platformLayerClient.listServices(true));
-
-		UntypedItem created = platformLayerClient.putItem(key, xml, Format.XML);
-
-		Class<T> itemClass = (Class<T>) item.getClass();
-		return promoteToTyped(created, itemClass);
+	public <T extends ItemBase> T putItem(T item) throws OpsException {
+		return platformLayerClient.putItem(item);
 	}
 
 	// public <T> Iterable<T> listItems(Class<T> itemClass) throws PlatformLayerClientException {
