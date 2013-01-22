@@ -116,15 +116,17 @@ public class UntypedItemFormatter extends SimpleFormatter<UntypedItem> {
 			PlatformLayerKey plk = item.getKey();
 
 			if (fullPath) {
-				ansi.println(plk.getUrl());
+				ansi.print(plk.getUrl());
 			} else {
-				ansi.println(plk.getItemId().getKey());
+				ansi.print(plk.getItemId().getKey());
 			}
 		} finally {
 			if (undo != null) {
 				ansi.doAction(undo);
 			}
 		}
+
+		ansi.println();
 
 	}
 

@@ -40,7 +40,8 @@ public class GetItem extends PlatformLayerCommandRunnerBase {
 		Source src = new DOMSource(item.getRoot());
 		String xml = XmlHelper.toXml(src, 4);
 
-		ansi.println(xml);
+		ansi.print(xml);
+		ansi.println();
 
 		ansi.reset();
 	}
