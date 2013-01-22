@@ -1,15 +1,20 @@
 package org.platformlayer.xaas.web.resources;
 
+import java.util.Collections;
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 
-import org.slf4j.*;
 import org.eclipse.jetty.server.Response;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.auth.crypto.SecretProvider;
 import org.platformlayer.core.model.ItemBase;
+import org.platformlayer.core.model.ManagedItemCollection;
 import org.platformlayer.core.model.PlatformLayerKey;
+import org.platformlayer.core.model.Tag;
+import org.platformlayer.core.model.Tags;
 import org.platformlayer.ids.ItemType;
 import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.ids.ModelKey;
@@ -26,6 +31,11 @@ import org.platformlayer.xaas.services.ModelClass;
 import org.platformlayer.xaas.services.ServiceProvider;
 import org.platformlayer.xaas.services.ServiceProviderDictionary;
 import org.platformlayer.xaas.web.jaxrs.JaxbContextHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Function;
+import com.google.common.collect.Ordering;
 
 public class XaasResourceBase extends ResourceBase {
 	static final Logger log = LoggerFactory.getLogger(XaasResourceBase.class);
@@ -52,6 +62,7 @@ public class XaasResourceBase extends ResourceBase {
 		return getManagedItem(true);
 	}
 
+	@Override
 	protected void raiseNotFound() {
 		throw new WebApplicationException(Response.SC_NOT_FOUND);
 	}
@@ -177,4 +188,43 @@ public class XaasResourceBase extends ResourceBase {
 		return new PlatformLayerKey(null, getProject(), getServiceType(), getItemType(), getItemId());
 	}
 
+	protected <T extends ItemBase> T cleanup(T item) {
+		if (item != null) {
+			cleanup(item.getTags());
+		}
+		return item;
+	}
+
+	protected <T extends ItemBase> ManagedItemCollection<T> cleanup(ManagedItemCollection<T> collection) {
+		if (collection != null) {
+			if (collection.items != null) {
+				for (T item : collection.items) {
+					cleanup(item);
+				}
+
+				Collections.sort(collection.items, Ordering.natural().onResultOf(new Function<T, String>() {
+					@Override
+					public String apply(T input) {
+						PlatformLayerKey key = input.getKey();
+						if (key == null)
+							return "";
+						return key.getUrl();
+					}
+				}));
+			}
+		}
+		return collection;
+	}
+
+	protected void cleanup(Tags tags) {
+		if (tags == null)
+			return;
+		List<Tag> tagList = tags.getTags();
+		if (tagList == null)
+			return;
+		Collections.sort(
+				tagList,
+				Ordering.natural().onResultOf(Tag.GET_TAG_KEY)
+						.compound(Ordering.natural().onResultOf(Tag.GET_TAG_VALUE)));
+	}
 }

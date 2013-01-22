@@ -70,6 +70,9 @@ public class ItemServiceImpl implements ItemService {
 			throws OpsException {
 		ModelClass<T> modelClass = serviceProviderDirectory.getModelClass(itemClass);
 
+		if (modelClass == null) {
+			throw new IllegalArgumentException();
+		}
 		// if (modelClass.isSystemObject()) {
 		// if (!isInRole(authentication, RoleId.ADMIN)) {
 		// throw new SecurityException();

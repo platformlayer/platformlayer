@@ -17,7 +17,11 @@ public class TagsResource extends XaasResourceBase {
 	public Tags listTags() throws RepositoryException {
 		boolean fetchTags = true;
 		ItemBase managedItem = getManagedItem(fetchTags);
-		return managedItem.getTags();
+
+		Tags tags = managedItem.getTags();
+
+		cleanup(tags);
+		return tags;
 	}
 
 	@POST
@@ -26,6 +30,9 @@ public class TagsResource extends XaasResourceBase {
 	public Tags changeTags(TagChanges changeTags) throws RepositoryException {
 		ModelClass<?> modelClass = getModelClass();
 
-		return repository.changeTags(modelClass, getProject(), getItemId(), changeTags);
+		Tags tags = repository.changeTags(modelClass, getProject(), getItemId(), changeTags, null);
+
+		cleanup(tags);
+		return tags;
 	}
 }

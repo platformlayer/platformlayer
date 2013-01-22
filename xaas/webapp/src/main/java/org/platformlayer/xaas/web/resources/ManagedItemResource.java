@@ -45,8 +45,9 @@ public class ManagedItemResource extends XaasResourceBase {
 	@Produces({ XML, JSON })
 	public ItemBase retrieveItem() throws RepositoryException {
 		boolean fetchTags = true;
-		ItemBase managedItem = getManagedItem(fetchTags);
-		return managedItem;
+		ItemBase item = getManagedItem(fetchTags);
+
+		return cleanup(item);
 	}
 
 	@PUT
@@ -59,7 +60,9 @@ public class ManagedItemResource extends XaasResourceBase {
 		checkItemKey(item);
 
 		// TODO: Does it matter that we're not checking the item type??
-		return itemService.putItem(getProjectAuthorization(), item, uniqueTag);
+		T created = itemService.putItem(getProjectAuthorization(), item, uniqueTag);
+
+		return cleanup(created);
 	}
 
 	@PUT
@@ -130,7 +133,7 @@ public class ManagedItemResource extends XaasResourceBase {
 		List<ItemBase> roots = itemService.listAll(getProjectAuthorization(), filter);
 		ManagedItemCollection<ItemBase> collection = new ManagedItemCollection<ItemBase>();
 		collection.items = roots;
-		return collection;
+		return cleanup(collection);
 	}
 
 	@Path("tags")

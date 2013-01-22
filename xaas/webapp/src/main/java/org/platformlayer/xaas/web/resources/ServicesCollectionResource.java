@@ -40,7 +40,8 @@ public class ServicesCollectionResource extends XaasResourceBase {
 		List<ItemBase> roots = itemService.findRoots(getProjectAuthorization());
 		ManagedItemCollection<ItemBase> collection = new ManagedItemCollection<ItemBase>();
 		collection.items = roots;
-		return collection;
+
+		return cleanup(collection);
 	}
 
 	// @Path("create")
