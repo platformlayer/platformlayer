@@ -2,16 +2,17 @@ package org.platformlayer.ops.pool;
 
 import java.io.File;
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 
-import org.slf4j.*;
 import org.platformlayer.TimeSpan;
+import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.filesystem.FilesystemInfo;
 import org.platformlayer.ops.process.ProcessExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
@@ -31,15 +32,15 @@ import com.google.common.collect.Sets;
  * @author justinsb
  * 
  */
-public abstract class FilesystemBackedPool implements ResourcePool {
+public abstract class FilesystemBackedPool<T> implements ResourcePool<T> {
 	static final Logger log = LoggerFactory.getLogger(FilesystemBackedPool.class);
 
-	final PoolBuilder poolBuilder;
+	final PoolBuilder<T> adapter;
 	protected final OpsTarget target;
 	final File assignedDir;
 
-	public FilesystemBackedPool(PoolBuilder poolBuilder, OpsTarget target, File assignedDir) {
-		this.poolBuilder = poolBuilder;
+	public FilesystemBackedPool(PoolBuilder<T> adapter, OpsTarget target, File assignedDir) {
+		this.adapter = adapter;
 		this.target = target;
 		this.assignedDir = assignedDir;
 	}
@@ -71,7 +72,7 @@ public abstract class FilesystemBackedPool implements ResourcePool {
 
 	protected abstract Iterable<String> pickRandomResource() throws OpsException;
 
-	String pickUnassigned() throws OpsException {
+	T pickUnassigned() throws OpsException {
 		for (int i = 0; i < 2; i++) {
 			Set<String> assigned = Sets.newHashSet(list(assignedDir));
 
@@ -84,28 +85,25 @@ public abstract class FilesystemBackedPool implements ResourcePool {
 			}
 
 			if (found != null) {
-				return found;
+				return read(found);
 			}
 
 			// TODO: We should implement resource reclamation by checking that symlink targets exist.
 			// (We should probably avoid doing this on too many threads concurrently)
 			if (i == 0) {
-				if (poolBuilder != null) {
-					int added = poolBuilder.extendPool(this);
-					if (added != 0) {
-						log.warn("Added " + added + " items to pool");
-					}
-				}
+				extendPool();
 			}
 		}
 
 		return null;
 	}
 
-	private boolean createSymlink(File src, File link) throws OpsException {
-		src = src.getAbsoluteFile();
+	protected abstract void extendPool() throws OpsException;
 
-		Command command = Command.build("ln -s -T {0} {1}", src, link);
+	private boolean createSymlink(File symlinkTarget, File link) throws OpsException {
+		// symlinkTarget = symlinkTarget.getAbsoluteFile();
+
+		Command command = Command.build("ln -s -T {0} {1}", symlinkTarget, link);
 		try {
 			target.executeCommand(command);
 			return true;
@@ -118,8 +116,10 @@ public abstract class FilesystemBackedPool implements ResourcePool {
 	}
 
 	@Override
-	public String findAssigned(File owner) throws OpsException {
+	public T findAssigned(PlatformLayerKey owner) throws OpsException {
 		int count = 0;
+
+		String expectedTarget = toFile(owner).getAbsolutePath();
 
 		for (FilesystemInfo file : target.getFilesystemInfoDir(assignedDir)) {
 			if (!file.isSymlink()) {
@@ -128,8 +128,8 @@ public abstract class FilesystemBackedPool implements ResourcePool {
 
 			count++;
 
-			if (file.symlinkTarget.equals(owner.getAbsolutePath())) {
-				return getKey(file);
+			if (file.symlinkTarget.equals(expectedTarget)) {
+				return read(getKey(file));
 			}
 		}
 
@@ -140,20 +140,27 @@ public abstract class FilesystemBackedPool implements ResourcePool {
 		return null;
 	}
 
+	private File toFile(PlatformLayerKey owner) {
+		// Construct a fake filename to represent the resource
+		String name = owner.getUrl();
+		name = name.replace(PlatformLayerKey.SCHEME + "://", "/platformlayer/");
+		return new File(name);
+	}
+
 	@Override
-	public String assign(File owner, boolean required) throws OpsException {
-		String assigned = findAssigned(owner);
+	public T assign(PlatformLayerKey owner, boolean required) throws OpsException {
+		T assigned = findAssigned(owner);
 		if (assigned != null) {
 			return assigned;
 		}
 
 		for (int i = 0; i < 10; i++) {
-			String unassigned = pickUnassigned();
+			T unassigned = pickUnassigned();
 			if (unassigned == null) {
 				break;
 			}
 
-			if (createSymlink(owner, new File(assignedDir, unassigned))) {
+			if (createSymlink(toFile(owner), new File(assignedDir, toKey(unassigned)))) {
 				return unassigned;
 			}
 
@@ -169,20 +176,23 @@ public abstract class FilesystemBackedPool implements ResourcePool {
 	}
 
 	@Override
-	public void release(File owner, String item) throws OpsException {
-		File symlink = new File(assignedDir, item);
+	public void release(PlatformLayerKey owner, T item) throws OpsException {
+		File symlink = new File(assignedDir, toKey(item));
 		FilesystemInfo info = target.getFilesystemInfoFile(symlink);
 		if (info == null) {
 			throw new OpsException("Symlink not found");
 		}
 
-		if (!Objects.equal(info.symlinkTarget, owner.getAbsolutePath())) {
+		if (!Objects.equal(info.symlinkTarget, toFile(owner).getAbsolutePath())) {
 			throw new OpsException("Resource not assigned to owner");
 		}
 
 		target.rm(symlink);
 	}
 
-	@Override
-	public abstract Properties readProperties(String key) throws OpsException;
+	protected String toKey(T item) {
+		return adapter.toKey(item);
+	}
+
+	protected abstract T read(String key) throws OpsException;
 }

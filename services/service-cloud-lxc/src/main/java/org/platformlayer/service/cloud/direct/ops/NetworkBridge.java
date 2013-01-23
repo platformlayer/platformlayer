@@ -68,6 +68,7 @@ public class NetworkBridge extends OpsTreeBase {
 
 		addChild(SysctlSetting.build("net.ipv4.ip_forward", "1"));
 		addChild(SysctlSetting.build("net.ipv6.conf.all.forwarding", "1"));
+		addChild(SysctlSetting.build("net.ipv6.conf.all.proxy_ndp", "1"));
 
 		{
 			File scriptPath = new File("/etc/network/if-up.d/nat-for-bridge");
@@ -84,6 +85,5 @@ public class NetworkBridge extends OpsTreeBase {
 
 			nat.setUpdateAction(command);
 		}
-
 	}
 }

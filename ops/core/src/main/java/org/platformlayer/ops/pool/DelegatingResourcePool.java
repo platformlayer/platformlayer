@@ -1,40 +1,43 @@
 package org.platformlayer.ops.pool;
 
-import java.io.File;
-import java.util.Properties;
-
-import org.slf4j.*;
+import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.OpsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class DelegatingResourcePool implements ResourcePool {
+public class DelegatingResourcePool<T> implements ResourcePool<T> {
 	@SuppressWarnings("unused")
 	private static final Logger log = LoggerFactory.getLogger(DelegatingResourcePool.class);
 
-	final ResourcePool underlying;
+	final ResourcePool<T> underlying;
 
-	@Override
-	public void release(File holder, String key) throws OpsException {
-		underlying.release(holder, key);
+	public DelegatingResourcePool(ResourcePool<T> underlying) {
+		this.underlying = underlying;
 	}
 
 	@Override
-	public Properties readProperties(String key) throws OpsException {
-		return underlying.readProperties(key);
+	public void release(PlatformLayerKey holder, T item) throws OpsException {
+		underlying.release(holder, item);
 	}
 
+	// @Override
+	// public T read(String id) throws OpsException {
+	// return underlying.read(id);
+	// }
+
 	@Override
-	public String findAssigned(File holder) throws OpsException {
+	public T findAssigned(PlatformLayerKey holder) throws OpsException {
 		return underlying.findAssigned(holder);
 	}
 
 	@Override
-	public String assign(File owner, boolean required) throws OpsException {
+	public T assign(PlatformLayerKey owner, boolean required) throws OpsException {
 		return underlying.assign(owner, required);
 	}
 
-	public DelegatingResourcePool(ResourcePool underlying) {
-		super();
-		this.underlying = underlying;
-	}
+	// @Override
+	// public boolean addResource(T item) throws OpsException {
+	// return underlying.addResource(item);
+	// }
 
 }

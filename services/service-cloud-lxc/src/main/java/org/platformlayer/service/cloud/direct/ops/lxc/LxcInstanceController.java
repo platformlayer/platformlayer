@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.util.Collections;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import org.platformlayer.PlatformLayerClient;
+import org.platformlayer.core.model.AddressModel;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.ops.Command;
@@ -20,7 +22,6 @@ import org.platformlayer.ops.helpers.ServiceContext;
 import org.platformlayer.ops.helpers.SshKeys;
 import org.platformlayer.ops.images.ImageFormat;
 import org.platformlayer.ops.instances.ImageFactory;
-import org.platformlayer.ops.networks.AddressModel;
 import org.platformlayer.ops.pool.NetworkAddressPoolAssignment;
 import org.platformlayer.ops.supervisor.StandardService;
 import org.platformlayer.ops.tagger.Tagger;
@@ -44,6 +45,9 @@ public class LxcInstanceController extends OpsTreeBase {
 	public File instanceDir;
 	public String id;
 	public int minimumMemoryMB;
+
+	@Inject
+	DirectCloudUtils directCloudHelpers;
 
 	@Inject
 	PlatformLayerClient platformLayer;
@@ -87,18 +91,22 @@ public class LxcInstanceController extends OpsTreeBase {
 		instance.addChild(ManagedDirectory.build(getInstanceDir(), "700"));
 
 		// TODO: If we're not going to assign an IPV4 redirect, we might not need this
-		final NetworkAddressPoolAssignment address4;
+		final Provider<AddressModel> address4;
 		{
-			address4 = instance.addChild(NetworkAddressPoolAssignment.class);
-			address4.holder = getInstanceDir();
-			address4.poolProvider = DirectCloudUtils.getPrivateAddressPool4();
+			NetworkAddressPoolAssignment provider = instance.addChild(NetworkAddressPoolAssignment.class);
+			provider.holder = model.getKey();
+			provider.poolProvider = DirectCloudUtils.getPrivateAddressPool4();
+
+			address4 = provider;
 		}
 
-		final NetworkAddressPoolAssignment address6;
+		final Provider<AddressModel> address6;
 		{
-			address6 = instance.addChild(NetworkAddressPoolAssignment.class);
-			address6.holder = getInstanceDir();
-			address6.poolProvider = DirectCloudUtils.getAddressPool6();
+			NetworkAddressPoolAssignment provider = instance.addChild(NetworkAddressPoolAssignment.class);
+			provider.holder = model.getKey();
+			provider.poolProvider = directCloudHelpers.getAddressPool6();
+
+			address6 = provider;
 		}
 
 		// {

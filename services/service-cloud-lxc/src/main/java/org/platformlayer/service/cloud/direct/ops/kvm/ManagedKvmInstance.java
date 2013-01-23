@@ -8,12 +8,12 @@ import java.util.Map;
 
 import javax.inject.Provider;
 
+import org.platformlayer.core.model.AddressModel;
 import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.TemplatedFile;
-import org.platformlayer.ops.networks.AddressModel;
 import org.platformlayer.ops.supervisor.StandardService;
 import org.platformlayer.ops.templates.TemplateDataSource;
 import org.platformlayer.ops.tree.OpsTreeBase;

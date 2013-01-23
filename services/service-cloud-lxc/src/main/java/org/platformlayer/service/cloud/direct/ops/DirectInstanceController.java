@@ -67,6 +67,7 @@ public class DirectInstanceController extends OpsTreeBase {
 			String id = model.getId();
 			kvm.id = id;
 			kvm.instanceDir = new File(DirectCloudUtils.KVM_BASE_DIR, id);
+			kvm.owner = model.getKey();
 
 			kvm.minimumMemoryMB = model.minimumMemoryMb;
 			kvm.recipeId = model.recipeId;

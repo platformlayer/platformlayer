@@ -8,11 +8,22 @@ import com.google.common.collect.Lists;
 public class VncPortPoolBuilder extends InetSocketAddressPoolBuilder {
 
 	@Override
-	protected Iterable<InetSocketAddress> getItems() {
-		List<InetSocketAddress> sockets = Lists.newArrayList();
+	public Iterable<String> getItems() {
+		List<String> sockets = Lists.newArrayList();
 		for (int port = 5900; port <= 5999; port++) {
-			sockets.add(new InetSocketAddress(port));
+			sockets.add("" + port);
 		}
 		return sockets;
+	}
+
+	@Override
+	public String toKey(InetSocketAddress item) {
+		return String.valueOf(item.getPort());
+	}
+
+	@Override
+	public InetSocketAddress toItem(String key) {
+		int port = Integer.parseInt(key);
+		return new InetSocketAddress(port);
 	}
 }

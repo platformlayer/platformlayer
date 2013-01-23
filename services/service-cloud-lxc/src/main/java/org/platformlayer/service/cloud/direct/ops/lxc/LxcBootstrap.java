@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
+import org.platformlayer.core.model.AddressModel;
 import org.platformlayer.ops.ChrootOpsTarget;
 import org.platformlayer.ops.FileUpload;
 import org.platformlayer.ops.Handler;
@@ -15,7 +16,6 @@ import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.helpers.TemplateHelpers;
-import org.platformlayer.ops.networks.AddressModel;
 import org.platformlayer.ops.networks.InterfaceModel;
 import org.platformlayer.ops.ssh.SshAuthorizedKey;
 import org.platformlayer.service.cloud.direct.model.DirectHost;

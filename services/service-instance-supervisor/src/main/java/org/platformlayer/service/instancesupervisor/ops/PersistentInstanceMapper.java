@@ -150,7 +150,7 @@ public class PersistentInstanceMapper extends OpsTreeBase {
 
 					TagChanges changeTags = new TagChanges();
 					changeTags.addTags.add(Tag.INSTANCE_KEY.build(machine.getKey()));
-					platformLayer.changeTags(model.getKey(), changeTags);
+					platformLayer.changeTags(model.getKey(), changeTags, null);
 					return changeTags;
 				}
 			};

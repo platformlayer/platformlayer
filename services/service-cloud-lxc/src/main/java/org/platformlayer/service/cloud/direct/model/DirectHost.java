@@ -24,4 +24,6 @@ public class DirectHost extends ItemBase {
 
 	public String bridge = "br100";
 	public String publicInterface = "eth0";
+
+	public PlatformLayerKey network;
 }

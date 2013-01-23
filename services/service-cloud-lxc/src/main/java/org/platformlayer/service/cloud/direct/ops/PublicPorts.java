@@ -4,11 +4,11 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.List;
-import java.util.Properties;
 
 import javax.inject.Inject;
 
 import org.platformlayer.InetAddressChooser;
+import org.platformlayer.core.model.AddressModel;
 import org.platformlayer.core.model.EndpointInfo;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.Tag;
@@ -25,7 +25,6 @@ import org.platformlayer.ops.instances.ImageFactory;
 import org.platformlayer.ops.machines.InetAddressUtils;
 import org.platformlayer.ops.machines.PlatformLayerCloudMachine;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
-import org.platformlayer.ops.pool.DelegatingResourcePool;
 import org.platformlayer.ops.pool.ResourcePool;
 import org.platformlayer.ops.pool.SocketAddressPoolAssignment;
 import org.platformlayer.ops.tagger.Tagger;
@@ -36,7 +35,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
-import com.google.inject.Provider;
 
 public class PublicPorts extends OpsTreeBase {
 
@@ -69,6 +67,9 @@ public class PublicPorts extends OpsTreeBase {
 	@Inject
 	ServiceContext service;
 
+	@Inject
+	DirectCloudUtils directCloudHelpers;
+
 	@Override
 	protected void addChildren() throws OpsException {
 		final CloudInstanceMapper cloudHost;
@@ -82,22 +83,15 @@ public class PublicPorts extends OpsTreeBase {
 		final SocketAddressPoolAssignment assignPublicAddress;
 		{
 			assignPublicAddress = cloudHost.addChild(SocketAddressPoolAssignment.class);
-			assignPublicAddress.holder = DirectCloudUtils.getInstanceDir(backendItem);
+			assignPublicAddress.holder = backendItem.getKey();
 
 			if (Objects.equal(transport, Transport.Ipv6)) {
-				assignPublicAddress.poolProvider = new Provider<ResourcePool>() {
+				assignPublicAddress.poolProvider = new OpsProvider<ResourcePool<InetSocketAddress>>() {
 					@Override
-					public ResourcePool get() {
-						final ResourcePool pool = DirectCloudUtils.getAddressPool6().get();
+					public ResourcePool<InetSocketAddress> get() throws OpsException {
+						final ResourcePool<AddressModel> pool = directCloudHelpers.getAddressPool6().get();
 
-						return new DelegatingResourcePool(pool) {
-							@Override
-							public Properties readProperties(String key) throws OpsException {
-								Properties properties = super.readProperties(key);
-								properties.setProperty("port", "" + publicPort);
-								return properties;
-							}
-						};
+						return new AssignPortToAddressPool(pool, publicPort);
 					}
 				};
 			} else {
@@ -169,5 +163,4 @@ public class PublicPorts extends OpsTreeBase {
 			}
 		}
 	}
-
 }

@@ -3,27 +3,24 @@ package org.platformlayer.ops.pool;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
+import java.util.Set;
 
+import org.platformlayer.ops.FileUpload;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
-import org.platformlayer.ops.images.ConfigMap;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
-public class StaticFilesystemBackedPool extends FilesystemBackedPool {
+public class StaticFilesystemBackedPool<T> extends FilesystemBackedPool<T> {
 	protected final File resourceDir;
+	private final Class<T> clazz;
 
-	public StaticFilesystemBackedPool(PoolBuilder poolBuilder, OpsTarget target, File resourceDir, File assignedDir) {
-		super(poolBuilder, target, assignedDir);
+	public StaticFilesystemBackedPool(Class<T> clazz, PoolBuilder<T> adapter, OpsTarget target, File resourceDir,
+			File assignedDir) {
+		super(adapter, target, assignedDir);
+		this.clazz = clazz;
 		this.resourceDir = resourceDir;
-	}
-
-	@Override
-	public Properties readProperties(String key) throws OpsException {
-		File path = new File(resourceDir, key);
-		Properties properties = ConfigMap.read(target, path);
-		return properties;
 	}
 
 	@Override
@@ -48,8 +45,82 @@ public class StaticFilesystemBackedPool extends FilesystemBackedPool {
 		target.mkdir(assignedDir);
 	}
 
-	public boolean addResource(String key, Properties properties) throws OpsException {
+	private boolean addResource(String key) throws OpsException {
+		// JaxbHelper jaxb = JaxbHelper.get(item.getClass());
+		//
+		// String xml;
+		// try {
+		// xml = jaxb.marshal(item, true);
+		// } catch (JAXBException e) {
+		// throw new OpsException("Error serializing as XML", e);
+		// }
+
+		String contents = "";
 		File path = new File(resourceDir, key);
-		return ConfigMap.write(target, path, properties);
+		if (target.getFilesystemInfoFile(path) != null) {
+			return false;
+		}
+
+		FileUpload.upload(target, path, contents);
+
+		return true;
 	}
+
+	@Override
+	protected T read(String key) throws OpsException {
+		return adapter.toItem(key);
+		//
+		// JaxbHelper jaxb = JaxbHelper.get(clazz);
+		//
+		// String xml;
+		// try {
+		// File path = new File(resourceDir, key);
+		// xml = target.readTextFile(path);
+		// if (xml == null) {
+		// return null;
+		// }
+		//
+		// return (T) jaxb.unmarshal(xml);
+		// } catch (JAXBException e) {
+		// throw new OpsException("Error reading XML from pool", e);
+		// }
+	}
+
+	protected int batchAddCount = 16;
+
+	@Override
+	protected void extendPool() throws OpsException {
+		ensureCreated();
+
+		Set<String> resourceKeys = Sets.newHashSet(listResourceKeys());
+
+		int added = 0;
+
+		for (String key : adapter.getItems()) {
+			if (resourceKeys.contains(key)) {
+				continue;
+			}
+
+			// Properties properties = buildProperties(item);
+
+			if (!addResource(key)) {
+				// Presumably already exists
+				log.warn("Unexpectedly did not add resource: " + key);
+				continue;
+			}
+
+			added++;
+
+			if (added >= batchAddCount) {
+				break;
+			}
+		}
+
+		if (added != 0) {
+			log.info("Added " + added + " items to pool");
+		} else {
+			log.warn("Adapter did not add any items to pool");
+		}
+	}
+
 }

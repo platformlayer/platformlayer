@@ -1,9 +1,9 @@
 package org.platformlayer.ops.pool;
 
-import org.platformlayer.ops.OpsException;
+public interface PoolBuilder<T> {
+	String toKey(T item);
 
-public interface PoolBuilder {
+	Iterable<String> getItems();
 
-	int extendPool(FilesystemBackedPool filesystemBackedPool) throws OpsException;
-
+	T toItem(String key);
 }

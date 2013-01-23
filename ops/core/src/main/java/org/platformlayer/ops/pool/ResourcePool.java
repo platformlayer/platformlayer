@@ -1,18 +1,16 @@
 package org.platformlayer.ops.pool;
 
-import java.io.File;
-import java.util.Properties;
-
+import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.OpsException;
 
-public interface ResourcePool {
+public interface ResourcePool<T> {
 
-	Properties readProperties(String key) throws OpsException;
+	// boolean addResource(T item) throws OpsException;
 
-	String assign(File owner, boolean required) throws OpsException;
+	T assign(PlatformLayerKey owner, boolean required) throws OpsException;
 
-	String findAssigned(File holder) throws OpsException;
+	T findAssigned(PlatformLayerKey holder) throws OpsException;
 
-	void release(File holder, String key) throws OpsException;
+	void release(PlatformLayerKey holder, T item) throws OpsException;
 
 }

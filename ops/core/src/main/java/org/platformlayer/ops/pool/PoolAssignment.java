@@ -1,24 +1,23 @@
 package org.platformlayer.ops.pool;
 
-import java.io.File;
-import java.util.Properties;
-
 import javax.inject.Provider;
 
+import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.OpsProvider;
 
 public abstract class PoolAssignment<T> implements Provider<T> {
-	public Provider<ResourcePool> poolProvider;
+	public OpsProvider<ResourcePool<T>> poolProvider;
 
-	public File holder;
+	public PlatformLayerKey holder;
 
-	private ResourcePool cachedPool;
+	private ResourcePool<T> cachedPool;
 
-	private Properties assignedProperties;
+	private T assignedResource;
 
-	private ResourcePool getPool() {
+	private ResourcePool<T> getPool() throws OpsException {
 		if (cachedPool == null) {
 			cachedPool = poolProvider.get();
 		}
@@ -27,32 +26,25 @@ public abstract class PoolAssignment<T> implements Provider<T> {
 
 	@Handler
 	public void handler() throws OpsException {
-		ResourcePool pool = getPool();
+		ResourcePool<T> pool = getPool();
 
 		if (OpsContext.isConfigure()) {
-			if (assignedProperties == null) {
-				String key = pool.assign(holder, true);
-				assignedProperties = pool.readProperties(key);
+			if (assignedResource == null) {
+				assignedResource = pool.assign(holder, true);
 			}
 		}
 
 		if (OpsContext.isDelete()) {
-			String key = pool.findAssigned(holder);
-			if (key != null) {
-				pool.release(holder, key);
-				assignedProperties = null;
+			T assigned = pool.findAssigned(holder);
+			if (assigned != null) {
+				pool.release(holder, assigned);
+				assignedResource = null;
 			}
 		}
 	}
 
-	public Properties getProperties() {
-		return assignedProperties;
-	}
-
 	@Override
 	public T get() {
-		return map(getProperties());
+		return assignedResource;
 	}
-
-	protected abstract T map(Properties properties);
 }

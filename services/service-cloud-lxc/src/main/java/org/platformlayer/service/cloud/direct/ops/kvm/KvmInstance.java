@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.inject.Inject;
+
+import org.platformlayer.core.model.AddressModel;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
@@ -18,7 +21,6 @@ import org.platformlayer.ops.OpsProvider;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.filesystem.ManagedDirectory;
 import org.platformlayer.ops.images.ImageFormat;
-import org.platformlayer.ops.networks.AddressModel;
 import org.platformlayer.ops.networks.InterfaceModel;
 import org.platformlayer.ops.pool.NetworkAddressPoolAssignment;
 import org.platformlayer.ops.pool.SocketAddressPoolAssignment;
@@ -40,6 +42,8 @@ import com.google.common.collect.Maps;
 import com.google.inject.Provider;
 
 public class KvmInstance extends OpsTreeBase {
+	public PlatformLayerKey owner;
+
 	public File instanceDir;
 	public String id;
 	public int minimumMemoryMB;
@@ -47,6 +51,9 @@ public class KvmInstance extends OpsTreeBase {
 	public PublicKey sshPublicKey;
 
 	// public MachineCreationRequest request;
+
+	@Inject
+	DirectCloudUtils directCloudHelpers;
 
 	private File getInstanceDir() {
 		return instanceDir;
@@ -82,15 +89,15 @@ public class KvmInstance extends OpsTreeBase {
 		final NetworkAddressPoolAssignment address4;
 		{
 			address4 = instance.addChild(NetworkAddressPoolAssignment.class);
-			address4.holder = getInstanceDir();
+			address4.holder = owner;
 			address4.poolProvider = DirectCloudUtils.getPrivateAddressPool4();
 		}
 
 		final NetworkAddressPoolAssignment address6;
 		{
 			address6 = instance.addChild(NetworkAddressPoolAssignment.class);
-			address6.holder = getInstanceDir();
-			address6.poolProvider = DirectCloudUtils.getAddressPool6();
+			address6.holder = owner;
+			address6.poolProvider = directCloudHelpers.getAddressPool6();
 		}
 
 		{
@@ -109,7 +116,7 @@ public class KvmInstance extends OpsTreeBase {
 		final SocketAddressPoolAssignment assignMonitorPort;
 		{
 			assignMonitorPort = injected(SocketAddressPoolAssignment.class);
-			assignMonitorPort.holder = getInstanceDir();
+			assignMonitorPort.holder = owner;
 			assignMonitorPort.poolProvider = DirectCloudUtils.getKvmMonitorPortPool();
 			instance.addChild(assignMonitorPort);
 		}
@@ -117,7 +124,7 @@ public class KvmInstance extends OpsTreeBase {
 		final SocketAddressPoolAssignment assignVncPort;
 		{
 			assignVncPort = injected(SocketAddressPoolAssignment.class);
-			assignVncPort.holder = getInstanceDir();
+			assignVncPort.holder = owner;
 			assignVncPort.poolProvider = DirectCloudUtils.getVncPortPool();
 			instance.addChild(assignVncPort);
 		}

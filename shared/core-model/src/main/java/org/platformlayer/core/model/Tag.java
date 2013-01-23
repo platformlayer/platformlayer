@@ -23,6 +23,8 @@ public class Tag /* implements IsTag */{
 	public static final String ASSIGNED = "assigned";
 	public static final KeyTagKey ASSIGNED_TO = new KeyTagKey("assigned_to");
 
+	public static final StringTagKey POOL_ASSIGNMENT = new StringTagKey("poolmap");
+
 	public static final StringTagKey IMAGE_ID = new StringTagKey("imageid");
 	public static final StringTagKey PUBLIC_KEY_SIG = new StringTagKey("publickeysig");
 

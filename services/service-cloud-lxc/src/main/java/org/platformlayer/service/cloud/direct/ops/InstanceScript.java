@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.inject.Provider;
 
+import org.platformlayer.core.model.AddressModel;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsContext;
@@ -12,7 +13,6 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsProvider;
 import org.platformlayer.ops.filesystem.SyntheticFile;
 import org.platformlayer.ops.machines.InetAddressUtils;
-import org.platformlayer.ops.networks.AddressModel;
 import org.platformlayer.ops.networks.ScriptBuilder;
 import org.platformlayer.ops.supervisor.StandardService;
 import org.platformlayer.service.cloud.direct.model.DirectHost;

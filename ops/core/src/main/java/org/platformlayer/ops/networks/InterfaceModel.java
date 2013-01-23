@@ -2,6 +2,8 @@ package org.platformlayer.ops.networks;
 
 import java.util.List;
 
+import org.platformlayer.core.model.AddressModel;
+
 import com.google.common.collect.Lists;
 
 public class InterfaceModel {
