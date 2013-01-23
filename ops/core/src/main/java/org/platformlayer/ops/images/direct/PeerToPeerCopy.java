@@ -84,6 +84,11 @@ public class PeerToPeerCopy {
 				Callable<ProcessExecution> pushFile = new Callable<ProcessExecution>() {
 					@Override
 					public ProcessExecution call() throws Exception {
+						// TODO: This is actually _really_ problematic because pkill kills proceses in guests also...
+						// // TODO: Check no concurrent socats?? Move to a better system??
+						// Command killExistingSocats = Command.build("pkill socat || true");
+						// src.executeCommand(killExistingSocats);
+
 						// TODO: Secure this better (using host address is probably sufficient, but then we need a full
 						// network map to know which IP to use)
 						// Command sendCommand = Command.build("socat -u OPEN:{0},rdonly TCP4-LISTEN:{1},range={2}",
@@ -97,6 +102,7 @@ public class PeerToPeerCopy {
 				Callable<ProcessExecution> listenFile = new Callable<ProcessExecution>() {
 					@Override
 					public ProcessExecution call() throws Exception {
+						// TODO: This is actually _really_ problematic because pkill kills proceses in guests also...
 						// TODO: Check no concurrent socats?? Move to a better system??
 						Command killExistingSocats = Command.build("pkill socat || true");
 						dest.executeCommand(killExistingSocats);
@@ -106,7 +112,7 @@ public class PeerToPeerCopy {
 									toSocatListen(channel.src, listenPort), tempDest);
 							return dest.executeCommand(listenCommand.setTimeout(TimeSpan.TEN_MINUTES));
 						} catch (ProcessExecutionException e) {
-							log.warn("Error running listen process", e);
+							log.warn("Error running listen process for P2P copy: " + channel, e);
 							throw new OpsException("Error running listen process", e);
 						}
 					}

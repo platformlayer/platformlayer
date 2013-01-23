@@ -12,4 +12,9 @@ public class InetAddressPair {
 		this.dest = dest;
 	}
 
+	@Override
+	public String toString() {
+		return "InetAddressPair [" + src + " => " + dest + "]";
+	}
+
 }
