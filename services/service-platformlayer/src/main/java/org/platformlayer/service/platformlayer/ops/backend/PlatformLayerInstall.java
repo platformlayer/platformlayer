@@ -38,6 +38,7 @@ public class PlatformLayerInstall extends StandardServiceInstall {
 			download.specifier = "gwt-platformlayerplus:production:gwt-platformlayer-1.0-SNAPSHOT.war";
 		}
 
+		addService("service-extensions");
 		addService("service-domains");
 	}
 
