@@ -9,6 +9,8 @@ import org.platformlayer.common.KeyTagKey;
 import org.platformlayer.common.StringTagKey;
 import org.platformlayer.common.UuidTagKey;
 
+import com.google.common.base.Function;
+
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Tag /* implements IsTag */{
 	public String key;
@@ -41,6 +43,20 @@ public class Tag /* implements IsTag */{
 	public static final UuidTagKey UUID = new UuidTagKey("uuid");
 
 	public static final StringTagKey SSH_KEY = new StringTagKey("sshkey");
+
+	public static final Function<Tag, String> GET_TAG_KEY = new Function<Tag, String>() {
+		@Override
+		public String apply(Tag input) {
+			return input.getKey();
+		}
+	};
+
+	public static final Function<Tag, String> GET_TAG_VALUE = new Function<Tag, String>() {
+		@Override
+		public String apply(Tag input) {
+			return input.getValue();
+		}
+	};
 
 	// public static final String IMAGE_TYPE = "platformlayer.org__type";
 
