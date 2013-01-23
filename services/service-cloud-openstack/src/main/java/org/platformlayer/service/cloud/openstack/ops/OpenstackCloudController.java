@@ -1,13 +1,11 @@
 package org.platformlayer.service.cloud.openstack.ops;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.inject.Inject;
 
 import org.openstack.client.OpenstackCredentials;
 import org.platformlayer.cas.CasStoreInfo;
-import org.platformlayer.core.model.HostPolicyTag;
 import org.platformlayer.core.model.InstanceBase;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PublicEndpointBase;
@@ -15,6 +13,7 @@ import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.MachineCreationRequest;
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.PolicyChecker;
 import org.platformlayer.ops.cas.CasStoreProvider;
 import org.platformlayer.ops.images.ImageStore;
 import org.platformlayer.ops.machines.MachineProvider;
@@ -26,8 +25,6 @@ import org.platformlayer.service.cloud.openstack.model.OpenstackPublicEndpoint;
 import org.platformlayer.service.cloud.openstack.ops.openstack.OpenstackCloudContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Joiner;
 
 public class OpenstackCloudController extends OpsTreeBase implements MachineProvider, CasStoreProvider {
 
@@ -94,9 +91,7 @@ public class OpenstackCloudController extends OpsTreeBase implements MachineProv
 
 	@Override
 	public float getPrice(MachineCreationRequest request) {
-		List<String> unsatisfied = HostPolicyTag.satisfy(request.hostPolicy, model.getTags());
-		if (!unsatisfied.isEmpty()) {
-			log.info("Cannot satisfy requirements: " + Joiner.on(",").join(unsatisfied));
+		if (!PolicyChecker.isSatisfied(request.hostPolicy, model.getTags())) {
 			return Float.POSITIVE_INFINITY;
 		}
 
