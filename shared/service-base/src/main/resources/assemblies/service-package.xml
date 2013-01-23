@@ -119,6 +119,12 @@
                 <exclude>*:jsr305:*</exclude>
                 <exclude>*:hibernate-validator:*</exclude>
                 <exclude>*:jboss-logging:*</exclude>
+
+                <exclude>*:fathomdb-config:*</exclude>
+                <exclude>*:guice-servlet:*</exclude>
+                <exclude>*:gwt-bootstrap:*</exclude>
+                <exclude>*:gwt-jquery:*</exclude>
+                <exclude>*:gwt-reboot:*</exclude>
             </excludes>
         </dependencySet>
     </dependencySets>
