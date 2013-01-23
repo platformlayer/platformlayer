@@ -44,7 +44,7 @@ public class DeleteTag extends PlatformLayerCommandRunnerBase {
 			tagChanges.removeTags.add(tag);
 		}
 
-		Tags newTags = client.changeTags(key, tagChanges);
+		Tags newTags = client.changeTags(key, tagChanges, null);
 		return newTags;
 	}
 }

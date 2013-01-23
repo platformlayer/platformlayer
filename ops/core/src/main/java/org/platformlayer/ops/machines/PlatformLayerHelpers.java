@@ -154,4 +154,9 @@ public class PlatformLayerHelpers extends TypedPlatformLayerClient {
 		}
 	}
 
+	public boolean compareAndSwapTag(PlatformLayerKey key, Tag assignedTag, Object object) {
+		throw new UnsupportedOperationException();
+
+	}
+
 }

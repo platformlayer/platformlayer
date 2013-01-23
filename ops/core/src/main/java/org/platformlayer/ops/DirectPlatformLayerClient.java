@@ -119,11 +119,12 @@ public class DirectPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
-	public Tags changeTags(PlatformLayerKey key, TagChanges tagChanges) throws PlatformLayerClientException {
+	public Tags changeTags(PlatformLayerKey key, TagChanges tagChanges, Long ifVersion)
+			throws PlatformLayerClientException {
 		ModelClass<?> modelClass = getModelClass(key.getServiceType(), key.getItemType());
 
 		try {
-			return itemRepository.changeTags(modelClass, getProject(), key.getItemId(), tagChanges);
+			return itemRepository.changeTags(modelClass, getProject(), key.getItemId(), tagChanges, ifVersion);
 		} catch (RepositoryException e) {
 			throw new PlatformLayerClientException("Error changing tags", e);
 		}

@@ -254,8 +254,13 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 	// }
 
 	@Override
-	public Tags changeTags(PlatformLayerKey key, TagChanges tagChanges) throws PlatformLayerClientException {
-		return changeTags(key.getServiceType(), key.getItemType(), key.getItemId(), tagChanges);
+	public Tags changeTags(PlatformLayerKey key, TagChanges tagChanges, Long ifVersion)
+			throws PlatformLayerClientException {
+		if (ifVersion != null) {
+			throw new UnsupportedOperationException();
+		} else {
+			return changeTags(key.getServiceType(), key.getItemType(), key.getItemId(), tagChanges);
+		}
 	}
 
 	public Tags changeTags(ServiceType serviceType, ItemType itemType, ManagedItemId id, TagChanges tagChanges)

@@ -1,5 +1,6 @@
 package org.platformlayer.ops;
 
+
 public abstract class OpsProvider<T> {
 
 	public abstract T get() throws OpsException;

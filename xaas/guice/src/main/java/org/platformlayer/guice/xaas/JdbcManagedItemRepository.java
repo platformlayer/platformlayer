@@ -702,8 +702,8 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 
 	@Override
 	@JdbcTransaction
-	public Tags changeTags(ModelClass<?> modelClass, ProjectId project, ManagedItemId itemKey, TagChanges changeTags)
-			throws RepositoryException {
+	public Tags changeTags(ModelClass<?> modelClass, ProjectId project, ManagedItemId itemKey, TagChanges changeTags,
+			Long ifVersion) throws RepositoryException {
 		DbHelper db = new DbHelper(modelClass, project);
 
 		try {
@@ -714,6 +714,10 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 			}
 
 			int itemId = rs.id;
+
+			if (ifVersion != null) {
+				log.warn("CAS version swapping not implemented");
+			}
 
 			Tags tags = new Tags();
 			mapToTags(db.listTagsForItem(itemId), tags);

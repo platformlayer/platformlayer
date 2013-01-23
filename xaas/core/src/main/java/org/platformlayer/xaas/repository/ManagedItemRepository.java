@@ -22,8 +22,8 @@ public interface ManagedItemRepository {
 	ItemBase getManagedItem(PlatformLayerKey key, boolean fetchTags, SecretProvider secretProvider)
 			throws RepositoryException;
 
-	Tags changeTags(ModelClass<?> modelClass, ProjectId projectId, ManagedItemId itemId, TagChanges changeTags)
-			throws RepositoryException;
+	Tags changeTags(ModelClass<?> modelClass, ProjectId projectId, ManagedItemId itemId, TagChanges changeTags,
+			Long ifVersion) throws RepositoryException;
 
 	<T extends ItemBase> T createManagedItem(ProjectId project, T item) throws RepositoryException;
 

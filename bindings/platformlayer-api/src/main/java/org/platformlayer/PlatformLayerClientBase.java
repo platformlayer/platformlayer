@@ -18,6 +18,8 @@ import org.platformlayer.core.model.ManagedItemCollection;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ServiceInfo;
 import org.platformlayer.core.model.Tag;
+import org.platformlayer.core.model.TagChanges;
+import org.platformlayer.core.model.Tags;
 import org.platformlayer.ids.FederationKey;
 import org.platformlayer.ids.ItemType;
 import org.platformlayer.ids.ManagedItemId;
@@ -262,6 +264,10 @@ public abstract class PlatformLayerClientBase implements PlatformLayerClient {
 		}
 
 		return promoteToTyped(itemUntyped);
+	}
+
+	public Tags changeTags(PlatformLayerKey key, TagChanges tagChanges) throws PlatformLayerClientException {
+		return changeTags(key, tagChanges, null);
 	}
 
 }

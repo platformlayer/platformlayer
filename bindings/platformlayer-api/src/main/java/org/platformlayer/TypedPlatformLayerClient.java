@@ -204,9 +204,14 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 		}
 	}
 
-	@Override
 	public Tags changeTags(PlatformLayerKey key, TagChanges tagChanges) throws PlatformLayerClientException {
-		return platformLayerClient.changeTags(key, tagChanges);
+		return changeTags(key, tagChanges, null);
+	}
+
+	@Override
+	public Tags changeTags(PlatformLayerKey key, TagChanges tagChanges, Long ifVersion)
+			throws PlatformLayerClientException {
+		return platformLayerClient.changeTags(key, tagChanges, ifVersion);
 	}
 
 	@Override

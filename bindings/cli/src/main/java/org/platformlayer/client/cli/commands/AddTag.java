@@ -34,7 +34,7 @@ public class AddTag extends PlatformLayerCommandRunnerBase {
 		Tag tag = Tag.build(tagKey, tagValue);
 		tagChanges.addTags.add(tag);
 
-		return client.changeTags(resolved, tagChanges);
+		return client.changeTags(resolved, tagChanges, null);
 	}
 
 	@Override

@@ -70,7 +70,8 @@ public interface PlatformLayerClient {
 	public List<ItemBase> listChildrenTyped(PlatformLayerKey parent) throws OpsException;
 
 	// Tags
-	public Tags changeTags(PlatformLayerKey key, TagChanges tagChanges) throws PlatformLayerClientException;
+	public Tags changeTags(PlatformLayerKey key, TagChanges tagChanges, Long ifVersion)
+			throws PlatformLayerClientException;
 
 	// Jobs
 	public JobDataList listJobs() throws PlatformLayerClientException;

@@ -495,9 +495,10 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
-	public Tags changeTags(PlatformLayerKey key, TagChanges tagChanges) throws PlatformLayerClientException {
+	public Tags changeTags(PlatformLayerKey key, TagChanges tagChanges, Long ifVersion)
+			throws PlatformLayerClientException {
 		MappedPlatformLayerKey mapped = mapToChild(key);
-		return mapped.child.client.changeTags(mapped.key, tagChanges);
+		return mapped.child.client.changeTags(mapped.key, tagChanges, ifVersion);
 	}
 
 	@Override

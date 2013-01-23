@@ -2,7 +2,6 @@ package org.platformlayer.ops.tagger;
 
 import javax.inject.Inject;
 
-import org.slf4j.*;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
@@ -12,6 +11,8 @@ import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Tagger {
 	static final Logger log = LoggerFactory.getLogger(Tagger.class);
@@ -45,7 +46,7 @@ public class Tagger {
 					tagChanges.removeTags = x;
 				}
 
-				platformLayer.changeTags(platformLayerKey, tagChanges);
+				platformLayer.changeTags(platformLayerKey, tagChanges, null);
 			}
 		}
 	}
