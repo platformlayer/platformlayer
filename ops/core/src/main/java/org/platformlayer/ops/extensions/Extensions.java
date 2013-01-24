@@ -3,6 +3,8 @@ package org.platformlayer.ops.extensions;
 import java.util.List;
 
 import org.platformlayer.jdbc.simplejpa.ResultSetMappersProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fathomdb.Configuration;
 import com.google.common.base.Splitter;
@@ -14,6 +16,7 @@ import com.google.inject.Module;
 import com.google.inject.util.Modules;
 
 public class Extensions {
+	private static final Logger log = LoggerFactory.getLogger(Extensions.class);
 
 	private final Configuration configuration;
 
@@ -37,6 +40,8 @@ public class Extensions {
 		String extensionList = configuration.find("extensions");
 		if (!Strings.isNullOrEmpty(extensionList)) {
 			for (String extension : Splitter.on(',').split(extensionList)) {
+				log.info("Using extension: " + extension);
+
 				Class<? extends ExtensionModule> extensionClass;
 				try {
 					if (!extension.contains(".")) {
