@@ -10,13 +10,13 @@ import org.platformlayer.auth.AuthenticationToken;
 import org.platformlayer.auth.AuthenticationTokenValidator;
 import org.platformlayer.auth.PlatformlayerAuthenticationClientException;
 import org.platformlayer.core.model.PlatformLayerKey;
-import org.platformlayer.crypto.EncryptionStore;
 import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.ops.MultitenantConfiguration;
 import org.platformlayer.ops.OpsException;
 
 import com.fathomdb.Configuration;
 import com.fathomdb.crypto.CertificateAndKey;
+import com.fathomdb.crypto.EncryptionStore;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 

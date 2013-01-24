@@ -31,7 +31,6 @@ import org.apache.http.impl.client.DecompressingHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.util.EntityUtils;
-import org.platformlayer.crypto.EncryptionStore;
 import org.platformlayer.http.SslHelpers;
 import org.platformlayer.metrics.MetricTreeObject;
 import org.platformlayer.metrics.model.MetricQuery;
@@ -42,6 +41,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fathomdb.Configuration;
 import com.fathomdb.crypto.CertificateAndKey;
+import com.fathomdb.crypto.EncryptionStore;
 import com.fathomdb.crypto.SimpleClientCertificateKeyManager;
 import com.fathomdb.crypto.ssl.PublicKeyTrustManager;
 import com.google.common.base.Splitter;

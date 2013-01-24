@@ -20,10 +20,10 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
 import org.platformlayer.crypto.AcceptAllClientCertificatesTrustManager;
-import org.platformlayer.crypto.EncryptionStore;
 import org.platformlayer.ops.OpsException;
 
 import com.fathomdb.crypto.CertificateAndKey;
+import com.fathomdb.crypto.EncryptionStore;
 import com.fathomdb.crypto.KeyStoreUtils;
 import com.google.inject.Inject;
 import com.google.inject.Injector;

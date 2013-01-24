@@ -4,9 +4,9 @@ import org.platformlayer.auth.services.CacheSystem;
 import org.platformlayer.auth.services.TokenService;
 import org.platformlayer.auth.services.crypto.SharedSecretTokenService;
 import org.platformlayer.auth.services.memory.SimpleCacheSystem;
-import org.platformlayer.crypto.EncryptionStore;
 import org.platformlayer.crypto.KeyStoreEncryptionStore;
 
+import com.fathomdb.crypto.EncryptionStore;
 import com.google.inject.AbstractModule;
 
 public class GuiceAuthenticationConfig extends AbstractModule {

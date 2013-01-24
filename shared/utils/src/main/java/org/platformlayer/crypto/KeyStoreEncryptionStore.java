@@ -11,12 +11,12 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.platformlayer.ops.OpsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fathomdb.Configuration;
 import com.fathomdb.crypto.CertificateAndKey;
+import com.fathomdb.crypto.EncryptionStore;
 import com.fathomdb.crypto.KeyStoreUtils;
 import com.fathomdb.crypto.SimpleCertificateAndKey;
 
@@ -44,7 +44,7 @@ public class KeyStoreEncryptionStore implements EncryptionStore {
 	}
 
 	@Override
-	public CertificateAndKey getCertificateAndKey(String alias) throws OpsException {
+	public CertificateAndKey getCertificateAndKey(String alias) {
 		CertificateAndKey certificateAndKey;
 
 		if (alias.startsWith("/")) {
@@ -55,7 +55,7 @@ public class KeyStoreEncryptionStore implements EncryptionStore {
 			try {
 				certificate = CertificateUtils.fromPem(certPath);
 			} catch (IOException e) {
-				throw new OpsException("Error reading certificate: " + certPath, e);
+				throw new IllegalArgumentException("Error reading certificate: " + certPath, e);
 			}
 
 			File keyPath = new File(alias + ".key");
@@ -64,7 +64,7 @@ public class KeyStoreEncryptionStore implements EncryptionStore {
 			try {
 				privateKey = PrivateKeys.fromPem(keyPath);
 			} catch (IOException e) {
-				throw new OpsException("Error reading private key: " + keyPath, e);
+				throw new IllegalArgumentException("Error reading private key: " + keyPath, e);
 			}
 
 			certificateAndKey = new SimpleCertificateAndKey(certificate, privateKey);
@@ -76,12 +76,12 @@ public class KeyStoreEncryptionStore implements EncryptionStore {
 			try {
 				certificateAndKey = KeyStoreUtils.getCertificateAndKey(keyStore, alias, password);
 			} catch (GeneralSecurityException e) {
-				throw new OpsException("Error reading private key", e);
+				throw new IllegalArgumentException("Error reading private key", e);
 			}
 
 			if (certificateAndKey == null) {
 				log.warn("Unable to find private key: " + alias);
-				throw new OpsException("Private key not found");
+				throw new IllegalArgumentException("Private key not found");
 			}
 		}
 
