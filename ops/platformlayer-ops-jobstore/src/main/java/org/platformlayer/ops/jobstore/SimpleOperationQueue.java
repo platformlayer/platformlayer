@@ -124,7 +124,6 @@ public class SimpleOperationQueue extends OperationQueueBase {
 		}
 
 		return ret;
-
 	}
 
 	@Override

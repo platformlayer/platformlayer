@@ -394,6 +394,14 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
+	public JobExecutionList listJobExecutions() throws PlatformLayerClientException {
+		String relativePath = "jobs/runs";
+		JobExecutionList jobs = doRequest("GET", relativePath, JobExecutionList.class, Format.XML, null, null);
+
+		return jobs;
+	}
+
+	@Override
 	public MetricInfoCollection listMetrics(PlatformLayerKey key) throws PlatformLayerClientException {
 		String relativePath = buildRelativePath(key) + "/metrics";
 

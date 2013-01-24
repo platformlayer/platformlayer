@@ -22,12 +22,12 @@ public interface JobRegistry {
 
 	JobData getJob(PlatformLayerKey jobKey) throws OpsException;
 
-	List<JobData> listRecentJobs(ProjectId project);
+	List<JobData> listRecentJobs(ProjectId project) throws OpsException;
 
 	JobData enqueueOperation(Action action, ProjectAuthorization projectAuthorization, PlatformLayerKey itemKey)
 			throws OpsException;
 
 	ActiveJobExecution startSystemJob(ServiceType serviceType, ProjectAuthorization authentication);
 
-	JobExecutionList listRecentExecutions(ProjectId project);
+	JobExecutionList listRecentExecutions(ProjectId project) throws OpsException;
 }

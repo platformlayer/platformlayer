@@ -73,7 +73,7 @@ public class PersistentJobRegistry implements JobRegistry {
 	}
 
 	@Override
-	public List<JobData> listRecentJobs(ProjectId projectId) {
+	public List<JobData> listRecentJobs(ProjectId projectId) throws OpsException {
 		return operationQueue.listRecentJobs(projectId);
 	}
 
@@ -177,7 +177,7 @@ public class PersistentJobRegistry implements JobRegistry {
 	}
 
 	@Override
-	public JobExecutionList listRecentExecutions(ProjectId projectId) {
+	public JobExecutionList listRecentExecutions(ProjectId projectId) throws OpsException {
 		return operationQueue.listRecentExecutions(projectId);
 	}
 }

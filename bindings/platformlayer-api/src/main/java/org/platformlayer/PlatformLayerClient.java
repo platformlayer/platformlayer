@@ -109,4 +109,6 @@ public interface PlatformLayerClient {
 
 	public <T> T findItem(PlatformLayerKey key) throws OpsException;
 
+	public JobExecutionList listJobExecutions() throws PlatformLayerClientException;
+
 }

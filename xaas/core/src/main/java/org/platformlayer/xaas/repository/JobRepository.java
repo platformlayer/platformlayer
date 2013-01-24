@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.platformlayer.RepositoryException;
+import org.platformlayer.TimeSpan;
 import org.platformlayer.common.JobState;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ids.ProjectId;
@@ -26,4 +27,8 @@ public interface JobRepository {
 	String insertExecution(PlatformLayerKey jobKey, Date startedAt) throws RepositoryException;
 
 	String insertJob(ProjectId projectId, JobData jobData) throws RepositoryException;
+
+	List<JobExecutionData> listRecentExecutions(ProjectId projectId, TimeSpan window) throws RepositoryException;
+
+	List<JobData> listRecentJobs(ProjectId projectId, TimeSpan window) throws RepositoryException;
 }

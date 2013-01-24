@@ -17,9 +17,9 @@ import org.platformlayer.ops.log.JobLogger;
 public interface OperationQueue {
 	void submit(ProjectAuthorization auth, JobData jobData) throws OpsException;
 
-	JobExecutionList listRecentExecutions(ProjectId projectId);
+	JobExecutionList listRecentExecutions(ProjectId projectId) throws OpsException;
 
-	List<JobData> listRecentJobs(ProjectId projectId);
+	List<JobData> listRecentJobs(ProjectId projectId) throws OpsException;
 
 	void jobFinished(JobExecutionData jobExecutionData, JobState state, JobLogger logger) throws OpsException;
 

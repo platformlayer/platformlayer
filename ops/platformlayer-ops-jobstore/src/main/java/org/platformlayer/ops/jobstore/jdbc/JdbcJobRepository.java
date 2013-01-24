@@ -15,9 +15,11 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.platformlayer.RepositoryException;
+import org.platformlayer.TimeSpan;
 import org.platformlayer.common.JobState;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.PlatformLayerKey;
+import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.jdbc.DbHelperBase;
 import org.platformlayer.jdbc.JdbcConnection;
@@ -47,6 +49,12 @@ public class JdbcJobRepository implements JobRepository {
 		@Query("SELECT * FROM job_execution WHERE project=? and job_id=?")
 		List<JobExecutionEntity> listExecutions(int projectId, String jobId) throws SQLException;
 
+		@Query("SELECT * FROM job_execution WHERE project=? and started_at >= (current_timestamp - (? * interval '1 second'))")
+		List<JobExecutionEntity> listRecentExecutions(int projectId, long totalSeconds) throws SQLException;
+
+		@Query("SELECT * FROM job WHERE project=? and id IN (SELECT job_id FROM job_execution WHERE project=? and started_at >= (current_timestamp - (? * interval '1 second')))")
+		List<JobEntity> listRecentJobs(int projectId, int projectIdDup, long totalSeconds);
+
 		@Query("SELECT * FROM job WHERE project=? and id=?")
 		JobEntity findJob(int projectId, String jobId) throws SQLException;
 
@@ -62,6 +70,7 @@ public class JdbcJobRepository implements JobRepository {
 
 		@Query(value = Query.AUTOMATIC_INSERT)
 		int insert(JobEntity entity) throws SQLException;
+
 	}
 
 	@Inject
@@ -126,6 +135,48 @@ public class JdbcJobRepository implements JobRepository {
 			List<JobExecutionData> ret = Lists.newArrayList();
 			for (JobExecutionEntity execution : executions) {
 				ret.add(mapFromEntity(execution, jobKey));
+			}
+			return ret;
+		} catch (SQLException e) {
+			throw new RepositoryException("Error listing job executions", e);
+		} finally {
+			db.close();
+		}
+	}
+
+	@Override
+	@JdbcTransaction
+	public List<JobExecutionData> listRecentExecutions(ProjectId projectId, TimeSpan window) throws RepositoryException {
+		DbHelper db = new DbHelper();
+		try {
+			List<JobExecutionEntity> executions = db.queries.listRecentExecutions(db.mapToValue(projectId),
+					window.getTotalSeconds());
+			List<JobExecutionData> ret = Lists.newArrayList();
+			for (JobExecutionEntity execution : executions) {
+				ManagedItemId jobId = new ManagedItemId(execution.jobId);
+				PlatformLayerKey jobKey = JobData.buildKey(projectId, jobId);
+				ret.add(mapFromEntity(execution, jobKey));
+			}
+			return ret;
+		} catch (SQLException e) {
+			throw new RepositoryException("Error listing job executions", e);
+		} finally {
+			db.close();
+		}
+	}
+
+	@Override
+	@JdbcTransaction
+	public List<JobData> listRecentJobs(ProjectId projectId, TimeSpan window) throws RepositoryException {
+		DbHelper db = new DbHelper();
+		try {
+			int project = db.mapToValue(projectId);
+			List<JobEntity> jobs = db.queries.listRecentJobs(project, project, window.getTotalSeconds());
+			List<JobData> ret = Lists.newArrayList();
+			for (JobEntity job : jobs) {
+				ManagedItemId jobId = new ManagedItemId(job.jobId);
+				PlatformLayerKey jobKey = JobData.buildKey(projectId, jobId);
+				ret.add(mapFromEntity(job, jobKey));
 			}
 			return ret;
 		} catch (SQLException e) {
@@ -299,4 +350,5 @@ public class JdbcJobRepository implements JobRepository {
 		}
 
 	}
+
 }

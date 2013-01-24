@@ -13,6 +13,7 @@ import org.platformlayer.common.JobState;
 public class JobExecutionEntity {
 	@Column
 	public int project;
+
 	@Column(name = "job_id")
 	public String jobId;
 

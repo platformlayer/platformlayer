@@ -224,6 +224,11 @@ public class DirectPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
+	public JobExecutionList listJobExecutions() throws PlatformLayerClientException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public <T> List<T> listItems(Class<T> clazz) throws PlatformLayerClientException, OpsException {
 		Class<? extends ItemBase> itemClass = (Class<? extends ItemBase>) clazz;
 		List<T> listItems = (List<T>) itemService.findAll(auth, itemClass);

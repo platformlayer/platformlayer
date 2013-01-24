@@ -50,7 +50,7 @@ public class JobsCollectionResource extends XaasResourceBase {
 
 	@GET
 	@Produces({ XML, JSON })
-	public JobDataList getActiveJobs() {
+	public JobDataList getActiveJobs() throws OpsException {
 		List<JobData> jobList = jobRegistry.listRecentJobs(getProject());
 		JobDataList jobs = JobDataList.create();
 		jobs.jobs = Lists.newArrayList();
