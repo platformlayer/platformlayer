@@ -1,5 +1,7 @@
 package org.platformlayer.client.cli.commands;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.List;
 
@@ -17,7 +19,10 @@ import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 
 import com.fathomdb.cli.CliException;
+import com.fathomdb.io.NoCloseInputStream;
+import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
+import com.google.common.io.ByteStreams;
 
 public class PutItem extends PlatformLayerCommandRunnerBase {
 	@Option(name = "-p", aliases = "--parent", usage = "parent")
@@ -40,6 +45,18 @@ public class PutItem extends PlatformLayerCommandRunnerBase {
 	@Override
 	public Object runCommand() throws PlatformLayerClientException, JSONException {
 		PlatformLayerClient client = getPlatformLayerClient();
+
+		if (json == null) {
+			InputStream stream = new NoCloseInputStream(System.in);
+			byte[] data;
+			try {
+				data = ByteStreams.toByteArray(stream);
+
+				json = new String(data, Charsets.UTF_8);
+			} catch (IOException e) {
+				throw new CliException("Error reading stdin", e);
+			}
+		}
 
 		JSONObject jsonObject = new JSONObject(json);
 
