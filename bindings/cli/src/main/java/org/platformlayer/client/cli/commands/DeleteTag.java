@@ -1,6 +1,7 @@
 package org.platformlayer.client.cli.commands;
 
 import org.kohsuke.args4j.Argument;
+import org.platformlayer.Format;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
 import org.platformlayer.client.cli.model.ItemPath;
@@ -29,7 +30,7 @@ public class DeleteTag extends PlatformLayerCommandRunnerBase {
 		PlatformLayerClient client = getPlatformLayerClient();
 
 		PlatformLayerKey key = path.resolve(getContext());
-		UntypedItem ret = client.getItemUntyped(key);
+		UntypedItem ret = client.getItemUntyped(key, Format.XML);
 
 		TagChanges tagChanges = new TagChanges();
 		for (Tag tag : ret.getTags()) {

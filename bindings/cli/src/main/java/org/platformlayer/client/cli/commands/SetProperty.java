@@ -61,13 +61,15 @@ public class SetProperty extends PlatformLayerCommandRunnerBase {
 			} else {
 				value = new String(data);
 			}
-		} else if (value == null) {
-			throw new CliException("Value is required (if not using -stdin)");
+		} else {
+			if (value == null) {
+				throw new CliException("Value is required (if not using -stdin)");
+			}
 		}
 
 		PlatformLayerKey resolved = path.resolve(getContext());
 
-		UntypedItemXml item = (UntypedItemXml) client.getItemUntyped(resolved);
+		UntypedItemXml item = (UntypedItemXml) client.getItemUntyped(resolved, Format.XML);
 
 		Element element = item.getRoot();
 		List<String> tokens = Lists.newArrayList(Splitter.on(".").split(key));

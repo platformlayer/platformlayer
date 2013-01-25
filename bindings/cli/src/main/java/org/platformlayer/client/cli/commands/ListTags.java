@@ -20,7 +20,7 @@ public class ListTags extends PlatformLayerCommandRunnerBase {
 		PlatformLayerClient client = getPlatformLayerClient();
 
 		PlatformLayerKey key = path.resolve(getContext());
-		UntypedItem ret = client.getItemUntyped(key);
+		UntypedItem ret = client.getItemUntyped(key, getFormat());
 
 		return ret.getTags();
 	}

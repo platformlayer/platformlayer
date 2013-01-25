@@ -248,7 +248,7 @@ public abstract class PlatformLayerClientBase implements PlatformLayerClient {
 
 	@Override
 	public <T> T findItem(PlatformLayerKey key, Class<T> itemClass) throws OpsException {
-		UntypedItem itemUntyped = getItemUntyped(key);
+		UntypedItem itemUntyped = getItemUntyped(key, Format.XML);
 		if (itemUntyped == null) {
 			return null;
 		}
@@ -258,7 +258,7 @@ public abstract class PlatformLayerClientBase implements PlatformLayerClient {
 
 	@Override
 	public <T> T findItem(PlatformLayerKey key) throws OpsException {
-		UntypedItem itemUntyped = getItemUntyped(key);
+		UntypedItem itemUntyped = getItemUntyped(key, Format.XML);
 		if (itemUntyped == null) {
 			return null;
 		}

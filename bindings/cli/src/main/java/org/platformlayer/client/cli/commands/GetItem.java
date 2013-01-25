@@ -28,7 +28,7 @@ public class GetItem extends PlatformLayerCommandRunnerBase {
 		PlatformLayerClient client = getPlatformLayerClient();
 
 		PlatformLayerKey key = path.resolve(getContext());
-		return client.getItemUntyped(key);
+		return client.getItemUntyped(key, getFormat());
 	}
 
 	@Override

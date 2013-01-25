@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 import java.util.List;
 
 import org.kohsuke.args4j.Argument;
+import org.platformlayer.Format;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
 import org.platformlayer.client.cli.model.ItemPath;
@@ -26,7 +27,7 @@ public class GetEndpoint extends PlatformLayerCommandRunnerBase {
 
 		PlatformLayerKey key = path.resolve(getContext());
 
-		UntypedItem untypedItem = client.getItemUntyped(key);
+		UntypedItem untypedItem = client.getItemUntyped(key, Format.XML);
 		List<EndpointInfo> endpoints = EndpointInfo.getEndpoints(untypedItem.getTags());
 
 		return endpoints;

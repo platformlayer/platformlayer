@@ -1,5 +1,6 @@
 package org.platformlayer.client.cli.commands;
 
+import org.platformlayer.Format;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
 import org.platformlayer.client.cli.PlatformLayerCliContext;
@@ -74,5 +75,9 @@ public abstract class PlatformLayerCommandRunnerBase extends CommandRunnerBase {
 		FederationKey host = null;
 		ProjectId project = client.getProject();
 		return new PlatformLayerKey(host, project, new ServiceType(serviceType), new ItemType(itemType), null);
+	}
+
+	protected Format getFormat() {
+		return Format.XML;
 	}
 }

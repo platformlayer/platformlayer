@@ -245,8 +245,12 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 	}
 
 	@Override
+	public UntypedItem getItemUntyped(PlatformLayerKey key, Format format) throws PlatformLayerClientException {
+		return platformLayerClient.getItemUntyped(key, format);
+	}
+
 	public UntypedItem getItemUntyped(PlatformLayerKey key) throws PlatformLayerClientException {
-		return platformLayerClient.getItemUntyped(key);
+		return getItemUntyped(key, Format.XML);
 	}
 
 	@Override

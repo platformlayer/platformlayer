@@ -5,6 +5,7 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 
 import org.kohsuke.args4j.Argument;
+import org.platformlayer.Format;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
 import org.platformlayer.client.cli.model.ItemPath;
@@ -30,7 +31,7 @@ public class SshItem extends PlatformLayerCommandRunnerBase {
 
 		PlatformLayerKey key = path.resolve(getContext());
 
-		UntypedItem untypedItem = client.getItemUntyped(key);
+		UntypedItem untypedItem = client.getItemUntyped(key, Format.XML);
 
 		InetAddress sshAddress = findSshAddress(client, untypedItem);
 

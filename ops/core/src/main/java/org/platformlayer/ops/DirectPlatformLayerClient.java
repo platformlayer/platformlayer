@@ -99,7 +99,7 @@ public class DirectPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
-	public UntypedItem getItemUntyped(PlatformLayerKey key) throws PlatformLayerClientException {
+	public UntypedItem getItemUntyped(PlatformLayerKey key, Format format) throws PlatformLayerClientException {
 		throw new UnsupportedOperationException();
 	}
 

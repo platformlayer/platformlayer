@@ -375,14 +375,27 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
-	public UntypedItem getItemUntyped(PlatformLayerKey key) throws PlatformLayerClientException {
+	public UntypedItem getItemUntyped(PlatformLayerKey key, Format format) throws PlatformLayerClientException {
 		String relativePath = buildRelativePath(key);
 
-		String xml = doRequest("GET", relativePath, String.class, Format.XML, null, null);
+		String data = doRequest("GET", relativePath, String.class, format, null, null);
 
-		UntypedItem item = UntypedItemXml.build(xml);
+		UntypedItem item;
+		switch (format) {
+		case XML:
+			item = UntypedItemXml.build(data);
+			break;
+
+		case JSON:
+			item = UntypedItemJson.build(data);
+			break;
+
+		default:
+			throw new IllegalArgumentException("Format not supported");
+		}
 
 		return item;
+
 	}
 
 	@Override

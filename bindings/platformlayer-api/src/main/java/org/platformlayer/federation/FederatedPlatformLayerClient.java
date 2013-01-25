@@ -471,7 +471,7 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
-	public UntypedItem getItemUntyped(PlatformLayerKey key) throws PlatformLayerClientException {
+	public UntypedItem getItemUntyped(PlatformLayerKey key, Format format) throws PlatformLayerClientException {
 		MappedPlatformLayerKey mapped = mapToChild(key);
 		UntypedItem item = mapped.child.client.getItemUntyped(key);
 		return mapped.child.setHost(item);

@@ -28,7 +28,7 @@ public class OpenItem extends PlatformLayerCommandRunnerBase {
 
 		PlatformLayerKey key = path.resolve(getContext());
 
-		UntypedItem untypedItem = client.getItemUntyped(key);
+		UntypedItem untypedItem = client.getItemUntyped(key, getFormat());
 		List<EndpointInfo> endpointList = EndpointInfo.getEndpoints(untypedItem.getTags());
 
 		Set<EndpointInfo> endpoints = Sets.newHashSet(endpointList);
