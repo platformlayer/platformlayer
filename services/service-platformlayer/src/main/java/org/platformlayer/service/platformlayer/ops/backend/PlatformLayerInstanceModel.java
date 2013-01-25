@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import org.platformlayer.InetAddressChooser;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
+import org.platformlayer.core.model.Property;
 import org.platformlayer.core.model.Secret;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.Command;
@@ -145,6 +146,8 @@ public class PlatformLayerInstanceModel extends StandardTemplateData {
 	protected Map<String, String> getConfigurationProperties() throws OpsException {
 		Map<String, String> properties = Maps.newHashMap();
 
+		PlatformLayerService model = getModel();
+
 		{
 			// Configure keystore
 			properties.put("keystore", getKeystoreFile().getAbsolutePath());
@@ -160,10 +163,10 @@ public class PlatformLayerInstanceModel extends StandardTemplateData {
 		}
 
 		if (isMultitenant()) {
-			properties.put("multitenant.keys", getModel().multitenantItems);
+			properties.put("multitenant.keys", model.multitenantItems);
 			properties.put("multitenant.project", getMultitenantProject());
-			properties.put("multitenant.user", "master@" + getModel().dnsName);
-			// properties.put("multitenant.password", getModel().multitenantPassword.plaintext());
+			properties.put("multitenant.user", "master@" + model.dnsName);
+			// properties.put("multitenant.password", model.multitenantPassword.plaintext());
 			properties.put("multitenant.cert", getMultitenantKeyAlias());
 		}
 
@@ -196,6 +199,12 @@ public class PlatformLayerInstanceModel extends StandardTemplateData {
 			properties.put("auth.system.ssl.keys", Joiner.on(',').join(systemAuthKeys));
 			properties.put("auth.system.url", systemAuthUrl);
 			properties.put("auth.system.ssl.cert", getSystemCertAlias());
+		}
+
+		if (model.config != null) {
+			for (Property property : model.config.getProperties()) {
+				properties.put(property.key, property.value);
+			}
 		}
 
 		return properties;
