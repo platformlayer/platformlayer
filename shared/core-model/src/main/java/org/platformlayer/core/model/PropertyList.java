@@ -4,10 +4,12 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public class PropertyList {
@@ -32,11 +34,15 @@ public class PropertyList {
 	}
 
 	@JsonValue
-	public List<Property> getProperty() {
+	@XmlElement(name = "property")
+	public List<Property> getProperties() {
+		if (property == null) {
+			property = Lists.newArrayList();
+		}
 		return property;
 	}
 
-	public void setProperty(List<Property> property) {
+	public void setProperties(List<Property> property) {
 		this.property = property;
 	}
 
