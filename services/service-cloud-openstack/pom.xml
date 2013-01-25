@@ -11,8 +11,12 @@
     <artifactId>service-cloud-openstack</artifactId>
     <name>PlatformLayer :: Services :: Cloud :: OpenStack</name>
 
-   <dependencies>
-       <dependency>
+    <properties>
+        <version.openstack>0.1-SNAPSHOT</version.openstack>
+    </properties>
+
+    <dependencies>
+        <dependency>
             <groupId>org.platformlayer</groupId>
             <artifactId>service-base</artifactId>
         </dependency>
@@ -20,6 +24,7 @@
         <dependency>
             <groupId>org.platformlayer</groupId>
             <artifactId>openstack-api</artifactId>
+            <version>${version.openstack}</version>
         </dependency>
     </dependencies>
 </project>
