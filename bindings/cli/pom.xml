@@ -18,8 +18,8 @@
         </dependency>
 
         <dependency>
-            <groupId>org.platformlayer</groupId>
-            <artifactId>shared-cli</artifactId>
+            <groupId>com.fathomdb</groupId>
+            <artifactId>fathomdb-cli</artifactId>
         </dependency>
 
         <dependency>
