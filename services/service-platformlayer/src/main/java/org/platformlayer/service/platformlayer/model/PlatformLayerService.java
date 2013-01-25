@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.platformlayer.core.model.Generate;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
+import org.platformlayer.core.model.PropertyList;
 import org.platformlayer.core.model.Secret;
 import org.platformlayer.service.platformlayer.ops.backend.PlatformLayerServiceController;
 import org.platformlayer.xaas.Controller;
@@ -30,4 +31,6 @@ public class PlatformLayerService extends ItemBase {
 	public PlatformLayerKey sslKey;
 
 	public String transport;
+
+	public PropertyList config;
 }

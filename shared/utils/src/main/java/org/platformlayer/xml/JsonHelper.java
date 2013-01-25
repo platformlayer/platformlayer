@@ -7,6 +7,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.introspect.AnnotationIntrospectorPair;
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 import com.google.common.collect.Maps;
@@ -177,8 +179,11 @@ public class JsonHelper<T> {
 		if (formatted) {
 			mapper.enable(SerializationFeature.INDENT_OUTPUT);
 		}
-		AnnotationIntrospector introspector = new JaxbAnnotationIntrospector(typeFactory);
-		// Use JAXB annotations
+
+		// Favor JAXB annotations
+		AnnotationIntrospector jaxbIntrospector = new JaxbAnnotationIntrospector(typeFactory);
+		AnnotationIntrospector jacksonIntrospector = new JacksonAnnotationIntrospector();
+		AnnotationIntrospector introspector = new AnnotationIntrospectorPair(jaxbIntrospector, jacksonIntrospector);
 		mapper.setAnnotationIntrospector(introspector);
 
 		return mapper;
