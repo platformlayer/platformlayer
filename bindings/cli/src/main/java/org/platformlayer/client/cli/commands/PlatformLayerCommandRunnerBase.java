@@ -78,6 +78,12 @@ public abstract class PlatformLayerCommandRunnerBase extends CommandRunnerBase {
 	}
 
 	protected Format getFormat() {
-		return Format.XML;
+		switch (getOutputFormat()) {
+		case Json:
+			return Format.JSON;
+
+		default:
+			return Format.XML;
+		}
 	}
 }

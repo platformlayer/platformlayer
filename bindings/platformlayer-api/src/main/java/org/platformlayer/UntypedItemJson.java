@@ -7,10 +7,10 @@ import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tags;
 
 public class UntypedItemJson implements UntypedItem {
-	private final JSONObject json;
+	private final JSONObject root;
 
-	private UntypedItemJson(JSONObject json) {
-		this.json = json;
+	private UntypedItemJson(JSONObject root) {
+		this.root = root;
 	}
 
 	@Override
@@ -38,6 +38,10 @@ public class UntypedItemJson implements UntypedItem {
 		}
 
 		return new UntypedItemJson(json);
+	}
+
+	public JSONObject getRoot() {
+		return root;
 	}
 
 }
