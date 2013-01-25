@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.kohsuke.args4j.Argument;
 import org.platformlayer.PlatformLayerClient;
@@ -48,7 +49,11 @@ public class GetItem extends PlatformLayerCommandRunnerBase {
 			UntypedItemJson item = (UntypedItemJson) o;
 
 			JSONObject root = item.getRoot();
-			data = root.toString();
+			try {
+				data = root.toString(2);
+			} catch (JSONException e) {
+				throw new IllegalStateException("Error formatting JSON", e);
+			}
 		} else {
 			throw new IllegalStateException();
 		}
