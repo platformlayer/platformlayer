@@ -2,8 +2,6 @@ package org.platformlayer.ops.jobstore;
 
 import java.util.Comparator;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.concurrent.Callable;
@@ -16,10 +14,8 @@ import org.platformlayer.RepositoryException;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.common.JobState;
 import org.platformlayer.core.model.PlatformLayerKey;
-import org.platformlayer.ids.ProjectId;
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobExecutionData;
-import org.platformlayer.jobs.model.JobExecutionList;
 import org.platformlayer.jobs.model.JobLog;
 import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.ops.OpsException;
@@ -29,7 +25,6 @@ import org.platformlayer.ops.tasks.ActiveJobExecution;
 import org.platformlayer.ops.tasks.JobQueueEntry;
 import org.platformlayer.ops.tasks.OperationWorker;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -54,7 +49,8 @@ public class SimpleOperationQueue extends OperationQueueBase {
 	});
 
 	final Map<PlatformLayerKey, ActiveJobExecution> activeJobs = Maps.newHashMap();
-	final LinkedList<JobExecutionData> recentJobs = Lists.newLinkedList();
+
+	// final LinkedList<JobExecutionData> recentJobs = Lists.newLinkedList();
 
 	class QueuedJob implements Callable<Object>, JobQueueEntry {
 		final ProjectAuthorization auth;
@@ -102,57 +98,57 @@ public class SimpleOperationQueue extends OperationQueueBase {
 		}
 	}
 
-	@Override
-	public JobExecutionList listRecentExecutions(ProjectId projectId) {
-		JobExecutionList ret = JobExecutionList.create();
-		synchronized (activeJobs) {
-			for (ActiveJobExecution job : activeJobs.values()) {
-				if (!Objects.equal(job.getTargetItemKey().getProject(), projectId)) {
-					continue;
-				}
-				ret.add(job.getJobExecution());
-			}
-		}
+	// @Override
+	// public JobExecutionList listRecentExecutions(ProjectId projectId) {
+	// JobExecutionList ret = JobExecutionList.create();
+	// synchronized (activeJobs) {
+	// for (ActiveJobExecution job : activeJobs.values()) {
+	// if (!Objects.equal(job.getTargetItemKey().getProject(), projectId)) {
+	// continue;
+	// }
+	// ret.add(job.getJobExecution());
+	// }
+	// }
+	//
+	// synchronized (recentJobs) {
+	// for (JobExecutionData jobExecution : recentJobs) {
+	// if (!jobExecution.getJobKey().getProject().equals(projectId)) {
+	// continue;
+	// }
+	// ret.add(jobExecution);
+	// }
+	// }
+	//
+	// return ret;
+	// }
 
-		synchronized (recentJobs) {
-			for (JobExecutionData jobExecution : recentJobs) {
-				if (!jobExecution.getJobKey().getProject().equals(projectId)) {
-					continue;
-				}
-				ret.add(jobExecution);
-			}
-		}
+	// @Override
+	// public List<JobData> listRecentJobs(ProjectId projectId) {
+	// List<JobData> ret = Lists.newArrayList();
+	//
+	// synchronized (activeJobs) {
+	// for (ActiveJobExecution job : activeJobs.values()) {
+	// if (!Objects.equal(job.getTargetItemKey().getProject(), projectId)) {
+	// continue;
+	// }
+	// JobExecutionData execution = job.getJobExecution();
+	// ret.add(execution.getJob());
+	// }
+	// }
+	//
+	// synchronized (recentJobs) {
+	// for (JobExecutionData job : recentJobs) {
+	// if (!job.getJobKey().getProject().equals(projectId)) {
+	// continue;
+	// }
+	// ret.add(job.getJob());
+	// }
+	// }
+	//
+	// return ret;
+	// }
 
-		return ret;
-	}
-
-	@Override
-	public List<JobData> listRecentJobs(ProjectId projectId) {
-		List<JobData> ret = Lists.newArrayList();
-
-		synchronized (activeJobs) {
-			for (ActiveJobExecution job : activeJobs.values()) {
-				if (!Objects.equal(job.getTargetItemKey().getProject(), projectId)) {
-					continue;
-				}
-				JobExecutionData execution = job.getJobExecution();
-				ret.add(execution.getJob());
-			}
-		}
-
-		synchronized (recentJobs) {
-			for (JobExecutionData job : recentJobs) {
-				if (!job.getJobKey().getProject().equals(projectId)) {
-					continue;
-				}
-				ret.add(job.getJob());
-			}
-		}
-
-		return ret;
-	}
-
-	private static final int RECENT_JOB_COUNT = 100;
+	// private static final int RECENT_JOB_COUNT = 100;
 
 	@Override
 	public void jobFinished(JobExecutionData jobExecutionData, JobState state, JobLogger logger) throws OpsException {
@@ -166,12 +162,12 @@ public class SimpleOperationQueue extends OperationQueueBase {
 			activeJobs.remove(jobKey);
 		}
 
-		synchronized (recentJobs) {
-			recentJobs.push(jobExecutionData);
-			if (recentJobs.size() > RECENT_JOB_COUNT) {
-				recentJobs.pop();
-			}
-		}
+		// synchronized (recentJobs) {
+		// recentJobs.push(jobExecutionData);
+		// if (recentJobs.size() > RECENT_JOB_COUNT) {
+		// recentJobs.pop();
+		// }
+		// }
 
 		try {
 			jobLogStore.saveJobLog(jobKey, executionId, startTime, logger);
