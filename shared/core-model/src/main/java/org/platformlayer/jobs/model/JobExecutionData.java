@@ -59,4 +59,8 @@ public class JobExecutionData implements IsJobExecution {
 	public void setJob(JobData job) {
 		this.job = job;
 	}
+
+	public String getJobId() {
+		return jobKey.getItemIdString();
+	}
 }
