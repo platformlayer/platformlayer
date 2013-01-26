@@ -172,9 +172,12 @@ class StandaloneXaasWebserver {
 			WebAppContext context = new WebAppContext();
 			context.setWar(war.getAbsolutePath());
 			context.setContextPath(contextPath);
-			contexts.addHandler(context);
+
+			context.setInitParameter("org.eclipse.jetty.servlet.Default.dirAllowed", "false");
 
 			context.addFilter(GwtCacheHeaderFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
+
+			contexts.addHandler(context);
 		}
 
 		server.setHandler(contexts);
