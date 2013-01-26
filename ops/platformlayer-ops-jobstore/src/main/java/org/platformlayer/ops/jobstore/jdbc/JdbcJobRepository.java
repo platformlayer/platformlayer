@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -26,6 +27,7 @@ import org.platformlayer.jdbc.JdbcConnection;
 import org.platformlayer.jdbc.JdbcTransaction;
 import org.platformlayer.jdbc.proxy.Query;
 import org.platformlayer.jdbc.proxy.QueryFactory;
+import org.platformlayer.jdbc.simplejpa.JoinedQueryResult;
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobExecutionData;
 import org.platformlayer.xaas.repository.JobRepository;
@@ -33,6 +35,7 @@ import org.platformlayer.xaas.services.ServiceProviderDictionary;
 
 import com.fathomdb.Casts;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 public class JdbcJobRepository implements JobRepository {
 	@Inject
@@ -54,6 +57,9 @@ public class JdbcJobRepository implements JobRepository {
 
 		@Query("SELECT * FROM job WHERE project=? and id IN (SELECT job_id FROM job_execution WHERE project=? and started_at >= (current_timestamp - (? * interval '1 second')))")
 		List<JobEntity> listRecentJobs(int projectId, int projectIdDup, long totalSeconds);
+
+		@Query("SELECT * FROM job j, job_execution je WHERE je.project=? and je.started_at >= (current_timestamp - (? * interval '1 second')) AND (j.project = je.project) and (j.id = je.job_id)")
+		JoinedQueryResult listRecentJobsAndExecutions(int projectId, long totalSeconds);
 
 		@Query("SELECT * FROM job WHERE project=? and id=?")
 		JobEntity findJob(int projectId, String jobId) throws SQLException;
@@ -149,14 +155,35 @@ public class JdbcJobRepository implements JobRepository {
 	public List<JobExecutionData> listRecentExecutions(ProjectId projectId, TimeSpan window) throws RepositoryException {
 		DbHelper db = new DbHelper();
 		try {
-			List<JobExecutionEntity> executions = db.queries.listRecentExecutions(db.mapToValue(projectId),
+			// We use JoinedQueryResult because we have a compound PK (projectId / jobId)
+			// and JPA makes this really complicated.
+
+			// TODO: Is it really a compound PK? Should jobId be globally unique?
+			JoinedQueryResult results = db.queries.listRecentJobsAndExecutions(db.mapToValue(projectId),
 					window.getTotalSeconds());
+
 			List<JobExecutionData> ret = Lists.newArrayList();
-			for (JobExecutionEntity execution : executions) {
+			Map<String, JobData> jobs = Maps.newHashMap();
+
+			for (JobEntity job : results.getAll(JobEntity.class)) {
+				ManagedItemId jobId = new ManagedItemId(job.jobId);
+				PlatformLayerKey jobKey = JobData.buildKey(projectId, jobId);
+				jobs.put(job.jobId, mapFromEntity(job, jobKey));
+			}
+
+			for (JobExecutionEntity execution : results.getAll(JobExecutionEntity.class)) {
+				JobData jobData = jobs.get(execution.jobId);
+				if (jobData == null) {
+					throw new IllegalStateException();
+				}
+
 				ManagedItemId jobId = new ManagedItemId(execution.jobId);
 				PlatformLayerKey jobKey = JobData.buildKey(projectId, jobId);
-				ret.add(mapFromEntity(execution, jobKey));
+				JobExecutionData run = mapFromEntity(execution, jobKey);
+				run.job = jobData;
+				ret.add(run);
 			}
+
 			return ret;
 		} catch (SQLException e) {
 			throw new RepositoryException("Error listing job executions", e);

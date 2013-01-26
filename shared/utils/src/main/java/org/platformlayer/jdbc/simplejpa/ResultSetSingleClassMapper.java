@@ -54,11 +54,13 @@ public class ResultSetSingleClassMapper {
 				keyMapper = new SimpleKeyMapper(columnNumbers.get(0));
 			} else {
 				IdClass idClassAnnotation = targetClass.getAnnotation(IdClass.class);
-				if (idClassAnnotation == null) {
-					throw new IllegalStateException("Expected @IdClass annotation for composite primary key: "
-							+ targetClass);
+				if (idClassAnnotation != null) {
+					keyMapper = new CompoundKeyMapper(idClassAnnotation.value(), idFields, columnNumbers);
+				} else {
+					// throw new IllegalStateException("Expected @IdClass annotation for composite primary key: "
+					// + targetClass);
+					keyMapper = new DefaultCompoundKeyMapper(columnNumbers);
 				}
-				keyMapper = new CompoundKeyMapper(idClassAnnotation.value(), idFields, columnNumbers);
 			}
 
 			this.keyMapper = keyMapper;

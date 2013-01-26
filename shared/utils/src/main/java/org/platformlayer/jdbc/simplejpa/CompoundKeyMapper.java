@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class CompoundKeyMapper extends KeyMapper {
-
 	private final List<Integer> columnNumbers;
 	final Field[] pkFields;
 	private final Class<?> pkType;
