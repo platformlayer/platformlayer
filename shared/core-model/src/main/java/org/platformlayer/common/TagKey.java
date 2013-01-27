@@ -23,8 +23,8 @@ public abstract class TagKey<T> {
 
 	public Iterable<Tag> filter(Tags tags) {
 		List<Tag> matches = Lists.newArrayList();
-		for (Tag tag : tags) {
-			if (key.equals(tag.key)) {
+		for (Tag tag : tags.getTags()) {
+			if (key.equals(tag.getKey())) {
 				matches.add(tag);
 			}
 		}

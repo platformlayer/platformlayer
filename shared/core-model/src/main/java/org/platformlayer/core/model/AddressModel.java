@@ -39,10 +39,6 @@ public class AddressModel {
 		return protocol;
 	}
 
-	public Tag toTag() {
-		return Tag.NETWORK_ADDRESS.build(getInetAddress());
-	}
-
 	public void copyFrom(AddressModel b) {
 		this.cidr = b.cidr;
 		this.gateway = b.gateway;

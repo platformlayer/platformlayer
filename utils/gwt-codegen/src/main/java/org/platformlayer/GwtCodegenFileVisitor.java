@@ -287,6 +287,30 @@ public class GwtCodegenFileVisitor extends FileVisitor {
 						set += "}\n";
 
 						mapped = "HACK";
+					} else if (type.equals(Boolean.class)) {
+						get = "";
+						get += "public final Boolean is{beanName}() {\n";
+						get += "	return org.platformlayer.core.model.JsHelpers.getBoolean0(this, \"{fieldName}\");\n";
+						get += "}\n";
+
+						set = "";
+						set += "public final void set{beanName}(String v) {\n";
+						set += "	org.platformlayer.core.model.JsHelpers.set0(this, \"{fieldName}\", v);\n";
+						set += "}\n";
+
+						mapped = "HACK";
+					} else if (type.equals(Float.class)) {
+						get = "";
+						get += "public final Float get{beanName}() {\n";
+						get += "	return org.platformlayer.core.model.JsHelpers.getFloat0(this, \"{fieldName}\");\n";
+						get += "}\n";
+
+						set = "";
+						set += "public final void set{beanName}(String v) {\n";
+						set += "	org.platformlayer.core.model.JsHelpers.set0(this, \"{fieldName}\", v);\n";
+						set += "}\n";
+
+						mapped = "HACK";
 					} else {
 						boolean gwtSafe = false;
 						for (Annotation annotation : type.getAnnotations()) {
@@ -394,7 +418,7 @@ public class GwtCodegenFileVisitor extends FileVisitor {
 			return true;
 		}
 
-		if (type == Boolean.class) {
+		if (type == boolean.class) {
 			return true;
 		}
 		if (type == Byte.class) {
@@ -412,7 +436,7 @@ public class GwtCodegenFileVisitor extends FileVisitor {
 		if (type == Long.class) {
 			return true;
 		}
-		if (type == Float.class) {
+		if (type == float.class) {
 			return true;
 		}
 		if (type == Double.class) {

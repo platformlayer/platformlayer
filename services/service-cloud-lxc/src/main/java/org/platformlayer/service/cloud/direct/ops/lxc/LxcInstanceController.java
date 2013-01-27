@@ -177,8 +177,8 @@ public class LxcInstanceController extends OpsTreeBase {
 					AddressModel ipv4 = address4.get();
 					AddressModel ipv6 = address6.get();
 
-					tagChanges.addTags.add(ipv4.toTag());
-					tagChanges.addTags.add(ipv6.toTag());
+					tagChanges.addTags.add(Tag.NETWORK_ADDRESS.build(ipv4));
+					tagChanges.addTags.add(Tag.NETWORK_ADDRESS.build(ipv6));
 
 					return tagChanges;
 				}

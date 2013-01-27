@@ -18,6 +18,14 @@ public class PolicyChecker {
 	// By default we require 99.9% uptime (1 hour per month) unless otherwise specified
 	public float defaultUptime = 99.9f;
 
+	public static Tag makeDatacenterUptime(float percent) {
+		return Tag.HOST_POLICY.build(HostPolicyTag.DATACENTER_UPTIME_PREFIX + String.valueOf(percent));
+	}
+
+	public static Tag requireTrusted() {
+		return Tag.HOST_POLICY.build(HostPolicyTag.TRUSTED_HOST);
+	}
+
 	public List<String> satisfy(HostPolicy hostPolicy, Tags cloudTags) {
 		List<String> unsatisified = Lists.newArrayList();
 
@@ -56,7 +64,7 @@ public class PolicyChecker {
 
 		if (!checkedUptime) {
 			if (!hasUptime(haves, defaultUptime)) {
-				unsatisified.add(HostPolicyTag.makeDatacenterUptime(defaultUptime).getValue());
+				unsatisified.add(makeDatacenterUptime(defaultUptime).getValue());
 			}
 		}
 
