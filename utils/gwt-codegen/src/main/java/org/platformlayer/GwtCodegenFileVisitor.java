@@ -5,6 +5,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -307,6 +308,18 @@ public class GwtCodegenFileVisitor extends FileVisitor {
 
 						set = "";
 						set += "public final void set{beanName}(String v) {\n";
+						set += "	org.platformlayer.core.model.JsHelpers.set0(this, \"{fieldName}\", v);\n";
+						set += "}\n";
+
+						mapped = "HACK";
+					} else if (type.equals(Date.class)) {
+						get = "";
+						get += "public final java.util.Date get{beanName}() {\n";
+						get += "	return org.platformlayer.core.model.JsHelpers.getDate0(this, \"{fieldName}\");\n";
+						get += "}\n";
+
+						set = "";
+						set += "public final void set{beanName}(java.util.Date v) {\n";
 						set += "	org.platformlayer.core.model.JsHelpers.set0(this, \"{fieldName}\", v);\n";
 						set += "}\n";
 
