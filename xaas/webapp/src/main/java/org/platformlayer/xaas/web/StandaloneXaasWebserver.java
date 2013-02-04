@@ -6,6 +6,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TimeZone;
 
 import javax.inject.Inject;
 import javax.servlet.DispatcherType;
@@ -76,6 +77,9 @@ class StandaloneXaasWebserver {
 
 	public static void main(String[] args) {
 		try {
+			// Force GMT
+			TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+
 			ConfigurationImpl configuration = ConfigurationImpl.load();
 
 			Extensions extensions = Extensions.load(configuration);
