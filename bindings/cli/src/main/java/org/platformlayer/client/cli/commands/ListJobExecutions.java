@@ -1,5 +1,6 @@
 package org.platformlayer.client.cli.commands;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 
 import org.platformlayer.PlatformLayerClient;
@@ -7,7 +8,9 @@ import org.platformlayer.PlatformLayerClientException;
 import org.platformlayer.common.JobState;
 import org.platformlayer.jobs.model.JobExecutionData;
 import org.platformlayer.jobs.model.JobExecutionList;
+import org.platformlayer.xml.JsonHelper;
 
+import com.fathomdb.cli.CliException;
 import com.fathomdb.cli.autocomplete.AutoCompletor;
 import com.fathomdb.cli.autocomplete.SimpleAutoCompleter;
 import com.fathomdb.cli.commands.Ansi;
@@ -53,6 +56,19 @@ public class ListJobExecutions extends PlatformLayerCommandRunnerBase {
 	@Override
 	public void formatRaw(Object o, PrintWriter writer) {
 		JobExecutionList jobs = (JobExecutionList) o;
+
+		switch (getFormat()) {
+		case JSON:
+			JsonHelper<JobExecutionList> jsonHelper = JsonHelper.build(JobExecutionList.class);
+			boolean formatted = true;
+			try {
+				String json = jsonHelper.marshal(jobs, formatted);
+				writer.println(json);
+				return;
+			} catch (IOException e) {
+				throw new CliException("Error formatting for output", e);
+			}
+		}
 
 		Ansi ansi = new Ansi(writer);
 
