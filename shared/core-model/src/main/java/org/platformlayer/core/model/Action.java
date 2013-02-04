@@ -17,7 +17,7 @@ public class Action implements IsAction {
 	// }
 
 	public Action() {
-		this.type = getType();
+		this.type = getClass().getSimpleName();
 	}
 
 	public String type;
@@ -33,7 +33,7 @@ public class Action implements IsAction {
 
 	@Override
 	public String getType() {
-		return getClass().getSimpleName();
+		return type;
 	}
 
 	public void setType(String type) {
