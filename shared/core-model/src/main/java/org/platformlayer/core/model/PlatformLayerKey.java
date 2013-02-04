@@ -189,6 +189,10 @@ public class PlatformLayerKey {
 		return new PlatformLayerKey(getHost(), getProject(), getServiceType(), getItemType(), id2);
 	}
 
+	public PlatformLayerKey withId(String id2) {
+		return withId(new ManagedItemId(id2));
+	}
+
 	public PlatformLayerKey withServiceType(ServiceType serviceType2) {
 		return new PlatformLayerKey(getHost(), getProject(), serviceType2, getItemType(), getItemId());
 	}
