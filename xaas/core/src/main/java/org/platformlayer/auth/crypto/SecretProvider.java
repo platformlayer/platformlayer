@@ -2,7 +2,6 @@ package org.platformlayer.auth.crypto;
 
 import org.platformlayer.auth.ProjectInfo;
 import org.platformlayer.core.model.SecretInfo;
-import org.platformlayer.model.ProjectAuthorization;
 
 import com.fathomdb.crypto.CryptoKey;
 
@@ -26,21 +25,21 @@ public abstract class SecretProvider {
 		};
 	}
 
-	public static SecretProvider from(final ProjectAuthorization project) {
-		if (project == null) {
-			throw new IllegalArgumentException();
-		}
-
-		return new SecretProvider() {
-			@Override
-			public CryptoKey getItemSecret(SecretInfo secret) {
-				SecretStore secretStore = new SecretStore(secret.getEncoded());
-
-				CryptoKey secretKey = secretStore.getSecretFromProject(project);
-				return secretKey;
-			}
-		};
-	}
+	// public static SecretProvider from(final ProjectAuthorization project) {
+	// if (project == null) {
+	// throw new IllegalArgumentException();
+	// }
+	//
+	// return new SecretProvider() {
+	// @Override
+	// public CryptoKey getItemSecret(SecretInfo secret) {
+	// SecretStore secretStore = new SecretStore(secret.getEncoded());
+	//
+	// CryptoKey secretKey = secretStore.getSecretFromProject(project);
+	// return secretKey;
+	// }
+	// };
+	// }
 
 	// public static SecretProvider withAuth(OpsAuthentication auth) {
 	// return withProject(auth.getProject());

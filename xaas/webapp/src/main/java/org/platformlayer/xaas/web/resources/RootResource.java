@@ -13,13 +13,14 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.UriInfo;
 
-import org.slf4j.*;
 import org.platformlayer.auth.AuthenticationTokenValidator;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.inject.ObjectInjector;
 import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.model.RoleId;
 import org.platformlayer.web.AuthenticationFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path("/")
 @Singleton
@@ -65,6 +66,10 @@ public class RootResource extends XaasResourceBase {
 		if (roles == null || !roles.contains(RoleId.OWNER)) {
 			throw new WebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
 		}
+
+		// Note that we have a different notion of project id from the auth system
+		// TODO: I think this is not needed for direct authentication? Fix? Cleanup?
+		authz = new XaasProjectAuthorization(repository, authz);
 
 		getScope().put(new ProjectId(projectKey));
 		getScope().put(ProjectAuthorization.class, authz);
