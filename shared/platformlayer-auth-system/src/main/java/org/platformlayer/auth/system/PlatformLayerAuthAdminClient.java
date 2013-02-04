@@ -16,6 +16,7 @@ import org.platformlayer.auth.v1.CertificateChainInfo;
 import org.platformlayer.auth.v1.CheckServiceAccessRequest;
 import org.platformlayer.auth.v1.CheckServiceAccessResponse;
 import org.platformlayer.auth.v1.ProjectValidation;
+import org.platformlayer.auth.v1.Role;
 import org.platformlayer.auth.v1.SignCertificateRequest;
 import org.platformlayer.auth.v1.SignCertificateResponse;
 import org.platformlayer.auth.v1.UserValidation;
@@ -26,6 +27,7 @@ import org.platformlayer.http.HttpStrategy;
 import org.platformlayer.http.SslConfiguration;
 import org.platformlayer.http.UrlUtils;
 import org.platformlayer.model.ProjectAuthorization;
+import org.platformlayer.model.RoleId;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.rest.HttpPayload;
 import org.platformlayer.rest.JreRestfulClient;
@@ -137,7 +139,7 @@ public class PlatformLayerAuthAdminClient implements AuthenticationTokenValidato
 			String userKey = userInfo.getName();
 
 			PlatformlayerUserAuthentication user = new PlatformlayerUserAuthentication(authToken, userKey);
-			PlatformlayerProjectAuthorization project = new PlatformlayerProjectAuthorization(user, projectInfo);
+			PlatformlayerProjectAuthorization project = buildPlatformlayerProjectAuthorization(user, projectInfo);
 			return project;
 		} catch (RestClientException e) {
 			if (e.getHttpResponseCode() != null && e.getHttpResponseCode() == 404) {
@@ -180,7 +182,7 @@ public class PlatformLayerAuthAdminClient implements AuthenticationTokenValidato
 			String userKey = userInfo.getName();
 
 			PlatformlayerUserAuthentication user = new PlatformlayerUserAuthentication(null, userKey);
-			PlatformlayerProjectAuthorization project = new PlatformlayerProjectAuthorization(user, projectInfo);
+			PlatformlayerProjectAuthorization project = buildPlatformlayerProjectAuthorization(user, projectInfo);
 			return project;
 		} catch (RestClientException e) {
 			if (e.getHttpResponseCode() != null && e.getHttpResponseCode() == 404) {
@@ -190,6 +192,21 @@ public class PlatformLayerAuthAdminClient implements AuthenticationTokenValidato
 			log.warn("Error while validating credentials", e);
 			throw new IllegalArgumentException("Error while validating credentials", e);
 		}
+	}
+
+	private PlatformlayerProjectAuthorization buildPlatformlayerProjectAuthorization(
+			PlatformlayerUserAuthentication user, ProjectValidation project) {
+
+		String name = project.getName();
+		int projectId = Integer.parseInt(project.getId());
+
+		List<RoleId> roles = Lists.newArrayList();
+		for (Role role : project.getRoles()) {
+			roles.add(new RoleId(role.getName()));
+		}
+
+		CryptoKey projectSecret = FathomdbCrypto.deserializeKey(project.getSecret());
+		return new PlatformlayerProjectAuthorization(user, name, projectSecret, roles, projectId);
 	}
 
 	// This can actually be moved to the user-auth system

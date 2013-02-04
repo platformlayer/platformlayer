@@ -7,7 +7,7 @@ public interface ProjectInfo {
 
 	CryptoKey getProjectSecret();
 
-	int getId();
-
 	String getName();
+
+	int getId();
 }

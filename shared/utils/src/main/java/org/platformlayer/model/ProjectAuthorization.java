@@ -8,4 +8,5 @@ public interface ProjectAuthorization extends ProjectInfo {
 	Authentication getUser();
 
 	List<RoleId> getRoles();
+
 }
