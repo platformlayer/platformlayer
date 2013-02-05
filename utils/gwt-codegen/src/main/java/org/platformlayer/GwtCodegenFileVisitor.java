@@ -261,10 +261,10 @@ public class GwtCodegenFileVisitor extends FileVisitor {
 								get += "public final java.util.List<{itemClass}> get{beanName}() {\n";
 
 								if (itemClass.equals(String.class)) {
-									get += "	com.google.gwt.core.client.JsArrayString array0 = org.platformlayer.core.model.JsHelpers.getObject0(this, \"{fieldName}\").cast();\n";
+									get += "	com.google.gwt.core.client.JsArrayString array0 = com.gwtreboot.client.JsHelpers.getObject0(this, \"{fieldName}\").cast();\n";
 									get += "	return org.platformlayer.core.model.JsStringArrayToList.wrap(array0);\n";
 								} else {
-									get += "	com.google.gwt.core.client.JsArray<{itemClass}> array0 = org.platformlayer.core.model.JsHelpers.getObject0(this, \"{fieldName}\").cast();\n";
+									get += "	com.google.gwt.core.client.JsArray<{itemClass}> array0 = com.gwtreboot.client.JsHelpers.getObject0(this, \"{fieldName}\").cast();\n";
 									get += "	return org.platformlayer.core.model.JsArrayToList.wrap(array0);\n";
 								}
 
@@ -279,48 +279,48 @@ public class GwtCodegenFileVisitor extends FileVisitor {
 					} else if (type.equals(String.class)) {
 						get = "";
 						get += "public final String get{beanName}() {\n";
-						get += "	return org.platformlayer.core.model.JsHelpers.getString0(this, \"{fieldName}\");\n";
+						get += "	return com.gwtreboot.client.JsHelpers.getString0(this, \"{fieldName}\");\n";
 						get += "}\n";
 
 						set = "";
 						set += "public final void set{beanName}(String v) {\n";
-						set += "	org.platformlayer.core.model.JsHelpers.set0(this, \"{fieldName}\", v);\n";
+						set += "	com.gwtreboot.client.JsHelpers.set0(this, \"{fieldName}\", v);\n";
 						set += "}\n";
 
 						mapped = "HACK";
 					} else if (type.equals(Boolean.class)) {
 						get = "";
 						get += "public final Boolean is{beanName}() {\n";
-						get += "	return org.platformlayer.core.model.JsHelpers.getBoolean0(this, \"{fieldName}\");\n";
+						get += "	return com.gwtreboot.client.JsHelpers.getBoolean0(this, \"{fieldName}\");\n";
 						get += "}\n";
 
 						set = "";
 						set += "public final void set{beanName}(String v) {\n";
-						set += "	org.platformlayer.core.model.JsHelpers.set0(this, \"{fieldName}\", v);\n";
+						set += "	com.gwtreboot.client.JsHelpers.set0(this, \"{fieldName}\", v);\n";
 						set += "}\n";
 
 						mapped = "HACK";
 					} else if (type.equals(Float.class)) {
 						get = "";
 						get += "public final Float get{beanName}() {\n";
-						get += "	return org.platformlayer.core.model.JsHelpers.getFloat0(this, \"{fieldName}\");\n";
+						get += "	return com.gwtreboot.client.JsHelpers.getFloat0(this, \"{fieldName}\");\n";
 						get += "}\n";
 
 						set = "";
 						set += "public final void set{beanName}(String v) {\n";
-						set += "	org.platformlayer.core.model.JsHelpers.set0(this, \"{fieldName}\", v);\n";
+						set += "	com.gwtreboot.client.JsHelpers.set0(this, \"{fieldName}\", v);\n";
 						set += "}\n";
 
 						mapped = "HACK";
 					} else if (type.equals(Date.class)) {
 						get = "";
 						get += "public final java.util.Date get{beanName}() {\n";
-						get += "	return org.platformlayer.core.model.JsHelpers.getDate0(this, \"{fieldName}\");\n";
+						get += "	return com.gwtreboot.client.JsHelpers.getDate0(this, \"{fieldName}\");\n";
 						get += "}\n";
 
 						set = "";
 						set += "public final void set{beanName}(java.util.Date v) {\n";
-						set += "	org.platformlayer.core.model.JsHelpers.set0(this, \"{fieldName}\", v);\n";
+						set += "	com.gwtreboot.client.JsHelpers.set0(this, \"{fieldName}\", v);\n";
 						set += "}\n";
 
 						mapped = "HACK";
@@ -335,7 +335,7 @@ public class GwtCodegenFileVisitor extends FileVisitor {
 						if (gwtSafe) {
 							get = "";
 							get += "public final {field.type} get{beanName}() {\n";
-							get += "	return org.platformlayer.core.model.JsHelpers.getObject0(this, \"{fieldName}\").cast();\n";
+							get += "	return com.gwtreboot.client.JsHelpers.getObject0(this, \"{fieldName}\").cast();\n";
 							get += "}\n";
 
 							set = "";
