@@ -12,12 +12,12 @@ public class DnsZone extends org.platformlayer.core.model.ItemBaseJs {
 
     
     public final String getDnsName() {
-	return org.platformlayer.core.model.JsHelpers.getString0(this, "dnsName");
+	return com.gwtreboot.client.JsHelpers.getString0(this, "dnsName");
 }
 
 	
     public final void setDnsName(String v) {
-	org.platformlayer.core.model.JsHelpers.set0(this, "dnsName", v);
+	com.gwtreboot.client.JsHelpers.set0(this, "dnsName", v);
 }
 
 

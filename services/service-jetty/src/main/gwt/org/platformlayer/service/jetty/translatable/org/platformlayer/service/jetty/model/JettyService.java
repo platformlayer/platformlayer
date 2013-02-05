@@ -13,18 +13,18 @@ public class JettyService extends org.platformlayer.core.model.ItemBaseJs {
 
     
     public final String getDnsName() {
-	return org.platformlayer.core.model.JsHelpers.getString0(this, "dnsName");
+	return com.gwtreboot.client.JsHelpers.getString0(this, "dnsName");
 }
 
 	
     public final void setDnsName(String v) {
-	org.platformlayer.core.model.JsHelpers.set0(this, "dnsName", v);
+	com.gwtreboot.client.JsHelpers.set0(this, "dnsName", v);
 }
 
 
     
     public final java.util.List<org.platformlayer.service.jetty.model.JettyContext> getContexts() {
-	com.google.gwt.core.client.JsArray<org.platformlayer.service.jetty.model.JettyContext> array0 = org.platformlayer.core.model.JsHelpers.getObject0(this, "contexts").cast();
+	com.google.gwt.core.client.JsArray<org.platformlayer.service.jetty.model.JettyContext> array0 = com.gwtreboot.client.JsHelpers.getObject0(this, "contexts").cast();
 	return org.platformlayer.core.model.JsArrayToList.wrap(array0);
 }
 
