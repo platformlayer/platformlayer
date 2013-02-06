@@ -74,8 +74,7 @@ public class PlatformLayerHelpers extends TypedPlatformLayerClient {
 	}
 
 	public void setUniqueTags(PlatformLayerKey key, Iterable<Tag> uniqueTags) throws OpsException {
-		UntypedItem itemUntyped = getItemUntyped(key);
-		Tags tags = itemUntyped.getTags();
+		Tags tags = getItemTags(key);
 
 		TagChanges tagChanges = new TagChanges();
 		for (Tag setTag : uniqueTags) {

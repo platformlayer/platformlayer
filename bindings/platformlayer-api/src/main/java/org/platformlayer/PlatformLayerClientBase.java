@@ -270,4 +270,13 @@ public abstract class PlatformLayerClientBase implements PlatformLayerClient {
 		return changeTags(key, tagChanges, null);
 	}
 
+	@Override
+	public Tags getItemTags(PlatformLayerKey key) throws PlatformLayerClientException {
+		UntypedItem itemUntyped = getItemUntyped(key, Format.XML);
+		if (itemUntyped == null) {
+			return null;
+		}
+		return itemUntyped.getTags();
+	}
+
 }

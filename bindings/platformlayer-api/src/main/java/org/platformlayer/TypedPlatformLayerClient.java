@@ -254,6 +254,11 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 	}
 
 	@Override
+	public Tags getItemTags(PlatformLayerKey key) throws PlatformLayerClientException {
+		return platformLayerClient.getItemTags(key);
+	}
+
+	@Override
 	public UntypedItemCollection listItemsUntyped(PlatformLayerKey path) throws PlatformLayerClientException {
 		return platformLayerClient.listItemsUntyped(path);
 	}

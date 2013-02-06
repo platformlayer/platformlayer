@@ -260,7 +260,7 @@ public class DirectPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
-	public <T> T findItem(PlatformLayerKey key) throws OpsException {
+	public <T> T findItem(PlatformLayerKey key) throws PlatformLayerClientException {
 		boolean fetchTags = true;
 		ItemBase managedItem;
 		try {
@@ -269,6 +269,15 @@ public class DirectPlatformLayerClient extends PlatformLayerClientBase {
 			throw new PlatformLayerClientException("Error fetching item", e);
 		}
 		return (T) managedItem;
+	}
+
+	@Override
+	public Tags getItemTags(PlatformLayerKey key) throws PlatformLayerClientException {
+		ItemBase item = findItem(key);
+		if (item == null) {
+			return null;
+		}
+		return item.getTags();
 	}
 
 	protected SecretProvider getSecretProvider() {

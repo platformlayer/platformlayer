@@ -111,4 +111,6 @@ public interface PlatformLayerClient {
 
 	public JobExecutionList listJobExecutions() throws PlatformLayerClientException;
 
+	public Tags getItemTags(PlatformLayerKey key) throws PlatformLayerClientException;
+
 }
