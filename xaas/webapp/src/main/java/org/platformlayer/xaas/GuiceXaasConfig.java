@@ -45,6 +45,7 @@ import org.platformlayer.ops.tasks.OperationQueue;
 import org.platformlayer.ops.templates.FreemarkerTemplateEngine;
 import org.platformlayer.ops.templates.TemplateEngine;
 import org.platformlayer.ssh.mina.MinaSshContext;
+import org.platformlayer.xaas.discovery.AnnotatedClass;
 import org.platformlayer.xaas.discovery.AnnotationDiscovery;
 import org.platformlayer.xaas.discovery.JerseyAnnotationDiscovery;
 import org.platformlayer.xaas.ops.InProcessChangeQueue;
@@ -101,7 +102,22 @@ public class GuiceXaasConfig extends AbstractModule {
 		URLClassLoader urlClassLoader = (URLClassLoader) Thread.currentThread().getContextClassLoader();
 		JerseyAnnotationDiscovery discovery = new JerseyAnnotationDiscovery();
 		discovery.scan(urlClassLoader);
+
 		bind(AnnotationDiscovery.class).toInstance(discovery);
+
+		for (AnnotatedClass annotatedClass : discovery.findAnnotatedClasses(org.platformlayer.xaas.Module.class)) {
+			Class<?> moduleClass = annotatedClass.getSubjectClass();
+
+			com.google.inject.Module module;
+			try {
+				module = (com.google.inject.Module) moduleClass.newInstance();
+			} catch (InstantiationException e) {
+				throw new IllegalStateException("Error creating class: " + moduleClass, e);
+			} catch (IllegalAccessException e) {
+				throw new IllegalStateException("Error creating class: " + moduleClass, e);
+			}
+			this.install(module);
+		}
 
 		HttpStrategy httpStrategy = new InstrumentedApacheHttpStrategy();
 		bind(HttpStrategy.class).toInstance(httpStrategy);
@@ -140,5 +156,4 @@ public class GuiceXaasConfig extends AbstractModule {
 
 		bind(PlatformLayerClient.class).toProvider(PlatformLayerClientProvider.class);
 	}
-
 }

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.platformlayer.xaas.Controller;
+import org.platformlayer.xaas.Module;
 import org.platformlayer.xaas.Service;
 
 import com.google.common.base.Function;
@@ -19,7 +20,7 @@ import com.sun.jersey.spi.scanning.AnnotationScannerListener;
 
 public class JerseyAnnotationDiscovery implements AnnotationDiscovery {
 	static Class<? extends Annotation>[] ANNOTATIONS = (Class<? extends Annotation>[]) new Class<?>[] { Service.class,
-			Controller.class };
+			Controller.class, Module.class };
 
 	final Map<Class<? extends Annotation>, AnnotationDictionary> annotationDictionaries = new MapMaker()
 			.makeComputingMap(new Function<Class<? extends Annotation>, AnnotationDictionary>() {
