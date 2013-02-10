@@ -2,4 +2,8 @@
     <inherits name='org.platformlayer.ModelShared' />
 
     <source path="common" />
+    <source path="jobs/model">
+        <include name="JobState.java" />
+        <include name="IsJobExecution.java" />
+    </source>
 </module>
