@@ -13,8 +13,6 @@ public class JdbcGuiceModule extends AbstractModule {
 		JdbcTransactionInterceptor interceptor = new JdbcTransactionInterceptor(getProvider(DataSource.class));
 		bindInterceptor(Matchers.any(), Matchers.annotatedWith(JdbcTransaction.class), interceptor);
 
-		// install(new FactoryModuleBuilder().build(GuiceDataSourceProvider.Factory.class));
-
 		bind(JdbcConnection.class).toProvider(JdbcConnectionProvider.class);
 	}
 }

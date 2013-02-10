@@ -2,6 +2,9 @@ package org.platformlayer.metrics;
 
 import java.util.List;
 
+import com.google.inject.ImplementedBy;
+
+@ImplementedBy(NullMetricRegistry.class)
 public interface MetricRegistry {
 	void discoverMetrics(Object o);
 

@@ -2,6 +2,8 @@ package org.platformlayer.jdbc;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 import org.slf4j.Logger;
@@ -110,6 +112,24 @@ public class GuiceDataSourceProvider implements Provider<DataSource> {
 		};
 
 		return provider;
+	}
+
+	public static Provider<? extends DataSource> bindJndi(final String key) {
+		Provider<DataSource> provider = new Provider<DataSource>() {
+			@Override
+			public DataSource get() {
+				try {
+					InitialContext context = new InitialContext();
+					DataSource dataSource = (DataSource) context.lookup(key);
+					return dataSource;
+				} catch (NamingException e) {
+					throw new IllegalStateException("Error getting JDNI connection: " + key, e);
+				}
+			}
+		};
+
+		return provider;
+
 	}
 
 }
