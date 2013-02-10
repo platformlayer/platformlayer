@@ -6,8 +6,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.platformlayer.common.IsJobExecution;
-import org.platformlayer.common.JobState;
 import org.platformlayer.core.model.PlatformLayerKey;
 
 @XmlRootElement(name = "jobExecution")

@@ -1,4 +1,4 @@
-package org.platformlayer.common;
+package org.platformlayer.jobs.model;
 
 public class JobLogLineLevels {
 	public final static int LEVEL_FATAL = 50000;

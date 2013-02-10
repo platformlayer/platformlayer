@@ -3,8 +3,6 @@
 
   <xs:import namespace="http://platformlayer.org/core/v1.0" schemaLocation="platformlayer-core.xsd"/>
 
-  <xs:import schemaLocation="schema6.xsd"/>
-
   <xs:element name="job" type="tns:jobData"/>
 
   <xs:element name="jobDataList" type="tns:jobDataList"/>
@@ -43,7 +41,7 @@
     <xs:sequence>
       <xs:element name="jobKey" type="ns1:platformLayerKey" minOccurs="0"/>
       <xs:element name="executionId" type="xs:string" minOccurs="0"/>
-      <xs:element name="state" type="jobState" minOccurs="0"/>
+      <xs:element name="state" type="tns:jobState" minOccurs="0"/>
       <xs:element name="startedAt" type="xs:dateTime" minOccurs="0"/>
       <xs:element name="endedAt" type="xs:dateTime" minOccurs="0"/>
       <xs:element ref="tns:job" minOccurs="0"/>
@@ -69,5 +67,18 @@
       <xs:element name="runs" type="tns:jobExecutionData" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
   </xs:complexType>
+
+  <xs:complexType name="jobLogLineLevels">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:simpleType name="jobState">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="PRESTART"/>
+      <xs:enumeration value="RUNNING"/>
+      <xs:enumeration value="FAILED"/>
+      <xs:enumeration value="SUCCESS"/>
+    </xs:restriction>
+  </xs:simpleType>
 </xs:schema>
 

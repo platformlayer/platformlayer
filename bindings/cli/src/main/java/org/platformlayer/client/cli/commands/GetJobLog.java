@@ -12,10 +12,10 @@ import org.platformlayer.PlatformLayerClientException;
 import org.platformlayer.PlatformLayerClientNotFoundException;
 import org.platformlayer.PrimitiveComparators;
 import org.platformlayer.client.cli.autocomplete.AutoCompleteJobId;
-import org.platformlayer.common.JobState;
 import org.platformlayer.jobs.model.JobExecutionData;
 import org.platformlayer.jobs.model.JobExecutionList;
 import org.platformlayer.jobs.model.JobLog;
+import org.platformlayer.jobs.model.JobState;
 
 import com.fathomdb.cli.autocomplete.AutoCompletor;
 import com.fathomdb.cli.autocomplete.SimpleAutoCompleter;

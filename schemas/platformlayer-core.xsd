@@ -21,8 +21,6 @@
 
   <xs:element name="jobSchedule" type="tns:jobSchedule"/>
 
-  <xs:element name="machineCloudBase" type="tns:machineCloudBase"/>
-
   <xs:element name="managedItemCollection" type="tns:managedItemCollection"/>
 
   <xs:element name="publicEndpointBase" type="tns:publicEndpointBase"/>
@@ -43,6 +41,19 @@
       <xs:element name="namespace" type="xs:string" minOccurs="0"/>
       <xs:element name="description" type="xs:string" minOccurs="0"/>
       <xs:element name="itemTypes" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="propertyList">
+    <xs:sequence>
+      <xs:element name="property" type="tns:property" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="property">
+    <xs:sequence>
+      <xs:element name="key" type="xs:string" minOccurs="0"/>
+      <xs:element name="value" type="xs:string" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -136,7 +147,12 @@
       <xs:element name="groupId" type="xs:string" minOccurs="0"/>
       <xs:element name="scoreSameGroup" type="xs:float"/>
       <xs:element name="scoreSameItemType" type="xs:float"/>
+      <xs:element name="policies" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="hostPolicyTag">
+    <xs:sequence/>
   </xs:complexType>
 
   <xs:complexType name="managedItemCollection">
@@ -159,18 +175,6 @@
     <xs:restriction base="xs:string"/>
   </xs:simpleType>
 
-  <xs:complexType name="untypedItemJson">
-    <xs:sequence/>
-  </xs:complexType>
-
-  <xs:complexType name="machineCloudBase">
-    <xs:complexContent>
-      <xs:extension base="tns:itemBase">
-        <xs:sequence/>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-
   <xs:complexType name="tagChanges">
     <xs:sequence>
       <xs:element name="addTags" type="tns:tags" minOccurs="0"/>
@@ -184,6 +188,16 @@
         <xs:sequence/>
       </xs:extension>
     </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="addressModel">
+    <xs:sequence>
+      <xs:element name="cidr" type="xs:string" minOccurs="0"/>
+      <xs:element name="gateway" type="xs:string" minOccurs="0"/>
+      <xs:element name="netmask" type="xs:string" minOccurs="0"/>
+      <xs:element name="address" type="xs:string" minOccurs="0"/>
+      <xs:element name="protocol" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="backupAction">

@@ -48,9 +48,6 @@ and then manually edited to give us the mappings we want
     <bindings scd="~tns:instanceBase">
       <class ref="org.platformlayer.core.model.InstanceBase"/>
     </bindings>
-    <bindings scd="~tns:machineCloudBase">
-      <class ref="org.platformlayer.core.model.MachineCloudBase"/>
-    </bindings>
   </bindings>
 </bindings>
 

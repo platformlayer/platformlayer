@@ -6,11 +6,11 @@ import java.util.List;
 import org.kohsuke.args4j.Argument;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
-import org.platformlayer.common.JobState;
 import org.platformlayer.jobs.model.JobExecutionData;
 import org.platformlayer.jobs.model.JobExecutionList;
 import org.platformlayer.jobs.model.JobLog;
 import org.platformlayer.jobs.model.JobLogLine;
+import org.platformlayer.jobs.model.JobState;
 
 import com.google.common.base.Strings;
 

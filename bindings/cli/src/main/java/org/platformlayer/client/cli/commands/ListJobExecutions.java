@@ -5,9 +5,9 @@ import java.io.PrintWriter;
 
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
-import org.platformlayer.common.JobState;
 import org.platformlayer.jobs.model.JobExecutionData;
 import org.platformlayer.jobs.model.JobExecutionList;
+import org.platformlayer.jobs.model.JobState;
 import org.platformlayer.xml.JsonHelper;
 
 import com.fathomdb.cli.CliException;

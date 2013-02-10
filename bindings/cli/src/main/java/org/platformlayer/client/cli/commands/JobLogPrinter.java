@@ -3,10 +3,10 @@ package org.platformlayer.client.cli.commands;
 import java.io.PrintWriter;
 import java.util.List;
 
-import org.platformlayer.common.JobLogLineLevels;
 import org.platformlayer.jobs.model.JobLog;
 import org.platformlayer.jobs.model.JobLogExceptionInfo;
 import org.platformlayer.jobs.model.JobLogLine;
+import org.platformlayer.jobs.model.JobLogLineLevels;
 
 import com.fathomdb.cli.commands.Ansi;
 import com.google.common.base.Strings;

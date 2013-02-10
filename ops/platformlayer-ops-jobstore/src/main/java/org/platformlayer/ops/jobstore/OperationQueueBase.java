@@ -7,11 +7,11 @@ import javax.inject.Inject;
 
 import org.platformlayer.RepositoryException;
 import org.platformlayer.TimeSpan;
-import org.platformlayer.common.JobState;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobExecutionData;
 import org.platformlayer.jobs.model.JobExecutionList;
+import org.platformlayer.jobs.model.JobState;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.tasks.OperationQueue;
 import org.platformlayer.xaas.repository.JobRepository;

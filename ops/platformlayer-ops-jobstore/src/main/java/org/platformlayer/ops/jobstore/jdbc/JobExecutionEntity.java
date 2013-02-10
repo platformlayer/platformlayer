@@ -7,7 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.platformlayer.common.JobState;
+import org.platformlayer.jobs.model.JobState;
 
 @Entity()
 @Table(name = "job_execution")

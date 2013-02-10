@@ -1,4 +1,4 @@
-package org.platformlayer.common;
+package org.platformlayer.jobs.model;
 
 import java.util.Date;
 

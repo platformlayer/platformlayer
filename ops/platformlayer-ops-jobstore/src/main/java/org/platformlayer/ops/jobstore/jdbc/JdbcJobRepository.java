@@ -17,7 +17,6 @@ import javax.xml.bind.Unmarshaller;
 
 import org.platformlayer.RepositoryException;
 import org.platformlayer.TimeSpan;
-import org.platformlayer.common.JobState;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ids.ManagedItemId;
@@ -30,6 +29,7 @@ import org.platformlayer.jdbc.proxy.QueryFactory;
 import org.platformlayer.jdbc.simplejpa.JoinedQueryResult;
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobExecutionData;
+import org.platformlayer.jobs.model.JobState;
 import org.platformlayer.xaas.repository.JobRepository;
 import org.platformlayer.xaas.services.ServiceProviderDictionary;
 
