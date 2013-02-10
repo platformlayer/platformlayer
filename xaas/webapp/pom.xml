@@ -13,22 +13,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-validator</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.platformlayer</groupId>
-            <artifactId>platformlayer-xaas-core</artifactId>
-        </dependency>
-
-       <dependency>
-            <groupId>org.platformlayer</groupId>
-            <artifactId>platformlayer-distributed</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.platformlayer</groupId>
             <artifactId>platformlayer-xaas-core</artifactId>
         </dependency>

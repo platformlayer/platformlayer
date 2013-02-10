@@ -47,7 +47,8 @@ public class Extensions {
 					if (!extension.contains(".")) {
 						extension = "org.platformlayer.ops.extensions." + extension;
 					}
-					extensionClass = (Class<? extends ExtensionModule>) Class.forName(extension);
+					ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+					extensionClass = (Class<? extends ExtensionModule>) classLoader.loadClass(extension);
 				} catch (ClassNotFoundException e) {
 					throw new IllegalStateException("Unable to load extension class: " + extension, e);
 				}
@@ -63,7 +64,6 @@ public class Extensions {
 				extensions.add(extensionModule);
 			}
 		}
-
 	}
 
 	public void addFilters(HttpConfiguration http) {
