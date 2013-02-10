@@ -151,6 +151,10 @@
             <artifactId>httpclient</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.platformlayer</groupId>
+            <artifactId>metrics-client</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>com.yammer.metrics</groupId>
