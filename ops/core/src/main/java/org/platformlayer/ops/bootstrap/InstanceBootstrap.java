@@ -41,7 +41,7 @@ public class InstanceBootstrap extends OpsTreeBase {
 		// We currently use socat for CAS peer-to-peer copying
 		// TODO: Can we optimize this away? Using netcat? SSH?
 		addChild(PackageDependency.build("socat"));
-		addChild(PeerToPeerCopy.FirewallRules.class);
+		addChild(SocatPeerToPeerCopy.FirewallRules.class);
 
 		// if (OpsContext.isDelete()) {
 		// OpenstackComputeMachine machine = OpsContext.get().getInstance(OpenstackComputeMachine.class);

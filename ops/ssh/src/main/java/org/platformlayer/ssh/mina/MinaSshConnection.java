@@ -10,6 +10,9 @@ import java.net.Socket;
 import java.security.KeyPair;
 
 import org.apache.sshd.ClientChannel;
+import org.apache.sshd.agent.SshAgent;
+import org.apache.sshd.agent.local.LocalAgentFactory;
+import org.apache.sshd.client.channel.ChannelSession;
 import org.apache.sshd.client.channel.ForwardLocalPort;
 import org.apache.sshd.client.channel.SshTunnelSocket;
 import org.apache.sshd.common.RuntimeSshException;
@@ -166,7 +169,7 @@ public class MinaSshConnection extends SshConnection {
 
 	int sshExecute(String command, final OutputStream stdout, final OutputStream stderr, ProcessStartListener listener,
 			TimeSpan timeout) throws SshException, IOException, InterruptedException {
-		ClientChannel sshChannel = null;
+		ChannelSession sshChannel = null;
 		try {
 			sshChannel = ensureConnected().openSession(command);
 
@@ -277,6 +280,28 @@ public class MinaSshConnection extends SshConnection {
 		MinaSshConnectionWrapper sshConnection = ensureConnected();
 
 		return new SshTunnelSocket(sshConnection.sshClientSession);
+	}
+
+	@Override
+	public SshConnection buildAgentConnection(KeyPair agentKeyPair) throws IOException, SshException {
+		LocalAgentFactory agentFactory = new LocalAgentFactory();
+		SshAgent agent = agentFactory.getAgent();
+		try {
+			agent.addIdentity(agentKeyPair, "default");
+		} catch (IOException e) {
+			throw new IllegalArgumentException("Error adding agent identity", e);
+		}
+		MinaSshConnection agentConnection = new MinaSshConnection(new MinaSshContext(agentFactory));
+
+		agentConnection.setHost(this.getHost());
+		agentConnection.setPort(this.getPort());
+		agentConnection.setUser(this.getUser());
+		agentConnection.setServerKeyVerifier(this.getServerKeyVerifier());
+		agentConnection.setKeyPair(this.getKeyPair());
+
+		agentConnection.ensureConnected();
+
+		return agentConnection;
 	}
 
 	@Override

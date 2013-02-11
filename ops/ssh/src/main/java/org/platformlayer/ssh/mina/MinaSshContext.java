@@ -2,9 +2,9 @@ package org.platformlayer.ssh.mina;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 
 import org.apache.sshd.SshClient;
+import org.apache.sshd.agent.SshAgentFactory;
 import org.apache.sshd.client.keyverifier.DelegatingServerKeyVerifier;
 import org.apache.sshd.common.Channel;
 import org.apache.sshd.common.Compression;
@@ -17,15 +17,19 @@ import org.platformlayer.ops.ssh.SshConnection;
 import org.platformlayer.ssh.mina.ciphers.AES128CTR;
 
 import com.google.common.collect.Lists;
-import com.google.inject.Inject;
 
 public class MinaSshContext implements ISshContext {
 	// public static final MinaSshContext INSTANCE = new MinaSshContext();
 
 	final SshClient client;
+	final SshAgentFactory agentFactory;
 
-	@Inject
-	public MinaSshContext(ExecutorService executorService) {
+	public MinaSshContext() {
+		this(null);
+	}
+
+	public MinaSshContext(SshAgentFactory agentFactory) {
+		this.agentFactory = agentFactory;
 		this.client = SshClient.setUpDefaultClient();
 
 		// this.client = SshClient.setUpDefaultClient(executorService, false, true);
@@ -37,8 +41,20 @@ public class MinaSshContext implements ISshContext {
 		compressionFactories.add(new CompressionNone.Factory());
 		client.setCompressionFactories(compressionFactories);
 
-		// Don't use SSH agent
-		client.setChannelFactories(Collections.<NamedFactory<Channel>> emptyList());
+		if (agentFactory == null) {
+			// Don't use SSH agent
+			client.setChannelFactories(Collections.<NamedFactory<Channel>> emptyList());
+		} else {
+			List<NamedFactory<Channel>> factories = client.getChannelFactories();
+			if (factories == null) {
+				factories = Lists.newArrayList();
+			} else {
+				factories = Lists.newArrayList(factories);
+			}
+			factories.add(agentFactory.getChannelForwardingFactory());
+			client.setChannelFactories(factories);
+			client.setAgentFactory(agentFactory);
+		}
 
 		client.setServerKeyVerifier(new DelegatingServerKeyVerifier());
 
@@ -57,6 +73,10 @@ public class MinaSshContext implements ISshContext {
 		MinaSshConnection sshConnection = new MinaSshConnection(this);
 		sshConnection.setUser(user);
 		return sshConnection;
+	}
+
+	public boolean isAgentForwarding() {
+		return this.agentFactory != null;
 	}
 
 }

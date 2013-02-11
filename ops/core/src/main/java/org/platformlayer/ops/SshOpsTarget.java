@@ -6,8 +6,8 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.security.KeyPair;
 
-import com.fathomdb.Utf8;
 import org.platformlayer.ExceptionUtils;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.ops.networks.NetworkPoint;
@@ -17,6 +17,7 @@ import org.platformlayer.ops.ssh.SshConnection;
 import org.platformlayer.ops.ssh.SshException;
 import org.platformlayer.ops.ssh.SshPortForward;
 
+import com.fathomdb.Utf8;
 import com.google.common.base.Objects;
 import com.google.common.net.InetAddresses;
 
@@ -79,7 +80,17 @@ public class SshOpsTarget extends OpsTargetBase {
 		try {
 			String commandString = command.buildCommandString();
 			TimeSpan timeout = command.getTimeout();
-			return sshConnection.sshExecute(commandString, timeout);
+
+			if (command.getKeyPair() != null) {
+				SshConnection agentConnection = sshConnection.buildAgentConnection(command.getKeyPair());
+				try {
+					return agentConnection.sshExecute(commandString, timeout);
+				} finally {
+					agentConnection.close();
+				}
+			} else {
+				return sshConnection.sshExecute(commandString, timeout);
+			}
 		} catch (IOException e) {
 			throw new ProcessExecutionException("Error during command execution", e);
 		} catch (InterruptedException e) {
@@ -178,4 +189,13 @@ public class SshOpsTarget extends OpsTargetBase {
 	public void setEnsureRunningAsRoot(boolean ensureRunningAsRoot) {
 		this.ensureRunningAsRoot = ensureRunningAsRoot;
 	}
+
+	public KeyPair getKeyPair() {
+		return sshConnection.getKeyPair();
+	}
+
+	public String getUsername() {
+		return sshConnection.getUser();
+	}
+
 }

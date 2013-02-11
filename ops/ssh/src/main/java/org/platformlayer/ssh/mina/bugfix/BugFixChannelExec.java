@@ -3,17 +3,23 @@ package org.platformlayer.ssh.mina.bugfix;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.sshd.ClientChannel;
 import org.apache.sshd.ClientSession;
-import org.apache.sshd.client.channel.ChannelExec;
+import org.apache.sshd.client.channel.ChannelSession;
 import org.apache.sshd.common.SshConstants;
 import org.apache.sshd.common.util.Buffer;
 
-public class BugFixChannelExec extends ChannelExec {
+public class BugFixChannelExec extends ChannelSession {
 	private static final boolean USE_BUG_FIX = true;
 
+	private final String command;
+
+	private boolean agentForwarding;
+
 	public BugFixChannelExec(String command) {
-		super(command);
+		if (command == null) {
+			throw new IllegalArgumentException("command must not be null");
+		}
+		this.command = command;
 	}
 
 	@Override
@@ -87,14 +93,53 @@ public class BugFixChannelExec extends ChannelExec {
 		}
 	}
 
-	public static ClientChannel createExecChannel(ClientSession clientSession, String command) throws Exception {
+	public static ChannelSession createExecChannel(ClientSession clientSession, String command,
+			boolean useAgentForwarding) throws Exception {
 		if (!USE_BUG_FIX) {
 			return clientSession.createExecChannel(command);
 		} else {
 			BugFixChannelExec channel = new BugFixChannelExec(command);
+
+			if (useAgentForwarding) {
+				channel.setAgentForwarding(true);
+			}
+
 			((org.apache.sshd.client.session.ClientSessionImpl) clientSession).registerChannel(channel);
 			return channel;
 		}
+	}
+
+	@Override
+	protected void doOpen() throws Exception {
+		super.doOpen();
+
+		Buffer buffer;
+
+		if (agentForwarding) {
+			log.info("Send agent forwarding request");
+			buffer = session.createBuffer(SshConstants.Message.SSH_MSG_CHANNEL_REQUEST, 0);
+			buffer.putInt(recipient);
+			buffer.putString("auth-agent-req@openssh.com");
+			buffer.putBoolean(false);
+			session.writePacket(buffer);
+		}
+
+		log.info("Send SSH_MSG_CHANNEL_REQUEST exec");
+		buffer = session.createBuffer(SshConstants.Message.SSH_MSG_CHANNEL_REQUEST, 0);
+		buffer.putInt(recipient);
+		buffer.putString("exec");
+		buffer.putBoolean(false);
+		buffer.putString(command);
+		session.writePacket(buffer);
+
+	}
+
+	public boolean isAgentForwarding() {
+		return agentForwarding;
+	}
+
+	public void setAgentForwarding(boolean agentForwarding) {
+		this.agentForwarding = agentForwarding;
 	}
 
 }

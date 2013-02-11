@@ -24,7 +24,7 @@ import org.platformlayer.ops.dns.DnsResolver;
 import org.platformlayer.ops.filesystem.ManagedDirectory;
 import org.platformlayer.ops.helpers.ServiceContext;
 import org.platformlayer.ops.helpers.SshKeys;
-import org.platformlayer.ops.images.direct.PeerToPeerCopy;
+import org.platformlayer.ops.images.direct.SocatPeerToPeerCopy;
 import org.platformlayer.ops.machines.PlatformLayerCloudContext;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.networks.NetworkPoint;
@@ -125,7 +125,7 @@ public class DirectHostController extends OpsTreeBase implements CasStoreProvide
 		host.addChild(PackageDependency.build("bzip2"));
 		host.addChild(PackageDependency.build("socat"));
 
-		host.addChild(PeerToPeerCopy.FirewallRules.class);
+		host.addChild(SocatPeerToPeerCopy.FirewallRules.class);
 
 		{
 			PlatformLayerKey owner = model.getKey();

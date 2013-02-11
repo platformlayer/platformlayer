@@ -4,10 +4,10 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.security.KeyPair;
 
-import org.apache.sshd.ClientChannel;
 import org.apache.sshd.ClientSession;
 import org.apache.sshd.SshClient;
 import org.apache.sshd.client.ServerKeyVerifier;
+import org.apache.sshd.client.channel.ChannelSession;
 import org.apache.sshd.client.future.ConnectFuture;
 import org.platformlayer.ExceptionUtils;
 import org.platformlayer.TimeSpan;
@@ -82,9 +82,12 @@ public class MinaSshConnectionWrapper implements Closeable {
 		}
 	}
 
-	public ClientChannel openSession(String command) throws SshException {
+	public ChannelSession openSession(String command) throws SshException {
 		try {
-			ClientChannel clientChannel = BugFixChannelExec.createExecChannel(sshClientSession, command);
+			boolean useAgentForwarding = sshContext.isAgentForwarding();
+
+			ChannelSession clientChannel = BugFixChannelExec.createExecChannel(sshClientSession, command,
+					useAgentForwarding);
 			return clientChannel;
 		} catch (Exception e) {
 			ExceptionUtils.handleInterrupted(e);

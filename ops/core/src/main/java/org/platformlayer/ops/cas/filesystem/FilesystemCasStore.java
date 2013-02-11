@@ -4,8 +4,8 @@ import java.io.File;
 
 import org.platformlayer.cas.CasLocation;
 import org.platformlayer.cas.CasStore;
-import org.platformlayer.cas.CasStoreObject;
 import org.platformlayer.cas.CasStoreInfo;
+import org.platformlayer.cas.CasStoreObject;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsException;

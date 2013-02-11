@@ -45,6 +45,8 @@ public abstract class SshConnection implements Closeable {
 		return execution;
 	}
 
+	public abstract SshConnection buildAgentConnection(KeyPair agentKeyPair) throws IOException, SshException;
+
 	protected abstract ProcessExecution sshExecute0(String command, TimeSpan timeout) throws SshException, IOException,
 			InterruptedException;
 
@@ -127,4 +129,5 @@ public abstract class SshConnection implements Closeable {
 	public void setServerKeyVerifier(IServerKeyVerifier serverKeyVerifier) {
 		this.serverKeyVerifier = serverKeyVerifier;
 	}
+
 }

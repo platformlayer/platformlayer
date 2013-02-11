@@ -2,9 +2,10 @@ package org.platformlayer.ops;
 
 import java.io.File;
 
-import com.fathomdb.hash.Md5Hash;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.process.ProcessExecution;
+
+import com.fathomdb.hash.Md5Hash;
 
 /**
  * Creates a target out of machine image that we have to chroot into. Although the default implementations of many
@@ -59,6 +60,11 @@ public class ChrootOpsTarget extends OpsTargetBase {
 	@Override
 	protected ProcessExecution executeCommandUnchecked(Command command) throws OpsException {
 		// Command innerCommand = Command.build("chroot {0} {1}", chrootDir, command.buildCommandString());
+
+		if (command.getKeyPair() != null) {
+			// Might work, but untested
+			throw new UnsupportedOperationException();
+		}
 
 		Command innerCommand = command.prefix("chroot", chrootDir);
 

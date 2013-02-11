@@ -3,10 +3,11 @@ package org.platformlayer.ops;
 import java.io.File;
 import java.util.List;
 
-import com.fathomdb.hash.Md5Hash;
 import org.platformlayer.ops.filesystem.FilesystemInfo;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.process.ProcessExecution;
+
+import com.fathomdb.hash.Md5Hash;
 
 public interface OpsTarget {
 	void doUpload(FileUpload upload) throws OpsException;

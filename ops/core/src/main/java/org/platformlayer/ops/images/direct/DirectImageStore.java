@@ -8,7 +8,6 @@ import java.util.concurrent.ExecutorService;
 
 import javax.inject.Inject;
 
-import org.slf4j.*;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.Tags;
@@ -19,6 +18,8 @@ import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.images.CloudImage;
 import org.platformlayer.ops.images.ImageStore;
 import org.platformlayer.ops.images.PropertiesFileStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 

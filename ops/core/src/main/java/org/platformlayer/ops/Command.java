@@ -3,6 +3,7 @@ package org.platformlayer.ops;
 import java.io.File;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
+import java.security.KeyPair;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -66,6 +67,8 @@ public class Command {
 
 	private TimeSpan timeout = TimeSpan.TWO_MINUTES;
 	private CommandEnvironment env;
+
+	private KeyPair keyPair;
 
 	// private Command(String executable) {
 	// this();
@@ -371,6 +374,14 @@ public class Command {
 		Command command = new Command();
 		command.addFile(executable);
 		return command;
+	}
+
+	public KeyPair getKeyPair() {
+		return keyPair;
+	}
+
+	public void setKeyPair(KeyPair keyPair) {
+		this.keyPair = keyPair;
 	}
 
 }

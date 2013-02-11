@@ -143,7 +143,7 @@ public class MinaScpClient {
 			log.debug("SCP Opening channel for cmd: " + cmd);
 
 			try {
-				channel = BugFixChannelExec.createExecChannel(clientSession, cmd);
+				channel = BugFixChannelExec.createExecChannel(clientSession, cmd, false);
 			} catch (Exception e1) {
 				throw new IOException("Cannot create channel", e1);
 			}
