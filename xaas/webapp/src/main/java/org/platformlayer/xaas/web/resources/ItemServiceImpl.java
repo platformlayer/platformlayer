@@ -15,6 +15,7 @@ import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
+import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceType;
@@ -303,6 +304,30 @@ public class ItemServiceImpl implements ItemService {
 						item.setKey(existing.getKey());
 
 						newItem = repository.updateManagedItem(project, item);
+
+						TagChanges tagChanges = new TagChanges();
+						for (Tag tag : item.getTags()) {
+							if (newItem.getTags().hasTag(tag)) {
+								continue;
+							}
+
+							boolean uniqueTagKey = false;
+							if (tag.getKey().equals(Tag.PARENT.getKey())) {
+								uniqueTagKey = true;
+							}
+
+							tagChanges.addTags.add(tag);
+
+							if (uniqueTagKey) {
+								for (Tag oldTag : newItem.getTags().findTags(tag.getKey())) {
+									tagChanges.removeTags.add(oldTag);
+								}
+							}
+						}
+
+						if (!tagChanges.isEmpty()) {
+							repository.changeTags(modelClass, project, newItem.getKey().getItemId(), tagChanges, null);
+						}
 					}
 				} catch (RepositoryException e) {
 					throw new OpsException("Error writing object to database", e);
