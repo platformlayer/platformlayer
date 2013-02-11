@@ -17,7 +17,6 @@ import org.platformlayer.ops.metrics.MetricsManager;
 import org.platformlayer.ops.supervisor.StandardService;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
-import com.google.common.base.Supplier;
 import com.google.inject.util.Providers;
 
 public abstract class StandardServiceInstance extends OpsTreeBase {
@@ -96,19 +95,14 @@ public abstract class StandardServiceInstance extends OpsTreeBase {
 	protected void addConfigurationFile(final StandardTemplateData template) throws OpsException {
 		PropertiesConfigFile conf = addChild(PropertiesConfigFile.class);
 		conf.filePath = template.getConfigurationFile();
-		conf.propertiesSupplier = new Supplier<Map<String, String>>() {
-
+		conf.propertiesSupplier = new OpsProvider<Map<String, String>>() {
 			@Override
-			public Map<String, String> get() {
-				try {
-					Map<String, String> properties = template.getConfigurationProperties();
+			public Map<String, String> get() throws OpsException {
+				Map<String, String> properties = template.getConfigurationProperties();
 
-					template.addMetricsProperties(properties);
+				template.addMetricsProperties(properties);
 
-					return properties;
-				} catch (OpsException e) {
-					throw new IllegalStateException("Error building configuration", e);
-				}
+				return properties;
 			}
 		};
 	}

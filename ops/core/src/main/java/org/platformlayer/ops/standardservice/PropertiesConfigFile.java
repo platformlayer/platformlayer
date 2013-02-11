@@ -4,16 +4,16 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
 
-import com.fathomdb.Utf8;
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.OpsProvider;
 import org.platformlayer.ops.filesystem.SyntheticFile;
 
+import com.fathomdb.Utf8;
 import com.fathomdb.properties.PropertyUtils;
-import com.google.common.base.Supplier;
 
 public class PropertiesConfigFile extends SyntheticFile {
 
-	public Supplier<Map<String, String>> propertiesSupplier;
+	public OpsProvider<Map<String, String>> propertiesSupplier;
 
 	@Override
 	protected byte[] getContentsBytes() throws OpsException {
