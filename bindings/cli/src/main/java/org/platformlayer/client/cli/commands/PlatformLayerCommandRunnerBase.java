@@ -43,6 +43,10 @@ public abstract class PlatformLayerCommandRunnerBase extends CommandRunnerBase {
 		return results;
 	}
 
+	protected ProjectId getProject() {
+		return getContext().getProject();
+	}
+
 	protected static String getServiceTypeFromItemType(PlatformLayerClient client, String itemType)
 			throws PlatformLayerClientException {
 		Iterable<ServiceInfo> serviceInfo = client.listServices(true);

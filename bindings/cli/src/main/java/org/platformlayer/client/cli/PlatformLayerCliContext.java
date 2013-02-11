@@ -84,7 +84,7 @@ public class PlatformLayerCliContext extends CliContextBase {
 		return items;
 	}
 
-	public PlatformLayerKey pathToItem(String path) throws PlatformLayerClientException {
+	public PlatformLayerKey pathToItem(ProjectId project, String path) throws PlatformLayerClientException {
 		String serviceType = null;
 		String itemType = null;
 		String itemId = null;
@@ -143,9 +143,12 @@ public class PlatformLayerCliContext extends CliContextBase {
 		}
 
 		FederationKey host = null;
-		ProjectId project = null;
 		return new PlatformLayerKey(host, project, new ServiceType(serviceType), new ItemType(itemType),
 				new ManagedItemId(itemId));
+	}
+
+	public ProjectId getProject() {
+		return getPlatformLayerClient().getProject();
 	}
 
 }

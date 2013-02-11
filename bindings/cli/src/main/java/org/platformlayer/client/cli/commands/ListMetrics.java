@@ -18,10 +18,11 @@ public class ListMetrics extends PlatformLayerCommandRunnerBase {
 	public Object runCommand() throws PlatformLayerClientException {
 		PlatformLayerClient client = getPlatformLayerClient();
 
-		PlatformLayerKey key = getContext().pathToItem(path);
+		PlatformLayerKey key = getContext().pathToItem(getProject(), path);
 
 		MetricInfoCollection items = client.listMetrics(key);
 
 		return items;
 	}
+
 }

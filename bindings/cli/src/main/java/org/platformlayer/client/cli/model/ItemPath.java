@@ -15,7 +15,7 @@ public class ItemPath extends StringWrapper {
 	}
 
 	public PlatformLayerKey resolve(PlatformLayerCliContext context) throws PlatformLayerClientException {
-		return context.pathToItem(this.getKey());
+		return context.pathToItem(context.getProject(), this.getKey());
 	}
 
 }
