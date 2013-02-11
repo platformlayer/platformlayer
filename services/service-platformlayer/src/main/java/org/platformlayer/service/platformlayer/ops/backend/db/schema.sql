@@ -1,16 +1,20 @@
 create table services (id serial, key text, primary key (key));
+create unique index services_id on services (id);
 grant all on services to platformlayer_ops;
 grant all on services_id_seq to platformlayer_ops;
 
 create table project_codes (id serial, key text, primary key (key));
+create unique index project_codes_id on project_codes (id);
 grant all on project_codes to platformlayer_ops;
 grant all on project_codes_id_seq to platformlayer_ops;
 
 create table metadata_keys (id serial, key text, primary key (key));
+create unique index metadata_keys_id on metadata_keys (id);
 grant all on metadata_keys to platformlayer_ops;
 grant all on metadata_keys_id_seq to platformlayer_ops;
 
 create table item_types (id serial, key text, primary key (key));
+create unique index item_types_id on item_types (id);
 grant all on item_types to platformlayer_ops;
 grant all on item_types_id_seq to platformlayer_ops;
 
@@ -26,6 +30,8 @@ grant all on project_metadata to platformlayer_ops;
 create table items (service int, model int, project int, id serial, key varchar(512), state int, data bytea, secret bytea, primary key (service, model, project, id));
 grant all on items_id_seq to platformlayer_ops;
 grant all on items to platformlayer_ops;
+
+create unique index item_key ON items (service, model, project, key);
 
 create table item_tags (id serial, service int, model int, project int, item int, key text, data text);
 create index item_tags_index on item_tags (project, service, model, item);
