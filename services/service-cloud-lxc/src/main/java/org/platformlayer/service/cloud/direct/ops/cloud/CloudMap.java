@@ -5,6 +5,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.platformlayer.choice.Chooser;
+import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.helpers.InstanceHelpers;
@@ -15,6 +16,7 @@ import org.platformlayer.service.cloud.direct.model.DirectHost;
 import org.platformlayer.service.cloud.direct.model.DirectInstance;
 import org.platformlayer.service.cloud.direct.ops.DirectCloudUtils;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
 public class CloudMap {
@@ -52,10 +54,14 @@ public class CloudMap {
 
 	List<DirectCloudHost> hosts;
 
-	private List<DirectCloudHost> getHosts() throws OpsException {
+	private List<DirectCloudHost> getHosts(PlatformLayerKey cloudKey) throws OpsException {
 		if (this.hosts == null) {
 			List<DirectCloudHost> hosts = Lists.newArrayList();
 			for (DirectHost host : platformLayer.listItems(DirectHost.class)) {
+				if (!Objects.equal(host.cloud, cloudKey)) {
+					continue;
+				}
+
 				OpsTarget target = directHelpers.toTarget(host);
 
 				hosts.add(new DirectCloudHost(host, target));
@@ -85,7 +91,7 @@ public class CloudMap {
 	// // }
 	//
 	public DirectCloudHost pickHost(DirectInstance model) throws OpsException {
-		List<DirectCloudHost> hosts = getHosts();
+		List<DirectCloudHost> hosts = getHosts(model.cloud);
 
 		Chooser<DirectCloudHost> chooser = buildChooser(model);
 		return chooser.choose(hosts);
