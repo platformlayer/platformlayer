@@ -11,7 +11,7 @@ import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OperationRecursor;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.databases.Database;
+import org.platformlayer.ops.databases.DatabaseServer;
 import org.platformlayer.ops.databases.DatabaseTarget;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.helpers.ProviderHelper;
@@ -49,18 +49,18 @@ public class DatabaseConnection extends OpsTreeBase implements CustomRecursor {
 	public void doRecurseOperation() throws OpsException {
 		ItemBase server = platformLayer.getItem(serverKey);
 
-		Database database = providers.toInterface(server, Database.class);
+		DatabaseServer database = providers.toInterface(server, DatabaseServer.class);
 
 		String username = this.username;
 		if (username == null) {
-			username = database.getRootUsername(server);
+			username = database.getRootUsername();
 		}
 
 		if (username.equals("postgres") && password == null) {
-			password = database.getRootPassword(server);
+			password = database.getRootPassword();
 		}
 
-		DatabaseTarget dbTarget = database.buildDatabaseTarget(server, username, password, databaseName);
+		DatabaseTarget dbTarget = database.buildDatabaseTarget(username, password, databaseName);
 		BindingScope scope = BindingScope.push(dbTarget);
 		try {
 			OpsContext opsContext = OpsContext.get();

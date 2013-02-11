@@ -11,8 +11,8 @@ import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Secret;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.databases.Database;
 import org.platformlayer.ops.databases.DatabaseHelper;
+import org.platformlayer.ops.databases.DatabaseServer;
 import org.platformlayer.service.gerrit.model.GerritDatabase;
 import org.platformlayer.service.gerrit.model.GerritService;
 import org.platformlayer.service.jetty.ops.JettyTemplate;
@@ -89,9 +89,9 @@ public class GerritTemplate extends JettyTemplate {
 		PlatformLayerKey serverKey = getDatabase().server;
 
 		ItemBase serverItem = (ItemBase) platformLayer.getItem(serverKey);
-		Database server = databases.toDatabase(serverItem);
+		DatabaseServer server = databases.toDatabase(serverItem);
 
-		String jdbc = server.getJdbcUrl(serverItem, getDatabaseName(), InetAddressChooser.preferIpv6());
+		String jdbc = server.getJdbcUrl(getDatabaseName(), InetAddressChooser.preferIpv6());
 		return jdbc;
 	}
 

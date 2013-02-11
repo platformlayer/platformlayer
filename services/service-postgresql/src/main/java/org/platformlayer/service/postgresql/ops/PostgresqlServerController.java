@@ -7,11 +7,12 @@ import javax.inject.Inject;
 
 import org.platformlayer.InetAddressChooser;
 import org.platformlayer.core.model.Secret;
+import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
-import org.platformlayer.ops.databases.Database;
+import org.platformlayer.ops.databases.DatabaseServer;
 import org.platformlayer.ops.databases.DatabaseTarget;
 import org.platformlayer.ops.databases.TunneledDatabaseTarget;
 import org.platformlayer.ops.filesystem.TemplatedFile;
@@ -28,12 +29,15 @@ import org.platformlayer.service.postgresql.model.PostgresqlServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PostgresqlServerController extends OpsTreeBase implements Database {
+public class PostgresqlServerController extends OpsTreeBase implements DatabaseServer {
 
 	private static final Logger log = LoggerFactory.getLogger(PostgresqlServerController.class);
 
 	@Inject
 	InstanceHelpers instanceHelpers;
+
+	@Bound
+	PostgresqlServer model;
 
 	@Handler
 	public void handler() throws OpsException {
@@ -42,7 +46,6 @@ public class PostgresqlServerController extends OpsTreeBase implements Database 
 	@Override
 	protected void addChildren() throws OpsException {
 		PostgresqlTemplateVariables template = injected(PostgresqlTemplateVariables.class);
-		PostgresqlServer model = template.getModel();
 
 		InstanceBuilder instance = InstanceBuilder.build(model.dnsName, this);
 		// TODO: Memory _really_ needs to be configurable here!
@@ -93,10 +96,8 @@ public class PostgresqlServerController extends OpsTreeBase implements Database 
 	}
 
 	@Override
-	public String getJdbcUrl(Object obj, String databaseName, InetAddressChooser chooser) throws OpsException {
-		PostgresqlServer database = (PostgresqlServer) obj;
-
-		Machine itemMachine = instanceHelpers.getMachine(database);
+	public String getJdbcUrl(String databaseName, InetAddressChooser chooser) throws OpsException {
+		Machine itemMachine = instanceHelpers.getMachine(model);
 
 		InetAddress address = itemMachine.getBestAddress(NetworkPoint.forTargetInContext(), 5432, chooser);
 		String host = address.getHostAddress();
@@ -107,22 +108,19 @@ public class PostgresqlServerController extends OpsTreeBase implements Database 
 	}
 
 	@Override
-	public Secret getRootPassword(Object obj) {
-		PostgresqlServer database = (PostgresqlServer) obj;
-
-		return database.rootPassword;
+	public Secret getRootPassword() {
+		return model.rootPassword;
 	}
 
 	@Override
-	public String getRootUsername(Object objr) {
+	public String getRootUsername() {
 		return "postgres";
 	}
 
 	@Override
-	public DatabaseTarget buildDatabaseTarget(Object obj, String username, Secret password, String databaseName)
+	public DatabaseTarget buildDatabaseTarget(String username, Secret password, String databaseName)
 			throws OpsException {
-		PostgresqlServer server = (PostgresqlServer) obj;
-		OpsTarget target = instanceHelpers.getTarget(server);
+		OpsTarget target = instanceHelpers.getTarget(model);
 
 		// Machine machine = instanceHelpers.getMachine(pgServer);
 		//

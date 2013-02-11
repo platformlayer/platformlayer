@@ -17,8 +17,8 @@ import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Command.Argument;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.databases.Database;
 import org.platformlayer.ops.databases.DatabaseHelper;
+import org.platformlayer.ops.databases.DatabaseServer;
 import org.platformlayer.ops.java.JavaCommandBuilder;
 import org.platformlayer.ops.standardservice.StandardTemplateData;
 import org.platformlayer.service.platformlayer.model.PlatformLayerDatabase;
@@ -118,9 +118,9 @@ public class PlatformLayerInstanceModel extends StandardTemplateData {
 		PlatformLayerKey serverKey = getDatabase().server;
 
 		ItemBase serverItem = (ItemBase) platformLayer.getItem(serverKey);
-		Database server = databases.toDatabase(serverItem);
+		DatabaseServer server = databases.toDatabase(serverItem);
 
-		String jdbc = server.getJdbcUrl(serverItem, getDatabaseName(), InetAddressChooser.preferIpv6());
+		String jdbc = server.getJdbcUrl(getDatabaseName(), InetAddressChooser.preferIpv6());
 		return jdbc;
 	}
 

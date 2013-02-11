@@ -9,8 +9,8 @@ import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Secret;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.databases.Database;
 import org.platformlayer.ops.databases.DatabaseHelper;
+import org.platformlayer.ops.databases.DatabaseServer;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.standardservice.StandardTemplateData;
 import org.platformlayer.service.platformlayer.model.PlatformLayerAuthDatabase;
@@ -63,9 +63,9 @@ public abstract class CommonAuthTemplateData extends StandardTemplateData {
 		PlatformLayerKey serverKey = getAuthDatabase().server;
 
 		ItemBase serverItem = (ItemBase) platformLayer.getItem(serverKey);
-		Database server = databases.toDatabase(serverItem);
+		DatabaseServer server = databases.toDatabase(serverItem);
 
-		String jdbc = server.getJdbcUrl(serverItem, getAuthDatabaseName(), InetAddressChooser.preferIpv6());
+		String jdbc = server.getJdbcUrl(getAuthDatabaseName(), InetAddressChooser.preferIpv6());
 		return jdbc;
 	}
 

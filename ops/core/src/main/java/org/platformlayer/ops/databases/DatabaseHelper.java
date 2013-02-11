@@ -39,8 +39,8 @@ public class DatabaseHelper {
 	// return proxies;
 	// }
 
-	public Database toDatabase(ItemBase item) throws OpsException {
-		return providerHelper.toInterface(item, Database.class);
+	public DatabaseServer toDatabase(ItemBase item) throws OpsException {
+		return providerHelper.toInterface(item, DatabaseServer.class);
 	}
 
 }
