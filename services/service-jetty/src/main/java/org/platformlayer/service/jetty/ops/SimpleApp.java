@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
@@ -16,6 +18,7 @@ import org.platformlayer.ops.filesystem.TemplatedFile;
 import org.platformlayer.ops.standardservice.PropertiesConfigFile;
 import org.platformlayer.ops.templates.TemplateDataSource;
 import org.platformlayer.ops.tree.OpsTreeBase;
+import org.platformlayer.ops.uses.ConsumeHelpers;
 import org.platformlayer.service.jetty.model.JettyContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +33,9 @@ public class SimpleApp extends OpsTreeBase {
 
 	@Bound
 	JettyTemplate jettyTemplate;
+
+	@Inject
+	ConsumeHelpers consumeHelper;
 
 	public File getWorkDir() {
 		File workDir = new File(jettyTemplate.getBaseDir(), "work/" + key);
@@ -74,7 +80,7 @@ public class SimpleApp extends OpsTreeBase {
 			conf.filePath = getConfigurationFilePath();
 			conf.propertiesSupplier = new OpsProvider<Map<String, String>>() {
 				@Override
-				public Map<String, String> get() {
+				public Map<String, String> get() throws OpsException {
 					return getConfigurationProperties();
 				}
 			};
@@ -85,8 +91,10 @@ public class SimpleApp extends OpsTreeBase {
 		addChild(TemplatedFile.build(contextTemplate, new File(contextDir, "context.xml")));
 	}
 
-	protected Map<String, String> getConfigurationProperties() {
+	protected Map<String, String> getConfigurationProperties() throws OpsException {
 		Map<String, String> config = Maps.newHashMap();
+
+		config.putAll(consumeHelper.buildConfigProperties(context.use));
 
 		return config;
 	}

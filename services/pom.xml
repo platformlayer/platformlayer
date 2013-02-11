@@ -23,6 +23,7 @@
         <module>service-gitlab</module>
         <module>service-jenkins</module>
         <module>service-collectd</module>
+        <module>service-database</module>
         <module>service-postgresql</module>
         <module>service-tomcat</module>
         <module>service-jetty</module>
