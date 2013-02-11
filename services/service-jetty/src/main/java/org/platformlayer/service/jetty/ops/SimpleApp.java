@@ -47,6 +47,8 @@ public class SimpleApp extends OpsTreeBase {
 			Map<String, String> contextParameters = Maps.newHashMap();
 
 			contextParameters.put("conf", getConfigurationFilePath().getAbsolutePath());
+			contextParameters.put("org.eclipse.jetty.servlet.Default.dirAllowed", "false");
+
 			return contextParameters;
 		}
 	}
