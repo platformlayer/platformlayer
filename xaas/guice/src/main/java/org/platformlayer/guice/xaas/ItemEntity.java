@@ -28,4 +28,11 @@ public class ItemEntity {
 
 	@Column
 	public byte[] secret;
+
+	@Override
+	public String toString() {
+		return "ItemEntity [id=" + id + ", service=" + service + ", model=" + model + ", key=" + key + ", state="
+				+ state + "]";
+	}
+
 }
