@@ -71,7 +71,7 @@ public class JettyInstance extends StandardServiceInstance {
 					key = "root";
 				}
 				app.key = key;
-				app.source = context.source;
+				app.context = context;
 			}
 		}
 

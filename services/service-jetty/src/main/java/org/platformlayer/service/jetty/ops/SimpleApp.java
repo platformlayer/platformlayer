@@ -2,46 +2,97 @@ package org.platformlayer.service.jetty.ops;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.OpsProvider;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.filesystem.DownloadFileByHash;
+import org.platformlayer.ops.filesystem.ManagedDirectory;
 import org.platformlayer.ops.filesystem.ManagedSymlink;
 import org.platformlayer.ops.filesystem.TemplatedFile;
+import org.platformlayer.ops.standardservice.PropertiesConfigFile;
+import org.platformlayer.ops.templates.TemplateDataSource;
 import org.platformlayer.ops.tree.OpsTreeBase;
+import org.platformlayer.service.jetty.model.JettyContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SimpleApp extends OpsTreeBase {
+import com.google.common.collect.Maps;
 
+public class SimpleApp extends OpsTreeBase {
 	private static final Logger log = LoggerFactory.getLogger(SimpleApp.class);
 
 	public String key;
-	public String source;
+	public JettyContext context;
 
 	@Bound
-	JettyTemplate template;
+	JettyTemplate jettyTemplate;
+
+	public File getWorkDir() {
+		File workDir = new File(jettyTemplate.getBaseDir(), "work/" + key);
+		return workDir;
+	}
+
+	class ContextTemplate implements TemplateDataSource {
+
+		@Override
+		public void buildTemplateModel(Map<String, Object> model) throws OpsException {
+			model.put("contextParameters", getContextParameters().entrySet());
+		}
+
+		public Map<String, String> getContextParameters() {
+			Map<String, String> contextParameters = Maps.newHashMap();
+
+			contextParameters.put("conf", getConfigurationFilePath().getAbsolutePath());
+			return contextParameters;
+		}
+	}
 
 	@Handler
 	public void handler(OpsTarget target) throws IOException, OpsException {
 	}
 
+	public File getConfigurationFilePath() {
+		return new File(getWorkDir(), "configuration.properties");
+	}
+
 	@Override
 	protected void addChildren() throws OpsException {
 		DownloadFileByHash download = addChild(buildDownload());
-		File deployed = new File(template.getWarsDeployDir(), getWarName());
+		File deployed = new File(jettyTemplate.getWarsDeployDir(), getWarName());
 		addChild(ManagedSymlink.build(deployed, download.filePath));
 
-		File contextDir = template.getContextDir();
-		addChild(TemplatedFile.build(template, new File(contextDir, "context.xml")));
+		addChild(ManagedDirectory.build(getWorkDir(), "0700"));
+
+		{
+			PropertiesConfigFile conf = addChild(PropertiesConfigFile.class);
+			conf.filePath = getConfigurationFilePath();
+			conf.propertiesSupplier = new OpsProvider<Map<String, String>>() {
+				@Override
+				public Map<String, String> get() {
+					return getConfigurationProperties();
+				}
+			};
+		}
+
+		File contextDir = jettyTemplate.getContextDir();
+		ContextTemplate contextTemplate = new ContextTemplate();
+		addChild(TemplatedFile.build(contextTemplate, new File(contextDir, "context.xml")));
+	}
+
+	protected Map<String, String> getConfigurationProperties() {
+		Map<String, String> config = Maps.newHashMap();
+
+		return config;
 	}
 
 	protected DownloadFileByHash buildDownload() {
 		DownloadFileByHash download = injected(DownloadFileByHash.class);
-		download.filePath = new File(template.getWarsStagingDir(), getWarName());
-		download.specifier = source;
+		download.filePath = new File(jettyTemplate.getWarsStagingDir(), getWarName());
+		download.specifier = context.source;
 
 		return download;
 	}

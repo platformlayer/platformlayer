@@ -20,6 +20,13 @@ detected.
   <Set name="contextPath">/</Set>
   <Set name="war"><SystemProperty name="jetty.home" default="."/>/webapps/root.war</Set>
 
+<#list contextParameters as contextParameter>
+    <Call name="setInitParameter">
+        <Arg>${contextParameter.key}</Arg>
+        <Arg>${contextParameter.value}</Arg>
+    </Call>
+</#list>
+
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <!-- Optional context configuration                                  -->
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->

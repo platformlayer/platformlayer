@@ -118,7 +118,14 @@ public class ConfigurationImpl implements Configuration {
 	}
 
 	public static ConfigurationImpl load() {
-		String configFilePath = System.getProperty("conf");
+		return load(null);
+	}
+
+	public static ConfigurationImpl load(String configFilePath) {
+		if (configFilePath == null) {
+			configFilePath = System.getProperty("conf");
+		}
+
 		if (configFilePath == null) {
 			configFilePath = System.getenv("CONFIGURATION_FILE");
 		}
