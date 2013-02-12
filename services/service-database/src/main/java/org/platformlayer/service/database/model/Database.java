@@ -22,5 +22,5 @@ public class Database extends ItemBase {
 	@Generate
 	public Secret password;
 
-	public String databaseName;
+	public String databaseName = "main";
 }
