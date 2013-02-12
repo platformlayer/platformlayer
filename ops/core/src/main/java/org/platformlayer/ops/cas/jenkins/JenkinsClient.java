@@ -10,9 +10,10 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.slf4j.*;
 import org.platformlayer.PlatformLayerClientBase;
 import org.platformlayer.xml.XmlHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -276,7 +277,14 @@ public class JenkinsClient {
 	}
 
 	public BuildInfo findBuildInfo(BuildId build) throws JenkinsException {
-		String relativeUrl = "job/" + build.getJobKey() + "/" + build.getNumber() + "/";
+		String jobKey = build.getJobKey();
+		if (jobKey.contains(":")) {
+			// A maven module; use the parent
+
+			String parent = jobKey.substring(0, jobKey.indexOf('/'));
+			jobKey = parent;
+		}
+		String relativeUrl = "job/" + jobKey + "/" + build.getNumber() + "/";
 
 		return findBuildInfo(relativeUrl, null);
 	}
