@@ -138,8 +138,16 @@ public class PlatformLayerCliContext extends CliContextBase {
 
 		itemId = Joiner.on('/').join(components);
 
-		if (serviceType == null || itemType == null || Strings.isNullOrEmpty(itemId)) {
-			throw new IllegalArgumentException("Cannot resolve path: " + path);
+		if (serviceType == null) {
+			throw new IllegalArgumentException("Cannot resolve path (service type not resolved): " + path);
+		}
+
+		if (itemType == null) {
+			throw new IllegalArgumentException("Cannot resolve path (item type not resolved): " + path);
+		}
+
+		if (Strings.isNullOrEmpty(itemId)) {
+			throw new IllegalArgumentException("Cannot resolve path (item id not resolved): " + path);
 		}
 
 		FederationKey host = null;
