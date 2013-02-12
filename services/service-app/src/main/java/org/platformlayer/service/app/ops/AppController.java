@@ -49,6 +49,8 @@ public class AppController extends OpsTreeBase implements HasPorts {
 			JettyContext context = new JettyContext();
 			context.id = null;
 			context.source = model.source;
+			context.use = model.use;
+
 			server.contexts.add(context);
 
 			Tag uniqueTag = UniqueTag.build(model);

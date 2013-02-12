@@ -1,5 +1,7 @@
 package org.platformlayer.service.app.model;
 
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -18,4 +20,6 @@ public class App extends ItemBase {
 	public String source;
 
 	public PlatformLayerKey sslKey;
+
+	public List<PlatformLayerKey> use;
 }
