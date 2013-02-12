@@ -57,12 +57,16 @@ import org.platformlayer.xaas.services.ChangeQueue;
 import org.platformlayer.xaas.services.ServiceProviderDictionary;
 import org.platformlayer.xaas.web.jaxrs.JaxbContextHelper;
 import org.platformlayer.xaas.web.resources.ItemServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fathomdb.crypto.EncryptionStore;
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 
 public class GuiceXaasConfig extends AbstractModule {
+
+	private static final Logger log = LoggerFactory.getLogger(GuiceXaasConfig.class);
 
 	final ConfigurationImpl configuration;
 
@@ -107,6 +111,8 @@ public class GuiceXaasConfig extends AbstractModule {
 
 		for (AnnotatedClass annotatedClass : discovery.findAnnotatedClasses(org.platformlayer.xaas.Module.class)) {
 			Class<?> moduleClass = annotatedClass.getSubjectClass();
+
+			log.info("Installing extension module: " + moduleClass);
 
 			com.google.inject.Module module;
 			try {
