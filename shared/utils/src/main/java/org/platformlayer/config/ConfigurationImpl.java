@@ -151,11 +151,12 @@ public class ConfigurationImpl implements Configuration {
 					Properties properties = new Properties();
 					PropertyUtils.loadProperties(properties, configFile);
 					propertiesList.add(PropertyUtils.toMap(properties));
+					log.info("Loaded configuration file: " + configFile);
 				} catch (IOException e) {
 					throw new IllegalStateException("Error loading configuration file: " + configFile, e);
 				}
 			} else {
-				log.warn("Configuration file not found");
+				log.warn("Configuration file not found: " + configFile);
 			}
 		}
 
