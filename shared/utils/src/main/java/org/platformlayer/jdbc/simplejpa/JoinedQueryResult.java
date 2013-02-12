@@ -9,7 +9,7 @@ import com.google.common.collect.Maps;
 
 public class JoinedQueryResult {
 	public static class ObjectList<T> {
-		public final Map<Object, T> objects = Maps.newHashMap();
+		public final Map<Object, T> objects = Maps.newLinkedHashMap();
 
 		public boolean containsKey(Object key) {
 			return objects.containsKey(key);
