@@ -93,9 +93,6 @@ public class ImageStoreController extends OpsTreeBase implements ImageStoreProvi
 		SshAuthorizedKey.ensureSshAuthorization(target, "imagestore", sshPublicKey);
 
 		// addChild(SshAuthorizedKey.build("root", publicKey));
-
-		// TODO: Re-introduce (but we don't have the machine)
-		// addChild(PackageDependency.build("socat"));
 	}
 
 	protected void addChildrenGlance(ImageStore model) throws OpsException {

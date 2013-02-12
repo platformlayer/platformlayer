@@ -11,6 +11,7 @@ import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
+import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OpaqueMachine;
 import org.platformlayer.ops.OpsContext;
@@ -24,7 +25,7 @@ import org.platformlayer.ops.dns.DnsResolver;
 import org.platformlayer.ops.filesystem.ManagedDirectory;
 import org.platformlayer.ops.helpers.ServiceContext;
 import org.platformlayer.ops.helpers.SshKeys;
-import org.platformlayer.ops.images.direct.SocatPeerToPeerCopy;
+import org.platformlayer.ops.images.direct.PeerToPeerCopy;
 import org.platformlayer.ops.machines.PlatformLayerCloudContext;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.networks.NetworkPoint;
@@ -123,9 +124,9 @@ public class DirectHostController extends OpsTreeBase implements CasStoreProvide
 
 		// Useful for moving images around
 		host.addChild(PackageDependency.build("bzip2"));
-		host.addChild(PackageDependency.build("socat"));
 
-		host.addChild(SocatPeerToPeerCopy.FirewallRules.class);
+		PeerToPeerCopy peerToPeerCopy = Injection.getInstance(PeerToPeerCopy.class);
+		peerToPeerCopy.addChildren(this);
 
 		{
 			PlatformLayerKey owner = model.getKey();

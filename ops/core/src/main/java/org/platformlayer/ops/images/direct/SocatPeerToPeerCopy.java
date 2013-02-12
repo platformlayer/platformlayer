@@ -26,6 +26,7 @@ import org.platformlayer.ops.firewall.Protocol;
 import org.platformlayer.ops.firewall.Transport;
 import org.platformlayer.ops.firewall.scripts.IptablesFilterEntry;
 import org.platformlayer.ops.networks.IpRange;
+import org.platformlayer.ops.packages.PackageDependency;
 import org.platformlayer.ops.process.ProcessExecution;
 import org.platformlayer.ops.process.ProcessExecutionException;
 import org.platformlayer.ops.tree.OpsTreeBase;
@@ -299,5 +300,11 @@ public class SocatPeerToPeerCopy implements PeerToPeerCopy {
 		} else {
 			throw new IllegalStateException();
 		}
+	}
+
+	@Override
+	public void addChildren(OpsTreeBase parent) throws OpsException {
+		parent.addChild(PackageDependency.build("socat"));
+		parent.addChild(SocatPeerToPeerCopy.FirewallRules.class);
 	}
 }

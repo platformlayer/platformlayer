@@ -1,12 +1,15 @@
 package org.platformlayer.ops.images.direct;
 
 import java.io.File;
+import java.net.InetAddress;
 
 import org.platformlayer.TimeSpan;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.SshOpsTarget;
+import org.platformlayer.ops.machines.InetAddressUtils;
+import org.platformlayer.ops.tree.OpsTreeBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +53,11 @@ public class SshAgentPeerToPeerCopy implements PeerToPeerCopy {
 		} finally {
 			dest.rmdir(tempDir);
 		}
+	}
+
+	@Override
+	public void addChildren(OpsTreeBase parent) {
+
 	}
 
 }

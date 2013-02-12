@@ -211,7 +211,6 @@ public class DiskImageController {
 		apt.install(target, "debootstrap");
 
 		// For transferring the file to a direct image server
-		apt.install(target, "socat");
 
 		// debootstrap with LXC seems to have serious problems...
 		boolean supportLxc = false;
