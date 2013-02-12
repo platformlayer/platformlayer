@@ -1,13 +1,20 @@
 package org.platformlayer.ops.bootstrap;
 
-import org.slf4j.*;
+import java.io.File;
+import java.util.Map;
+
 import org.platformlayer.ops.Handler;
+import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.filesystem.TemplatedFile;
 import org.platformlayer.ops.firewall.scripts.PersistIptablesScripts;
 import org.platformlayer.ops.images.direct.PeerToPeerCopy;
 import org.platformlayer.ops.packages.AptSourcesConfigurationFile.DefaultAptSourcesConfigurationFile;
 import org.platformlayer.ops.packages.PackageDependency;
+import org.platformlayer.ops.templates.TemplateDataSource;
 import org.platformlayer.ops.tree.OpsTreeBase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * General machine configuration.
