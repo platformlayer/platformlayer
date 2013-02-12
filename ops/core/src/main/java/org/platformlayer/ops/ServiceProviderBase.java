@@ -1,6 +1,8 @@
 package org.platformlayer.ops;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.security.PublicKey;
 import java.util.Collections;
 import java.util.List;
@@ -272,24 +274,72 @@ public abstract class ServiceProviderBase implements ServiceProvider {
 				}
 
 				if (key != null) {
-					if (key.getServiceType() == null) {
-						ItemType itemType = key.getItemType();
-						ServiceType serviceType = OpsContext.get().getOpsSystem().getServiceType(itemType);
-						key = key.withServiceType(serviceType);
-					}
+					PlatformLayerKey newKey = resolveKey(key);
 
-					if (key.getProject() == null) {
-						key = key.withProject(OpsContext.get().getPlatformLayerClient().getProject());
+					if (newKey != key) {
+						try {
+							field.set(item, key);
+						} catch (IllegalAccessException e) {
+							throw new IllegalStateException("Error setting field: " + field, e);
+						}
 					}
+				}
+			}
 
-					try {
-						field.set(item, key);
-					} catch (IllegalAccessException e) {
-						throw new IllegalStateException("Error setting field: " + field, e);
+			if (fieldType == List.class) {
+				Type genericFieldType = field.getGenericType();
+
+				if (genericFieldType instanceof ParameterizedType) {
+					ParameterizedType aType = (ParameterizedType) genericFieldType;
+					Type[] fieldArgTypes = aType.getActualTypeArguments();
+					if (fieldArgTypes.length == 1) {
+						Type fieldArgType = fieldArgTypes[0];
+						if (fieldArgType instanceof Class) {
+							Class fieldArg = (Class) fieldArgType;
+
+							if (fieldArg.equals(PlatformLayerKey.class)) {
+								List<PlatformLayerKey> list;
+								try {
+									list = (List<PlatformLayerKey>) field.get(item);
+								} catch (IllegalAccessException e) {
+									throw new IllegalStateException("Error getting field: " + field, e);
+								}
+								if (list != null) {
+									for (int i = 0; i < list.size(); i++) {
+										PlatformLayerKey key = list.get(i);
+										PlatformLayerKey newKey = resolveKey(key);
+
+										if (newKey != key) {
+											list.set(i, newKey);
+										}
+									}
+
+									try {
+										field.set(item, list);
+									} catch (IllegalAccessException e) {
+										throw new IllegalStateException("Error setting field: " + field, e);
+									}
+								}
+							}
+						}
 					}
 				}
 			}
 		}
+	}
+
+	private PlatformLayerKey resolveKey(PlatformLayerKey key) throws OpsException {
+		if (key.getServiceType() == null) {
+			ItemType itemType = key.getItemType();
+			ServiceType serviceType = OpsContext.get().getOpsSystem().getServiceType(itemType);
+			key = key.withServiceType(serviceType);
+		}
+
+		if (key.getProject() == null) {
+			key = key.withProject(OpsContext.get().getPlatformLayerClient().getProject());
+		}
+
+		return key;
 	}
 
 	public void autoPopulate(Object item) throws OpsException {
