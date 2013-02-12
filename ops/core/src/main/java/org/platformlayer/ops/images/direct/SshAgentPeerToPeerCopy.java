@@ -32,9 +32,16 @@ public class SshAgentPeerToPeerCopy implements PeerToPeerCopy {
 			{
 				SshOpsTarget srcSshOpsTarget = (SshOpsTarget) src;
 
-				Command pullCommand = Command.build("scp -o StrictHostKeyChecking=no {0}@{1}:{2} {3}",
-						srcSshOpsTarget.getUsername(), InetAddresses.toAddrString(srcSshOpsTarget.getHost()), srcFile,
-						tempDest);
+				String sshSrc = srcSshOpsTarget.getUsername() + "@";
+				InetAddress srcHost = srcSshOpsTarget.getHost();
+				if (InetAddressUtils.isIpv6(srcHost)) {
+					sshSrc += "[" + InetAddresses.toAddrString(srcHost) + "]";
+				} else {
+					sshSrc += InetAddresses.toAddrString(srcHost);
+				}
+				sshSrc += ":" + srcFile.getAbsolutePath();
+
+				Command pullCommand = Command.build("scp -o StrictHostKeyChecking=no {0} {1}", sshSrc, tempDest);
 
 				pullCommand.setKeyPair(srcSshOpsTarget.getKeyPair());
 
