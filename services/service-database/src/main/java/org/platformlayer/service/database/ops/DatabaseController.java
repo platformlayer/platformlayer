@@ -6,12 +6,14 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.platformlayer.InetAddressChooser;
+import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.machines.InetAddressUtils;
+import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.postgres.CreateDatabase;
 import org.platformlayer.ops.postgres.CreateUser;
@@ -32,6 +34,9 @@ public class DatabaseController extends OpsTreeBase implements Consumable {
 
 	@Inject
 	InstanceHelpers instanceHelpers;
+
+	@Inject
+	PlatformLayerHelpers platformLayer;
 
 	@Handler
 	public void handler() throws OpsException {
@@ -71,7 +76,9 @@ public class DatabaseController extends OpsTreeBase implements Consumable {
 	}
 
 	public String getJdbcUrl(String databaseName, InetAddressChooser chooser) throws OpsException {
-		Machine itemMachine = instanceHelpers.getMachine(model);
+		ItemBase server = platformLayer.getItem(model.server);
+
+		Machine itemMachine = instanceHelpers.getMachine(server);
 
 		InetAddress address = itemMachine.getBestAddress(NetworkPoint.forTargetInContext(), 5432, chooser);
 		String host = address.getHostAddress();
