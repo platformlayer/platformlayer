@@ -1,13 +1,13 @@
 package org.platformlayer.ops.uses;
 
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
 import org.platformlayer.InetAddressChooser;
 import org.platformlayer.core.model.ItemBase;
-import org.platformlayer.core.model.PlatformLayerKey;
+import org.platformlayer.core.model.Link;
+import org.platformlayer.core.model.LinkList;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.helpers.ProviderHelper;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
@@ -23,12 +23,12 @@ public class ConsumeHelpers {
 
 	public InetAddressChooser inetAddressChooser = InetAddressChooser.preferIpv6();
 
-	public Map<String, String> buildConfigProperties(List<PlatformLayerKey> useKeys) throws OpsException {
+	public Map<String, String> buildConfigProperties(LinkList links) throws OpsException {
 		Map<String, String> config = Maps.newHashMap();
 
-		if (useKeys != null) {
-			for (PlatformLayerKey useKey : useKeys) {
-				ItemBase item = platformLayer.getItem(useKey);
+		if (links != null) {
+			for (Link link : links.getLinks()) {
+				ItemBase item = platformLayer.getItem(link.getTarget());
 				Consumable consumable = providerHelper.toInterface(item, Consumable.class);
 
 				Map<String, String> consumableConfig = consumable.buildConsumerConfiguration(inetAddressChooser);
