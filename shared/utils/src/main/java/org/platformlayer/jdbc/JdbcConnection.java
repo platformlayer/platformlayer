@@ -8,10 +8,12 @@ import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 
 import org.platformlayer.jdbc.simplejpa.ConnectionMetadata;
+import org.postgresql.jdbc2.AbstractJdbc2Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Maps;
+import com.jolbox.bonecp.PreparedStatementHandle;
 
 public class JdbcConnection {
 	private static final Logger log = LoggerFactory.getLogger(JdbcConnection.class);
@@ -41,6 +43,19 @@ public class JdbcConnection {
 
 	public PreparedStatement prepareStatement(String sql) throws SQLException {
 		PreparedStatement preparedStatement = getConnection().prepareStatement(sql);
+
+		PreparedStatement actual = preparedStatement;
+
+		if (actual instanceof PreparedStatementHandle) {
+			PreparedStatementHandle handle = (PreparedStatementHandle) actual;
+			actual = handle.getInternalPreparedStatement();
+		}
+
+		if (actual instanceof AbstractJdbc2Statement) {
+			// Make sure that we actually prepare the statement
+			((AbstractJdbc2Statement) actual).setPrepareThreshold(1);
+		}
+
 		return preparedStatement;
 	}
 
