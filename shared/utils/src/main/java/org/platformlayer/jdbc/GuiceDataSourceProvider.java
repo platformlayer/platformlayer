@@ -62,6 +62,13 @@ public class GuiceDataSourceProvider implements Provider<DataSource> {
 			pooledDataSource.setLogStatementsEnabled(Boolean.parseBoolean(sqlDebug));
 		}
 
+		pooledDataSource.setPartitionCount(1);
+		pooledDataSource.setMinConnectionsPerPartition(1);
+
+		// Don't auto-acquire new connections
+		// TODO: This is broken!!!
+		pooledDataSource.setPoolAvailabilityThreshold(0);
+
 		// Enable statement caching
 		pooledDataSource.setStatementsCacheSize(32);
 
