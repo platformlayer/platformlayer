@@ -1,7 +1,6 @@
 package org.platformlayer.jdbc;
 
 import java.io.Closeable;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Map;
@@ -34,7 +33,7 @@ public class DbHelperBase implements Closeable {
 	protected PreparedStatement prepareStatement(String sql) throws SQLException {
 		PreparedStatement ps = preparedStatements.get(sql);
 		if (ps == null) {
-			ps = getConnection().prepareStatement(sql);
+			ps = jdbcConnection.prepareStatement(sql);
 			preparedStatements.put(sql, ps);
 		}
 		return ps;
@@ -73,10 +72,6 @@ public class DbHelperBase implements Closeable {
 
 	protected void setAtom(PreparedStatement ps, int parameterIndex, Class<?> clazz) throws SQLException {
 		ps.setInt(parameterIndex, getAtomValue(clazz));
-	}
-
-	public Connection getConnection() {
-		return jdbcConnection.getConnection();
 	}
 
 	public JdbcConnection getJdbcConnection() {

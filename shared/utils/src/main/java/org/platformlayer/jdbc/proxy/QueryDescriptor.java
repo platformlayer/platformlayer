@@ -28,15 +28,18 @@ class QueryDescriptor {
 
 	final List<Field> parameterMap;
 
+	final boolean batchExecute;
+
 	enum QueryType {
 		Manual, AutomaticUpdate, AutomaticInsert
 	}
 
-	private QueryDescriptor(QueryType queryType, String sql, List<Field> parameterMap) {
+	private QueryDescriptor(QueryType queryType, String sql, List<Field> parameterMap, boolean batchExecute) {
 		super();
 		this.queryType = queryType;
 		this.sql = sql;
 		this.parameterMap = parameterMap;
+		this.batchExecute = batchExecute;
 	}
 
 	private void setParameter(PreparedStatement ps, int i, Object param) throws SQLException {
@@ -89,11 +92,11 @@ class QueryDescriptor {
 		return sql;
 	}
 
-	private static QueryDescriptor buildManual(String sql) {
-		return new QueryDescriptor(QueryType.Manual, sql, null);
+	private static QueryDescriptor buildManual(String sql, boolean batchExecute) {
+		return new QueryDescriptor(QueryType.Manual, sql, null, batchExecute);
 	}
 
-	private static QueryDescriptor buildAutomaticInsert(FieldMap map) {
+	private static QueryDescriptor buildAutomaticInsert(FieldMap map, boolean batchExecute) {
 		List<String> columnNames = map.getColumnNames();
 
 		StringBuilder sb = new StringBuilder();
@@ -117,10 +120,10 @@ class QueryDescriptor {
 
 		String sql = sb.toString();
 
-		return new QueryDescriptor(QueryType.AutomaticInsert, sql, parameterMap);
+		return new QueryDescriptor(QueryType.AutomaticInsert, sql, parameterMap, batchExecute);
 	}
 
-	private static QueryDescriptor buildAutomaticUpdate(FieldMap map) {
+	private static QueryDescriptor buildAutomaticUpdate(FieldMap map, boolean batchExecute) {
 		List<String> columnNames = map.getColumnNames();
 		List<Field> parameterMap = Lists.newArrayList();
 
@@ -165,7 +168,7 @@ class QueryDescriptor {
 
 		String sql = sb.toString();
 
-		return new QueryDescriptor(QueryType.AutomaticUpdate, sql, parameterMap);
+		return new QueryDescriptor(QueryType.AutomaticUpdate, sql, parameterMap, batchExecute);
 	}
 
 	public static QueryDescriptor getQueryDescriptor(Method m) {
@@ -195,8 +198,10 @@ class QueryDescriptor {
 
 		FieldMap fieldMap = null;
 
+		BatchExecute batchExecuteAnnotation = m.getAnnotation(BatchExecute.class);
+		boolean batchExecute = batchExecuteAnnotation != null;
 		if (queryType == QueryType.Manual) {
-			queryDescriptor = QueryDescriptor.buildManual(sql);
+			queryDescriptor = QueryDescriptor.buildManual(sql, batchExecute);
 		} else {
 			Class<?>[] parameterTypes = m.getParameterTypes();
 			if (parameterTypes.length != 1) {
@@ -211,11 +216,11 @@ class QueryDescriptor {
 
 			switch (queryType) {
 			case AutomaticInsert: {
-				queryDescriptor = QueryDescriptor.buildAutomaticInsert(fieldMap);
+				queryDescriptor = QueryDescriptor.buildAutomaticInsert(fieldMap, batchExecute);
 				break;
 			}
 			case AutomaticUpdate: {
-				queryDescriptor = QueryDescriptor.buildAutomaticUpdate(fieldMap);
+				queryDescriptor = QueryDescriptor.buildAutomaticUpdate(fieldMap, batchExecute);
 				break;
 			}
 			default:
@@ -228,5 +233,9 @@ class QueryDescriptor {
 		}
 
 		return queryDescriptor;
+	}
+
+	public boolean isBatchExecute() {
+		return batchExecute;
 	}
 }

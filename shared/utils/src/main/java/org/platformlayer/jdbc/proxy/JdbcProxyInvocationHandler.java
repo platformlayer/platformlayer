@@ -58,30 +58,49 @@ public class JdbcProxyInvocationHandler<T> implements InvocationHandler {
 			timerContext = timer.start();
 		}
 
+		boolean batchExecute = queryDescriptor.isBatchExecute();
 		PreparedStatement ps = null;
 		try {
 			log.debug("Executing SQL: " + sql);
 
-			ps = jdbcConnection.getConnection().prepareStatement(sql);
+			if (batchExecute) {
+				ps = jdbcConnection.prepareBatchStatement(sql);
+			} else {
+				ps = jdbcConnection.prepareStatement(sql);
+			}
+
 			queryDescriptor.setParameters(ps, args);
 
-			boolean isResultSet = ps.execute();
-			if (isResultSet) {
-				return marshalQueryset(m, ps);
-			} else {
+			if (batchExecute) {
+				ps.addBatch();
 				Class<?> returnType = m.getReturnType();
-
-				int updateCount = ps.getUpdateCount();
 				if (returnType.equals(Void.class) || returnType.equals(void.class)) {
 					return null;
-				} else if (returnType.equals(Integer.class) || returnType.equals(int.class)) {
-					return updateCount;
 				} else {
-					throw new IllegalArgumentException();
+					throw new IllegalStateException("@BatchExecute must have return type of void");
+				}
+			} else {
+				boolean isResultSet = ps.execute();
+				if (isResultSet) {
+					return marshalQueryset(m, ps);
+				} else {
+					Class<?> returnType = m.getReturnType();
+
+					int updateCount = ps.getUpdateCount();
+					if (returnType.equals(Void.class) || returnType.equals(void.class)) {
+						return null;
+					} else if (returnType.equals(Integer.class) || returnType.equals(int.class)) {
+						return updateCount;
+					} else {
+						throw new IllegalArgumentException();
+					}
 				}
 			}
 		} finally {
-			JdbcUtils.safeClose(ps);
+			if (!batchExecute) {
+				JdbcUtils.safeClose(ps);
+			}
+
 			if (timerContext != null) {
 				timerContext.stop();
 			}

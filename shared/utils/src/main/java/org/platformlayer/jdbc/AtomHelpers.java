@@ -1,6 +1,5 @@
 package org.platformlayer.jdbc;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,12 +18,11 @@ public class AtomHelpers {
 		return jdbcConnection.getCacheable(key, new Callable<Integer>() {
 			@Override
 			public Integer call() throws Exception {
-				Connection connection = jdbcConnection.getConnection();
 				while (true) {
 					{
 						String sql = "SELECT id FROM " + tableName + " WHERE key=?";
 
-						PreparedStatement ps = connection.prepareStatement(sql);
+						PreparedStatement ps = jdbcConnection.prepareStatement(sql);
 						ResultSet rs = null;
 						try {
 							ps.setString(1, value);
@@ -42,7 +40,7 @@ public class AtomHelpers {
 
 					{
 						String sql = "INSERT INTO " + tableName + " (key) VALUES (?)";
-						PreparedStatement ps = connection.prepareStatement(sql);
+						PreparedStatement ps = jdbcConnection.prepareStatement(sql);
 						ResultSet rs = null;
 						try {
 							ps.setString(1, value);
@@ -67,11 +65,9 @@ public class AtomHelpers {
 
 			@Override
 			public String call() throws Exception {
-				Connection connection = jdbcConnection.getConnection();
-
 				String sql = "SELECT key FROM " + tableName + " WHERE id=?";
 
-				PreparedStatement ps = connection.prepareStatement(sql);
+				PreparedStatement ps = jdbcConnection.prepareStatement(sql);
 				ResultSet rs = null;
 				try {
 					ps.setInt(1, id);

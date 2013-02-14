@@ -10,9 +10,12 @@ import javax.sql.DataSource;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.platformlayer.jdbc.simplejpa.ConnectionMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Singleton
 class JdbcTransactionInterceptor implements MethodInterceptor {
+	private static final Logger log = LoggerFactory.getLogger(JdbcTransactionInterceptor.class);
 
 	private static final ThreadLocal<JdbcConnection> threadLocalConnection = new ThreadLocal<JdbcConnection>();
 
@@ -50,11 +53,13 @@ class JdbcTransactionInterceptor implements MethodInterceptor {
 
 				try {
 					Object returnValue = methodInvocation.proceed();
-					connection.commit();
+					log.debug("Committing transaction");
+					jdbcConnection.commit();
 					committed = true;
 					return returnValue;
 				} finally {
 					if (!committed) {
+						log.debug("Rolling back transaction");
 						connection.rollback();
 					}
 				}
