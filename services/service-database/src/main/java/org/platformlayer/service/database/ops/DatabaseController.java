@@ -89,7 +89,7 @@ public class DatabaseController extends OpsTreeBase implements LinkTarget {
 	}
 
 	@Override
-	public Map<String, String> buildConsumerConfiguration(InetAddressChooser inetAddressChooser) throws OpsException {
+	public Map<String, String> buildLinkTargetConfiguration(InetAddressChooser inetAddressChooser) throws OpsException {
 		Map<String, String> config = Maps.newHashMap();
 		config.put("jdbc.driverClassName", "org.postgresql.Driver");
 

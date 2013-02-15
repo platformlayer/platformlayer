@@ -7,6 +7,6 @@ import org.platformlayer.ops.OpsException;
 
 public interface LinkTarget {
 
-	Map<String, String> buildConsumerConfiguration(InetAddressChooser inetAddressChooser) throws OpsException;
+	Map<String, String> buildLinkTargetConfiguration(InetAddressChooser inetAddressChooser) throws OpsException;
 
 }

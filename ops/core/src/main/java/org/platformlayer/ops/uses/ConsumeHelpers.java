@@ -31,7 +31,7 @@ public class ConsumeHelpers {
 				ItemBase item = platformLayer.getItem(link.getTarget());
 				LinkTarget consumable = providerHelper.toInterface(item, LinkTarget.class);
 
-				Map<String, String> consumableConfig = consumable.buildConsumerConfiguration(inetAddressChooser);
+				Map<String, String> consumableConfig = consumable.buildLinkTargetConfiguration(inetAddressChooser);
 				if (consumableConfig != null) {
 					config.putAll(consumableConfig);
 				}
