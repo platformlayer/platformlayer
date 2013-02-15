@@ -5,6 +5,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -12,19 +13,20 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 
 @XmlAccessorType(XmlAccessType.PROPERTY)
-public class LinkList {
+@XmlRootElement
+public class Links {
 	@JsonCreator
-	public LinkList(List<Link> values) {
+	public Links(List<Link> values) {
 		this.links = values;
 	}
 
 	public List<Link> links;
 
-	public LinkList() {
+	public Links() {
 	}
 
-	public static LinkList build() {
-		LinkList tag = new LinkList();
+	public static Links build() {
+		Links tag = new Links();
 		return tag;
 	}
 
@@ -44,6 +46,15 @@ public class LinkList {
 
 	public void setLinks(List<Link> links) {
 		this.links = links;
+	}
+
+	public Link findLink(String name) {
+		for (Link link : getLinks()) {
+			if (name.equals(link.getName())) {
+				return link;
+			}
+		}
+		return null;
 	}
 
 }

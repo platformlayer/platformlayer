@@ -8,6 +8,7 @@ public class DnsZone extends org.platformlayer.core.model.ItemBaseJs {
 
 	// TODO: JSNI cannot map 'long version'
 	// TODO: JSNI cannot map 'ManagedItemState state'
+	// TODO: JSNI cannot map 'Links links'
 	// TODO: JSNI cannot map 'SecretInfo secret'
 
     

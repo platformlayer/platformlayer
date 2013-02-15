@@ -7,7 +7,7 @@ import javax.inject.Inject;
 import org.platformlayer.InetAddressChooser;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.Link;
-import org.platformlayer.core.model.LinkList;
+import org.platformlayer.core.model.Links;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.helpers.ProviderHelper;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
@@ -23,7 +23,7 @@ public class ConsumeHelpers {
 
 	public InetAddressChooser inetAddressChooser = InetAddressChooser.preferIpv6();
 
-	public Map<String, String> buildConfigProperties(LinkList links) throws OpsException {
+	public Map<String, String> buildConfigProperties(Links links) throws OpsException {
 		Map<String, String> config = Maps.newHashMap();
 
 		if (links != null) {

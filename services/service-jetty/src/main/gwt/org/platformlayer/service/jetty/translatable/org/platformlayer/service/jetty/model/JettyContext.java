@@ -6,7 +6,7 @@ public class JettyContext extends com.google.gwt.core.client.JavaScriptObject {
 	protected JettyContext() {
 	}
 
-	// TODO: JSNI cannot map 'LinkList links'
+	// TODO: JSNI cannot map 'Links links'
 
     
     public final String getId() {

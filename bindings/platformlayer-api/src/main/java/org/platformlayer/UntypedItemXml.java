@@ -3,6 +3,8 @@ package org.platformlayer;
 import javax.xml.bind.JAXBException;
 
 import org.platformlayer.common.UntypedItem;
+import org.platformlayer.core.model.ItemBase;
+import org.platformlayer.core.model.Links;
 import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tags;
@@ -19,6 +21,7 @@ public class UntypedItemXml implements UntypedItem {
 
 	private final Element root;
 	private Tags tags;
+	private Links links;
 
 	private PlatformLayerKey platformLayerKey;
 
@@ -78,33 +81,71 @@ public class UntypedItemXml implements UntypedItem {
 		return tags;
 	}
 
+	public Links getLinks() {
+		if (links == null) {
+			Node element = XmlHelper.findUniqueChild(root, "links", false);
+			if (element == null) {
+				links = new Links();
+			} else {
+				JaxbHelper helper = JaxbHelper.get(Links.class);
+				try {
+					links = (Links) helper.unmarshal(element);
+				} catch (JAXBException e) {
+					throw new IllegalStateException("Error parsing tags data", e);
+				}
+			}
+		}
+		return links;
+	}
+
 	public void setTags(Tags tags) {
-		Document tagsDocument;
+		Document document;
 
 		JaxbHelper helper = JaxbHelper.get(Tags.class);
 		try {
-			tagsDocument = helper.marshalToDom(tags);
+			document = helper.marshalToDom(tags);
 		} catch (JAXBException e) {
 			throw new IllegalStateException("Error parsing tags data", e);
 		}
 
-		String xml = XmlHelper.safeToXml(tagsDocument.getDocumentElement());
+		replaceNode("tags", document.getDocumentElement());
 
-		Node newTags = tagsDocument.getDocumentElement();// XmlHelper.findUniqueChild(tagsDocument.getDocumentElement(),
-															// "tags");
-		Node imported = root.getOwnerDocument().adoptNode(newTags);
+		// To avoid any possible state problems, we set to null rather than copying
+		this.tags = null;
+	}
 
-		Node existing = XmlHelper.findUniqueChild(root, "tags", false);
+	public void setLinks(Links links) {
+		ItemBase item = new ItemBase();
+		item.links = links;
+
+		Document document;
+
+		JaxbHelper helper = JaxbHelper.get(ItemBase.class);
+		try {
+			document = helper.marshalToDom(item);
+		} catch (JAXBException e) {
+			throw new IllegalStateException("Error serializing data", e);
+		}
+
+		replaceNode("links", XmlHelper.findUniqueChild(document.getDocumentElement(), "links", false));
+
+		// To avoid any possible state problems, we set to null rather than copying
+		this.links = null;
+	}
+
+	private void replaceNode(String key, Node newNode) {
+		// String xml = XmlHelper.safeToXml(document.getDocumentElement());
+
+		Node imported = root.getOwnerDocument().adoptNode(newNode);
+
+		Node existing = XmlHelper.findUniqueChild(root, key, false);
 		if (existing == null) {
 			root.appendChild(imported);
 		} else {
 			root.replaceChild(imported, existing);
 		}
 
-		xml = XmlHelper.safeToXml(root);
-
-		// To avoid any possible state problems, we set to null rather than copying
-		this.tags = null;
+		// String xml = XmlHelper.safeToXml(root);
 	}
 
 	// public String getId() {

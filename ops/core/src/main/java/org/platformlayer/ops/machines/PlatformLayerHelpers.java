@@ -11,7 +11,6 @@ import javax.inject.Inject;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
 import org.platformlayer.TypedPlatformLayerClient;
-import org.platformlayer.common.UntypedItem;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.core.model.PlatformLayerKey;

@@ -20,6 +20,8 @@ public class ItemBase implements IsItem {
 
 	public Tags tags;
 
+	public Links links;
+
 	@XmlTransient
 	public SecretInfo secret;
 

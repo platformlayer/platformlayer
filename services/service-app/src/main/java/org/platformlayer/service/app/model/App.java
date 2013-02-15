@@ -5,7 +5,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.platformlayer.core.model.ItemBase;
-import org.platformlayer.core.model.LinkList;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.service.app.ops.AppController;
 import org.platformlayer.xaas.Controller;
@@ -19,6 +18,4 @@ public class App extends ItemBase {
 	public String source;
 
 	public PlatformLayerKey sslKey;
-
-	public LinkList links;
 }
