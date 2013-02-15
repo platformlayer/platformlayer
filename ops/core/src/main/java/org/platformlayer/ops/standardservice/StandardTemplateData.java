@@ -68,7 +68,7 @@ public abstract class StandardTemplateData implements TemplateDataSource {
 
 	protected abstract Map<String, String> getConfigurationProperties() throws OpsException;
 
-	protected abstract PlatformLayerKey getSslKeyPath();
+	protected abstract PlatformLayerKey getSslKeyPath() throws OpsException;
 
 	public ManagedSecretKey findSslKey() throws OpsException {
 		PlatformLayerKey sslKey = getSslKeyPath();
