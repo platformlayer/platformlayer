@@ -94,7 +94,7 @@ public class SimpleApp extends OpsTreeBase {
 	protected Map<String, String> getConfigurationProperties() throws OpsException {
 		Map<String, String> config = Maps.newHashMap();
 
-		config.putAll(consumeHelper.buildConfigProperties(context.links));
+		config.putAll(consumeHelper.buildLinkTargetProperties(context.links));
 
 		return config;
 	}

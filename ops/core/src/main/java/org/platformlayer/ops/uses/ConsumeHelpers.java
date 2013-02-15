@@ -23,7 +23,7 @@ public class ConsumeHelpers {
 
 	public InetAddressChooser inetAddressChooser = InetAddressChooser.preferIpv6();
 
-	public Map<String, String> buildConfigProperties(Links links) throws OpsException {
+	public Map<String, String> buildLinkTargetProperties(Links links) throws OpsException {
 		Map<String, String> config = Maps.newHashMap();
 
 		if (links != null) {
@@ -31,9 +31,9 @@ public class ConsumeHelpers {
 				ItemBase item = platformLayer.getItem(link.getTarget());
 				LinkTarget consumable = providerHelper.toInterface(item, LinkTarget.class);
 
-				Map<String, String> consumableConfig = consumable.buildLinkTargetConfiguration(inetAddressChooser);
-				if (consumableConfig != null) {
-					config.putAll(consumableConfig);
+				Map<String, String> linkTargetConfig = consumable.buildLinkTargetConfiguration(inetAddressChooser);
+				if (linkTargetConfig != null) {
+					config.putAll(linkTargetConfig);
 				}
 			}
 		}
