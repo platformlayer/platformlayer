@@ -8,7 +8,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-import com.fathomdb.Utf8;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceMetadataKey;
@@ -21,6 +20,7 @@ import org.platformlayer.ops.crypto.SecretHelper;
 import org.platformlayer.xaas.model.ServiceAuthorization;
 import org.platformlayer.xaas.repository.ServiceAuthorizationRepository;
 
+import com.fathomdb.Utf8;
 import com.fathomdb.crypto.CryptoKey;
 import com.fathomdb.crypto.FathomdbCrypto;
 import com.google.common.collect.Lists;
@@ -45,7 +45,7 @@ public class JdbcServiceAuthorizationRepository implements ServiceAuthorizationR
 
 			List<ServiceAuthorization> items = Lists.newArrayList();
 
-			PreparedStatement ps = connection.getConnection().prepareStatement(sql);
+			PreparedStatement ps = connection.prepareStatement(sql);
 			ResultSet rs = null;
 			try {
 				ps.setInt(1, serviceId);
@@ -85,7 +85,7 @@ public class JdbcServiceAuthorizationRepository implements ServiceAuthorizationR
 
 			final String sql = "INSERT INTO service_authorizations (service, project, data) VALUES (?, ?, ?)";
 
-			PreparedStatement ps = connection.getConnection().prepareStatement(sql);
+			PreparedStatement ps = connection.prepareStatement(sql);
 			ResultSet rs = null;
 			try {
 				ps.setInt(1, serviceId);
