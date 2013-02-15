@@ -19,14 +19,14 @@ import org.platformlayer.ops.postgres.CreateDatabase;
 import org.platformlayer.ops.postgres.CreateUser;
 import org.platformlayer.ops.postgres.DatabaseConnection;
 import org.platformlayer.ops.tree.OpsTreeBase;
-import org.platformlayer.ops.uses.Consumable;
+import org.platformlayer.ops.uses.LinkTarget;
 import org.platformlayer.service.database.model.Database;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Maps;
 
-public class DatabaseController extends OpsTreeBase implements Consumable {
+public class DatabaseController extends OpsTreeBase implements LinkTarget {
 	private static final Logger log = LoggerFactory.getLogger(DatabaseController.class);
 
 	@Bound
@@ -99,5 +99,4 @@ public class DatabaseController extends OpsTreeBase implements Consumable {
 
 		return config;
 	}
-
 }

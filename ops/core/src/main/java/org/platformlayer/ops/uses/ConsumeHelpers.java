@@ -29,7 +29,7 @@ public class ConsumeHelpers {
 		if (links != null) {
 			for (Link link : links.getLinks()) {
 				ItemBase item = platformLayer.getItem(link.getTarget());
-				Consumable consumable = providerHelper.toInterface(item, Consumable.class);
+				LinkTarget consumable = providerHelper.toInterface(item, LinkTarget.class);
 
 				Map<String, String> consumableConfig = consumable.buildConsumerConfiguration(inetAddressChooser);
 				if (consumableConfig != null) {
