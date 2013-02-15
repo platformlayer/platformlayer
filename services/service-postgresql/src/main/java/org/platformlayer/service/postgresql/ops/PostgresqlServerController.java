@@ -2,6 +2,7 @@ package org.platformlayer.service.postgresql.ops;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.security.cert.X509Certificate;
 
 import javax.inject.Inject;
 
@@ -130,5 +131,11 @@ public class PostgresqlServerController extends OpsTreeBase implements DatabaseS
 		DatabaseTarget db = new TunneledDatabaseTarget(target, username, password, databaseName);
 
 		return db;
+	}
+
+	@Override
+	public X509Certificate getCertificate() {
+		// Not yet supported
+		return null;
 	}
 }

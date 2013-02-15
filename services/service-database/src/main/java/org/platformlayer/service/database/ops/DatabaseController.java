@@ -1,6 +1,6 @@
 package org.platformlayer.service.database.ops;
 
-import java.net.InetAddress;
+import java.security.cert.X509Certificate;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -9,12 +9,11 @@ import org.platformlayer.InetAddressChooser;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
-import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.databases.DatabaseServer;
 import org.platformlayer.ops.helpers.InstanceHelpers;
-import org.platformlayer.ops.machines.InetAddressUtils;
+import org.platformlayer.ops.helpers.ProviderHelper;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
-import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.postgres.CreateDatabase;
 import org.platformlayer.ops.postgres.CreateUser;
 import org.platformlayer.ops.postgres.DatabaseConnection;
@@ -24,6 +23,7 @@ import org.platformlayer.service.database.model.Database;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.crypto.OpenSshUtils;
 import com.google.common.collect.Maps;
 
 public class DatabaseController extends OpsTreeBase implements LinkTarget {
@@ -38,14 +38,15 @@ public class DatabaseController extends OpsTreeBase implements LinkTarget {
 	@Inject
 	PlatformLayerHelpers platformLayer;
 
+	@Inject
+	ProviderHelper providers;
+
 	@Handler
 	public void handler() throws OpsException {
 	}
 
 	@Override
 	protected void addChildren() throws OpsException {
-		// GerritDatabaseTemplate template = injected(GerritDatabaseTemplate.class);
-
 		DatabaseConnection dbConnection;
 		{
 			dbConnection = addChild(DatabaseConnection.build(model.server));
@@ -64,28 +65,6 @@ public class DatabaseController extends OpsTreeBase implements LinkTarget {
 			db.databaseUser = model.username;
 			db.databasePassword = model.password;
 		}
-
-		// {
-		// RunScript script = dbConnection.addChild(RunScript.class);
-		// try {
-		// script.sql = ResourceUtils.get(getClass(), "schema.sql");
-		// } catch (IOException e) {
-		// throw new OpsException("Error loading SQL script resource", e);
-		// }
-		// }
-	}
-
-	public String getJdbcUrl(String databaseName, InetAddressChooser chooser) throws OpsException {
-		ItemBase server = platformLayer.getItem(model.server);
-
-		Machine itemMachine = instanceHelpers.getMachine(server);
-
-		InetAddress address = itemMachine.getBestAddress(NetworkPoint.forTargetInContext(), 5432, chooser);
-		String host = address.getHostAddress();
-		if (InetAddressUtils.isIpv6(address)) {
-			host = "[" + host + "]";
-		}
-		return "jdbc:postgresql://" + host + ":5432/" + databaseName;
 	}
 
 	@Override
@@ -93,9 +72,24 @@ public class DatabaseController extends OpsTreeBase implements LinkTarget {
 		Map<String, String> config = Maps.newHashMap();
 		config.put("jdbc.driverClassName", "org.postgresql.Driver");
 
-		config.put("jdbc.url", getJdbcUrl(model.databaseName, inetAddressChooser));
+		ItemBase serverItem = platformLayer.getItem(model.server);
+		DatabaseServer databaseServer = providers.toInterface(serverItem, DatabaseServer.class);
+
+		String jdbcUrl = databaseServer.getJdbcUrl(model.databaseName, inetAddressChooser);
+
+		config.put("jdbc.url", jdbcUrl);
 		config.put("jdbc.username", model.username);
 		config.put("jdbc.password", model.password.plaintext());
+
+		X509Certificate sslCertificate = databaseServer.getCertificate();
+
+		boolean useSsl = (sslCertificate != null);
+		config.put("jdbc.ssl", String.valueOf(useSsl));
+
+		if (useSsl) {
+			String sigString = OpenSshUtils.getSignatureString(sslCertificate.getPublicKey());
+			config.put("jdbc.ssl.keys", sigString);
+		}
 
 		return config;
 	}
