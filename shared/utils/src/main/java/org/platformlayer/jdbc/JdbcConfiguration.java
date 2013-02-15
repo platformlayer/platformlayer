@@ -71,6 +71,10 @@ class JdbcConfiguration {
 		String password = properties.get(keyPrefix + "password");
 
 		Map<String, String> extraProperties = PropertyUtils.getChildProperties(properties, keyPrefix);
+		extraProperties.remove("url");
+		extraProperties.remove("driverClassName");
+		extraProperties.remove("username");
+		extraProperties.remove("password");
 
 		JdbcConfiguration jdbcConfig = new JdbcConfiguration(jdbcUrl, username, password, driverClassName,
 				extraProperties);

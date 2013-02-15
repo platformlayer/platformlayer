@@ -1,5 +1,7 @@
 package org.platformlayer.jdbc;
 
+import java.util.Properties;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.naming.InitialContext;
@@ -52,10 +54,31 @@ public class GuiceDataSourceProvider implements Provider<DataSource> {
 		pooledDataSource.setUsername(jdbcConfig.username);
 		pooledDataSource.setPassword(jdbcConfig.password);
 
+		Properties jdbcProperties = new Properties();
+		if (jdbcConfig.extraProperties != null) {
+			jdbcProperties.putAll(jdbcConfig.extraProperties);
+		}
+
 		String sqlDebug = null;
 
 		if (jdbcConfig.extraProperties != null) {
 			sqlDebug = jdbcConfig.extraProperties.get("sql.debug");
+		}
+
+		if (jdbcProperties.containsKey("ssl.keys")) {
+			String trustKeys = (String) jdbcProperties.remove("ssl.keys");
+
+			// http://jdbc.postgresql.org/documentation/80/ssl-factory.html
+			jdbcProperties.put("sslfactory", TrustedKeysSSLSocketFactory.class.getName());
+			jdbcProperties.put("sslfactoryarg", trustKeys);
+		}
+
+		if (!jdbcProperties.isEmpty()) {
+			try {
+				pooledDataSource.setDriverProperties(jdbcProperties);
+			} catch (Exception e) {
+				throw new IllegalStateException("Unable to set JDBC properties", e);
+			}
 		}
 
 		if (!Strings.isNullOrEmpty(sqlDebug)) {
