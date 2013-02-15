@@ -11,8 +11,8 @@ import org.platformlayer.jobs.model.JobData;
 
 public abstract class ActionCommandBase extends PlatformLayerCommandRunnerBase {
 
-	protected ActionCommandBase(String actionName) {
-		super(actionName, "item");
+	protected ActionCommandBase(String verb) {
+		super(verb, "item");
 	}
 
 	protected JobData runAction(ItemPath path, Action action) throws PlatformLayerClientException {

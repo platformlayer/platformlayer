@@ -500,6 +500,11 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
+	public JobData doAction(PlatformLayerKey key, String action, Format dataFormat) throws PlatformLayerClientException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public Tags changeTags(PlatformLayerKey key, TagChanges tagChanges, Long ifVersion)
 			throws PlatformLayerClientException {
 		MappedPlatformLayerKey mapped = mapToChild(key);

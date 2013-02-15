@@ -26,6 +26,8 @@ public interface PlatformLayerClient {
 	// Actions
 	public JobData doAction(PlatformLayerKey key, Action action) throws PlatformLayerClientException;
 
+	public JobData doAction(PlatformLayerKey key, String action, Format dataFormat) throws PlatformLayerClientException;
+
 	// Item CRUD
 	// public <T> Iterable<T> listItems(Class<T> clazz) throws PlatformLayerClientException;
 	//

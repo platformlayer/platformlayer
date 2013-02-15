@@ -224,6 +224,11 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 		return platformLayerClient.doAction(key, action);
 	}
 
+	@Override
+	public JobData doAction(PlatformLayerKey key, String action, Format dataFormat) throws PlatformLayerClientException {
+		return platformLayerClient.doAction(key, action, dataFormat);
+	}
+
 	/**
 	 * Consider using putItemByTag instead (or OwnedItem) for idempotency
 	 */

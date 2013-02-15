@@ -82,6 +82,11 @@ public class DirectPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
+	public JobData doAction(PlatformLayerKey key, String action, Format dataFormat) throws PlatformLayerClientException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public UntypedItem putItem(PlatformLayerKey key, String data, Format dataFormat)
 			throws PlatformLayerClientException {
 		throw new UnsupportedOperationException();

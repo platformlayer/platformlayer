@@ -455,6 +455,14 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
+	public JobData doAction(PlatformLayerKey key, String action, Format dataFormat) throws PlatformLayerClientException {
+		String relativePath = buildRelativePath(key) + "/actions";
+
+		JobData retval = doRequest("POST", relativePath, JobData.class, Format.XML, action, dataFormat);
+		return retval;
+	}
+
+	@Override
 	public ProjectId getProject() {
 		return projectId;
 	}
