@@ -278,7 +278,7 @@ public abstract class ServiceProviderBase implements ServiceProvider {
 
 					if (newKey != key) {
 						try {
-							field.set(item, key);
+							field.set(item, newKey);
 						} catch (IllegalAccessException e) {
 							throw new IllegalStateException("Error setting field: " + field, e);
 						}
