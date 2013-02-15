@@ -44,6 +44,12 @@ public class JdbcConnection {
 	public PreparedStatement prepareStatement(String sql) throws SQLException {
 		PreparedStatement preparedStatement = getConnection().prepareStatement(sql);
 
+		ensurePrepared(preparedStatement);
+
+		return preparedStatement;
+	}
+
+	private void ensurePrepared(PreparedStatement preparedStatement) throws SQLException {
 		PreparedStatement actual = preparedStatement;
 
 		if (actual instanceof PreparedStatementHandle) {
@@ -55,8 +61,6 @@ public class JdbcConnection {
 			// Make sure that we actually prepare the statement
 			((AbstractJdbc2Statement) actual).setPrepareThreshold(1);
 		}
-
-		return preparedStatement;
 	}
 
 	public PreparedStatement prepareBatchStatement(String sql) throws SQLException {
@@ -92,6 +96,14 @@ public class JdbcConnection {
 			batches.clear();
 		}
 		connection.commit();
+	}
+
+	public PreparedStatement prepareStatement(String sql, String[] columnNames) throws SQLException {
+		PreparedStatement ps = connection.prepareStatement(sql, columnNames);
+
+		ensurePrepared(ps);
+
+		return ps;
 	}
 
 }

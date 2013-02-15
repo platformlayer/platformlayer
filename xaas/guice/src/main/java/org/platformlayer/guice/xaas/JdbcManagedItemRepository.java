@@ -478,7 +478,7 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 			Integer itemId = null;
 			final String sql = "INSERT INTO items (service, model, project, state, data, key, secret) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-			PreparedStatement ps = getConnection().prepareStatement(sql, new String[] { "id" });
+			PreparedStatement ps = getJdbcConnection().prepareStatement(sql, new String[] { "id" });
 			ResultSet rs = null;
 			try {
 				ManagedItemState managedItemState = item.state;
