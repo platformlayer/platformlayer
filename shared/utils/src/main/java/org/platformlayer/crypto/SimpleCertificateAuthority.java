@@ -38,7 +38,7 @@ public class SimpleCertificateAuthority {
 	public X509Certificate[] caCertificate;
 	public PrivateKey caPrivateKey;
 
-	private static Certificate buildCertificate(X500Name issuer, PrivateKey issuerPrivateKey, X500Name subject,
+	private static Certificate buildCertificate(X500Name signer, PrivateKey signerPrivateKey, X500Name subject,
 			SubjectPublicKeyInfo subjectPublicKeyInfo) throws OpsException {
 		try {
 			AlgorithmIdentifier sigAlgId = new DefaultSignatureAlgorithmIdentifierFinder().find(SIGNATURE_ALGORITHM);
@@ -57,7 +57,7 @@ public class SimpleCertificateAuthority {
 				serialNumber = BigInteger.valueOf(nextSerialNumber);
 			}
 
-			X509v3CertificateBuilder certificateBuilder = new X509v3CertificateBuilder(issuer, serialNumber, notBefore,
+			X509v3CertificateBuilder certificateBuilder = new X509v3CertificateBuilder(signer, serialNumber, notBefore,
 					notAfter, subject, subjectPublicKeyInfo);
 
 			// {
@@ -66,7 +66,7 @@ public class SimpleCertificateAuthority {
 			// csr.getSubjectPublicKeyInfo());
 			// }
 
-			AsymmetricKeyParameter caPrivateKeyParameters = PrivateKeyFactory.createKey(issuerPrivateKey.getEncoded());
+			AsymmetricKeyParameter caPrivateKeyParameters = PrivateKeyFactory.createKey(signerPrivateKey.getEncoded());
 			ContentSigner contentSigner = new BcRSAContentSignerBuilder(sigAlgId, digestAlgId)
 					.build(caPrivateKeyParameters);
 
@@ -126,15 +126,20 @@ public class SimpleCertificateAuthority {
 
 	public X509Certificate signCsr(String csr) throws OpsException {
 		try {
-			PemReader reader = new PemReader(new StringReader(csr));
-			PemObject pemObject = reader.readPemObject();
-			reader.close();
-
-			PKCS10CertificationRequest csrHolder = new PKCS10CertificationRequest(pemObject.getContent());
+			PKCS10CertificationRequest csrHolder = parseCsr(csr);
 			return signCsr(csrHolder);
 		} catch (IOException e) {
 			throw new OpsException("Error reading CSR", e);
 		}
+	}
+
+	private static PKCS10CertificationRequest parseCsr(String csr) throws IOException {
+		PemReader reader = new PemReader(new StringReader(csr));
+		PemObject pemObject = reader.readPemObject();
+		reader.close();
+
+		PKCS10CertificationRequest csrHolder = new PKCS10CertificationRequest(pemObject.getContent());
+		return csrHolder;
 	}
 
 	public X509Certificate signCsr(PKCS10CertificationRequest csr) throws OpsException {
@@ -146,7 +151,7 @@ public class SimpleCertificateAuthority {
 		return toX509(certificate);
 	}
 
-	private X509Certificate toX509(Certificate certificate) {
+	private static X509Certificate toX509(Certificate certificate) {
 		try {
 			CertificateFactory cf = CertificateFactory.getInstance("X.509");
 			X509Certificate cert = (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(certificate
@@ -177,11 +182,29 @@ public class SimpleCertificateAuthority {
 	// }
 	// }
 
-	public X509Certificate selfSign(X500Principal subject, KeyPair keyPair) throws OpsException {
+	public static X509Certificate selfSign(X500Principal subject, KeyPair keyPair) throws OpsException {
 		X500Principal issuer = subject;
 		Certificate certificate = buildCertificate(BouncyCastleHelpers.toX500Name(issuer), keyPair.getPrivate(),
 				BouncyCastleHelpers.toX500Name(subject),
 				BouncyCastleHelpers.toSubjectPublicKeyInfo(keyPair.getPublic()));
 		return toX509(certificate);
+	}
+
+	public static X509Certificate selfSign(String csr, KeyPair keyPair) throws OpsException {
+		try {
+			PKCS10CertificationRequest csrHolder = parseCsr(csr);
+
+			SubjectPublicKeyInfo subjectPublicKeyInfo = csrHolder.getSubjectPublicKeyInfo();
+			X500Name subject = csrHolder.getSubject();
+
+			// Self sign
+			X500Name issuer = subject;
+			PrivateKey issuerPrivateKey = keyPair.getPrivate();
+
+			Certificate certificate = buildCertificate(issuer, issuerPrivateKey, subject, subjectPublicKeyInfo);
+			return toX509(certificate);
+		} catch (IOException e) {
+			throw new OpsException("Error reading CSR", e);
+		}
 	}
 }
