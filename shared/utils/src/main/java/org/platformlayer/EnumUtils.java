@@ -46,13 +46,19 @@ public class EnumUtils {
 		throw new IllegalArgumentException("Unknown value for " + enumType + ": " + name);
 	}
 
-	public static <T extends Enum<T>> T valueOfOrNull(Class<T> enumType, String name) {
+	public static <T extends Enum<T>> T valueOfOrNull(Class<T> enumType, String name, boolean checkCase) {
 		if (name == null) {
 			return null;
 		}
 		for (T enumValue : EnumSet.allOf(enumType)) {
-			if (enumValue.toString().equals(name)) {
-				return enumValue;
+			if (checkCase) {
+				if (enumValue.toString().equals(name)) {
+					return enumValue;
+				}
+			} else {
+				if (enumValue.toString().equalsIgnoreCase(name)) {
+					return enumValue;
+				}
 			}
 		}
 		return null;
