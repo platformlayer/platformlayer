@@ -117,8 +117,7 @@ public class PlatformLayerHelpers extends TypedPlatformLayerClient {
 			throws OpsException {
 		Set<String> newTagValuesSet = Sets.newHashSet(newTagValues);
 
-		UntypedItem itemUntyped = getItemUntyped(key);
-		Tags existingTags = itemUntyped.getTags();
+		Tags existingTags = getItemTags(key);
 
 		TagChanges tagChanges = new TagChanges();
 
