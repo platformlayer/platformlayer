@@ -149,6 +149,12 @@
 
             <dependency>
                 <groupId>org.platformlayer</groupId>
+                <artifactId>service-database</artifactId>
+                <version>${version.project}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.platformlayer</groupId>
                 <artifactId>service-dns</artifactId>
                 <version>${version.project}</version>
             </dependency>

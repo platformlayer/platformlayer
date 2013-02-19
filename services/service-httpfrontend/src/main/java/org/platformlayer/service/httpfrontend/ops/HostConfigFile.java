@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.inject.Inject;
@@ -16,7 +17,9 @@ import org.platformlayer.ops.filesystem.SyntheticFile;
 import org.platformlayer.ops.helpers.ProviderHelper;
 import org.platformlayer.ops.helpers.ProviderHelper.ProviderOf;
 import org.platformlayer.ops.http.HttpBackend;
+import org.platformlayer.ops.machines.MachineProvider;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
+import org.platformlayer.ops.machines.StorageConfiguration;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.service.httpfrontend.model.HttpServer;
 import org.platformlayer.service.httpfrontend.model.HttpSite;
@@ -65,31 +68,37 @@ public class HostConfigFile extends SyntheticFile {
 
 		URI backendUri = URI.create(site.backend);
 		if (backendUri.getScheme().equals("openstack")) {
-			throw new UnsupportedOperationException();
+			String host = backendUri.getHost();
 
-			// ItemBase cloudItem = platformLayer.findItem(backendUri.getHost());
-			// if (cloudItem == null) {
-			// throw new OpsException("Cannot find backend cloud: " + backendUri);
-			// }
-			//
-			// MachineProvider machineProvider = providers.toInterface(cloudItem, MachineProvider.class);
-			// StorageConfiguration storageConfiguration = machineProvider.getStorageConfiguration();
-			//
-			//
-			// properties.put("openstack.url", storageConfiguration.getEndpoint());
-			// properties.put("openstack.user", cloud.getUsername());
-			// properties.put("openstack.key", cloud.getPassword());
-			// if (!Strings.isNullOrEmpty(cloud.getTenant())) {
-			// properties.put("openstack.tenant", cloud.getTenant());
-			// }
-			//
-			// String container = backendUri.getPath();
-			// if (container.startsWith("/")) {
-			// container = container.substring(1);
-			// }
-			// properties.put("openstack.container", container);
-			//
-			// properties.put("provider", "openstack");
+			ProviderOf<MachineProvider> found = null;
+			for (ProviderOf<MachineProvider> candidate : providers.listItemsProviding(MachineProvider.class)) {
+				String itemIdString = candidate.getItem().getKey().getItemIdString();
+				if (host.equals(itemIdString)) {
+					if (found != null) {
+						throw new OpsException("Host specifier is ambiguous: " + host);
+					}
+					found = candidate;
+				}
+			}
+
+			if (found == null) {
+				throw new OpsException("Cannot find backend cloud: " + backendUri);
+			}
+
+			MachineProvider machineProvider = found.get();
+			StorageConfiguration storageConfiguration = machineProvider.getStorageConfiguration();
+
+			Map<String, String> storageProperties = storageConfiguration.getProperties();
+			storageProperties = PropertyUtils.prefixProperties(storageProperties, "openstack.");
+			properties.putAll(storageProperties);
+
+			String container = backendUri.getPath();
+			if (container.startsWith("/")) {
+				container = container.substring(1);
+			}
+			properties.put("openstack.container", container);
+
+			properties.put("provider", "openstack");
 		} else if (backendUri.getScheme().equals(PlatformLayerKey.SCHEME)) {
 			PlatformLayerKey key = PlatformLayerKey.parse(site.backend);
 

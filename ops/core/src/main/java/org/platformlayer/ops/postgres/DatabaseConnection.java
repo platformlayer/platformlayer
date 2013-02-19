@@ -36,6 +36,9 @@ public class DatabaseConnection extends OpsTreeBase implements CustomRecursor {
 	ProviderHelper providers;
 
 	public static DatabaseConnection build(PlatformLayerKey serverKey) throws OpsException {
+		if (serverKey == null) {
+			throw new IllegalArgumentException("serverKey cannot be null");
+		}
 		DatabaseConnection db = injected(DatabaseConnection.class);
 		db.serverKey = serverKey;
 		return db;
