@@ -1,10 +1,13 @@
 package org.platformlayer.ops;
 
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.platformlayer.jdbc.simplejpa.ReflectionUtils;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Injector;
 
 public class BindingHelper {
@@ -41,6 +44,24 @@ public class BindingHelper {
 		Object item = null;
 		if (prebound != null) {
 			item = prebound.get(fieldType);
+
+			if (item == null) {
+				List<Object> matches = Lists.newArrayList();
+
+				for (Entry<Class<?>, Object> entry : prebound.entrySet()) {
+					Class<?> entryClass = entry.getKey();
+					if (fieldType.isAssignableFrom(entryClass)) {
+						matches.add(entry.getValue());
+					}
+				}
+
+				if (!matches.isEmpty()) {
+					if (matches.size() > 1) {
+						throw new IllegalStateException("Found multiple potential bindings for class: " + fieldType);
+					}
+					item = matches.get(0);
+				}
+			}
 		}
 
 		if (item == null) {
