@@ -37,6 +37,18 @@ public class InstanceBootstrap extends OpsTreeBase {
 
 		addChild(DefaultAptSourcesConfigurationFile.class);
 
+		{
+			File aptConfDir = new File("/etc/apt/apt.conf.d");
+
+			TemplateDataSource template = new TemplateDataSource() {
+				@Override
+				public void buildTemplateModel(Map<String, Object> model) throws OpsException {
+				}
+			};
+			addChild(TemplatedFile.build(template, new File(aptConfDir, "90-install-recommends")));
+			addChild(TemplatedFile.build(template, new File(aptConfDir, "90-install-suggests")));
+		}
+
 		addChild(BootstrapLocales.class);
 
 		addChild(ConfigureSshd.class);

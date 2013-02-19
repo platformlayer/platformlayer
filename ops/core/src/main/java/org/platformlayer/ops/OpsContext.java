@@ -9,7 +9,6 @@ import java.util.Map;
 import javalang7.AutoCloseable;
 import javalang7.Utils;
 
-import org.slf4j.*;
 import org.platformlayer.ApplicationMode;
 import org.platformlayer.CheckedCallable;
 import org.platformlayer.PlatformLayerClient;
@@ -24,6 +23,8 @@ import org.platformlayer.ops.model.metrics.MetricConfig;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.tasks.ActiveJobExecution;
 import org.platformlayer.ops.tasks.OperationInvoker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fathomdb.Configuration;
 import com.google.common.collect.Lists;
