@@ -2,18 +2,25 @@ package org.platformlayer.client.cli.output;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.platformlayer.UntypedItemXml;
+import org.platformlayer.client.cli.PlatformLayerCliContext;
 import org.platformlayer.common.UntypedItem;
 import org.platformlayer.core.model.PlatformLayerKey;
+import org.platformlayer.core.model.Tag;
+import org.platformlayer.core.model.Tags;
+import org.platformlayer.ids.ProjectId;
 import org.platformlayer.xml.XmlHelper;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.fathomdb.cli.CliContext;
 import com.fathomdb.cli.commands.Ansi;
 import com.fathomdb.cli.formatter.SimpleFormatter;
 import com.fathomdb.cli.output.OutputSink;
+import com.google.common.base.Objects;
 import com.google.common.collect.Maps;
 
 @SuppressWarnings("rawtypes")
@@ -23,7 +30,9 @@ public class UntypedItemFormatter extends SimpleFormatter<UntypedItem> {
 	}
 
 	@Override
-	public void visit(UntypedItem o, OutputSink sink) throws IOException {
+	public void visit(CliContext contextGeneric, UntypedItem o, OutputSink sink) throws IOException {
+		PlatformLayerCliContext context = (PlatformLayerCliContext) contextGeneric;
+
 		LinkedHashMap<String, Object> values = Maps.newLinkedHashMap();
 
 		UntypedItemXml item = (UntypedItemXml) o;
@@ -41,16 +50,92 @@ public class UntypedItemFormatter extends SimpleFormatter<UntypedItem> {
 		// throw new IllegalArgumentException("Error parsing XML", e);
 		// }
 
-		values.put("key", item.getKey().getUrl());
+		values.put("key", formatUrl(context, item.getKey()));
 		values.put("state", item.getState());
+
+		Tags tags = item.getTags();
+		values.put("tags", tagsToString(context, tags));
 
 		NodeList childNodes = dataElement.getChildNodes();
 		for (int i = 0; i < childNodes.getLength(); i++) {
 			Node node = childNodes.item(i);
-			values.put(node.getNodeName(), formatCell(node));
+			String nodeName = node.getNodeName();
+			String localName = node.getLocalName();
+			String namespace = node.getNamespaceURI();
+
+			if (namespace.equals("http://platformlayer.org/core/v1.0")) {
+				if (localName.equals("tags")) {
+					continue;
+				}
+
+				if (localName.equals("key")) {
+					continue;
+				}
+
+				if (localName.equals("version")) {
+					continue;
+				}
+
+				if (localName.equals("state")) {
+					continue;
+				}
+			}
+
+			String text = formatCell(node);
+			text = reformatText(context, text);
+			values.put(nodeName, text);
 		}
 
 		sink.outputRow(values);
+	}
+
+	private String tagsToString(PlatformLayerCliContext context, Tags tags) {
+		if (tags == null) {
+			return "";
+		}
+
+		List<Tag> tagList = tags.getTags();
+		if (tagList == null) {
+			return "";
+		}
+
+		StringBuilder sb = new StringBuilder();
+		for (Tag tag : tagList) {
+			if (sb.length() != 0) {
+				sb.append(", ");
+			}
+			String value = tag.getValue();
+			value = reformatText(context, value);
+			sb.append(tag.getKey() + "=" + value);
+		}
+
+		return sb.toString();
+	}
+
+	private String reformatText(PlatformLayerCliContext context, String text) {
+		if (text.startsWith("platform://")) {
+			// This looks like a PlatformLayerKey
+			try {
+				PlatformLayerKey key = PlatformLayerKey.parse(text);
+				text = formatUrl(context, key);
+			} catch (Exception e) {
+				// Ignore
+			}
+		}
+		return text;
+	}
+
+	private String formatUrl(PlatformLayerCliContext context, PlatformLayerKey key) {
+		String text = key.getUrl();
+
+		if (key.getHost() == null) {
+			ProjectId project = context.getProject();
+			if (Objects.equal(project, context.getProject())) {
+				text = "pl:" + key.getItemTypeString() + "/" + key.getItemIdString();
+			}
+		}
+
+		return text;
 	}
 
 	private String formatCell(Node node) {

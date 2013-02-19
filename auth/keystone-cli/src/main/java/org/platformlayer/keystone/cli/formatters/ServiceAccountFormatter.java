@@ -3,12 +3,13 @@ package org.platformlayer.keystone.cli.formatters;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 
-import com.fathomdb.utils.Hex;
 import org.platformlayer.auth.ServiceAccount;
 import org.platformlayer.auth.ServiceAccountEntity;
 
+import com.fathomdb.cli.CliContext;
 import com.fathomdb.cli.formatter.SimpleFormatter;
 import com.fathomdb.cli.output.OutputSink;
+import com.fathomdb.utils.Hex;
 import com.google.common.collect.Maps;
 
 public class ServiceAccountFormatter extends SimpleFormatter<ServiceAccount> {
@@ -18,7 +19,7 @@ public class ServiceAccountFormatter extends SimpleFormatter<ServiceAccount> {
 	}
 
 	@Override
-	public void visit(ServiceAccount o, OutputSink sink) throws IOException {
+	public void visit(CliContext context, ServiceAccount o, OutputSink sink) throws IOException {
 		LinkedHashMap<String, Object> values = Maps.newLinkedHashMap();
 
 		ServiceAccountEntity entity = (ServiceAccountEntity) o;

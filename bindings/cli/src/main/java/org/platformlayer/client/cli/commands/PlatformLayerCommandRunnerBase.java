@@ -1,8 +1,17 @@
 package org.platformlayer.client.cli.commands;
 
+import java.io.PrintWriter;
+
+import javax.xml.transform.Source;
+import javax.xml.transform.dom.DOMSource;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.platformlayer.Format;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
+import org.platformlayer.UntypedItemJson;
+import org.platformlayer.UntypedItemXml;
 import org.platformlayer.client.cli.PlatformLayerCliContext;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ServiceInfo;
@@ -11,11 +20,14 @@ import org.platformlayer.ids.ItemType;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.jobs.model.JobDataList;
+import org.platformlayer.xml.XmlHelper;
 
+import com.fathomdb.cli.commands.Ansi;
 import com.fathomdb.cli.commands.CommandRunnerBase;
 import com.fathomdb.cli.commands.CommandSpecifier;
 
 public abstract class PlatformLayerCommandRunnerBase extends CommandRunnerBase {
+	public static final String NAMESPACE_URI_CORE = "http://platformlayer.org/core/v1.0";
 
 	protected PlatformLayerCommandRunnerBase(String verb, String noun) {
 		super(verb, noun);
@@ -90,4 +102,35 @@ public abstract class PlatformLayerCommandRunnerBase extends CommandRunnerBase {
 			return Format.XML;
 		}
 	}
+
+	@Override
+	public void formatRaw(Object o, PrintWriter writer) {
+		Ansi ansi = new Ansi(writer);
+
+		String data;
+		if (o instanceof UntypedItemXml) {
+			UntypedItemXml item = (UntypedItemXml) o;
+
+			Source src = new DOMSource(item.getRoot());
+			String xml = XmlHelper.toXml(src, 4);
+			data = xml;
+		} else if (o instanceof UntypedItemJson) {
+			UntypedItemJson item = (UntypedItemJson) o;
+
+			JSONObject root = item.getRoot();
+			try {
+				data = root.toString(2);
+			} catch (JSONException e) {
+				throw new IllegalStateException("Error formatting JSON", e);
+			}
+		} else {
+			throw new IllegalStateException();
+		}
+
+		ansi.print(data);
+		ansi.println();
+
+		ansi.reset();
+	}
+
 }

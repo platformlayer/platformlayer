@@ -8,6 +8,7 @@ import org.platformlayer.jobs.model.JobExecutionData;
 import org.platformlayer.jobs.model.JobLog;
 import org.platformlayer.jobs.model.JobLogLine;
 
+import com.fathomdb.cli.CliContext;
 import com.fathomdb.cli.formatter.SimpleFormatter;
 import com.fathomdb.cli.output.OutputSink;
 import com.google.common.collect.Maps;
@@ -19,7 +20,7 @@ public class JobLogFormatter extends SimpleFormatter<JobLog> {
 	}
 
 	@Override
-	public void visit(JobLog o, OutputSink sink) throws IOException {
+	public void visit(CliContext context, JobLog o, OutputSink sink) throws IOException {
 		LinkedHashMap<String, Object> values = Maps.newLinkedHashMap();
 
 		JobExecutionData execution = o.getExecution();

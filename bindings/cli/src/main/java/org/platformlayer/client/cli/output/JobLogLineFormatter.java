@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 
 import org.platformlayer.jobs.model.JobLogLine;
 
+import com.fathomdb.cli.CliContext;
 import com.fathomdb.cli.formatter.SimpleFormatter;
 import com.fathomdb.cli.output.OutputSink;
 import com.google.common.collect.Maps;
@@ -16,7 +17,7 @@ public class JobLogLineFormatter extends SimpleFormatter<JobLogLine> {
 	}
 
 	@Override
-	public void visit(JobLogLine o, OutputSink sink) throws IOException {
+	public void visit(CliContext context, JobLogLine o, OutputSink sink) throws IOException {
 		LinkedHashMap<String, Object> values = Maps.newLinkedHashMap();
 
 		values.put("timestamp", o.timestamp);

@@ -7,6 +7,7 @@ import org.platformlayer.core.model.Action;
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobExecutionData;
 
+import com.fathomdb.cli.CliContext;
 import com.fathomdb.cli.formatter.SimpleFormatter;
 import com.fathomdb.cli.output.OutputSink;
 import com.google.common.collect.Maps;
@@ -18,7 +19,7 @@ public class JobExecutionDataFormatter extends SimpleFormatter<JobExecutionData>
 	}
 
 	@Override
-	public void visit(JobExecutionData o, OutputSink sink) throws IOException {
+	public void visit(CliContext context, JobExecutionData o, OutputSink sink) throws IOException {
 		LinkedHashMap<String, Object> values = Maps.newLinkedHashMap();
 
 		values.put("jobId", o.getJobId());

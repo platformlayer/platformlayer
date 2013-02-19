@@ -133,7 +133,7 @@ public class ScriptCommands {
 			for (Object item : list) {
 				pythonObjects.add(toPython(item));
 			}
-			return FormattedList.build(context.getFormatterRegistry(), pythonObjects, true);
+			return FormattedList.build(context, context.getFormatterRegistry(), pythonObjects, true);
 		}
 
 		// if (in instanceof UntypedItemCollection) {
