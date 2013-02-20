@@ -105,7 +105,6 @@ public abstract class PlatformLayerCommandRunnerBase extends CommandRunnerBase {
 
 	@Override
 	public void formatRaw(Object o, PrintWriter writer) {
-		Ansi ansi = new Ansi(writer);
 
 		String data;
 		if (o instanceof UntypedItemXml) {
@@ -124,8 +123,11 @@ public abstract class PlatformLayerCommandRunnerBase extends CommandRunnerBase {
 				throw new IllegalStateException("Error formatting JSON", e);
 			}
 		} else {
-			throw new IllegalStateException();
+			super.formatRaw(o, writer);
+			return;
 		}
+
+		Ansi ansi = new Ansi(writer);
 
 		ansi.print(data);
 		ansi.println();
