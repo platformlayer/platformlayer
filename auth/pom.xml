@@ -22,13 +22,6 @@
 
     <dependencyManagement>
         <dependencies>
-
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-log4j12</artifactId>
-                <version>1.6.1</version>
-            </dependency>
-
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
@@ -36,8 +29,6 @@
                 <scope>test</scope>
             </dependency>
         </dependencies>
-
-
     </dependencyManagement>
 
 </project>
