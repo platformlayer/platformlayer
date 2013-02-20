@@ -3,13 +3,14 @@ package org.platformlayer.ops.bootstrap;
 import java.io.File;
 import java.util.List;
 
-import org.slf4j.*;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.process.ProcessExecution;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
