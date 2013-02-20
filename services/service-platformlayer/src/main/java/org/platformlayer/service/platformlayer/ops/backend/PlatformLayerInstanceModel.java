@@ -21,6 +21,7 @@ import org.platformlayer.ops.databases.DatabaseHelper;
 import org.platformlayer.ops.databases.DatabaseServer;
 import org.platformlayer.ops.java.JavaCommandBuilder;
 import org.platformlayer.ops.standardservice.StandardTemplateData;
+import org.platformlayer.ops.uses.ConsumeHelpers;
 import org.platformlayer.service.platformlayer.model.PlatformLayerDatabase;
 import org.platformlayer.service.platformlayer.model.PlatformLayerService;
 import org.platformlayer.service.platformlayer.model.SystemAuthService;
@@ -39,6 +40,9 @@ public class PlatformLayerInstanceModel extends StandardTemplateData {
 
 	@Inject
 	DatabaseHelper databases;
+
+	@Inject
+	ConsumeHelpers links;
 
 	@Override
 	public PlatformLayerService getModel() {
@@ -147,6 +151,8 @@ public class PlatformLayerInstanceModel extends StandardTemplateData {
 		Map<String, String> properties = Maps.newHashMap();
 
 		PlatformLayerService model = getModel();
+
+		properties.putAll(links.buildLinkTargetProperties(model.links));
 
 		{
 			// Configure keystore
