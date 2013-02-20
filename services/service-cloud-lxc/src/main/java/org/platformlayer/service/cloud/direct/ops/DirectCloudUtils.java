@@ -139,17 +139,20 @@ public class DirectCloudUtils {
 		return sharedNetwork;
 	}
 
-	public static OpsProvider<ResourcePool<InetSocketAddress>> getPublicAddressPool4(final int publicPort) {
-		return new OpsProvider<ResourcePool<InetSocketAddress>>() {
+	public OpsProvider<ResourcePool<InetSocketAddress>> getPublicAddressPool4(final int publicPort) {
+		OpsProvider<ResourcePool<InetSocketAddress>> pool = new OpsProvider<ResourcePool<InetSocketAddress>>() {
 			@Override
-			public ResourcePool<InetSocketAddress> get() {
+			public ResourcePool<InetSocketAddress> get() throws OpsException {
+				DirectHost host = OpsContext.get().getInstance(DirectHost.class);
 				OpsTarget target = OpsContext.get().getInstance(OpsTarget.class);
 
-				DirectCloud cloud = OpsContext.get().getInstance(DirectCloud.class);
-				DirectHost host = OpsContext.get().getInstance(DirectHost.class);
+				PlatformLayerKey sharedNetworkKey = getSharedNetworkKey();
 
-				PlatformLayerKey sharedNetwork = getSharedNetworkKey();
-				if (sharedNetwork == null) {
+				// We don't skip here, at the moment.
+				// We may just need a comma separated list in future...
+				int skipCount = 0;
+
+				if (sharedNetworkKey == null) {
 					File poolPath = getPoolPath("sockets-ipv4-public");
 
 					File resourceDir = new File(poolPath, "all");
@@ -160,9 +163,6 @@ public class DirectCloudUtils {
 
 					String ipv4Public = host.ipv4Public;
 					if (ipv4Public != null) {
-						// We don't skip here, at the moment.
-						// We may just need a comma separated list in future...
-						int skipCount = 0;
 						poolBuilder = new NetworkPoolBuilder(ipv4Public, skipCount);
 					}
 
@@ -171,10 +171,36 @@ public class DirectCloudUtils {
 
 					return new AssignPortToAddressPool(addressPool, publicPort);
 				} else {
+					// We can't have different hosts answering the same IP on different ports
+					// (well, not really)
+
 					throw new UnsupportedOperationException();
+
+					// DirectNetwork network = platformLayer.getItem(sharedNetworkKey, DirectNetwork.class);
+					//
+					// for (AddressModel net : network.getNetworks()) {
+					// if (Strings.isNullOrEmpty(net.cidr)) {
+					// continue;
+					// }
+					//
+					// IpRange cidr = IpRange.parse(net.cidr);
+					// if (!cidr.isIpv4()) {
+					// continue;
+					// }
+					//
+					// NetworkPoolBuilder poolBuilder = new NetworkPoolBuilder(net.cidr, skipCount, net);
+					// PlatformlayerBackedPool<AddressModel> addressPool = new PlatformlayerBackedPool<AddressModel>(
+					// platformLayer, sharedNetworkKey, AddressModel.class, poolBuilder);
+					// return new AssignPortToAddressPool(addressPool, publicPort);
+					// }
+					//
+					// log.warn("Unable to find an IPV4 network configured on " + sharedNetworkKey);
+					// return null;
 				}
 			}
 		};
+
+		return pool;
 	}
 
 	public static OpsProvider<ResourcePool<AddressModel>> getPrivateAddressPool4() {

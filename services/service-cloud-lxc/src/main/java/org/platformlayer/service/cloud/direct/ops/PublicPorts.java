@@ -95,7 +95,7 @@ public class PublicPorts extends OpsTreeBase {
 					}
 				};
 			} else {
-				assignPublicAddress.poolProvider = DirectCloudUtils.getPublicAddressPool4(publicPort);
+				assignPublicAddress.poolProvider = directCloudHelpers.getPublicAddressPool4(publicPort);
 			}
 		}
 
