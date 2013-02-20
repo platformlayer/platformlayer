@@ -9,6 +9,7 @@ import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.backups.BackupDirectory;
 import org.platformlayer.ops.filesystem.SimpleFile;
+import org.platformlayer.ops.firewall.Transport;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.java.JavaVirtualMachine;
 import org.platformlayer.ops.networks.PublicEndpoint;
@@ -100,6 +101,8 @@ public class JenkinsServiceController extends OpsTreeBase {
 
 			endpoint.tagItem = model.getKey();
 			endpoint.parentItem = model.getKey();
+
+			endpoint.transport = Transport.Ipv6;
 
 			vm.addChild(endpoint);
 		}
