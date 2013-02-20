@@ -185,4 +185,8 @@ public abstract class IpRange {
 		return this instanceof IpV6Range;
 	}
 
+	public boolean isIpv4() {
+		return this instanceof IpV4Range;
+	}
+
 }
