@@ -5,6 +5,8 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 
+import com.google.common.collect.Lists;
+
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Repository {
 	public String key;
@@ -20,6 +22,9 @@ public class Repository {
 	}
 
 	public List<String> getSource() {
+		if (source == null) {
+			source = Lists.newArrayList();
+		}
 		return source;
 	}
 
