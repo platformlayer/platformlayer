@@ -26,7 +26,7 @@ public class NginxServiceController extends OpsTreeBase {
 	protected void addChildren() throws OpsException {
 		NginxService model = OpsContext.get().getInstance(NginxService.class);
 
-		InstanceBuilder instance = InstanceBuilder.build(model.dnsName, this);
+		InstanceBuilder instance = InstanceBuilder.build(model.dnsName, this, model.getTags());
 		instance.hostPolicy.allowRunInContainer = true;
 		instance.publicPorts.add(80);
 		instance.publicPorts.add(443);

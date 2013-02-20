@@ -24,7 +24,7 @@ public class HttpServerController extends OpsTreeBase {
 	protected void addChildren() throws OpsException {
 		HttpServer model = OpsContext.get().getInstance(HttpServer.class);
 
-		InstanceBuilder vm = InstanceBuilder.build(model.dnsName, this);
+		InstanceBuilder vm = InstanceBuilder.build(model.dnsName, this, model.getTags());
 		vm.addTagToManaged = true;
 		vm.publicPorts.add(HttpHelpers.PORT);
 

@@ -30,7 +30,7 @@ public class MysqlServerController extends OpsTreeBase {
 	protected void addChildren() throws OpsException {
 		MysqlServer model = OpsContext.get().getInstance(MysqlServer.class);
 
-		InstanceBuilder instance = InstanceBuilder.build(model.dnsName, this);
+		InstanceBuilder instance = InstanceBuilder.build(model.dnsName, this, model.getTags());
 		// TODO: Memory _really_ needs to be configurable here!
 
 		instance.publicPorts.add(3306);

@@ -27,7 +27,7 @@ public class SolrServerController extends OpsTreeBase {
 		InstanceBuilder vm;
 
 		{
-			vm = InstanceBuilder.build(model.dnsName, this);
+			vm = InstanceBuilder.build(model.dnsName, this, model.getTags());
 			vm.publicPorts.add(port);
 
 			vm.hostPolicy.allowRunInContainer = true;

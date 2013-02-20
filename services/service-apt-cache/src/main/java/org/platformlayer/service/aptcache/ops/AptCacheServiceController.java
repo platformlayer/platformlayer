@@ -43,7 +43,7 @@ public class AptCacheServiceController extends OpsTreeBase implements HttpProxyC
 		// TODO: Create endpoint with default port; maybe default to closed?
 		// model.dnsName
 
-		InstanceBuilder instance = InstanceBuilder.build(model.dnsName, this);
+		InstanceBuilder instance = InstanceBuilder.build(model.dnsName, this, model.getTags());
 		instance.hostPolicy.allowRunInContainer = true;
 		addChild(instance);
 

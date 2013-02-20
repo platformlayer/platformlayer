@@ -45,7 +45,7 @@ public class GerritServiceController extends OpsTreeBase implements HasPorts {
 
 		InstanceBuilder vm;
 		{
-			vm = InstanceBuilder.build(dnsName, this);
+			vm = InstanceBuilder.build(dnsName, this, model.getTags());
 			vm.publicPorts.addAll(ports);
 			vm.hostPolicy.configureCluster(template.getPlacementKey());
 

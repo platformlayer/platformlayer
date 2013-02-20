@@ -48,7 +48,7 @@ public class PostgresqlServerController extends OpsTreeBase implements DatabaseS
 	protected void addChildren() throws OpsException {
 		PostgresqlTemplateVariables template = injected(PostgresqlTemplateVariables.class);
 
-		InstanceBuilder instance = InstanceBuilder.build(model.dnsName, this);
+		InstanceBuilder instance = InstanceBuilder.build(model.dnsName, this, model.getTags());
 		// TODO: Memory _really_ needs to be configurable here!
 		instance.publicPorts.add(5432);
 

@@ -115,7 +115,7 @@ public class GitServerController extends OpsTreeBase implements TemplateDataSour
 	protected void addChildren() throws OpsException {
 		GitService model = OpsContext.get().getInstance(GitService.class);
 
-		InstanceBuilder vm = InstanceBuilder.build(model.dnsName, this);
+		InstanceBuilder vm = InstanceBuilder.build(model.dnsName, this, model.getTags());
 		addChild(vm);
 
 		vm.addChild(PackageDependency.build("apache2"));

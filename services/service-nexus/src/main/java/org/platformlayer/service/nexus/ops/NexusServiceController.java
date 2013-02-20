@@ -28,7 +28,7 @@ public class NexusServiceController extends OpsTreeBase {
 		InstanceBuilder vm;
 
 		{
-			vm = InstanceBuilder.build(model.dnsName, this);
+			vm = InstanceBuilder.build(model.dnsName, this, model.getTags());
 			vm.minimumMemoryMb = 2048;
 			addChild(vm);
 		}

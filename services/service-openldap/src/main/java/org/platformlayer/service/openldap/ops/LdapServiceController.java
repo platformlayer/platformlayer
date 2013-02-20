@@ -31,7 +31,7 @@ public class LdapServiceController extends OpsTreeBase {
 
 		// TODO: Support package pre-configuration??
 		InstanceBuilder instance = InstanceBuilder.build(model.dnsName,
-				DiskImageRecipeBuilder.loadDiskImageResource(getClass(), "DiskImageRecipe.xml"));
+				DiskImageRecipeBuilder.loadDiskImageResource(getClass(), "DiskImageRecipe.xml"), model.getTags());
 		addChild(instance);
 
 		instance.addChild(MetricsInstance.class);

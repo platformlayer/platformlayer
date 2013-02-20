@@ -25,7 +25,7 @@ public class DnsServerController extends OpsTreeBase {
 
 	@Override
 	protected void addChildren() throws OpsException {
-		InstanceBuilder vm = InstanceBuilder.build(model.dnsName, this);
+		InstanceBuilder vm = InstanceBuilder.build(model.dnsName, this, model.getTags());
 
 		// TODO: Do we need a DnsCluster concept?
 		// For now, we fake it

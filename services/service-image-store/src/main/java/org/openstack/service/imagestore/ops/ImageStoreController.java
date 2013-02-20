@@ -96,7 +96,7 @@ public class ImageStoreController extends OpsTreeBase implements ImageStoreProvi
 	}
 
 	protected void addChildrenGlance(ImageStore model) throws OpsException {
-		InstanceBuilder instance = InstanceBuilder.build(model.dnsName, this);
+		InstanceBuilder instance = InstanceBuilder.build(model.dnsName, this, model.getTags());
 		addChild(instance);
 
 		// We’ll stick with glance using SQLite (for now)

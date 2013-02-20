@@ -41,6 +41,8 @@ public class AppController extends OpsTreeBase implements HasPorts {
 
 			JettyService server = new JettyService();
 
+			server.getTags().addAll(Tag.HOST_POLICY.filter(model.getTags()));
+
 			server.transport = Transport.Ipv6;
 
 			// server.dnsName = model.dnsName;

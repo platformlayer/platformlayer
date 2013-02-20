@@ -27,7 +27,7 @@ public class TomcatServiceController extends OpsTreeBase {
 	protected void addChildren() throws OpsException {
 		TomcatService model = OpsContext.get().getInstance(TomcatService.class);
 
-		InstanceBuilder instance = InstanceBuilder.build(model.dnsName, this);
+		InstanceBuilder instance = InstanceBuilder.build(model.dnsName, this, model.getTags());
 		instance.minimumMemoryMb = 2048;
 		addChild(instance);
 

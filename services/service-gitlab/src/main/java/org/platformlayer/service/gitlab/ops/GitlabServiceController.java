@@ -31,7 +31,7 @@ public class GitlabServiceController extends OpsTreeBase implements TemplateData
 	protected void addChildren() throws OpsException {
 		GitlabService model = OpsContext.get().getInstance(GitlabService.class);
 
-		InstanceBuilder instance = InstanceBuilder.build(model.dnsName, this);
+		InstanceBuilder instance = InstanceBuilder.build(model.dnsName, this, model.getTags());
 		addChild(instance);
 
 		instance.addChildren(PackageDependency

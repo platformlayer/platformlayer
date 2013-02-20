@@ -34,7 +34,7 @@ public class CollectdServiceController extends OpsTreeBase {
 		// We'd like to auto-gen the disk image, but we have to fix the problems involving pre-installing collectd (see
 		// below)
 		InstanceBuilder instance = InstanceBuilder.build(model.dnsName,
-				DiskImageRecipeBuilder.loadDiskImageResource(getClass(), "DiskImageRecipe.xml"));
+				DiskImageRecipeBuilder.loadDiskImageResource(getClass(), "DiskImageRecipe.xml"), model.getTags());
 		instance.minimumMemoryMb = 512; // Make sure we have a bit more RAM, so that we can queue up a fair amount of
 										// RRD data
 		addChild(instance);

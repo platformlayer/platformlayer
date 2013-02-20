@@ -33,7 +33,7 @@ public class RedisServerController extends OpsTreeBase {
 		InstanceBuilder vm;
 
 		{
-			vm = InstanceBuilder.build(model.dnsName, this);
+			vm = InstanceBuilder.build(model.dnsName, this, model.getTags());
 
 			// TODO: Memory _really_ needs to be configurable here!
 			vm.publicPorts.add(PORT);

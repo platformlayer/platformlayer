@@ -30,7 +30,7 @@ public class UserAuthServiceController extends OpsTreeBase {
 
 		InstanceBuilder vm;
 		{
-			vm = InstanceBuilder.build(dnsName, this);
+			vm = InstanceBuilder.build(dnsName, this, model.getTags());
 			vm.publicPorts.add(port);
 			vm.hostPolicy.configureCluster(template.getPlacementKey());
 

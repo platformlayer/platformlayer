@@ -43,7 +43,7 @@ public class DnsResolverServiceController extends OpsTreeBase implements DnsReso
 			throw new IllegalArgumentException("dnsName must be specified");
 		}
 
-		InstanceBuilder instance = InstanceBuilder.build(model.dnsName, this);
+		InstanceBuilder instance = InstanceBuilder.build(model.dnsName, this, model.getTags());
 		addChild(instance);
 
 		instance.addChild(PackageDependency.build("bind9"));

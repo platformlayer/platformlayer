@@ -27,7 +27,7 @@ public class DesktopController extends OpsTreeBase {
 	protected void addChildren() throws OpsException {
 		Desktop model = OpsContext.get().getInstance(Desktop.class);
 
-		InstanceBuilder instance = InstanceBuilder.build(model.dnsName, this);
+		InstanceBuilder instance = InstanceBuilder.build(model.dnsName, this, model.getTags());
 		instance.publicPorts.add(22);
 
 		instance.hostPolicy.allowRunInContainer = true;

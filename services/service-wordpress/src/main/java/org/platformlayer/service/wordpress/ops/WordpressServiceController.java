@@ -29,7 +29,7 @@ public class WordpressServiceController extends OpsTreeBase {
 	protected void addChildren() throws OpsException {
 		WordpressService model = OpsContext.get().getInstance(WordpressService.class);
 
-		InstanceBuilder instance = InstanceBuilder.build(model.dnsName, this);
+		InstanceBuilder instance = InstanceBuilder.build(model.dnsName, this, model.getTags());
 		// instance.minimumMemoryMb = 2048;
 		addChild(instance);
 

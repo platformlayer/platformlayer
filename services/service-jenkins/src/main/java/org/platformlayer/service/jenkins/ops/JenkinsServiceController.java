@@ -34,7 +34,7 @@ public class JenkinsServiceController extends OpsTreeBase {
 		InstanceBuilder vm;
 
 		{
-			vm = InstanceBuilder.build(model.dnsName, this);
+			vm = InstanceBuilder.build(model.dnsName, this, model.getTags());
 			vm.publicPorts.add(PORT);
 
 			vm.hostPolicy.allowRunInContainer = true;
