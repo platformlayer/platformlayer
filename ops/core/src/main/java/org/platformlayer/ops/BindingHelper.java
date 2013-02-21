@@ -79,7 +79,7 @@ public class BindingHelper {
 			throw new IllegalArgumentException("Cannot find bound value for: " + field);
 		}
 
-		BindingHelper.INSTANCE.bind(item);
+		bind(item);
 
 		return item;
 	}
