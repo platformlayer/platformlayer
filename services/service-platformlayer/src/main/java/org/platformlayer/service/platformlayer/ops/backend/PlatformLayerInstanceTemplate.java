@@ -7,7 +7,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.platformlayer.InetAddressChooser;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Property;
 import org.platformlayer.core.model.Tag;
@@ -19,15 +18,12 @@ import org.platformlayer.ops.databases.DatabaseHelper;
 import org.platformlayer.ops.java.JavaCommandBuilder;
 import org.platformlayer.ops.standardservice.StandardTemplateData;
 import org.platformlayer.ops.uses.ConsumeHelpers;
-import org.platformlayer.ops.uses.LinkTarget;
-import org.platformlayer.service.platformlayer.model.PlatformLayerDatabase;
 import org.platformlayer.service.platformlayer.model.PlatformLayerService;
 import org.platformlayer.service.platformlayer.model.SystemAuthService;
 import org.platformlayer.service.platformlayer.model.UserAuthService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fathomdb.properties.PropertyUtils;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -88,13 +84,6 @@ public class PlatformLayerInstanceTemplate extends StandardTemplateData {
 		return serverKey;
 	}
 
-	public LinkTarget getDatabase() throws OpsException {
-		PlatformLayerKey databaseKey = getDatabaseKey();
-		PlatformLayerDatabase database = platformLayer.getItem(databaseKey, PlatformLayerDatabase.class);
-		LinkTarget dbTarget = providers.toInterface(database, LinkTarget.class);
-		return dbTarget;
-	}
-
 	public SystemAuthService getSystemAuthService() throws OpsException {
 		PlatformLayerKey systemAuthKey = getModel().systemAuth;
 		SystemAuthService auth = platformLayer.getItem(systemAuthKey, SystemAuthService.class);
@@ -139,13 +128,7 @@ public class PlatformLayerInstanceTemplate extends StandardTemplateData {
 		}
 
 		{
-			LinkTarget database = getDatabase();
-
-			InetAddressChooser inetAddressChooser = InetAddressChooser.preferIpv6();
-			Map<String, String> config = database.buildLinkTargetConfiguration(inetAddressChooser);
-			config = PropertyUtils.prefixProperties(config, "platformlayer.");
-
-			properties.putAll(config);
+			links.addTarget(properties, "platformlayer.", getDatabaseKey());
 		}
 
 		if (isMultitenant()) {
