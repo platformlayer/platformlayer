@@ -1,5 +1,6 @@
 package org.platformlayer.service.platformlayer.ops.auth.system;
 
+import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.instances.InstanceBuilder;
@@ -15,15 +16,18 @@ public class SystemAuthServiceController extends OpsTreeBase {
 
 	public static final int PORT = 35358;
 
+	@Bound
+	SystemAuthService model;
+
+	@Bound
+	SystemAuthInstanceModel template;
+
 	@Handler
 	public void handler() {
 	}
 
 	@Override
 	protected void addChildren() throws OpsException {
-		SystemAuthInstanceModel template = injected(SystemAuthInstanceModel.class);
-		SystemAuthService model = template.getModel();
-
 		int port = PORT;
 
 		String dnsName = model.dnsName;
@@ -41,17 +45,15 @@ public class SystemAuthServiceController extends OpsTreeBase {
 		}
 
 		{
-			SystemAuthInstall install = injected(SystemAuthInstall.class);
-			vm.addChild(install);
+			SystemAuthInstall install = vm.addChild(SystemAuthInstall.class);
 		}
 
 		{
-			SystemAuthInstance service = injected(SystemAuthInstance.class);
-			vm.addChild(service);
+			SystemAuthInstance service = vm.addChild(SystemAuthInstance.class);
 		}
 
 		{
-			PublicEndpoint endpoint = injected(PublicEndpoint.class);
+			PublicEndpoint endpoint = vm.addChild(PublicEndpoint.class);
 			// endpoint.network = null;
 			endpoint.publicPort = port;
 			endpoint.backendPort = port;
@@ -59,8 +61,6 @@ public class SystemAuthServiceController extends OpsTreeBase {
 
 			endpoint.tagItem = model.getKey();
 			endpoint.parentItem = model.getKey();
-
-			vm.addChild(endpoint);
 		}
 	}
 }

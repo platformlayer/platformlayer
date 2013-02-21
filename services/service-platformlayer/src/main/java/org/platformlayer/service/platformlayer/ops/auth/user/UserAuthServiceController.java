@@ -1,5 +1,6 @@
 package org.platformlayer.service.platformlayer.ops.auth.user;
 
+import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.instances.InstanceBuilder;
@@ -15,15 +16,18 @@ public class UserAuthServiceController extends OpsTreeBase {
 
 	public static final int PORT = 5001;
 
+	@Bound
+	UserAuthInstanceModel template;
+
+	@Bound
+	UserAuthService model;
+
 	@Handler
 	public void handler() {
 	}
 
 	@Override
 	protected void addChildren() throws OpsException {
-		UserAuthInstanceModel template = injected(UserAuthInstanceModel.class);
-		UserAuthService model = template.getModel();
-
 		int port = PORT;
 
 		String dnsName = model.dnsName;
@@ -41,17 +45,15 @@ public class UserAuthServiceController extends OpsTreeBase {
 		}
 
 		{
-			UserAuthInstall install = injected(UserAuthInstall.class);
-			vm.addChild(install);
+			UserAuthInstall install = vm.addChild(UserAuthInstall.class);
 		}
 
 		{
-			UserAuthInstance service = injected(UserAuthInstance.class);
-			vm.addChild(service);
+			UserAuthInstance service = vm.addChild(UserAuthInstance.class);
 		}
 
 		{
-			PublicEndpoint endpoint = injected(PublicEndpoint.class);
+			PublicEndpoint endpoint = vm.addChild(PublicEndpoint.class);
 			// endpoint.network = null;
 			endpoint.publicPort = port;
 			endpoint.backendPort = port;
@@ -59,8 +61,6 @@ public class UserAuthServiceController extends OpsTreeBase {
 
 			endpoint.tagItem = model.getKey();
 			endpoint.parentItem = model.getKey();
-
-			vm.addChild(endpoint);
 		}
 	}
 }
