@@ -63,7 +63,7 @@ public class PlatformLayerHelpers extends TypedPlatformLayerClient {
 		}
 		item = refresh(item);
 		if (item.getState() != ManagedItemState.DELETED) {
-			throw new OpsException("Item not yet deleted");
+			throw new OpsException("Item not yet deleted " + item.getKey());
 		}
 		return item;
 	}
