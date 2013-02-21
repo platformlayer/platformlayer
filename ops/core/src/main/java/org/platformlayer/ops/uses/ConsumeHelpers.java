@@ -18,6 +18,7 @@ public class ConsumeHelpers {
 
 	@Inject
 	ProviderHelper providerHelper;
+
 	@Inject
 	PlatformLayerHelpers platformLayer;
 

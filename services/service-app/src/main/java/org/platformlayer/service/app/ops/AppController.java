@@ -2,6 +2,8 @@ package org.platformlayer.service.app.ops;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.Bound;
