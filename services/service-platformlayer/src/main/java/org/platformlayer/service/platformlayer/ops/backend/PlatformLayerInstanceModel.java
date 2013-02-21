@@ -13,9 +13,9 @@ import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Property;
 import org.platformlayer.core.model.Secret;
 import org.platformlayer.core.model.Tag;
+import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Command.Argument;
-import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.databases.DatabaseHelper;
 import org.platformlayer.ops.databases.DatabaseServer;
@@ -44,9 +44,11 @@ public class PlatformLayerInstanceModel extends StandardTemplateData {
 	@Inject
 	ConsumeHelpers links;
 
+	@Bound
+	PlatformLayerService model;
+
 	@Override
 	public PlatformLayerService getModel() {
-		PlatformLayerService model = OpsContext.get().getInstance(PlatformLayerService.class);
 		return model;
 	}
 

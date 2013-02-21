@@ -1,6 +1,7 @@
 package org.platformlayer.service.platformlayer.ops.backend;
 
 import org.platformlayer.EnumUtils;
+import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.firewall.Transport;
@@ -12,10 +13,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class PlatformLayerServiceController extends OpsTreeBase {
-
 	private static final Logger log = LoggerFactory.getLogger(PlatformLayerServiceController.class);
 
 	public static final int PORT = 8082;
+
+	@Bound
+	PlatformLayerInstanceModel template;
+
+	@Bound
+	PlatformLayerService model;
 
 	@Handler
 	public void handler() {
@@ -23,9 +29,6 @@ public class PlatformLayerServiceController extends OpsTreeBase {
 
 	@Override
 	protected void addChildren() throws OpsException {
-		PlatformLayerInstanceModel template = injected(PlatformLayerInstanceModel.class);
-		PlatformLayerService model = template.getModel();
-
 		int port = PORT;
 
 		String dnsName = model.dnsName;
