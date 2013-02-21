@@ -34,9 +34,9 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-public class PlatformLayerInstanceModel extends StandardTemplateData {
+public class PlatformLayerInstanceTemplate extends StandardTemplateData {
 
-	private static final Logger log = LoggerFactory.getLogger(PlatformLayerInstanceModel.class);
+	private static final Logger log = LoggerFactory.getLogger(PlatformLayerInstanceTemplate.class);
 
 	@Inject
 	DatabaseHelper databases;

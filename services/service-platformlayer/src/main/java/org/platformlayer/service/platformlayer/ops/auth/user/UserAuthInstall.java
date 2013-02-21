@@ -8,7 +8,7 @@ import org.platformlayer.ops.standardservice.StandardTemplateData;
 public class UserAuthInstall extends StandardServiceInstall {
 
 	@Bound
-	UserAuthInstanceModel template;
+	UserAuthInstanceTemplate template;
 
 	@Override
 	protected DownloadFileByHash buildDownload() {

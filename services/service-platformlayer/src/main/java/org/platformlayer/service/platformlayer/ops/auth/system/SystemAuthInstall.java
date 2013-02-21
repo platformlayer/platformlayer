@@ -8,7 +8,7 @@ import org.platformlayer.ops.standardservice.StandardTemplateData;
 public class SystemAuthInstall extends StandardServiceInstall {
 
 	@Bound
-	SystemAuthInstanceModel template;
+	SystemAuthInstanceTemplate template;
 
 	@Override
 	protected StandardTemplateData getTemplate() {

@@ -18,7 +18,7 @@ public class PlatformLayerServiceController extends OpsTreeBase {
 	public static final int PORT = 8082;
 
 	@Bound
-	PlatformLayerInstanceModel template;
+	PlatformLayerInstanceTemplate template;
 
 	@Bound
 	PlatformLayerService model;

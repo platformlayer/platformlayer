@@ -13,9 +13,9 @@ import org.platformlayer.service.platformlayer.ops.auth.CommonAuthTemplateData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SystemAuthInstanceModel extends CommonAuthTemplateData {
+public class SystemAuthInstanceTemplate extends CommonAuthTemplateData {
 
-	private static final Logger log = LoggerFactory.getLogger(SystemAuthInstanceModel.class);
+	private static final Logger log = LoggerFactory.getLogger(SystemAuthInstanceTemplate.class);
 
 	@Bound
 	SystemAuthService model;

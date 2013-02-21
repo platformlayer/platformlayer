@@ -6,10 +6,10 @@ import org.platformlayer.ops.standardservice.StandardServiceInstance;
 public class SystemAuthInstance extends StandardServiceInstance {
 
 	@Bound
-	SystemAuthInstanceModel template;
+	SystemAuthInstanceTemplate template;
 
 	@Override
-	protected SystemAuthInstanceModel getTemplate() {
+	protected SystemAuthInstanceTemplate getTemplate() {
 		return template;
 	}
 

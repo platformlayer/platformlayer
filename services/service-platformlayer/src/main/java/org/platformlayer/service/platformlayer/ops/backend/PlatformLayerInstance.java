@@ -11,13 +11,13 @@ import org.platformlayer.ops.standardservice.StandardServiceInstance;
 public class PlatformLayerInstance extends StandardServiceInstance {
 
 	@Bound
-	PlatformLayerInstanceModel template;
+	PlatformLayerInstanceTemplate template;
 
 	@Override
 	protected void addChildren() throws OpsException {
 		super.addChildren();
 
-		PlatformLayerInstanceModel template = getTemplate();
+		PlatformLayerInstanceTemplate template = getTemplate();
 
 		ManagedDirectory configDir = findDirectory(template.getConfigDir());
 		File keystoreFile = template.getKeystoreFile();
@@ -38,7 +38,7 @@ public class PlatformLayerInstance extends StandardServiceInstance {
 	}
 
 	@Override
-	protected PlatformLayerInstanceModel getTemplate() {
+	protected PlatformLayerInstanceTemplate getTemplate() {
 		return template;
 	}
 

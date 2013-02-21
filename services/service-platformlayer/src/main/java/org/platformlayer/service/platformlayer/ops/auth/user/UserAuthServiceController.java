@@ -17,7 +17,7 @@ public class UserAuthServiceController extends OpsTreeBase {
 	public static final int PORT = 5001;
 
 	@Bound
-	UserAuthInstanceModel template;
+	UserAuthInstanceTemplate template;
 
 	@Bound
 	UserAuthService model;

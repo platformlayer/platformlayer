@@ -20,7 +20,7 @@ public class SystemAuthServiceController extends OpsTreeBase {
 	SystemAuthService model;
 
 	@Bound
-	SystemAuthInstanceModel template;
+	SystemAuthInstanceTemplate template;
 
 	@Handler
 	public void handler() {

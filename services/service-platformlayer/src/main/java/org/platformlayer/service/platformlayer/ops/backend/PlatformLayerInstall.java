@@ -12,7 +12,7 @@ import org.platformlayer.ops.standardservice.StandardTemplateData;
 public class PlatformLayerInstall extends StandardServiceInstall {
 
 	@Bound
-	PlatformLayerInstanceModel template;
+	PlatformLayerInstanceTemplate template;
 
 	@Override
 	protected StandardTemplateData getTemplate() {
