@@ -1,40 +1,30 @@
 package org.platformlayer.service.platformlayer.ops.backend;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Property;
-import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Command.Argument;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.databases.DatabaseHelper;
 import org.platformlayer.ops.java.JavaCommandBuilder;
 import org.platformlayer.ops.standardservice.StandardTemplateData;
 import org.platformlayer.ops.uses.LinkHelpers;
 import org.platformlayer.service.platformlayer.model.PlatformLayerService;
-import org.platformlayer.service.platformlayer.model.SystemAuthService;
-import org.platformlayer.service.platformlayer.model.UserAuthService;
+import org.platformlayer.service.platformlayer.ops.auth.system.SystemAuthServiceController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class PlatformLayerInstanceTemplate extends StandardTemplateData {
 
 	private static final Logger log = LoggerFactory.getLogger(PlatformLayerInstanceTemplate.class);
-
-	@Inject
-	DatabaseHelper databases;
 
 	@Inject
 	LinkHelpers links;
@@ -79,23 +69,6 @@ public class PlatformLayerInstanceTemplate extends StandardTemplateData {
 		return "platformlayer";
 	}
 
-	public PlatformLayerKey getDatabaseServerKey() throws OpsException {
-		PlatformLayerKey serverKey = getDatabaseKey();
-		return serverKey;
-	}
-
-	public SystemAuthService getSystemAuthService() throws OpsException {
-		PlatformLayerKey systemAuthKey = getModel().systemAuth;
-		SystemAuthService auth = platformLayer.getItem(systemAuthKey, SystemAuthService.class);
-		return auth;
-	}
-
-	public UserAuthService getAuthService() throws OpsException {
-		PlatformLayerKey authKey = getModel().auth;
-		UserAuthService auth = platformLayer.getItem(authKey, UserAuthService.class);
-		return auth;
-	}
-
 	public boolean isMultitenant() {
 		return (!Strings.isNullOrEmpty(getModel().multitenantItems));
 	}
@@ -128,6 +101,7 @@ public class PlatformLayerInstanceTemplate extends StandardTemplateData {
 		}
 
 		{
+			// Link to database
 			links.addTarget(properties, "platformlayer.", getDatabaseKey());
 		}
 
@@ -140,34 +114,13 @@ public class PlatformLayerInstanceTemplate extends StandardTemplateData {
 		}
 
 		{
-			// Configure user auth
-			List<String> userAuthKeys = Lists.newArrayList();
-
-			UserAuthService userAuthService = getAuthService();
-			String baseUrl = "https://" + userAuthService.dnsName + ":5001/";
-
-			userAuthKeys.addAll(Tag.PUBLIC_KEY_SIG.find(userAuthService));
-			Collections.sort(userAuthKeys); // Keep it stable
-
-			properties.put("auth.user.ssl.keys", Joiner.on(',').join(userAuthKeys));
-			properties.put("auth.user.url", baseUrl);
-
-			// The ssl cert is actually multitenant.cert
+			// Link to user auth
+			links.addTarget(properties, "auth.user.", model.auth);
 		}
 
 		{
-			// Configure system auth (token validation)
-			List<String> systemAuthKeys = Lists.newArrayList();
-
-			SystemAuthService systemAuthService = getSystemAuthService();
-			String systemAuthUrl = "https://" + systemAuthService.dnsName + ":35358/";
-
-			systemAuthKeys.addAll(Tag.PUBLIC_KEY_SIG.find(systemAuthService));
-			Collections.sort(systemAuthKeys); // Keep it stable
-
-			properties.put("auth.system.ssl.keys", Joiner.on(',').join(systemAuthKeys));
-			properties.put("auth.system.url", systemAuthUrl);
-			properties.put("auth.system.ssl.cert", getSystemCertAlias());
+			// Link to system auth (token validation)
+			links.addTarget(properties, "auth.system.", model.systemAuth);
 		}
 
 		if (model.config != null) {
@@ -180,7 +133,7 @@ public class PlatformLayerInstanceTemplate extends StandardTemplateData {
 	}
 
 	String getSystemCertAlias() {
-		return "clientcert.systemauth";
+		return SystemAuthServiceController.CERT_NAME;
 	}
 
 	protected PlatformLayerKey getDatabaseKey() {
