@@ -3,6 +3,7 @@ package org.platformlayer.service.postgresql.ops;
 import java.io.File;
 import java.net.InetAddress;
 import java.security.cert.X509Certificate;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -29,6 +30,9 @@ import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.postgresql.model.PostgresqlServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fathomdb.crypto.OpenSshUtils;
+import com.google.common.collect.Maps;
 
 public class PostgresqlServerController extends OpsTreeBase implements DatabaseServer {
 
@@ -137,5 +141,31 @@ public class PostgresqlServerController extends OpsTreeBase implements DatabaseS
 	public X509Certificate getCertificate() {
 		// Not yet supported
 		return null;
+	}
+
+	@Override
+	public Map<String, String> buildTargetConfiguration(String username, Secret password, String databaseName,
+			InetAddressChooser inetAddressChooser) throws OpsException {
+		Map<String, String> config = Maps.newHashMap();
+		config.put("jdbc.driverClassName", "org.postgresql.Driver");
+
+		String jdbcUrl = getJdbcUrl(databaseName, inetAddressChooser);
+
+		config.put("jdbc.url", jdbcUrl);
+		config.put("jdbc.username", username);
+		config.put("jdbc.password", password.plaintext());
+
+		X509Certificate sslCertificate = getCertificate();
+
+		boolean useSsl = (sslCertificate != null);
+		config.put("jdbc.ssl", String.valueOf(useSsl));
+
+		if (useSsl) {
+			String sigString = OpenSshUtils.getSignatureString(sslCertificate.getPublicKey());
+			config.put("jdbc.ssl.keys", sigString);
+		}
+
+		return config;
+
 	}
 }
