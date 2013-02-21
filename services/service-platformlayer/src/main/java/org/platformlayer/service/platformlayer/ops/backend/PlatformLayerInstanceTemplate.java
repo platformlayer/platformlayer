@@ -17,7 +17,7 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.databases.DatabaseHelper;
 import org.platformlayer.ops.java.JavaCommandBuilder;
 import org.platformlayer.ops.standardservice.StandardTemplateData;
-import org.platformlayer.ops.uses.ConsumeHelpers;
+import org.platformlayer.ops.uses.LinkHelpers;
 import org.platformlayer.service.platformlayer.model.PlatformLayerService;
 import org.platformlayer.service.platformlayer.model.SystemAuthService;
 import org.platformlayer.service.platformlayer.model.UserAuthService;
@@ -37,7 +37,7 @@ public class PlatformLayerInstanceTemplate extends StandardTemplateData {
 	DatabaseHelper databases;
 
 	@Inject
-	ConsumeHelpers links;
+	LinkHelpers links;
 
 	@Bound
 	PlatformLayerService model;

@@ -18,7 +18,7 @@ import org.platformlayer.ops.filesystem.TemplatedFile;
 import org.platformlayer.ops.standardservice.PropertiesConfigFile;
 import org.platformlayer.ops.templates.TemplateDataSource;
 import org.platformlayer.ops.tree.OpsTreeBase;
-import org.platformlayer.ops.uses.ConsumeHelpers;
+import org.platformlayer.ops.uses.LinkHelpers;
 import org.platformlayer.service.jetty.model.JettyContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +35,7 @@ public class SimpleApp extends OpsTreeBase {
 	JettyTemplate jettyTemplate;
 
 	@Inject
-	ConsumeHelpers consumeHelper;
+	LinkHelpers consumeHelper;
 
 	public File getWorkDir() {
 		File workDir = new File(jettyTemplate.getBaseDir(), "work/" + key);

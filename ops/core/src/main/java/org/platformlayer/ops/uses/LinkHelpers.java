@@ -16,7 +16,7 @@ import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import com.fathomdb.properties.PropertyUtils;
 import com.google.common.collect.Maps;
 
-public class ConsumeHelpers {
+public class LinkHelpers {
 
 	@Inject
 	ProviderHelper providers;
