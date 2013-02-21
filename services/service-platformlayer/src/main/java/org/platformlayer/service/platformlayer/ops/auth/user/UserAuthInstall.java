@@ -1,10 +1,14 @@
 package org.platformlayer.service.platformlayer.ops.auth.user;
 
+import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.filesystem.DownloadFileByHash;
 import org.platformlayer.ops.standardservice.StandardServiceInstall;
 import org.platformlayer.ops.standardservice.StandardTemplateData;
 
 public class UserAuthInstall extends StandardServiceInstall {
+
+	@Bound
+	UserAuthInstanceModel template;
 
 	@Override
 	protected DownloadFileByHash buildDownload() {
@@ -17,6 +21,6 @@ public class UserAuthInstall extends StandardServiceInstall {
 
 	@Override
 	protected StandardTemplateData getTemplate() {
-		return injected(UserAuthInstanceModel.class);
+		return template;
 	}
 }

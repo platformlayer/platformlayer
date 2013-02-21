@@ -4,8 +4,8 @@ import java.io.File;
 import java.util.Map;
 
 import org.platformlayer.core.model.PlatformLayerKey;
+import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Command;
-import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.java.JavaCommandBuilder;
 import org.platformlayer.service.platformlayer.model.SystemAuthService;
@@ -17,9 +17,11 @@ public class SystemAuthInstanceModel extends CommonAuthTemplateData {
 
 	private static final Logger log = LoggerFactory.getLogger(SystemAuthInstanceModel.class);
 
+	@Bound
+	SystemAuthService model;
+
 	@Override
 	public SystemAuthService getModel() {
-		SystemAuthService model = OpsContext.get().getInstance(SystemAuthService.class);
 		return model;
 	}
 
