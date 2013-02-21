@@ -99,11 +99,6 @@ public class DirectPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
-	public JobData deleteItem(PlatformLayerKey key) throws PlatformLayerClientException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
 	public UntypedItem getItemUntyped(PlatformLayerKey key, Format format) throws PlatformLayerClientException {
 		throw new UnsupportedOperationException();
 	}
@@ -121,6 +116,15 @@ public class DirectPlatformLayerClient extends PlatformLayerClientBase {
 	@Override
 	public UntypedItemCollection listChildren(PlatformLayerKey parent) throws PlatformLayerClientException {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public JobData deleteItem(PlatformLayerKey key) throws PlatformLayerClientException {
+		try {
+			return itemService.deleteItem(auth, key);
+		} catch (OpsException e) {
+			throw new PlatformLayerClientException("Error deleting item", e);
+		}
 	}
 
 	@Override
