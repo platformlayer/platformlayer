@@ -43,7 +43,6 @@ public abstract class CommonAuthTemplateData extends StandardTemplateData {
 		Map<String, String> properties = Maps.newHashMap();
 
 		{
-			// TODO: Use a link?
 			LinkTarget authDatabase = getAuthDatabase();
 
 			InetAddressChooser inetAddressChooser = InetAddressChooser.preferIpv6();

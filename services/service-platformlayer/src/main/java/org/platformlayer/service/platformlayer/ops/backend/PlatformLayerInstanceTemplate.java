@@ -8,20 +8,18 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.platformlayer.InetAddressChooser;
-import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Property;
-import org.platformlayer.core.model.Secret;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Command.Argument;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.databases.DatabaseHelper;
-import org.platformlayer.ops.databases.DatabaseServer;
 import org.platformlayer.ops.java.JavaCommandBuilder;
 import org.platformlayer.ops.standardservice.StandardTemplateData;
 import org.platformlayer.ops.uses.ConsumeHelpers;
+import org.platformlayer.ops.uses.LinkTarget;
 import org.platformlayer.service.platformlayer.model.PlatformLayerDatabase;
 import org.platformlayer.service.platformlayer.model.PlatformLayerService;
 import org.platformlayer.service.platformlayer.model.SystemAuthService;
@@ -29,6 +27,7 @@ import org.platformlayer.service.platformlayer.model.UserAuthService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.properties.PropertyUtils;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -84,28 +83,16 @@ public class PlatformLayerInstanceTemplate extends StandardTemplateData {
 		return "platformlayer";
 	}
 
-	public String getDatabaseUsername() throws OpsException {
-		return getDatabase().username;
-	}
-
-	public Secret getDatabasePassword() throws OpsException {
-		return getDatabase().password;
-		// return Secret.build("platformlayer-password");
-	}
-
-	public String getDatabaseName() throws OpsException {
-		return getDatabase().databaseName;
-	}
-
 	public PlatformLayerKey getDatabaseServerKey() throws OpsException {
-		PlatformLayerKey serverKey = getDatabase().server;
+		PlatformLayerKey serverKey = getDatabaseKey();
 		return serverKey;
 	}
 
-	public PlatformLayerDatabase getDatabase() throws OpsException {
+	public LinkTarget getDatabase() throws OpsException {
 		PlatformLayerKey databaseKey = getDatabaseKey();
 		PlatformLayerDatabase database = platformLayer.getItem(databaseKey, PlatformLayerDatabase.class);
-		return database;
+		LinkTarget dbTarget = providers.toInterface(database, LinkTarget.class);
+		return dbTarget;
 	}
 
 	public SystemAuthService getSystemAuthService() throws OpsException {
@@ -118,16 +105,6 @@ public class PlatformLayerInstanceTemplate extends StandardTemplateData {
 		PlatformLayerKey authKey = getModel().auth;
 		UserAuthService auth = platformLayer.getItem(authKey, UserAuthService.class);
 		return auth;
-	}
-
-	public String getJdbcUrl() throws OpsException {
-		PlatformLayerKey serverKey = getDatabase().server;
-
-		ItemBase serverItem = (ItemBase) platformLayer.getItem(serverKey);
-		DatabaseServer server = databases.toDatabase(serverItem);
-
-		String jdbc = server.getJdbcUrl(getDatabaseName(), InetAddressChooser.preferIpv6());
-		return jdbc;
 	}
 
 	public boolean isMultitenant() {
@@ -162,12 +139,13 @@ public class PlatformLayerInstanceTemplate extends StandardTemplateData {
 		}
 
 		{
-			// Configure database
-			properties.put("platformlayer.jdbc.driverClassName", "org.postgresql.Driver");
+			LinkTarget database = getDatabase();
 
-			properties.put("platformlayer.jdbc.url", getJdbcUrl());
-			properties.put("platformlayer.jdbc.username", getDatabaseUsername());
-			properties.put("platformlayer.jdbc.password", getDatabasePassword().plaintext());
+			InetAddressChooser inetAddressChooser = InetAddressChooser.preferIpv6();
+			Map<String, String> config = database.buildLinkTargetConfiguration(inetAddressChooser);
+			config = PropertyUtils.prefixProperties(config, "platformlayer.");
+
+			properties.putAll(config);
 		}
 
 		if (isMultitenant()) {
