@@ -9,17 +9,16 @@ import javax.inject.Inject;
 import org.platformlayer.TagFilter;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
+import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Command.Argument;
 import org.platformlayer.ops.Machine;
-import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.java.JavaCommandBuilder;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.standardservice.StandardTemplateData;
-import org.platformlayer.service.zookeeper.model.ZookeeperCluster;
 import org.platformlayer.service.zookeeper.model.ZookeeperServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,9 +36,11 @@ public class ZookeeperInstanceModel extends StandardTemplateData {
 	@Inject
 	InstanceHelpers instances;
 
+	@Bound
+	ZookeeperServer model;
+
 	@Override
 	public ZookeeperServer getModel() {
-		ZookeeperServer model = OpsContext.get().getInstance(ZookeeperServer.class);
 		return model;
 	}
 
@@ -51,6 +52,7 @@ public class ZookeeperInstanceModel extends StandardTemplateData {
 	public static class ClusterServer {
 		public String key;
 		public String ip;
+		public String dnsName;
 	}
 
 	public Cluster getCluster() throws OpsException {
@@ -67,15 +69,15 @@ public class ZookeeperInstanceModel extends StandardTemplateData {
 
 			model.ip = address;
 
+			model.dnsName = ZookeeperUtils.buildDnsName(server);
+
 			cluster.servers.add(model);
 		}
 		return cluster;
 	}
 
 	public List<ZookeeperServer> getClusterServers() throws OpsException {
-		ZookeeperServer model = getModel();
-
-		PlatformLayerKey parent = Tag.PARENT.findUnique(model);
+		PlatformLayerKey parent = getClusterKey();
 		if (parent == null) {
 			log.warn("Parent tag not set on Zookeeper server; assuming standalone server");
 			return Lists.newArrayList(model);
@@ -86,13 +88,23 @@ public class ZookeeperInstanceModel extends StandardTemplateData {
 		return servers;
 	}
 
+	private PlatformLayerKey getClusterKey() {
+		PlatformLayerKey parent = Tag.PARENT.findUnique(model);
+		return parent;
+	}
+
 	public String getMyId() {
 		return getModel().clusterId;
 	}
 
 	@Override
 	public File getInstallDir() {
-		return new File("/opt/zookeeper/zookeeper-3.3.5/zookeeper-3.3.5");
+		// TODO: Should we define getDownloadDir instead, with a default delegation??
+		return new File("/opt/zookeeper/");
+	}
+
+	public File getBaseDir() {
+		return new File(getInstallDir(), "zookeeper-3.4.5");
 	}
 
 	@Override
@@ -112,22 +124,10 @@ public class ZookeeperInstanceModel extends StandardTemplateData {
 		// TODO: Build by reflection? Rely on bean reflection in our templating
 		// library?
 
-		model.put("installDir", getInstallDir());
+		model.put("installDir", getBaseDir());
 		model.put("instanceDir", getInstanceDir());
 		model.put("cluster", getCluster());
 		model.put("myid", getMyId());
-	}
-
-	private ZookeeperCluster getClusterModel() throws OpsException {
-		ZookeeperServer model = getModel();
-
-		PlatformLayerKey parentKey = Tag.PARENT.findUnique(model);
-		if (parentKey == null) {
-			throw new OpsException("Parent tag not set on Zookeeper server");
-		}
-
-		ZookeeperCluster cluster = platformLayer.getItem(parentKey, ZookeeperCluster.class);
-		return cluster;
 	}
 
 	@Override
@@ -141,8 +141,8 @@ public class ZookeeperInstanceModel extends StandardTemplateData {
 		builder.setMainClass("org.apache.zookeeper.server.quorum.QuorumPeerMain");
 		builder.addArgument(Argument.buildFile(getConfigurationFile()));
 		builder.addClasspath(getInstanceDir(), false);
-		builder.addClasspathFolder(getInstallDir());
-		builder.addClasspathFolder(new File(getInstallDir(), "lib"));
+		builder.addClasspathFolder(getBaseDir());
+		builder.addClasspathFolder(new File(getBaseDir(), "lib"));
 
 		return builder.get();
 		// directory=${instanceDir}
@@ -178,7 +178,12 @@ public class ZookeeperInstanceModel extends StandardTemplateData {
 			// Server list ommitted to side-step ZOOKEEPER-1460 (for now)
 		} else {
 			for (ClusterServer server : cluster.servers) {
-				config.put("server." + server.key, server.ip + ":2888:2889");
+				String host = server.ip;
+
+				// We use DNS names to side-step ZOOKEEPER-1460
+				host = server.dnsName;
+
+				config.put("server." + server.key, host + ":2888:2889");
 			}
 		}
 
@@ -201,6 +206,10 @@ public class ZookeeperInstanceModel extends StandardTemplateData {
 	@Override
 	public File getConfigurationFile() {
 		return new File(getInstanceDir(), "zookeeper.cfg");
+	}
+
+	public String getClusterGroupId() throws OpsException {
+		return getClusterKey().toString();
 	}
 
 }

@@ -4,19 +4,13 @@ import java.io.File;
 
 import javax.inject.Inject;
 
-import org.platformlayer.core.model.PlatformLayerKey;
-import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.UniqueTag;
 import org.platformlayer.ops.filesystem.ManagedDirectory;
 import org.platformlayer.ops.filesystem.SimpleFile;
 import org.platformlayer.ops.filesystem.TemplatedFile;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.standardservice.StandardServiceInstance;
-import org.platformlayer.service.network.v1.NetworkConnection;
 import org.platformlayer.service.zookeeper.model.ZookeeperServer;
-
-import com.google.common.base.Objects;
 
 public class ZookeeperInstance extends StandardServiceInstance {
 
@@ -68,33 +62,34 @@ public class ZookeeperInstance extends StandardServiceInstance {
 		// instance.addChild(backup);
 		// }
 
-		{
-			for (ZookeeperServer peer : template.getClusterServers()) {
-				if (Objects.equal(peer.getKey(), model.getKey())) {
-					continue;
-				}
-
-				for (int systemPort : ZookeeperConstants.SYSTEM_PORTS) {
-					NetworkConnection networkConnection = injected(NetworkConnection.class);
-					networkConnection.setDestItem(peer.getKey());
-					networkConnection.setSourceItem(model.getKey());
-					networkConnection.setPort(systemPort);
-					networkConnection.setProtocol("tcp");
-
-					networkConnection.getTags().add(Tag.buildParentTag(model.getKey()));
-					Tag uniqueTag = UniqueTag.build(model, peer, String.valueOf(systemPort));
-					networkConnection.getTags().add(uniqueTag);
-
-					String id = model.clusterId + "-" + peer.clusterId + "-" + systemPort;
-					networkConnection.key = PlatformLayerKey.fromId(id);
-
-					// Hmmm... when do we embed, and when do we not??
-					// We need some clear rules!
-					// Here, we don't embed because it's cross-machine
-					platformLayer.putItemByTag(networkConnection, uniqueTag);
-				}
-			}
-		}
+		// We now use IPSEC...
+		// {
+		// for (ZookeeperServer peer : template.getClusterServers()) {
+		// if (Objects.equal(peer.getKey(), model.getKey())) {
+		// continue;
+		// }
+		//
+		// for (int systemPort : ZookeeperConstants.SYSTEM_PORTS) {
+		// NetworkConnection networkConnection = injected(NetworkConnection.class);
+		// networkConnection.setDestItem(peer.getKey());
+		// networkConnection.setSourceItem(model.getKey());
+		// networkConnection.setPort(systemPort);
+		// networkConnection.setProtocol("tcp");
+		//
+		// networkConnection.getTags().add(Tag.buildParentTag(model.getKey()));
+		// Tag uniqueTag = UniqueTag.build(model, peer, String.valueOf(systemPort));
+		// networkConnection.getTags().add(uniqueTag);
+		//
+		// String id = model.clusterId + "-" + peer.clusterId + "-" + systemPort;
+		// networkConnection.key = PlatformLayerKey.fromId(id);
+		//
+		// // Hmmm... when do we embed, and when do we not??
+		// // We need some clear rules!
+		// // Here, we don't embed because it's cross-machine
+		// platformLayer.putItemByTag(networkConnection, uniqueTag);
+		// }
+		// }
+		// }
 
 	}
 }

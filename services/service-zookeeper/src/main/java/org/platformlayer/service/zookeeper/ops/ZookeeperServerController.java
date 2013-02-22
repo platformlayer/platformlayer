@@ -4,8 +4,8 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
+import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
-import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.firewall.Transport;
 import org.platformlayer.ops.instances.InstanceBuilder;
@@ -26,27 +26,31 @@ public class ZookeeperServerController extends OpsTreeBase {
 	@Inject
 	IpsecHelpers ipsec;
 
+	@Bound
+	ZookeeperServer model;
+
+	@Bound
+	ZookeeperInstanceModel template;
+
 	@Handler
 	public void doOperation() throws OpsException, IOException {
 	}
 
 	@Override
 	protected void addChildren() throws OpsException {
-		ZookeeperServer model = OpsContext.get().getInstance(ZookeeperServer.class);
-
 		int port = ZookeeperConstants.ZK_PUBLIC_PORT;
 
 		// A per-instance name (for convenience)
 		String dnsName = ZookeeperUtils.buildDnsName(model);
 
 		InstanceBuilder vm = InstanceBuilder.build(dnsName, this, model.getTags());
-		vm.publicPorts.add(port);
-		vm.publicPorts.add(ZookeeperConstants.ZK_SYSTEM_PORT_1);
-		vm.publicPorts.add(ZookeeperConstants.ZK_SYSTEM_PORT_2);
+		// vm.publicPorts.add(port);
+		// vm.publicPorts.add(ZookeeperConstants.ZK_SYSTEM_PORT_1);
+		// vm.publicPorts.add(ZookeeperConstants.ZK_SYSTEM_PORT_2);
+
+		vm.hostPolicy.configureSpread(template.getClusterGroupId());
 
 		vm.addChild(IpsecInstall.class);
-
-		ZookeeperInstanceModel template = injected(ZookeeperInstanceModel.class);
 
 		{
 			IpsecPresharedKey psk = vm.addChild(IpsecPresharedKey.class);
@@ -61,6 +65,7 @@ public class ZookeeperServerController extends OpsTreeBase {
 			// endpoint.network = null;
 			endpoint.publicPort = systemPort;
 			endpoint.backendPort = systemPort;
+
 			endpoint.dnsName = dnsName;
 
 			// We expect this to be used by IPv6 capable client
@@ -85,17 +90,15 @@ public class ZookeeperServerController extends OpsTreeBase {
 		addChild(vm);
 
 		{
-			ZookeeperInstall install = injected(ZookeeperInstall.class);
-			vm.addChild(install);
+			ZookeeperInstall install = vm.addChild(ZookeeperInstall.class);
 		}
 
 		{
-			ZookeeperInstance service = injected(ZookeeperInstance.class);
-			vm.addChild(service);
+			ZookeeperInstance service = vm.addChild(ZookeeperInstance.class);
 		}
 
 		{
-			PublicEndpoint endpoint = injected(PublicEndpoint.class);
+			PublicEndpoint endpoint = vm.addChild(PublicEndpoint.class);
 			// endpoint.network = null;
 			endpoint.publicPort = port;
 			endpoint.backendPort = port;
@@ -106,8 +109,6 @@ public class ZookeeperServerController extends OpsTreeBase {
 
 			endpoint.tagItem = model.getKey();
 			endpoint.parentItem = model.getKey();
-
-			vm.addChild(endpoint);
 
 			{
 				IpsecForPort ipsecForPort = vm.addChild(IpsecForPort.class);

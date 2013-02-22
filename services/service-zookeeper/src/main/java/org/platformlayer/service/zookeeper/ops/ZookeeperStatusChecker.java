@@ -17,6 +17,8 @@ import org.platformlayer.service.zookeeper.ops.ZookeeperUtils.ZookeeperResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.net.InetAddresses;
+
 public class ZookeeperStatusChecker {
 
 	private static final Logger log = LoggerFactory.getLogger(ZookeeperStatusChecker.class);
@@ -37,6 +39,8 @@ public class ZookeeperStatusChecker {
 			{
 				ZookeeperResponse response;
 				try {
+					// IPV6 requires ipsec; use the IPV4 loopback instead
+					socketAddress = new InetSocketAddress(InetAddresses.forString("127.0.0.1"), socketAddress.getPort());
 					response = ZookeeperUtils.sendCommand(target, socketAddress, "ruok");
 
 					Deviations.assertEquals("imok", response.getRaw(), "Zookeeper ruok status");
