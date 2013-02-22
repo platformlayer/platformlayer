@@ -239,7 +239,13 @@ public class DnsHelpers {
 
 			OpsTarget target = machine.getTarget(service.getSshKey());
 
-			upload(target, dnsFile);
+			try {
+				upload(target, dnsFile);
+			} catch (OpsException e) {
+				log.warn("Error updloading dns to server: " + dnsServer, e);
+				failed = true;
+				continue;
+			}
 		}
 
 		if (failed) {
