@@ -25,6 +25,8 @@ public class ManagedDirectory extends ManagedFilesystemItem implements HasDescri
 		fileMode = "0700";
 	}
 
+	boolean createdNewFile;
+
 	// static final Logger log = LoggerFactory.getLogger(ManagedDirectoryOpsItem.class);
 	//
 	@Handler
@@ -37,7 +39,8 @@ public class ManagedDirectory extends ManagedFilesystemItem implements HasDescri
 			if (!exists) {
 				target.mkdir(path, fileMode);
 
-				// doUpdateAction(operation);
+				createdNewFile = true;
+				doUpdateAction(target);
 			}
 
 			configureOwnerAndMode(target, fsInfo);
@@ -59,6 +62,11 @@ public class ManagedDirectory extends ManagedFilesystemItem implements HasDescri
 	@Override
 	public String getDescription() throws Exception {
 		return "Directory: " + getFilePath();
+	}
+
+	@Override
+	public boolean getNewFileWasCreated() {
+		return createdNewFile;
 	}
 
 }

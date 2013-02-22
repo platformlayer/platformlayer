@@ -55,8 +55,8 @@ public abstract class ManagedFilesystemItem extends OpsTreeBase {
 		return this;
 	}
 
-	Command updateAction = null;
-	Command deleteAction = null;
+	FilesystemAction updateAction = null;
+	FilesystemAction deleteAction = null;
 
 	// protected FileMetadata getFileMetadata() {
 	// return new FileMetadata(getFileMode(), getOwner(), getGroup());
@@ -127,25 +127,29 @@ public abstract class ManagedFilesystemItem extends OpsTreeBase {
 		// markDependenciesForRestart(operation, null);
 
 		if (getUpdateAction() != null) {
-			target.executeCommand(getUpdateAction());
+			getUpdateAction().execute(target, this);
 		}
 	}
 
 	protected void doDeleteAction(OpsTarget target) throws OpsException {
 		if (getDeleteAction() != null) {
-			target.executeCommand(getDeleteAction());
+			getDeleteAction().execute(target, this);
 		}
 	}
 
-	public Command getUpdateAction() {
+	public FilesystemAction getUpdateAction() {
 		return updateAction;
 	}
 
-	public Command getDeleteAction() {
+	public FilesystemAction getDeleteAction() {
 		return deleteAction;
 	}
 
 	public ManagedFilesystemItem setUpdateAction(Command updateAction) {
+		return setUpdateAction(new SimpleFilesystemAction(updateAction));
+	}
+
+	public ManagedFilesystemItem setUpdateAction(FilesystemAction updateAction) {
 		this.updateAction = updateAction;
 		return this;
 	}
@@ -153,6 +157,8 @@ public abstract class ManagedFilesystemItem extends OpsTreeBase {
 	@Override
 	protected void addChildren() throws OpsException {
 	}
+
+	public abstract boolean getNewFileWasCreated();
 
 	// public String getGroup() {
 	// return group;

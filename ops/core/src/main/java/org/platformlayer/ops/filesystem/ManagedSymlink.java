@@ -2,11 +2,12 @@ package org.platformlayer.ops.filesystem;
 
 import java.io.File;
 
-import org.slf4j.*;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.HasDescription;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsTarget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Objects;
 
@@ -15,6 +16,8 @@ public class ManagedSymlink extends ManagedFilesystemItem implements HasDescript
 	static final Logger log = LoggerFactory.getLogger(ManagedSymlink.class);
 
 	public File symlinkTarget;
+
+	private boolean createdNewFile;
 
 	public ManagedSymlink() {
 		// Default mode is meaningless on a symlink
@@ -44,6 +47,8 @@ public class ManagedSymlink extends ManagedFilesystemItem implements HasDescript
 		if (OpsContext.isConfigure()) {
 			if (!exists) {
 				target.symlink(symlinkTarget, filePath, false);
+				createdNewFile = true;
+
 				doUpdateAction(target);
 			} else {
 				if (!symlinkTargetMatch) {
@@ -85,6 +90,11 @@ public class ManagedSymlink extends ManagedFilesystemItem implements HasDescript
 	@Override
 	public String getDescription() throws Exception {
 		return "Symlink: " + getFilePath() + " -> " + getSymlinkTarget();
+	}
+
+	@Override
+	public boolean getNewFileWasCreated() {
+		return createdNewFile;
 	}
 
 }

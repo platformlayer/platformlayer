@@ -5,12 +5,13 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import org.slf4j.*;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.HasDescription;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fathomdb.hash.Md5Hash;
 import com.google.common.base.Objects;
@@ -39,6 +40,8 @@ public abstract class ManagedFile extends ManagedFilesystemItem implements HasDe
 	protected abstract void uploadFile(OpsTarget target, File remoteFilePath) throws IOException, OpsException;
 
 	protected abstract Md5Hash getSourceMd5(OpsTarget target) throws OpsException;
+
+	boolean newFileWasCreated;
 
 	@Handler
 	public void handler(OpsTarget target) throws Exception {
@@ -112,6 +115,10 @@ public abstract class ManagedFile extends ManagedFilesystemItem implements HasDe
 					// remoteMd5 = agent.getRemoteMd5(newSymlinkDestination);
 				} else {
 					uploadFile(target, filePath);
+					if (remoteMd5 == null) {
+						newFileWasCreated = true;
+					}
+
 					remoteMd5 = target.getFileHash(filePath);
 				}
 
@@ -297,6 +304,11 @@ public abstract class ManagedFile extends ManagedFilesystemItem implements HasDe
 	@Override
 	public String getDescription() throws OpsException {
 		return "File: " + getFilePath();
+	}
+
+	@Override
+	public boolean getNewFileWasCreated() {
+		return newFileWasCreated;
 	}
 
 	// public boolean isSymlinkVersions() {
