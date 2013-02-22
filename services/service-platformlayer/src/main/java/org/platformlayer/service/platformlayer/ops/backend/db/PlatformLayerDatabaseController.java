@@ -1,26 +1,41 @@
 package org.platformlayer.service.platformlayer.ops.backend.db;
 
 import java.io.IOException;
+import java.util.Map;
 
+import javax.inject.Inject;
+
+import org.platformlayer.InetAddressChooser;
 import org.platformlayer.ResourceUtils;
+import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.databases.DatabaseServer;
+import org.platformlayer.ops.helpers.ProviderHelper;
+import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.postgres.CreateDatabase;
 import org.platformlayer.ops.postgres.CreateUser;
 import org.platformlayer.ops.postgres.DatabaseConnection;
 import org.platformlayer.ops.postgres.RunScript;
 import org.platformlayer.ops.tree.OpsTreeBase;
+import org.platformlayer.ops.uses.LinkTarget;
 import org.platformlayer.service.platformlayer.model.PlatformLayerDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PlatformLayerDatabaseController extends OpsTreeBase {
+public class PlatformLayerDatabaseController extends OpsTreeBase implements LinkTarget {
 
 	private static final Logger log = LoggerFactory.getLogger(PlatformLayerDatabaseController.class);
 
 	@Bound
 	PlatformLayerDatabase model;
+
+	@Inject
+	PlatformLayerHelpers platformLayer;
+
+	@Inject
+	ProviderHelper providers;
 
 	@Handler
 	public void handler() {
@@ -58,5 +73,14 @@ public class PlatformLayerDatabaseController extends OpsTreeBase {
 				throw new OpsException("Error loading SQL script resource", e);
 			}
 		}
+	}
+
+	@Override
+	public Map<String, String> buildLinkTargetConfiguration(InetAddressChooser inetAddressChooser) throws OpsException {
+		ItemBase serverItem = platformLayer.getItem(model.server);
+		DatabaseServer databaseServer = providers.toInterface(serverItem, DatabaseServer.class);
+
+		return databaseServer.buildTargetConfiguration(model.username, model.password, model.databaseName,
+				inetAddressChooser);
 	}
 }
