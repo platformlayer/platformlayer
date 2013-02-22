@@ -5,7 +5,9 @@
 
 set -e
 
-echo "if-up.d/iptables-ifup[$IFACE][$ADDRFAM]" >> /var/log/platformlayer
+STARTTIME=`date +%Y-%m-%d_%H:%M:%S`
+
+echo "$STARTTIME if-up.d/iptables-ifup[$IFACE][$ADDRFAM]" >> /var/log/platformlayer
 
 # Only run from ifup.
 if [ "$MODE" != start ]; then

@@ -3,7 +3,9 @@
 
 set -e
 
-echo "ipv6[$MODE][$IFACE][$ADDRFAM]" >> /var/log/platformlayer
+STARTTIME=`date +%Y-%m-%d_%H:%M:%S`
+
+echo "$STARTTIME ipv6[$MODE][$IFACE][$ADDRFAM]" >> /var/log/platformlayer
 
 # Only run from ifup.
 if [ "$MODE" != start ]; then

@@ -2,7 +2,9 @@
 
 set -e
 
-echo "iptables-lockdown[$MODE][$IFACE][$ADDRFAM]" >> /var/log/platformlayer
+STARTTIME=`date +%Y-%m-%d_%H:%M:%S`
+
+echo "$STARTTIME iptables-lockdown[$MODE][$IFACE][$ADDRFAM]" >> /var/log/platformlayer
 
 # Only run from ifup.
 if [ "$MODE" != start ]; then
@@ -17,7 +19,7 @@ if [ "$IFACE" != "--all" ]; then
 fi
 
 if [ "$ADDRFAM" != "meta" ]; then
-	echo "ADDRFAM != --meta; exiting"
+	echo "ADDRFAM != meta; exiting"
 	exit 0
 fi
 
