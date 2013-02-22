@@ -29,6 +29,7 @@ public class AsBlock {
 	public static final AsBlock HETZNER;
 	public static final AsBlock SOFTLAYER;
 	public static final AsBlock GOOGLE_COMPUTE_ENGINE;
+	public static final AsBlock OVH_USA;
 
 	static final List<AsBlock> ALL = Lists.newArrayList();
 
@@ -77,6 +78,19 @@ public class AsBlock {
 			as.add("173.255.112.0/20");
 			as.add("108.59.80.0/20");
 			GOOGLE_COMPUTE_ENGINE = as;
+		}
+
+		{
+			// OVH. It's in Canada, we pretend it's in the US
+			AsBlock as = addAsBlock("AS16276", Country.US);
+
+			// We probably need to rethink the mapping here as well, as OVH announces France in the same block (it looks
+			// like)
+
+			as.add("198.27.64.0/18");
+			as.add("2607:5300::/32");
+
+			OVH_USA = as;
 		}
 	}
 
