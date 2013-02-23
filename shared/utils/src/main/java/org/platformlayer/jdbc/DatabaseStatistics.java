@@ -4,7 +4,9 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.sql.DataSource;
 
+import org.platformlayer.metrics.ApacheTomcatMetricsReporter;
 import org.platformlayer.metrics.BoneCpMetricsReporter;
 import org.platformlayer.metrics.MetricKey;
 import org.platformlayer.metrics.MetricRegistry;
@@ -19,7 +21,7 @@ public class DatabaseStatistics {
 	@SuppressWarnings("unused")
 	private static final Logger log = LoggerFactory.getLogger(DatabaseStatistics.class);
 
-	final Map<String, BoneCPDataSource> dataSources = Maps.newHashMap();
+	final Map<String, DataSource> dataSources = Maps.newHashMap();
 
 	@Inject
 	MetricRegistry metrics;
@@ -34,6 +36,19 @@ public class DatabaseStatistics {
 
 			MetricKey metricKey = MetricKey.build(DatabaseStatistics.class, key);
 			metrics.add(new BoneCpMetricsReporter(metricKey, pooledDataSource));
+		}
+	}
+
+	public void register(String key, org.apache.tomcat.jdbc.pool.DataSource pooledDataSource) {
+		synchronized (dataSources) {
+			if (dataSources.containsKey(key)) {
+				throw new IllegalStateException();
+			}
+
+			dataSources.put(key, pooledDataSource);
+
+			MetricKey metricKey = MetricKey.build(DatabaseStatistics.class, key);
+			metrics.add(new ApacheTomcatMetricsReporter(metricKey, pooledDataSource));
 		}
 	}
 

@@ -442,6 +442,12 @@
                 <version>0.7.1.RELEASE</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.apache.tomcat</groupId>
+                <artifactId>tomcat-jdbc</artifactId>
+                <version>7.0.37</version>
+            </dependency>
+
             <!-- Jersey Spring integration; this would normally pull in Spring 
                 2.5 -->
             <dependency>

@@ -19,7 +19,6 @@
             <version>2.2.6</version>
         </dependency>
 
-
         <dependency>
             <groupId>org.platformlayer</groupId>
             <artifactId>model-shared</artifactId>
@@ -29,7 +28,7 @@
             <groupId>com.fathomdb</groupId>
             <artifactId>fathomdb-crypto</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>com.fathomdb</groupId>
             <artifactId>fathomdb-http</artifactId>
@@ -138,6 +137,12 @@
         <dependency>
             <groupId>com.jolbox</groupId>
             <artifactId>bonecp</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-jdbc</artifactId>
             <scope>provided</scope>
         </dependency>
 
