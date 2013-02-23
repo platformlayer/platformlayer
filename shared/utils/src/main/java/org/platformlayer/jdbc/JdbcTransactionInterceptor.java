@@ -60,7 +60,11 @@ class JdbcTransactionInterceptor implements MethodInterceptor {
 				} finally {
 					if (!committed) {
 						log.debug("Rolling back transaction");
-						connection.rollback();
+						try {
+							connection.rollback();
+						} catch (Exception e) {
+							log.warn("Ignoring error while rolling back transaction", e);
+						}
 					}
 				}
 			} finally {

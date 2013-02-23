@@ -6,15 +6,13 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.sql.DataSource;
 
-import org.platformlayer.metrics.ApacheTomcatMetricsReporter;
-import org.platformlayer.metrics.BoneCpMetricsReporter;
 import org.platformlayer.metrics.MetricKey;
 import org.platformlayer.metrics.MetricRegistry;
+import org.platformlayer.metrics.MetricsSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Maps;
-import com.jolbox.bonecp.BoneCPDataSource;
 
 @Singleton
 public class DatabaseStatistics {
@@ -26,30 +24,20 @@ public class DatabaseStatistics {
 	@Inject
 	MetricRegistry metrics;
 
-	public void register(String key, BoneCPDataSource pooledDataSource) {
+	public MetricKey getMetricKey(String key) {
+		MetricKey metricKey = MetricKey.build(DatabaseStatistics.class, key);
+		return metricKey;
+	}
+
+	public void register(String key, DataSource dataSource, MetricsSource metricsSource) {
 		synchronized (dataSources) {
 			if (dataSources.containsKey(key)) {
 				throw new IllegalStateException();
 			}
 
-			dataSources.put(key, pooledDataSource);
+			dataSources.put(key, dataSource);
 
-			MetricKey metricKey = MetricKey.build(DatabaseStatistics.class, key);
-			metrics.add(new BoneCpMetricsReporter(metricKey, pooledDataSource));
+			metrics.add(metricsSource);
 		}
 	}
-
-	public void register(String key, org.apache.tomcat.jdbc.pool.DataSource pooledDataSource) {
-		synchronized (dataSources) {
-			if (dataSources.containsKey(key)) {
-				throw new IllegalStateException();
-			}
-
-			dataSources.put(key, pooledDataSource);
-
-			MetricKey metricKey = MetricKey.build(DatabaseStatistics.class, key);
-			metrics.add(new ApacheTomcatMetricsReporter(metricKey, pooledDataSource));
-		}
-	}
-
 }

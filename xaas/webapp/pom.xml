@@ -16,7 +16,7 @@
             <groupId>org.platformlayer</groupId>
             <artifactId>platformlayer-xaas-core</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>org.platformlayer</groupId>
             <artifactId>billing-client</artifactId>
@@ -158,8 +158,8 @@
 
         <!-- Databases -->
         <dependency>
-            <groupId>com.jolbox</groupId>
-            <artifactId>bonecp</artifactId>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-jdbc</artifactId>
         </dependency>
     </dependencies>
 

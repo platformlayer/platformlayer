@@ -4,9 +4,9 @@ import org.apache.tomcat.jdbc.pool.ConnectionPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ApacheTomcatMetricsReporter implements MetricsSource {
+public class TomcatJdbcPoolMetricsReporter implements MetricsSource {
 	@SuppressWarnings("unused")
-	private static final Logger log = LoggerFactory.getLogger(ApacheTomcatMetricsReporter.class);
+	private static final Logger log = LoggerFactory.getLogger(TomcatJdbcPoolMetricsReporter.class);
 
 	ConnectionPool pool;
 
@@ -21,7 +21,7 @@ public class ApacheTomcatMetricsReporter implements MetricsSource {
 		return pool;
 	}
 
-	public ApacheTomcatMetricsReporter(MetricKey key, org.apache.tomcat.jdbc.pool.DataSource dataSource) {
+	public TomcatJdbcPoolMetricsReporter(MetricKey key, org.apache.tomcat.jdbc.pool.DataSource dataSource) {
 		this.key = key;
 		this.dataSource = dataSource;
 
