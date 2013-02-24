@@ -1,6 +1,7 @@
 package org.platformlayer.jdbc;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -10,7 +11,6 @@ import javax.sql.DataSource;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.platformlayer.jdbc.simplejpa.ConnectionMetadata;
-import org.postgresql.util.PSQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -121,28 +121,30 @@ class JdbcTransactionInterceptor implements MethodInterceptor {
 	private boolean getShouldRetry(Throwable e, boolean calledCommit) {
 		// TODO: Retry if it is a deadlock
 
-		if (e instanceof PSQLException) {
-			String sqlState = ((PSQLException) e).getSQLState();
-			if (sqlState.equals(SQLSTATE_UNABLE_TO_CONNECT)) {
-				// TODO: Delay??
-				return true;
-			}
-
-			if (sqlState.equals(SQLSTATE_CONNECTION_FAILURE)) {
-				if (calledCommit) {
-					log.warn("Detected connection failure, but already called commit; can't safely auto-retry");
-					return false;
-				} else {
+		if (e instanceof SQLException) {
+			String sqlState = ((SQLException) e).getSQLState();
+			if (sqlState != null) {
+				if (sqlState.equals(SQLSTATE_UNABLE_TO_CONNECT)) {
+					// TODO: Delay??
 					return true;
 				}
-			}
 
-			if (sqlState.equals(SQLSTATE_SERIALIZATION_FAILURE)) {
-				return true;
-			}
+				if (sqlState.equals(SQLSTATE_CONNECTION_FAILURE)) {
+					if (calledCommit) {
+						log.warn("Detected connection failure, but already called commit; can't safely auto-retry");
+						return false;
+					} else {
+						return true;
+					}
+				}
 
-			if (sqlState.equals(SQLSTATE_DEADLOCK_DETECTED)) {
-				return true;
+				if (sqlState.equals(SQLSTATE_SERIALIZATION_FAILURE)) {
+					return true;
+				}
+
+				if (sqlState.equals(SQLSTATE_DEADLOCK_DETECTED)) {
+					return true;
+				}
 			}
 		}
 
