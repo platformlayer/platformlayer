@@ -10,6 +10,7 @@ import javax.sql.DataSource;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.platformlayer.jdbc.simplejpa.ConnectionMetadata;
+import org.postgresql.util.PSQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +19,14 @@ class JdbcTransactionInterceptor implements MethodInterceptor {
 	private static final Logger log = LoggerFactory.getLogger(JdbcTransactionInterceptor.class);
 
 	private static final ThreadLocal<JdbcConnection> threadLocalConnection = new ThreadLocal<JdbcConnection>();
+
+	private static final String SQLSTATE_CONNECTION_FAILURE = "08006";
+
+	private static final String SQLSTATE_UNABLE_TO_CONNECT = "08001";
+
+	private static final String SQLSTATE_SERIALIZATION_FAILURE = "40001";
+
+	private static final String SQLSTATE_DEADLOCK_DETECTED = "40P01";
 
 	@Inject
 	Provider<DataSource> dataSource;
@@ -39,40 +48,109 @@ class JdbcTransactionInterceptor implements MethodInterceptor {
 			return methodInvocation.proceed();
 		}
 
-		// Yes, this is fairly paranoid...
-		try {
-			Connection connection = dataSource.get().getConnection();
+		JdbcTransaction transaction = methodInvocation.getMethod().getAnnotation(JdbcTransaction.class);
 
-			jdbcConnection = new JdbcConnection(metadata, connection);
+		int maxRetries = transaction.maxRetries();
 
-			threadLocalConnection.set(jdbcConnection);
+		for (int i = 1; i <= maxRetries; i++) {
+			boolean calledCommit = false;
 
 			try {
-				boolean committed = false;
-				connection.setAutoCommit(false);
-
+				// Yes, this is fairly paranoid...
+				Connection connection = null;
 				try {
-					Object returnValue = methodInvocation.proceed();
-					log.debug("Committing transaction");
-					jdbcConnection.commit();
-					committed = true;
-					return returnValue;
-				} finally {
-					if (!committed) {
-						log.debug("Rolling back transaction");
-						try {
-							connection.rollback();
-						} catch (Exception e) {
-							log.warn("Ignoring error while rolling back transaction", e);
+					connection = dataSource.get().getConnection();
+
+					jdbcConnection = new JdbcConnection(metadata, connection);
+
+					threadLocalConnection.set(jdbcConnection);
+
+					boolean committed = false;
+					connection.setAutoCommit(false);
+
+					try {
+						Object returnValue = methodInvocation.proceed();
+						log.debug("Committing transaction");
+
+						calledCommit = true;
+						jdbcConnection.commit();
+
+						committed = true;
+						return returnValue;
+					} finally {
+						if (!committed) {
+							log.debug("Rolling back transaction");
+							try {
+								connection.rollback();
+							} catch (Exception e) {
+								log.warn("Ignoring error while rolling back transaction", e);
+							}
 						}
 					}
+				} finally {
+					threadLocalConnection.set(null);
+
+					try {
+						if (connection != null) {
+							connection.close();
+						}
+					} catch (Exception e) {
+						log.warn("Ignoring error while closing connection", e);
+					}
 				}
-			} finally {
-				connection.close();
+
+			} catch (Exception e) {
+				boolean canRetry;
+				if (i == maxRetries) {
+					canRetry = false;
+				} else {
+					canRetry = getShouldRetry(e, calledCommit);
+				}
+
+				if (!canRetry) {
+					throw e;
+				}
+
+				log.info("Automatically retrying transaction after error", e);
 			}
-		} finally {
-			threadLocalConnection.set(null);
 		}
+
+		throw new IllegalStateException("Unreachable");
+	}
+
+	private boolean getShouldRetry(Throwable e, boolean calledCommit) {
+		// TODO: Retry if it is a deadlock
+
+		if (e instanceof PSQLException) {
+			String sqlState = ((PSQLException) e).getSQLState();
+			if (sqlState.equals(SQLSTATE_UNABLE_TO_CONNECT)) {
+				// TODO: Delay??
+				return true;
+			}
+
+			if (sqlState.equals(SQLSTATE_CONNECTION_FAILURE)) {
+				if (calledCommit) {
+					log.warn("Detected connection failure, but already called commit; can't safely auto-retry");
+					return false;
+				} else {
+					return true;
+				}
+			}
+
+			if (sqlState.equals(SQLSTATE_SERIALIZATION_FAILURE)) {
+				return true;
+			}
+
+			if (sqlState.equals(SQLSTATE_DEADLOCK_DETECTED)) {
+				return true;
+			}
+		}
+
+		Throwable cause = e.getCause();
+		if (cause == null) {
+			return false;
+		}
+		return getShouldRetry(cause, calledCommit);
 	}
 
 	static JdbcConnection getConnection() {
