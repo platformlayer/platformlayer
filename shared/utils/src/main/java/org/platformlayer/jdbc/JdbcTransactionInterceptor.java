@@ -119,8 +119,6 @@ class JdbcTransactionInterceptor implements MethodInterceptor {
 	}
 
 	private boolean getShouldRetry(Throwable e, boolean calledCommit) {
-		// TODO: Retry if it is a deadlock
-
 		if (e instanceof SQLException) {
 			String sqlState = ((SQLException) e).getSQLState();
 			if (sqlState != null) {
