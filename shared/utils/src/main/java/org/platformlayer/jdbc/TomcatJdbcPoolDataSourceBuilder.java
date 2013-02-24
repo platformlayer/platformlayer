@@ -54,7 +54,7 @@ public class TomcatJdbcPoolDataSourceBuilder extends DataSourceBuilderBase {
 		p.setInitialSize(1);
 
 		List<String> interceptors = Lists.newArrayList();
-		// interceptors.add("org.apache.tomcat.jdbc.pool.interceptor.StatementCache");
+		interceptors.add("org.apache.tomcat.jdbc.pool.interceptor.StatementCache");
 		if (!interceptors.isEmpty()) {
 			p.setJdbcInterceptors(Joiner.on(';').join(interceptors));
 		}
