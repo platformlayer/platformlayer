@@ -25,6 +25,7 @@ import org.platformlayer.ops.OpsException;
 import com.fathomdb.crypto.CertificateAndKey;
 import com.fathomdb.crypto.EncryptionStore;
 import com.fathomdb.crypto.KeyStoreUtils;
+import com.fathomdb.crypto.ssl.SslPolicy;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceFilter;
@@ -120,6 +121,9 @@ public class JettyWebServerBuilder implements WebServerBuilder {
 		} else {
 			sslContextFactory = new SslContextFactory(SslContextFactory.DEFAULT_KEYSTORE_PATH);
 		}
+
+		sslContextFactory.setIncludeCipherSuites(SslPolicy.DEFAULT.getEnabledCipherSuites());
+		sslContextFactory.setIncludeProtocols(SslPolicy.DEFAULT.getEnabledProtocols());
 
 		{
 			CertificateAndKey certificateAndKey = getCertificateAndKey();
