@@ -88,7 +88,7 @@ public class KeyStoreEncryptionStore implements EncryptionStore {
 		return certificateAndKey;
 	}
 
-	private static KeyStoreEncryptionStore build(File keystoreFile, String keystoreSecret) {
+	public static KeyStoreEncryptionStore build(File keystoreFile, String keystoreSecret) {
 		KeyStore keyStore;
 
 		if (!keystoreFile.exists()) {
