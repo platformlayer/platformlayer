@@ -1,5 +1,7 @@
 package org.platformlayer.service.httpfrontend.ops;
 
+import java.io.File;
+
 import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.ManagedDirectory;
@@ -21,7 +23,15 @@ public class HttpServerInstance extends StandardServiceInstance {
 
 		addChild(TemplatedFile.build(template, template.getLogConfigurationFile()));
 
+		// TODO: Ownership
 		addChild(ManagedDirectory.build(template.getHostsDir(), "755"));
+		addChild(ManagedDirectory.build(template.getCacheDir(), "755"));
+		addChild(ManagedDirectory.build(template.getLogsDir(), "755"));
+
+		File sslBaseDir = template.getSslBaseDir();
+		addChild(ManagedDirectory.build(sslBaseDir, "755"));
+		addChild(ManagedDirectory.build(new File(sslBaseDir, "config"), "755"));
+		addChild(ManagedDirectory.build(new File(sslBaseDir, "keystore"), "755"));
 
 		// TODO: Reintroduce this
 		// We split the configuration because we want to configure the services before we bring up DNS

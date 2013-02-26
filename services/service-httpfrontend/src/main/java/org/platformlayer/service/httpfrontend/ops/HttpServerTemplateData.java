@@ -38,6 +38,18 @@ public class HttpServerTemplateData extends StandardTemplateData {
 		return new File(getInstanceDir(), "hosts");
 	}
 
+	public File getCacheDir() {
+		return new File(getInstanceDir(), "cache");
+	}
+
+	public File getLogsDir() {
+		return new File(getInstanceDir(), "logs");
+	}
+
+	public File getSslBaseDir() {
+		return new File(getInstanceDir(), "ssl");
+	}
+
 	// public String getUser() {
 	// // TODO: We'd prefer an unprivileged user, but we have to bind to a privileged port
 	// // return "http";

@@ -2,6 +2,7 @@ package org.platformlayer.service.cloud.direct.ops;
 
 import java.io.File;
 import java.net.InetSocketAddress;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -139,7 +140,8 @@ public class DirectCloudUtils {
 		return sharedNetwork;
 	}
 
-	public OpsProvider<ResourcePool<InetSocketAddress>> getPublicAddressPool4(final int publicPort) {
+	public OpsProvider<ResourcePool<InetSocketAddress>> getPublicAddressPool4(final int publicPort,
+			final List<Integer> publicPortGroup) {
 		OpsProvider<ResourcePool<InetSocketAddress>> pool = new OpsProvider<ResourcePool<InetSocketAddress>>() {
 			@Override
 			public ResourcePool<InetSocketAddress> get() throws OpsException {

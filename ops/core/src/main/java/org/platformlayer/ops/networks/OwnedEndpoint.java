@@ -1,5 +1,7 @@
 package org.platformlayer.ops.networks;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.platformlayer.core.model.InstanceBase;
@@ -18,6 +20,9 @@ public class OwnedEndpoint extends OwnedItem<PublicEndpointBase> {
 	public int backendPort;
 	public PlatformLayerKey parentItem;
 
+	// A set of public ports which must all end up on the same IP
+	public List<Integer> publicPortCluster;
+
 	public Transport transport = null;
 
 	@Inject
@@ -32,6 +37,7 @@ public class OwnedEndpoint extends OwnedItem<PublicEndpointBase> {
 		PublicEndpointBase publicEndpoint = platformLayerCloudHelpers.createPublicEndpoint(instance, parentItem);
 		// publicEndpoint.network = network;
 		publicEndpoint.publicPort = publicPort;
+		publicEndpoint.publicPortCluster = publicPortCluster;
 		publicEndpoint.backendPort = backendPort;
 		publicEndpoint.instance = instanceKey;
 		publicEndpoint.key = PlatformLayerKey.fromId(instance.getId() + "_" + publicPort);

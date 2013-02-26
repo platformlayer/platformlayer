@@ -24,7 +24,8 @@ public class HttpHelpers {
 	public static final File PATH_BASE = new File("/var/httpfrontend");
 	// public static final File PATH_HOSTS = new File(PATH_BASE, "zones");
 
-	public static final int PORT = 80;
+	public static final int HTTP_PORT = 80;
+	public static final int HTTPS_PORT = 443;
 
 	// public void upload(OpsTarget target, ZoneFile zoneFile) throws OpsException {
 	// upload(new TargetServer(target), zoneFile);

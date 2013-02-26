@@ -5,7 +5,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-import org.slf4j.*;
 import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.EndpointInfo;
 import org.platformlayer.core.model.PlatformLayerKey;
@@ -23,6 +22,8 @@ import org.platformlayer.ops.machines.PlatformLayerCloudHelpers;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.tagger.Tagger;
 import org.platformlayer.ops.tree.OpsTreeBase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 
@@ -36,6 +37,8 @@ public class PublicEndpoint extends OpsTreeBase {
 	public String dnsName;
 	public PlatformLayerKey tagItem;
 	public PlatformLayerKey parentItem;
+
+	public List<Integer> publicPortCluster;
 
 	public boolean defaultBlocked = true;
 
@@ -66,6 +69,7 @@ public class PublicEndpoint extends OpsTreeBase {
 		{
 			endpoint = addChild(OwnedEndpoint.class);
 			endpoint.publicPort = publicPort;
+			endpoint.publicPortCluster = publicPortCluster;
 			endpoint.backendPort = backendPort;
 			endpoint.parentItem = parentItem;
 			endpoint.transport = transport;

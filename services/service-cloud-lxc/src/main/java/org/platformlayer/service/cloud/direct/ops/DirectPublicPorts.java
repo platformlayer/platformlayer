@@ -36,12 +36,15 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
-public class PublicPorts extends OpsTreeBase {
+public class DirectPublicPorts extends OpsTreeBase {
 
-	private static final Logger log = LoggerFactory.getLogger(PublicPorts.class);
+	private static final Logger log = LoggerFactory.getLogger(DirectPublicPorts.class);
 
 	public int backendPort;
+
 	public int publicPort;
+	public List<Integer> publicPortCluster;
+
 	public DirectInstance backendItem;
 
 	public Transport transport;
@@ -95,7 +98,17 @@ public class PublicPorts extends OpsTreeBase {
 					}
 				};
 			} else {
-				assignPublicAddress.poolProvider = directCloudHelpers.getPublicAddressPool4(publicPort);
+				List<Integer> publicPortCluster = this.publicPortCluster;
+				if (publicPortCluster == null) {
+					publicPortCluster = Lists.newArrayList();
+					publicPortCluster.add(publicPort);
+				}
+
+				if (!publicPortCluster.contains(publicPort)) {
+					throw new OpsException("Port set specified, but public port not in the set");
+				}
+
+				assignPublicAddress.poolProvider = directCloudHelpers.getPublicAddressPool4(publicPort, publicPortCluster);
 			}
 		}
 

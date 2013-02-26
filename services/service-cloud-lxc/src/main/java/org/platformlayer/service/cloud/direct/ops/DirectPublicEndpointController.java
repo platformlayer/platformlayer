@@ -33,13 +33,14 @@ public class DirectPublicEndpointController extends OpsTreeBase {
 		DirectInstance directInstance = platformLayerClient.getItem(model.instance, DirectInstance.class);
 
 		{
-			PublicPorts publicPorts = injected(PublicPorts.class);
+			DirectPublicPorts publicPorts = injected(DirectPublicPorts.class);
 			publicPorts.backendItem = directInstance;
 			publicPorts.tagItems.add(directInstance);
 			publicPorts.tagItems.add(model);
 			publicPorts.uuid = platformLayerClient.getOrCreateUuid(model).toString();
 			publicPorts.backendPort = model.backendPort;
 			publicPorts.publicPort = model.publicPort;
+			publicPorts.publicPortCluster = model.publicPortCluster;
 
 			if (model.transport != null) {
 				publicPorts.transport = EnumUtils.valueOfCaseInsensitive(Transport.class, model.transport);
