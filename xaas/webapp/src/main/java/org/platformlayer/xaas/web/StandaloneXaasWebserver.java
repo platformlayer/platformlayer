@@ -45,6 +45,7 @@ import com.fathomdb.Configuration;
 import com.fathomdb.crypto.CertificateAndKey;
 import com.fathomdb.crypto.EncryptionStore;
 import com.fathomdb.crypto.KeyStoreUtils;
+import com.fathomdb.crypto.ssl.SslPolicy;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Injector;
@@ -141,6 +142,9 @@ class StandaloneXaasWebserver {
 				sslContextFactory.setKeyStorePassword(secret);
 				sslContextFactory.setCertAlias(alias);
 			}
+
+			sslContextFactory.setIncludeCipherSuites(SslPolicy.DEFAULT.getEnabledCipherSuites());
+			sslContextFactory.setIncludeProtocols(SslPolicy.DEFAULT.getEnabledProtocols());
 
 			SslSelectChannelConnector connector = new SslSelectChannelConnector(sslContextFactory);
 			connector.setPort(PORT);
