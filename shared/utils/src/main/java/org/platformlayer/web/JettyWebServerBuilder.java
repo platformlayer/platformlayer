@@ -4,6 +4,7 @@ import java.security.KeyStore;
 import java.util.EnumSet;
 import java.util.Set;
 
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.servlet.DispatcherType;
 
@@ -122,8 +123,11 @@ public class JettyWebServerBuilder implements WebServerBuilder {
 			sslContextFactory = new SslContextFactory(SslContextFactory.DEFAULT_KEYSTORE_PATH);
 		}
 
-		sslContextFactory.setIncludeCipherSuites(SslPolicy.DEFAULT.getEnabledCipherSuites());
-		sslContextFactory.setIncludeProtocols(SslPolicy.DEFAULT.getEnabledProtocols());
+		// TODO: Preconfigure a better SSLContext??
+		SSLContext sslContext = SSLContext.getDefault();
+		sslContextFactory
+				.setIncludeCipherSuites(SslPolicy.DEFAULT.getEngineConfig(sslContext).getEnabledCipherSuites());
+		sslContextFactory.setIncludeProtocols(SslPolicy.DEFAULT.getEngineConfig(sslContext).getEnabledProtocols());
 
 		{
 			CertificateAndKey certificateAndKey = getCertificateAndKey();

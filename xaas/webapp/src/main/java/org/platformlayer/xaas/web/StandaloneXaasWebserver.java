@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.TimeZone;
 
 import javax.inject.Inject;
+import javax.net.ssl.SSLContext;
 import javax.servlet.DispatcherType;
 
 import org.eclipse.jetty.server.Connector;
@@ -143,8 +144,11 @@ class StandaloneXaasWebserver {
 				sslContextFactory.setCertAlias(alias);
 			}
 
-			sslContextFactory.setIncludeCipherSuites(SslPolicy.DEFAULT.getEnabledCipherSuites());
-			sslContextFactory.setIncludeProtocols(SslPolicy.DEFAULT.getEnabledProtocols());
+			// TODO: Preconfigure a better SSLContext??
+			SSLContext sslContext = SSLContext.getDefault();
+			sslContextFactory.setIncludeCipherSuites(SslPolicy.DEFAULT.getEngineConfig(sslContext)
+					.getEnabledCipherSuites());
+			sslContextFactory.setIncludeProtocols(SslPolicy.DEFAULT.getEngineConfig(sslContext).getEnabledProtocols());
 
 			SslSelectChannelConnector connector = new SslSelectChannelConnector(sslContextFactory);
 			connector.setPort(PORT);
