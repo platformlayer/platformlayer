@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.platformlayer.cas.CasLocation;
 import org.platformlayer.cas.CasStore;
-import org.platformlayer.cas.CasStoreObject;
 import org.platformlayer.cas.CasStoreInfo;
+import org.platformlayer.cas.CasStoreObject;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.cas.OpsCasLocation;
 import org.platformlayer.ops.cas.jenkins.JenkinsClient.BuildId;
@@ -101,6 +101,20 @@ public class JenkinsCasStore implements CasStore {
 		for (FingerprintInfo fingerprint : fingerprints) {
 			if (fileName.equals(fingerprint.getFileName())) {
 				found = fingerprint;
+			}
+		}
+
+		if (found == null) {
+			for (FingerprintInfo fingerprint : fingerprints) {
+				String fingerprintFileName = fingerprint.getFileName();
+				if (fingerprintFileName.contains(":")) {
+					// Strip the maven prefix
+					fingerprintFileName = fingerprintFileName.substring(fingerprintFileName.indexOf(':') + 1);
+				}
+
+				if (fileName.equals(fingerprintFileName)) {
+					found = fingerprint;
+				}
 			}
 		}
 

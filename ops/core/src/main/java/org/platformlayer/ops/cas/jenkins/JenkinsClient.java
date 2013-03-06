@@ -97,6 +97,11 @@ public class JenkinsClient {
 			Node child = XmlHelper.findUniqueChild(parent, childKey, false);
 			return (Element) child;
 		}
+
+		@Override
+		public String toString() {
+			return getClass().getName() + " [root=" + XmlHelper.toXml(root) + "]";
+		}
 	}
 
 	class FingerprintInfo extends JenkinsInfo {
@@ -143,6 +148,7 @@ public class JenkinsClient {
 
 			return new BuildId(name, Integer.valueOf(number));
 		}
+
 	}
 
 	class BuildInfo extends JenkinsInfo {
@@ -224,6 +230,16 @@ public class JenkinsClient {
 					return artifact;
 				}
 			}
+
+			if (fileName.contains(":")) {
+				String strippedFileName = fileName.substring(fileName.indexOf(":") + 1);
+				for (ArtifactInfo artifact : getArtifacts()) {
+					if (artifact.getFileName().equals(strippedFileName)) {
+						return artifact;
+					}
+				}
+			}
+
 			return null;
 		}
 	}
@@ -244,6 +260,12 @@ public class JenkinsClient {
 		public int getNumber() {
 			return number;
 		}
+
+		@Override
+		public String toString() {
+			return "BuildId [jobKey=" + jobKey + ", number=" + number + "]";
+		}
+
 	}
 
 	public FingerprintInfo findByFingerprint(String hash) throws JenkinsException {
