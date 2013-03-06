@@ -6,8 +6,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.slf4j.*;
-import org.platformlayer.TimeSpan;
 
+import com.fathomdb.TimeSpan;
 import com.google.inject.Singleton;
 
 @Singleton

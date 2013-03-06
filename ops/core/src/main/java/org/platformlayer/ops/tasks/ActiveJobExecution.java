@@ -1,6 +1,5 @@
 package org.platformlayer.ops.tasks;
 
-import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ids.ServiceType;
@@ -9,6 +8,8 @@ import org.platformlayer.jobs.model.JobState;
 import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.log.JobLogger;
+
+import com.fathomdb.TimeSpan;
 
 public interface ActiveJobExecution {
 	Action getAction();

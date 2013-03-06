@@ -9,9 +9,9 @@ import java.util.Map.Entry;
 
 import javax.inject.Provider;
 
-import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.Secret;
 
+import com.fathomdb.TimeSpan;
 import com.google.common.collect.Lists;
 
 public class Command {

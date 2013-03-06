@@ -6,6 +6,8 @@ import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.TimeSpan;
+
 /*
  * Helper class that (synchronously) executes a function at set intervals until it returns non-null, or until a timeout is reached.
  */

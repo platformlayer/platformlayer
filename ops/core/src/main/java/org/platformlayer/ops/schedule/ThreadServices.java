@@ -3,8 +3,8 @@ package org.platformlayer.ops.schedule;
 import java.io.Closeable;
 import java.util.TimerTask;
 
-import org.platformlayer.TimeSpan;
 
+import com.fathomdb.TimeSpan;
 import com.google.inject.ImplementedBy;
 
 /**

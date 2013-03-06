@@ -10,13 +10,14 @@ import org.apache.sshd.client.ServerKeyVerifier;
 import org.apache.sshd.client.channel.ChannelSession;
 import org.apache.sshd.client.future.ConnectFuture;
 import org.platformlayer.ExceptionUtils;
-import org.platformlayer.TimeSpan;
 import org.platformlayer.ops.ssh.IServerKeyVerifier;
 import org.platformlayer.ops.ssh.SshException;
 import org.platformlayer.ssh.SshConnectionInfo;
 import org.platformlayer.ssh.mina.bugfix.BugFixChannelExec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fathomdb.TimeSpan;
 
 public class MinaSshConnectionWrapper implements Closeable {
 	private static final Logger log = LoggerFactory.getLogger(MinaSshConnectionWrapper.class);

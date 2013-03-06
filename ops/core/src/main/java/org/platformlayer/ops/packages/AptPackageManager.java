@@ -7,7 +7,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.platformlayer.TimeSpan;
 import org.platformlayer.images.model.ConfigurePackage;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.CommandEnvironment;
@@ -21,6 +20,7 @@ import org.platformlayer.ops.proxy.HttpProxyHelper.Usage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.TimeSpan;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;

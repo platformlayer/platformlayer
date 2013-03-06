@@ -11,7 +11,6 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
-import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.service.solr.model.SolrCluster;
@@ -23,6 +22,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import com.fathomdb.TimeSpan;
 import com.google.common.collect.Lists;
 
 public class ITSolrService extends PlatformLayerApiTest {

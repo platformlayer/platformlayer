@@ -15,7 +15,6 @@ import org.platformlayer.auth.client.PlatformLayerAuthenticationClient;
 import org.platformlayer.auth.client.PlatformLayerAuthenticationClientProvider;
 import org.platformlayer.auth.system.PlatformLayerAuthAdminClient;
 import org.platformlayer.auth.system.PlatformlayerAuthenticationService;
-import org.platformlayer.config.ConfigurationImpl;
 import org.platformlayer.crypto.KeyStoreEncryptionStore;
 import org.platformlayer.guice.xaas.JdbcManagedItemRepository;
 import org.platformlayer.guice.xaas.JdbcServiceAuthorizationRepository;
@@ -60,6 +59,7 @@ import org.platformlayer.xaas.web.resources.ItemServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.config.ConfigurationImpl;
 import com.fathomdb.crypto.EncryptionStore;
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;

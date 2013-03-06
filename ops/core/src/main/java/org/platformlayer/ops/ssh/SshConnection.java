@@ -10,8 +10,9 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.security.KeyPair;
 
-import org.platformlayer.TimeSpan;
 import org.platformlayer.ops.process.ProcessExecution;
+
+import com.fathomdb.TimeSpan;
 
 /**
  * Implements an SSH connection. Abstract class that is either implemented by a MINA SSH library binding

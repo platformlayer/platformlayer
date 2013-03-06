@@ -6,7 +6,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.platformlayer.PlatformLayerClient;
-import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Handler;
@@ -24,6 +23,8 @@ import org.platformlayer.ops.machines.MachineProvider;
 import org.platformlayer.ops.machines.PlatformLayerCloudHelpers;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.direct.model.DirectCloud;
+
+import com.fathomdb.TimeSpan;
 
 public class DownloadImage extends OpsTreeBase {
 	private static final File IMAGES_DIR = new File("/var/lib/lxc/images");

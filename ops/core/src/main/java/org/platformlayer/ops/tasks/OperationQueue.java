@@ -2,7 +2,6 @@ package org.platformlayer.ops.tasks;
 
 import java.util.List;
 
-import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.jobs.model.JobData;
@@ -13,6 +12,8 @@ import org.platformlayer.jobs.model.JobState;
 import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.log.JobLogger;
+
+import com.fathomdb.TimeSpan;
 
 public interface OperationQueue {
 	void submit(ProjectAuthorization auth, JobData jobData) throws OpsException;

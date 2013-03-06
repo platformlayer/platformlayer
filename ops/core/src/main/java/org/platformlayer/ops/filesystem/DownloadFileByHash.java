@@ -7,7 +7,6 @@ import java.net.URISyntaxException;
 
 import javax.inject.Inject;
 
-import org.platformlayer.TimeSpan;
 import org.platformlayer.cas.CasStoreMap;
 import org.platformlayer.cas.CasStoreObject;
 import org.platformlayer.ops.Command;
@@ -20,6 +19,7 @@ import org.platformlayer.ops.helpers.CurlRequest;
 import org.platformlayer.ops.proxy.HttpProxyHelper;
 import org.platformlayer.ops.proxy.HttpProxyHelper.Usage;
 
+import com.fathomdb.TimeSpan;
 import com.fathomdb.hash.Md5Hash;
 
 public class DownloadFileByHash extends ManagedFile {

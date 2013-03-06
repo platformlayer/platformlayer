@@ -13,9 +13,10 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.platformlayer.TimeSpan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fathomdb.TimeSpan;
 
 public class GwtCacheHeaderFilter implements Filter {
 	private static final Logger log = LoggerFactory.getLogger(GwtCacheHeaderFilter.class);

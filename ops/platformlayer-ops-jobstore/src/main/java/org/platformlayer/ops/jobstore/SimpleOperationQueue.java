@@ -11,7 +11,6 @@ import javax.inject.Inject;
 
 import org.platformlayer.PrimitiveComparators;
 import org.platformlayer.RepositoryException;
-import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobExecutionData;
@@ -25,6 +24,7 @@ import org.platformlayer.ops.tasks.ActiveJobExecution;
 import org.platformlayer.ops.tasks.JobQueueEntry;
 import org.platformlayer.ops.tasks.OperationWorker;
 
+import com.fathomdb.TimeSpan;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 

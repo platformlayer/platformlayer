@@ -10,7 +10,6 @@ import java.net.UnknownHostException;
 import javax.inject.Inject;
 
 import org.slf4j.*;
-import org.platformlayer.TimeSpan;
 import org.platformlayer.cas.CasLocation;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.CommandEnvironment;
@@ -26,6 +25,7 @@ import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.proxy.HttpProxyHelper;
 import org.platformlayer.ops.proxy.HttpProxyHelper.Usage;
 
+import com.fathomdb.TimeSpan;
 import com.fathomdb.hash.Md5Hash;
 import com.fathomdb.io.IoUtils;
 import com.google.common.io.Closeables;

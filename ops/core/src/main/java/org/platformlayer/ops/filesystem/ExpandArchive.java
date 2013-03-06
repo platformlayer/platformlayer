@@ -2,7 +2,6 @@ package org.platformlayer.ops.filesystem;
 
 import java.io.File;
 
-import org.platformlayer.TimeSpan;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.HasDescription;
@@ -10,6 +9,8 @@ import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.tree.OpsTreeBase;
+
+import com.fathomdb.TimeSpan;
 
 public class ExpandArchive extends OpsTreeBase implements HasDescription {
 	public File archiveFile;

@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
@@ -16,6 +15,7 @@ import org.platformlayer.ops.pool.ResourcePool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.TimeSpan;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 

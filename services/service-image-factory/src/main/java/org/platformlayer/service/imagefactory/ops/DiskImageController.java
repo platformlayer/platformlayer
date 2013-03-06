@@ -13,7 +13,6 @@ import javax.inject.Inject;
 import org.platformlayer.EnumUtils;
 import org.platformlayer.ExceptionUtils;
 import org.platformlayer.ResourceUtils;
-import org.platformlayer.TimeSpan;
 import org.platformlayer.TimeoutPoll;
 import org.platformlayer.TimeoutPoll.PollFunction;
 import org.platformlayer.core.model.HostPolicy;
@@ -57,6 +56,7 @@ import org.platformlayer.service.imagefactory.OperatingSystem.Distribution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.TimeSpan;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;

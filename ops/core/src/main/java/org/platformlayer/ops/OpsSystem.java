@@ -8,7 +8,6 @@ import java.util.concurrent.ExecutorService;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.platformlayer.TimeSpan;
 import org.platformlayer.auth.AuthenticationService;
 import org.platformlayer.auth.AuthenticationTokenValidator;
 import org.platformlayer.core.model.PlatformLayerKey;
@@ -27,6 +26,7 @@ import org.platformlayer.xaas.services.ServiceProvider;
 import org.platformlayer.xaas.services.ServiceProviderDictionary;
 
 import com.fathomdb.Configuration;
+import com.fathomdb.TimeSpan;
 import com.fathomdb.crypto.CertificateAndKey;
 import com.fathomdb.crypto.EncryptionStore;
 import com.fathomdb.crypto.OpenSshUtils;

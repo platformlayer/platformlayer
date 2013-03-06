@@ -11,7 +11,6 @@ import org.openstack.client.OpenstackException;
 import org.openstack.client.common.OpenstackImageClient;
 import org.openstack.model.identity.Access;
 import org.openstack.model.image.Image;
-import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.Tags;
 import org.platformlayer.ops.Command;
@@ -24,6 +23,7 @@ import org.platformlayer.ops.process.ProcessExecution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.TimeSpan;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;

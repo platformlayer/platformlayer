@@ -3,11 +3,12 @@ package org.platformlayer.tests;
 import java.io.IOException;
 import java.util.EnumSet;
 
-import org.platformlayer.TimeSpan;
 import org.platformlayer.TypedPlatformLayerClient;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.ops.OpsException;
+
+import com.fathomdb.TimeSpan;
 
 public class ManagedItemStatePoller<T extends ItemBase> {
 	final TypedPlatformLayerClient client;

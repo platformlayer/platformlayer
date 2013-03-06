@@ -8,7 +8,6 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 import org.platformlayer.PlatformLayerClientException;
-import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.HostPolicy;
 import org.platformlayer.core.model.InstanceBase;
 import org.platformlayer.core.model.ItemBase;
@@ -36,6 +35,7 @@ import org.platformlayer.ops.machines.PlatformLayerCloudHelpers;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
+import com.fathomdb.TimeSpan;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 

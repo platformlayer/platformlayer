@@ -4,12 +4,13 @@ import java.util.Date;
 import java.util.List;
 
 import org.platformlayer.RepositoryException;
-import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobExecutionData;
 import org.platformlayer.jobs.model.JobState;
+
+import com.fathomdb.TimeSpan;
 
 public interface JobRepository {
 	// void recordJob(PlatformLayerKey jobId, PlatformLayerKey itemKey, JobState jobState, JobLog jobLog)

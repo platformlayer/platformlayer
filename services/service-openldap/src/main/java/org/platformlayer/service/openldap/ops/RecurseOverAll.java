@@ -2,7 +2,6 @@ package org.platformlayer.service.openldap.ops;
 
 import javax.inject.Inject;
 
-import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.ops.BindingScope;
 import org.platformlayer.ops.Machine;
@@ -15,6 +14,8 @@ import org.platformlayer.ops.helpers.SshKey;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fathomdb.TimeSpan;
 
 public class RecurseOverAll {
 

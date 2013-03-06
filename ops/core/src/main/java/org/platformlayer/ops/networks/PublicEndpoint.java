@@ -5,7 +5,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.EndpointInfo;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.PublicEndpointBase;
@@ -25,6 +24,7 @@ import org.platformlayer.ops.tree.OpsTreeBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.TimeSpan;
 import com.google.common.base.Strings;
 
 public class PublicEndpoint extends OpsTreeBase {

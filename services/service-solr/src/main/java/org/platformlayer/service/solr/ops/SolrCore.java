@@ -1,6 +1,5 @@
 package org.platformlayer.service.solr.ops;
 
-import org.platformlayer.TimeSpan;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
@@ -10,6 +9,7 @@ import org.platformlayer.service.solr.ops.SolrCoreHelpers.SolrCoreStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.TimeSpan;
 import com.google.common.base.Objects;
 
 public class SolrCore {

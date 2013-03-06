@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.List;
 import java.util.Set;
 
-import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsException;
@@ -14,6 +13,7 @@ import org.platformlayer.ops.process.ProcessExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.TimeSpan;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;

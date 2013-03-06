@@ -9,12 +9,13 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 
-import org.platformlayer.TimeSpan;
 import org.platformlayer.auth.keystone.KeystoneUserAuthenticator;
 import org.platformlayer.auth.services.RegistrationService;
 import org.platformlayer.web.HttpUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fathomdb.TimeSpan;
 
 public class PlatformlayerAuthResourceBase {
 	private static final Logger log = LoggerFactory.getLogger(PlatformlayerAuthResourceBase.class);

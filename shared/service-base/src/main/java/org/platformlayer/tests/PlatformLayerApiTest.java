@@ -3,12 +3,13 @@ package org.platformlayer.tests;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
-import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.service.network.v1.NetworkConnection;
 import org.testng.annotations.BeforeMethod;
+
+import com.fathomdb.TimeSpan;
 
 public class PlatformLayerApiTest extends AbstractPlatformLayerTest {
 	SimpleTypedItemMapper typedItemMapper;

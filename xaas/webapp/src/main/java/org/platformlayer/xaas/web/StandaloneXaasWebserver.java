@@ -22,7 +22,6 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.platformlayer.cache.CacheModule;
-import org.platformlayer.config.ConfigurationImpl;
 import org.platformlayer.config.ConfigurationModule;
 import org.platformlayer.guice.xaas.ItemEntity;
 import org.platformlayer.guice.xaas.TagEntity;
@@ -43,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fathomdb.Configuration;
+import com.fathomdb.config.ConfigurationImpl;
 import com.fathomdb.crypto.CertificateAndKey;
 import com.fathomdb.crypto.EncryptionStore;
 import com.fathomdb.crypto.KeyStoreUtils;

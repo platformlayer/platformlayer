@@ -10,7 +10,6 @@ import org.platformlayer.ApplicationMode;
 import org.platformlayer.CheckedCallable;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.Scope;
-import org.platformlayer.TimeSpan;
 import org.platformlayer.auth.crypto.SecretProvider;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.BackupAction;
@@ -36,6 +35,7 @@ import org.platformlayer.xaas.services.ServiceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.TimeSpan;
 import com.fathomdb.io.IoUtils;
 import com.google.common.collect.Lists;
 

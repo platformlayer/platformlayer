@@ -16,7 +16,6 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.platformlayer.RepositoryException;
-import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ids.ManagedItemId;
@@ -34,6 +33,7 @@ import org.platformlayer.xaas.repository.JobRepository;
 import org.platformlayer.xaas.services.ServiceProviderDictionary;
 
 import com.fathomdb.Casts;
+import com.fathomdb.TimeSpan;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 

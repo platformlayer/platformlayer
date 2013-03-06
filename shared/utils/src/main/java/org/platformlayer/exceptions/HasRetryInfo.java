@@ -1,6 +1,6 @@
 package org.platformlayer.exceptions;
 
-import org.platformlayer.TimeSpan;
+import com.fathomdb.TimeSpan;
 
 public interface HasRetryInfo {
 	public TimeSpan getRetry();

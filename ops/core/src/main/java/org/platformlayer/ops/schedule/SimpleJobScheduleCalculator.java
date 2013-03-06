@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Random;
 
-import org.platformlayer.TimeSpan;
+import com.fathomdb.TimeSpan;
 
 public class SimpleJobScheduleCalculator implements JobScheduleCalculator {
 	public static final Date SUGGESTED_BASE = new Date(2000 - 1900, 0, 1, 0, 0, 0);

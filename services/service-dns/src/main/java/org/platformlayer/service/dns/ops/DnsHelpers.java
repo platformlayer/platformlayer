@@ -7,7 +7,6 @@ import javalang7.AutoCloseable;
 
 import javax.inject.Inject;
 
-import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.EndpointInfo;
 import org.platformlayer.dns.model.DnsRecord;
 import org.platformlayer.ops.CloudContext;
@@ -24,6 +23,7 @@ import org.platformlayer.service.dns.model.DnsZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.TimeSpan;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 

@@ -14,7 +14,6 @@ import org.platformlayer.RepositoryException;
 import org.platformlayer.auth.KeystoneJdbcModule;
 import org.platformlayer.auth.UserDatabase;
 import org.platformlayer.auth.UserEntity;
-import org.platformlayer.config.ConfigurationImpl;
 import org.platformlayer.config.ConfigurationModule;
 import org.platformlayer.crypto.CertificateReader;
 import org.platformlayer.keystone.cli.commands.KeystoneCommandRegistry;
@@ -24,6 +23,7 @@ import org.platformlayer.ops.OpsException;
 
 import com.fathomdb.cli.CliContextBase;
 import com.fathomdb.cli.CliException;
+import com.fathomdb.config.ConfigurationImpl;
 import com.fathomdb.crypto.KeyStoreUtils;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;

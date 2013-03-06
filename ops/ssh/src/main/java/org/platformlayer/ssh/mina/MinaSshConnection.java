@@ -17,7 +17,6 @@ import org.apache.sshd.client.channel.ForwardLocalPort;
 import org.apache.sshd.client.channel.SshTunnelSocket;
 import org.apache.sshd.common.RuntimeSshException;
 import org.platformlayer.ExceptionUtils;
-import org.platformlayer.TimeSpan;
 import org.platformlayer.ops.process.ProcessExecution;
 import org.platformlayer.ops.ssh.IServerKeyVerifier;
 import org.platformlayer.ops.ssh.SshConnection;
@@ -26,6 +25,8 @@ import org.platformlayer.ops.ssh.SshPortForward;
 import org.platformlayer.ssh.SshConnectionInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fathomdb.TimeSpan;
 
 public class MinaSshConnection extends SshConnection {
 	private static final Logger log = LoggerFactory.getLogger(MinaSshConnection.class);

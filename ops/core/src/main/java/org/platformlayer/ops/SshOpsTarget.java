@@ -9,7 +9,6 @@ import java.net.Socket;
 import java.security.KeyPair;
 
 import org.platformlayer.ExceptionUtils;
-import org.platformlayer.TimeSpan;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.process.ProcessExecution;
 import org.platformlayer.ops.process.ProcessExecutionException;
@@ -17,6 +16,7 @@ import org.platformlayer.ops.ssh.SshConnection;
 import org.platformlayer.ops.ssh.SshException;
 import org.platformlayer.ops.ssh.SshPortForward;
 
+import com.fathomdb.TimeSpan;
 import com.fathomdb.Utf8;
 import com.google.common.base.Objects;
 import com.google.common.net.InetAddresses;

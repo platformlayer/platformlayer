@@ -5,7 +5,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.slf4j.*;
-import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.core.model.PlatformLayerKey;
@@ -19,6 +18,7 @@ import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.helpers.SshKey;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 
+import com.fathomdb.TimeSpan;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 

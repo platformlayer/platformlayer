@@ -5,11 +5,11 @@ import java.util.List;
 
 import javax.inject.Singleton;
 
-import org.platformlayer.TimeSpan;
 import org.platformlayer.ops.OpsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.TimeSpan;
 import com.google.common.base.Joiner;
 import com.netflix.curator.RetryPolicy;
 import com.netflix.curator.framework.CuratorFramework;

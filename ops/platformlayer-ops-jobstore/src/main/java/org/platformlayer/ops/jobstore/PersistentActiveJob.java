@@ -2,7 +2,6 @@ package org.platformlayer.ops.jobstore;
 
 import java.util.Date;
 
-import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ids.ServiceType;
@@ -16,6 +15,8 @@ import org.platformlayer.ops.tasks.ActiveJobExecution;
 import org.platformlayer.ops.tasks.OperationQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fathomdb.TimeSpan;
 
 public class PersistentActiveJob implements ActiveJobExecution {
 	private static final Logger log = LoggerFactory.getLogger(PersistentActiveJob.class);

@@ -8,7 +8,6 @@ import java.util.concurrent.ExecutorService;
 
 import javax.inject.Inject;
 
-import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.Tags;
 import org.platformlayer.ops.Command;
@@ -21,6 +20,7 @@ import org.platformlayer.ops.images.PropertiesFileStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.TimeSpan;
 import com.google.common.collect.Lists;
 
 public class DirectImageStore implements ImageStore {

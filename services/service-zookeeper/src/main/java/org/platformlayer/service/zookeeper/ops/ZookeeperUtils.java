@@ -10,7 +10,6 @@ import javax.inject.Inject;
 
 import org.platformlayer.Filter;
 import org.platformlayer.TagFilter;
-import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsException;
@@ -22,6 +21,7 @@ import org.platformlayer.service.zookeeper.model.ZookeeperServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.TimeSpan;
 import com.fathomdb.io.IoUtils;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;

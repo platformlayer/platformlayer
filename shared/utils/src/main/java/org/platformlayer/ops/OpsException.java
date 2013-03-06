@@ -1,8 +1,9 @@
 package org.platformlayer.ops;
 
-import org.platformlayer.TimeSpan;
 import org.platformlayer.exceptions.ExceptionHelpers;
 import org.platformlayer.exceptions.HasRetryInfo;
+
+import com.fathomdb.TimeSpan;
 
 public class OpsException extends Exception implements HasRetryInfo {
 	private static final long serialVersionUID = 1L;

@@ -7,13 +7,14 @@ import java.util.Map;
 import java.util.TimerTask;
 
 import org.slf4j.*;
+
+import com.fathomdb.TimeSpan;
 import com.fathomdb.utils.Hex;
 import org.platformlayer.HttpPlatformLayerClient;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
 import org.platformlayer.PlatformLayerEndpointInfo;
 import org.platformlayer.RepositoryException;
-import org.platformlayer.TimeSpan;
 import org.platformlayer.auth.Authenticator;
 import org.platformlayer.auth.DirectAuthenticationToken;
 import org.platformlayer.auth.DirectAuthenticator;

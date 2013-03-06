@@ -16,7 +16,6 @@ import java.util.Properties;
 import org.platformlayer.HttpPlatformLayerClient;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientBase;
-import org.platformlayer.TimeSpan;
 import org.platformlayer.TypedItemMapper;
 import org.platformlayer.TypedPlatformLayerClient;
 import org.platformlayer.core.model.Action;
@@ -37,6 +36,7 @@ import org.platformlayer.service.network.v1.NetworkConnection;
 import org.platformlayer.xml.JaxbHelper;
 
 import com.fathomdb.RandomUtil;
+import com.fathomdb.TimeSpan;
 import com.fathomdb.io.IoUtils;
 import com.google.common.collect.Lists;
 

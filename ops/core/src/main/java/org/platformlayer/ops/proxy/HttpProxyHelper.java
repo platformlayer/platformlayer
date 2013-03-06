@@ -6,7 +6,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.slf4j.*;
-import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.ops.CommandEnvironment;
@@ -18,6 +17,7 @@ import org.platformlayer.ops.helpers.ProviderHelper;
 import org.platformlayer.ops.helpers.ProviderHelper.ProviderOf;
 import org.platformlayer.ops.networks.NetworkPoint;
 
+import com.fathomdb.TimeSpan;
 import com.google.common.collect.Lists;
 
 public class HttpProxyHelper {

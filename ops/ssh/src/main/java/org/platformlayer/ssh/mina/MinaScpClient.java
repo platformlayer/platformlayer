@@ -12,12 +12,12 @@ import java.io.PipedOutputStream;
 import org.apache.sshd.ClientChannel;
 import org.apache.sshd.ClientSession;
 import org.platformlayer.ExceptionUtils;
-import org.platformlayer.TimeSpan;
 import org.platformlayer.ops.ssh.SshException;
 import org.platformlayer.ssh.mina.bugfix.BugFixChannelExec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.TimeSpan;
 import com.fathomdb.Utf8;
 import com.fathomdb.io.IoUtils;
 import com.google.common.io.Closeables;

@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fathomdb.Configuration;
+import com.fathomdb.config.ConfigurationImpl;
 import com.google.inject.AbstractModule;
 import com.google.inject.matcher.Matchers;
 

@@ -6,7 +6,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.platformlayer.PlatformLayerClientException;
-import org.platformlayer.TimeSpan;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
@@ -25,6 +24,7 @@ import org.platformlayer.xml.JaxbHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.TimeSpan;
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 

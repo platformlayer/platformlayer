@@ -9,12 +9,12 @@ import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
-import org.platformlayer.TimeSpan;
 import org.platformlayer.auth.services.CacheSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fathomdb.Casts;
+import com.fathomdb.TimeSpan;
 import com.fathomdb.io.IoUtils;
 
 public class SimpleCacheSystem implements CacheSystem {

@@ -2,7 +2,7 @@ package org.platformlayer.ops.helpers;
 
 import java.util.Map;
 
-import org.platformlayer.TimeSpan;
+import com.fathomdb.TimeSpan;
 
 public class CurlResult {
 	static final String METADATA_HTTP_CODE = "http_code";
