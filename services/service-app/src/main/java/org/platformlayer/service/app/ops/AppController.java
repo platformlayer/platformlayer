@@ -73,7 +73,8 @@ public class AppController extends OpsTreeBase implements HasPorts {
 	@Override
 	protected void addChildren() throws OpsException {
 		addChild(JettyChildServer.class);
-		loadBalancing.addHttpSite(this, model, model.dnsName);
+
+		loadBalancing.addHttpSite(this, model, model.dnsName, null);
 	}
 
 	@Override
