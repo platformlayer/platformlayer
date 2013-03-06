@@ -11,6 +11,7 @@ import org.bouncycastle.openssl.PEMReader;
 import org.bouncycastle.openssl.PEMWriter;
 import org.platformlayer.ops.OpsException;
 
+import com.fathomdb.crypto.bouncycastle.BouncyCastleLoader;
 import com.fathomdb.io.IoUtils;
 
 public class KeyPairUtils {

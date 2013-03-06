@@ -19,6 +19,7 @@ import com.fathomdb.crypto.CertificateAndKey;
 import com.fathomdb.crypto.EncryptionStore;
 import com.fathomdb.crypto.KeyStoreUtils;
 import com.fathomdb.crypto.SimpleCertificateAndKey;
+import com.fathomdb.crypto.bouncycastle.PrivateKeys;
 
 @Singleton
 public class KeyStoreEncryptionStore implements EncryptionStore {

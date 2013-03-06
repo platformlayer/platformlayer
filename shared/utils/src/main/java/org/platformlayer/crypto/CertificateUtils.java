@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fathomdb.crypto.CertificateAndKey;
 import com.fathomdb.crypto.KeyStoreUtils;
+import com.fathomdb.crypto.bouncycastle.BouncyCastleLoader;
 import com.fathomdb.io.IoUtils;
 import com.google.common.collect.Lists;
 
