@@ -1,5 +1,6 @@
 package org.platformlayer.service.platformlayer.ops.auth.user;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -12,9 +13,12 @@ import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.firewall.Transport;
+import org.platformlayer.ops.http.HttpBackend;
+import org.platformlayer.ops.http.HttpBackends;
 import org.platformlayer.ops.http.HttpManager;
 import org.platformlayer.ops.http.HttpManager.SslMode;
 import org.platformlayer.ops.instances.InstanceBuilder;
+import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.networks.PublicEndpoint;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.ops.uses.LinkTarget;
@@ -26,7 +30,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-public class UserAuthServiceController extends OpsTreeBase implements LinkTarget {
+public class UserAuthServiceController extends OpsTreeBase implements LinkTarget, HttpBackend {
 
 	private static final Logger log = LoggerFactory.getLogger(UserAuthServiceController.class);
 
@@ -102,5 +106,11 @@ public class UserAuthServiceController extends OpsTreeBase implements LinkTarget
 		// The ssl cert is actually multitenant.cert
 
 		return properties;
+	}
+
+	@Override
+	public URI getUri(NetworkPoint src) throws OpsException {
+		int port = BACKEND_PORT;
+		return HttpBackends.get().buildUri(src, "https", model, port);
 	}
 }

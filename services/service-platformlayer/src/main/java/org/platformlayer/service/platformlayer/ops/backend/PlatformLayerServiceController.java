@@ -1,20 +1,17 @@
 package org.platformlayer.service.platformlayer.ops.backend;
 
-import java.net.InetAddress;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import javax.inject.Inject;
 
 import org.platformlayer.EnumUtils;
-import org.platformlayer.InetAddressChooser;
 import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
-import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.firewall.Transport;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.http.HttpBackend;
+import org.platformlayer.ops.http.HttpBackends;
 import org.platformlayer.ops.http.HttpManager;
 import org.platformlayer.ops.http.HttpManager.SslMode;
 import org.platformlayer.ops.instances.InstanceBuilder;
@@ -24,8 +21,6 @@ import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.platformlayer.model.PlatformLayerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.net.InetAddresses;
 
 public class PlatformLayerServiceController extends OpsTreeBase implements HttpBackend {
 	private static final Logger log = LoggerFactory.getLogger(PlatformLayerServiceController.class);
@@ -100,21 +95,7 @@ public class PlatformLayerServiceController extends OpsTreeBase implements HttpB
 	@Override
 	public URI getUri(NetworkPoint src) throws OpsException {
 		int port = PORT;
-
-		Machine machine = instances.getMachine(model);
-
-		InetAddressChooser chooser = InetAddressChooser.preferIpv6();
-		InetAddress address = machine.getBestAddress(src, port, chooser);
-
-		String host = InetAddresses.toAddrString(address);
-
-		URI uri;
-		try {
-			uri = new URI("https", null, host, port, null, null, null);
-		} catch (URISyntaxException e) {
-			throw new OpsException("Error building URI", e);
-		}
-		return uri;
+		return HttpBackends.get().buildUri(src, "https", model, port);
 	}
 
 }

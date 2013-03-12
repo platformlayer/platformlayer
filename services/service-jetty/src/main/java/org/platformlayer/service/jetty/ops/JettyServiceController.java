@@ -1,19 +1,16 @@
 package org.platformlayer.service.jetty.ops;
 
-import java.net.InetAddress;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import org.platformlayer.InetAddressChooser;
 import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
-import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.http.HttpBackend;
+import org.platformlayer.ops.http.HttpBackends;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.metrics.MetricsInstance;
 import org.platformlayer.ops.networks.HasPorts;
@@ -25,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
-import com.google.common.net.InetAddresses;
 
 public class JettyServiceController extends OpsTreeBase implements HasPorts, HttpBackend {
 
@@ -93,21 +89,7 @@ public class JettyServiceController extends OpsTreeBase implements HasPorts, Htt
 	@Override
 	public URI getUri(NetworkPoint src) throws OpsException {
 		int port = PORT;
-
-		Machine machine = instances.getMachine(model);
-
-		InetAddressChooser chooser = InetAddressChooser.preferIpv6();
-		InetAddress address = machine.getBestAddress(src, port, chooser);
-
-		String host = InetAddresses.toAddrString(address);
-
-		URI uri;
-		try {
-			uri = new URI("http", null, host, port, null, null, null);
-		} catch (URISyntaxException e) {
-			throw new OpsException("Error building URI", e);
-		}
-		return uri;
+		return HttpBackends.get().buildUri(src, "http", model, port);
 	}
 
 }
