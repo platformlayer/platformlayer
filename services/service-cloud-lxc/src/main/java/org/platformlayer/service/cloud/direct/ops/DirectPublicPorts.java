@@ -159,6 +159,10 @@ public class DirectPublicPorts extends OpsTreeBase {
 					TagChanges tagChanges = new TagChanges();
 
 					InetSocketAddress socketAddress = assignPublicAddress.get();
+					if (socketAddress == null) {
+						return null;
+					}
+
 					if (socketAddress.getPort() != publicPort) {
 						throw new IllegalStateException();
 					}

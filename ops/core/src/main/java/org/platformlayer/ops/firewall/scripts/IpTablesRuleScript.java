@@ -2,14 +2,16 @@ package org.platformlayer.ops.firewall.scripts;
 
 import java.io.File;
 
-import org.slf4j.*;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.filesystem.FileAccess;
 import org.platformlayer.ops.filesystem.SyntheticFile;
 import org.platformlayer.ops.firewall.Sanitizer;
+import org.platformlayer.ops.firewall.Transport;
 import org.platformlayer.ops.networks.ScriptBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class IpTablesRuleScript extends SyntheticFile {
 	private static final Logger log = LoggerFactory.getLogger(IpTablesRuleScript.class);
@@ -25,10 +27,9 @@ public abstract class IpTablesRuleScript extends SyntheticFile {
 	@Override
 	protected File getFilePath() throws OpsException {
 		File scriptDirectory = new File(PersistIptablesScripts.BASE_DIR, interfaceName);
-		IptablesRule rule = getRule();
 
 		File transportDirectory;
-		switch (rule.getTransport()) {
+		switch (getRuleTransport()) {
 		case Ipv4:
 			transportDirectory = new File(scriptDirectory, "inet");
 			break;
@@ -51,6 +52,8 @@ public abstract class IpTablesRuleScript extends SyntheticFile {
 	}
 
 	protected abstract IptablesRule getRule() throws OpsException;
+
+	protected abstract Transport getRuleTransport() throws OpsException;
 
 	@Override
 	protected void doUpdateAction(OpsTarget target) throws OpsException {

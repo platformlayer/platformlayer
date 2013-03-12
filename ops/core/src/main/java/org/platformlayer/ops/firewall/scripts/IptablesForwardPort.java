@@ -4,12 +4,13 @@ import java.net.InetSocketAddress;
 
 import javax.inject.Provider;
 
-import org.slf4j.*;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsProvider;
 import org.platformlayer.ops.firewall.IptablesChain;
 import org.platformlayer.ops.firewall.Protocol;
 import org.platformlayer.ops.firewall.Transport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class IptablesForwardPort extends IpTablesRuleScript {
 	static final Logger log = LoggerFactory.getLogger(IptablesForwardPort.class);
@@ -35,5 +36,10 @@ public class IptablesForwardPort extends IpTablesRuleScript {
 		ruleSpec += " --to " + dest;
 
 		return new IptablesRuleRaw(transport, IptablesChain.Nat, ruleSpec);
+	}
+
+	@Override
+	protected Transport getRuleTransport() throws OpsException {
+		return transport;
 	}
 }

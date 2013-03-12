@@ -19,12 +19,20 @@ public class AssignPortToAddressPool extends TransformingResourcePool<AddressMod
 
 	@Override
 	protected InetSocketAddress transform(AddressModel item) {
+		if (item == null) {
+			return null;
+		}
+
 		InetAddress inetAddress = item.getInetAddress();
 		return new InetSocketAddress(inetAddress, port);
 	}
 
 	@Override
 	protected AddressModel reverse(InetSocketAddress item) {
+		if (item == null) {
+			return null;
+		}
+
 		AddressModel addressModel = new AddressModel();
 		addressModel.address = item.getAddress().getHostAddress();
 		AddressModels.populateDefaults(addressModel);
