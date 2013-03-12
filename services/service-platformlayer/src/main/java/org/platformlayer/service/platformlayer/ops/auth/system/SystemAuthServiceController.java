@@ -4,11 +4,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.platformlayer.InetAddressChooser;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.firewall.Transport;
+import org.platformlayer.ops.http.HttpManager;
+import org.platformlayer.ops.http.HttpManager.SslMode;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.networks.PublicEndpoint;
 import org.platformlayer.ops.tree.OpsTreeBase;
@@ -24,7 +29,7 @@ import com.google.common.collect.Maps;
 public class SystemAuthServiceController extends OpsTreeBase implements LinkTarget {
 	private static final Logger log = LoggerFactory.getLogger(SystemAuthServiceController.class);
 
-	public static final int PORT = 35358;
+	public static final int BACKEND_PORT = 35358;
 
 	public static final String CERT_NAME = "clientcert.systemauth";
 
@@ -34,20 +39,23 @@ public class SystemAuthServiceController extends OpsTreeBase implements LinkTarg
 	@Bound
 	SystemAuthInstanceTemplate template;
 
+	@Inject
+	HttpManager loadBalancing;
+
 	@Handler
 	public void handler() {
 	}
 
 	@Override
 	protected void addChildren() throws OpsException {
-		int port = PORT;
+		// int port = PORT;
 
-		String dnsName = model.dnsName;
+		// String dnsName = model.dnsName;
 
 		InstanceBuilder vm;
 		{
-			vm = InstanceBuilder.build(dnsName, this, model.getTags());
-			vm.publicPorts.add(port);
+			vm = InstanceBuilder.build(model.dnsName, this, model.getTags());
+			// vm.publicPorts.add(port);
 			vm.hostPolicy.configureCluster(template.getPlacementKey());
 
 			// TODO: This needs to be configurable (?)
@@ -67,13 +75,17 @@ public class SystemAuthServiceController extends OpsTreeBase implements LinkTarg
 		{
 			PublicEndpoint endpoint = vm.addChild(PublicEndpoint.class);
 			// endpoint.network = null;
-			endpoint.publicPort = port;
-			endpoint.backendPort = port;
-			endpoint.dnsName = dnsName;
+			endpoint.publicPort = BACKEND_PORT;
+			endpoint.backendPort = BACKEND_PORT;
+			// endpoint.dnsName = dnsName;
 
 			endpoint.tagItem = model.getKey();
 			endpoint.parentItem = model.getKey();
+
+			endpoint.transport = Transport.Ipv6;
 		}
+
+		loadBalancing.addHttpSite(this, model, model.dnsName, template.getSslKeyPath(), SslMode.Tunnel);
 	}
 
 	@Override
@@ -82,7 +94,7 @@ public class SystemAuthServiceController extends OpsTreeBase implements LinkTarg
 
 		List<String> systemAuthKeys = Lists.newArrayList();
 
-		String systemAuthUrl = "https://" + model.dnsName + ":35358/";
+		String systemAuthUrl = "https://" + model.dnsName + "/";
 
 		systemAuthKeys.addAll(Tag.PUBLIC_KEY_SIG.find(model));
 		Collections.sort(systemAuthKeys); // Keep it stable

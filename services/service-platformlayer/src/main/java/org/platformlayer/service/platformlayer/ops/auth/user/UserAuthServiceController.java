@@ -4,11 +4,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.platformlayer.InetAddressChooser;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.firewall.Transport;
+import org.platformlayer.ops.http.HttpManager;
+import org.platformlayer.ops.http.HttpManager.SslMode;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.networks.PublicEndpoint;
 import org.platformlayer.ops.tree.OpsTreeBase;
@@ -25,7 +30,7 @@ public class UserAuthServiceController extends OpsTreeBase implements LinkTarget
 
 	private static final Logger log = LoggerFactory.getLogger(UserAuthServiceController.class);
 
-	public static final int PORT = 5001;
+	private static final int BACKEND_PORT = 5001;
 
 	@Bound
 	UserAuthInstanceTemplate template;
@@ -33,20 +38,22 @@ public class UserAuthServiceController extends OpsTreeBase implements LinkTarget
 	@Bound
 	UserAuthService model;
 
+	@Inject
+	HttpManager loadBalancing;
+
 	@Handler
 	public void handler() {
 	}
 
 	@Override
 	protected void addChildren() throws OpsException {
-		int port = PORT;
 
 		String dnsName = model.dnsName;
 
 		InstanceBuilder vm;
 		{
 			vm = InstanceBuilder.build(dnsName, this, model.getTags());
-			vm.publicPorts.add(port);
+			// vm.publicPorts.add(port);
 			vm.hostPolicy.configureCluster(template.getPlacementKey());
 
 			// TODO: This needs to be configurable (?)
@@ -66,13 +73,16 @@ public class UserAuthServiceController extends OpsTreeBase implements LinkTarget
 		{
 			PublicEndpoint endpoint = vm.addChild(PublicEndpoint.class);
 			// endpoint.network = null;
-			endpoint.publicPort = port;
-			endpoint.backendPort = port;
-			endpoint.dnsName = dnsName;
+			endpoint.publicPort = BACKEND_PORT;
+			endpoint.backendPort = BACKEND_PORT;
+			// endpoint.dnsName = dnsName;
+			endpoint.transport = Transport.Ipv6;
 
 			endpoint.tagItem = model.getKey();
 			endpoint.parentItem = model.getKey();
 		}
+
+		loadBalancing.addHttpSite(this, model, model.dnsName, template.getSslKeyPath(), SslMode.Tunnel);
 	}
 
 	@Override
@@ -81,7 +91,7 @@ public class UserAuthServiceController extends OpsTreeBase implements LinkTarget
 
 		List<String> userAuthKeys = Lists.newArrayList();
 
-		String baseUrl = "https://" + model.dnsName + ":5001/";
+		String baseUrl = "https://" + model.dnsName + "/";
 
 		userAuthKeys.addAll(Tag.PUBLIC_KEY_SIG.find(model));
 		Collections.sort(userAuthKeys); // Keep it stable
