@@ -12,6 +12,7 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.UniqueTag;
 import org.platformlayer.ops.firewall.Transport;
 import org.platformlayer.ops.http.HttpManager;
+import org.platformlayer.ops.http.HttpManager.SslMode;
 import org.platformlayer.ops.networks.HasPorts;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.ops.tree.OwnedItem;
@@ -74,7 +75,7 @@ public class AppController extends OpsTreeBase implements HasPorts {
 	protected void addChildren() throws OpsException {
 		addChild(JettyChildServer.class);
 
-		loadBalancing.addHttpSite(this, model, model.dnsName, null);
+		loadBalancing.addHttpSite(this, model, model.dnsName, null, SslMode.Terminate);
 	}
 
 	@Override

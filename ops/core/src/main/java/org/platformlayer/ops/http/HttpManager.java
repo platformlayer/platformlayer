@@ -7,6 +7,23 @@ import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.ops.tree.OwnedItem;
 
 public interface HttpManager {
-	OwnedItem<?> addHttpSite(OpsTreeBase parent, ItemBase model, String dnsName, PlatformLayerKey sslKey)
-			throws OpsException;
+	public enum SslMode {
+		/**
+		 * Decrypt SSL on the load balancer
+		 */
+		Terminate,
+
+		/**
+		 * Port-forward SSL to the endpoint
+		 */
+		Tunnel,
+
+		/**
+		 * Don't allow SSL
+		 */
+		BlockSsl
+	}
+
+	OwnedItem<?> addHttpSite(OpsTreeBase parent, ItemBase model, String dnsName, PlatformLayerKey sslKey,
+			SslMode sslMode) throws OpsException;
 }

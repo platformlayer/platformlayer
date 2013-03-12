@@ -16,6 +16,7 @@ import org.platformlayer.ops.firewall.Transport;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.http.HttpBackend;
 import org.platformlayer.ops.http.HttpManager;
+import org.platformlayer.ops.http.HttpManager.SslMode;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.networks.PublicEndpoint;
@@ -80,19 +81,20 @@ public class PlatformLayerServiceController extends OpsTreeBase implements HttpB
 			// endpoint.network = null;
 			endpoint.publicPort = port;
 			endpoint.backendPort = port;
-			endpoint.dnsName = dnsName;
 
 			endpoint.tagItem = model.getKey();
 			endpoint.parentItem = model.getKey();
 
 			if (model.transport != null) {
 				endpoint.transport = EnumUtils.valueOfCaseInsensitive(Transport.class, model.transport);
+			} else {
+				endpoint.transport = Transport.Ipv6;
 			}
 
 			vm.addChild(endpoint);
 		}
 
-		loadBalancing.addHttpSite(this, model, model.dnsName, template.getSslKeyPath());
+		loadBalancing.addHttpSite(this, model, model.dnsName, template.getSslKeyPath(), SslMode.Terminate);
 	}
 
 	@Override
