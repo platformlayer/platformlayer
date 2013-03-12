@@ -3,12 +3,9 @@ package org.platformlayer.service.jetty.ops;
 import java.net.URI;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
-import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.http.HttpBackend;
 import org.platformlayer.ops.http.HttpBackends;
 import org.platformlayer.ops.instances.InstanceBuilder;
@@ -31,9 +28,6 @@ public class JettyServiceController extends OpsTreeBase implements HasPorts, Htt
 
 	@Bound
 	JettyService model;
-
-	@Inject
-	InstanceHelpers instances;
 
 	@Handler
 	public void doOperation() {

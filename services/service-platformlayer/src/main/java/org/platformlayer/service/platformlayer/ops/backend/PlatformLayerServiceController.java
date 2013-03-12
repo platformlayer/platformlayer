@@ -9,7 +9,6 @@ import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.firewall.Transport;
-import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.http.HttpBackend;
 import org.platformlayer.ops.http.HttpBackends;
 import org.platformlayer.ops.http.HttpManager;
@@ -35,9 +34,6 @@ public class PlatformLayerServiceController extends OpsTreeBase implements HttpB
 
 	@Inject
 	HttpManager loadBalancing;
-
-	@Inject
-	InstanceHelpers instances;
 
 	@Handler
 	public void handler() {
