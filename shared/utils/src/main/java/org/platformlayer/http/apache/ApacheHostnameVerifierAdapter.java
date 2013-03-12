@@ -9,8 +9,12 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 
 import org.apache.http.conn.ssl.X509HostnameVerifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ApacheHostnameVerifierAdapter implements X509HostnameVerifier {
+	private static final Logger log = LoggerFactory.getLogger(ApacheHostnameVerifierAdapter.class);
+
 	final HostnameVerifier hostnameVerifier;
 
 	public ApacheHostnameVerifierAdapter(HostnameVerifier hostnameVerifier) {
@@ -23,8 +27,15 @@ public class ApacheHostnameVerifierAdapter implements X509HostnameVerifier {
 	}
 
 	@Override
-	public void verify(String host, SSLSocket ssl) throws IOException {
-		SSLSession session = ssl.getSession();
+	public void verify(String host, SSLSocket socket) throws IOException {
+		if (socket instanceof sun.security.ssl.SSLSocketImpl) {
+			log.debug("Setting SNI host=" + host);
+			((sun.security.ssl.SSLSocketImpl) socket).setHost(host);
+		} else {
+			log.warn("Socket of unexpected type; can't set SNI: " + socket.getClass());
+		}
+
+		SSLSession session = socket.getSession();
 		delegateVerification(host, session);
 	}
 

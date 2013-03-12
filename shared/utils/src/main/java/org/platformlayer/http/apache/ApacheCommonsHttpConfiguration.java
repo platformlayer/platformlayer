@@ -54,6 +54,9 @@ public class ApacheCommonsHttpConfiguration implements HttpConfiguration {
 				X509HostnameVerifier apacheHostnameVerifier = null;
 				if (sslConfiguration.getHostnameVerifier() != null) {
 					apacheHostnameVerifier = new ApacheHostnameVerifierAdapter(sslConfiguration.getHostnameVerifier());
+				} else {
+					apacheHostnameVerifier = new ApacheHostnameVerifierAdapter(
+							SSLSocketFactory.BROWSER_COMPATIBLE_HOSTNAME_VERIFIER);
 				}
 				schemeSocketFactory = new SSLSocketFactory(sslSocketFactory, apacheHostnameVerifier);
 			} catch (GeneralSecurityException e) {
