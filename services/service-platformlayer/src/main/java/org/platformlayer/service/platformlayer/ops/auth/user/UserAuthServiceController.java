@@ -86,7 +86,7 @@ public class UserAuthServiceController extends OpsTreeBase implements LinkTarget
 			endpoint.parentItem = model.getKey();
 		}
 
-		loadBalancing.addHttpSite(this, model, model.dnsName, template.getSslKeyPath(), SslMode.Tunnel);
+		loadBalancing.addHttpSite(this, model, model.dnsName, template.getSslKeyPath(), SslMode.Terminate);
 	}
 
 	@Override
