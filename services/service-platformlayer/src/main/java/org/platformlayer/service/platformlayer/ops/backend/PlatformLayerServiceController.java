@@ -85,7 +85,9 @@ public class PlatformLayerServiceController extends OpsTreeBase implements HttpB
 			vm.addChild(endpoint);
 		}
 
-		loadBalancing.addHttpSite(this, model, model.dnsName, template.getSslKeyPath(), SslMode.Terminate);
+		if (model.dnsName != null) {
+			loadBalancing.addHttpSite(this, model, model.dnsName, template.getSslKeyPath(), SslMode.Terminate);
+		}
 	}
 
 	@Override
