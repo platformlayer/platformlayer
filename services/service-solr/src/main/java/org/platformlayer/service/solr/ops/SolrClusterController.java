@@ -8,9 +8,9 @@ import org.platformlayer.Filter;
 import org.platformlayer.TagFilter;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
+import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.Machine;
-import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.UniqueTag;
 import org.platformlayer.ops.helpers.InstanceHelpers;
@@ -35,6 +35,9 @@ public class SolrClusterController extends OpsTreeBase implements MachineCluster
 
 	@Inject
 	InstanceHelpers instances;
+
+	@Bound
+	SolrCluster model;
 
 	@Handler
 	public void handler() throws OpsException {
@@ -64,28 +67,23 @@ public class SolrClusterController extends OpsTreeBase implements MachineCluster
 
 	@Override
 	protected void addChildren() throws OpsException {
-		SolrCluster model = OpsContext.get().getInstance(SolrCluster.class);
-
 		int clusterSize = 1;
 		for (int i = 0; i < clusterSize; i++) {
-			SolrChildServer childServer = injected(SolrChildServer.class);
+			SolrChildServer childServer = addChild(SolrChildServer.class);
 			childServer.cluster = model;
 			childServer.clusterId = String.valueOf(i);
-			addChild(childServer);
 		}
 
 		{
-			TagFromChildren tagger = injected(TagFromChildren.class);
+			TagFromChildren tagger = addChild(TagFromChildren.class);
 			tagger.parentItem = model;
 			tagger.parentController = this;
 			tagger.ownedItemType = SolrChildServer.class;
-			addChild(tagger);
 		}
 	}
 
 	@Override
-	public List<Machine> getMachines(Object modelObject, boolean required) throws OpsException {
-		SolrCluster model = (SolrCluster) modelObject;
+	public List<Machine> getMachines(boolean required) throws OpsException {
 		Filter parentFilter = TagFilter.byTag(Tag.buildParentTag(model.getKey()));
 
 		List<Machine> machines = Lists.newArrayList();

@@ -135,12 +135,12 @@ public class InstanceHelpers {
 	public List<Machine> getMachines(ItemBase item, boolean required) throws OpsException {
 		Class<? extends ItemBase> javaClass = item.getClass();
 		ModelClass<?> modelClass = serviceProviderDictionary.getModelClass(javaClass);
-		Object controller = modelClass.getProvider().getController(javaClass);
+		Object controller = modelClass.getProvider().getController(item);
 
 		// TODO: Should we just recurse down through children?
 		if (controller instanceof MachineCluster) {
 			MachineCluster machineCluster = (MachineCluster) controller;
-			return machineCluster.getMachines(item, required);
+			return machineCluster.getMachines(required);
 		} else {
 			Machine machine = getMachine(item, required);
 			if (machine == null) {

@@ -6,9 +6,9 @@ import javax.inject.Inject;
 
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
+import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.Machine;
-import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.UniqueTag;
 import org.platformlayer.ops.helpers.InstanceHelpers;
@@ -34,13 +34,16 @@ public class ZookeeperClusterController extends OpsTreeBase implements MachineCl
 	@Inject
 	InstanceHelpers instances;
 
+	@Bound
+	ZookeeperCluster model;
+
+	@Inject
+	ZookeeperUtils zookeeper;
+
 	@Handler
 	public void handler() throws OpsException {
 
 	}
-
-	@Inject
-	ZookeeperUtils zookeeper;
 
 	static class ZookeeperChildServer extends OwnedItem<ZookeeperServer> {
 		ZookeeperCluster cluster;
@@ -67,29 +70,23 @@ public class ZookeeperClusterController extends OpsTreeBase implements MachineCl
 
 	@Override
 	protected void addChildren() throws OpsException {
-		ZookeeperCluster model = OpsContext.get().getInstance(ZookeeperCluster.class);
-
 		for (int i = 0; i < model.clusterSize; i++) {
-			ZookeeperChildServer childServer = injected(ZookeeperChildServer.class);
+			ZookeeperChildServer childServer = addChild(ZookeeperChildServer.class);
 			childServer.cluster = model;
 			childServer.clusterId = String.valueOf(i);
-			addChild(childServer);
 		}
 
 		{
-			TagFromChildren tagger = injected(TagFromChildren.class);
+			TagFromChildren tagger = addChild(TagFromChildren.class);
 			tagger.parentItem = model;
 			tagger.parentController = this;
 			tagger.ownedItemType = ZookeeperChildServer.class;
 			tagger.port = ZookeeperConstants.ZK_PUBLIC_PORT;
-			addChild(tagger);
 		}
 	}
 
 	@Override
-	public List<Machine> getMachines(Object modelObject, boolean required) throws OpsException {
-		ZookeeperCluster model = (ZookeeperCluster) modelObject;
-
+	public List<Machine> getMachines(boolean required) throws OpsException {
 		List<Machine> machines = Lists.newArrayList();
 
 		for (ZookeeperServer server : zookeeper.getServers(model)) {

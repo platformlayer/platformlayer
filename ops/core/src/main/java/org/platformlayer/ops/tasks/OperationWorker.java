@@ -30,6 +30,7 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.backups.BackupContext;
 import org.platformlayer.ops.backups.BackupHelpers;
+import org.platformlayer.ops.lock.LockSystem;
 import org.platformlayer.xaas.repository.ManagedItemRepository;
 import org.platformlayer.xaas.services.ServiceProvider;
 import org.slf4j.Logger;
@@ -54,9 +55,13 @@ public class OperationWorker implements Callable<Object> {
 	@Inject
 	BackupHelpers backups;
 
+	@Inject
+	LockSystem locks;
+
 	Object doOperation() throws OpsException {
 		final Action action = activeJob.getAction();
 		final PlatformLayerKey targetItemKey = activeJob.getTargetItemKey();
+
 		RenameThread rename = new RenameThread(action.getClass().getSimpleName() + " " + targetItemKey);
 		try {
 			OpsContextBuilder opsContextBuilder = opsSystem.getInjector().getInstance(OpsContextBuilder.class);

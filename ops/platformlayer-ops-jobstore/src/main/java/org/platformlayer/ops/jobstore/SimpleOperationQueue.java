@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.locks.Lock;
 
 import javax.inject.Inject;
 
@@ -19,16 +20,22 @@ import org.platformlayer.jobs.model.JobState;
 import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsSystem;
+import org.platformlayer.ops.lock.LockSystem;
+import org.platformlayer.ops.lock.Locks;
 import org.platformlayer.ops.log.JobLogger;
 import org.platformlayer.ops.tasks.ActiveJobExecution;
 import org.platformlayer.ops.tasks.JobQueueEntry;
 import org.platformlayer.ops.tasks.OperationWorker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fathomdb.TimeSpan;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class SimpleOperationQueue extends OperationQueueBase {
+	private static final Logger log = LoggerFactory.getLogger(SimpleOperationQueue.class);
+
 	@Inject
 	ExecutorService executorService;
 
@@ -37,6 +44,9 @@ public class SimpleOperationQueue extends OperationQueueBase {
 
 	@Inject
 	JobLogStore jobLogStore;
+
+	@Inject
+	LockSystem lockSystem;
 
 	final PriorityQueue<QueuedJob> queue = new PriorityQueue<QueuedJob>(100, new Comparator<QueuedJob>() {
 		@Override
@@ -55,7 +65,7 @@ public class SimpleOperationQueue extends OperationQueueBase {
 	class QueuedJob implements Callable<Object>, JobQueueEntry {
 		final ProjectAuthorization auth;
 		final JobData jobData;
-		final long timestamp;
+		long timestamp;
 
 		QueuedJob(long timestamp, ProjectAuthorization auth, JobData jobData) {
 			super();
@@ -66,14 +76,34 @@ public class SimpleOperationQueue extends OperationQueueBase {
 
 		@Override
 		public Object call() throws Exception {
-			JobExecutionData execution = createExecution(jobData);
+			String lockKey = jobData.getTargetItemKey().getUrl();
+			Lock lock = lockSystem.getLock(lockKey);
 
-			PersistentActiveJob activeJob = new PersistentActiveJob(SimpleOperationQueue.this, auth, execution);
-			activeJobs.put(execution.jobKey, activeJob);
+			boolean locked = lock.tryLock();
 
-			OperationWorker operationWorker = new OperationWorker(opsSystem, activeJob);
+			if (!locked) {
+				log.debug("Cannot get lock to run job: " + lockKey);
 
-			return operationWorker.call();
+				long retry = System.currentTimeMillis() + 1000;
+				this.timestamp = retry;
+				synchronized (queue) {
+					queue.add(this);
+				}
+				return null;
+			}
+
+			try {
+				JobExecutionData execution = createExecution(jobData);
+
+				PersistentActiveJob activeJob = new PersistentActiveJob(SimpleOperationQueue.this, auth, execution);
+				activeJobs.put(execution.jobKey, activeJob);
+
+				OperationWorker operationWorker = new OperationWorker(opsSystem, activeJob);
+
+				return operationWorker.call();
+			} finally {
+				Locks.unlock(lock);
+			}
 		}
 	}
 
