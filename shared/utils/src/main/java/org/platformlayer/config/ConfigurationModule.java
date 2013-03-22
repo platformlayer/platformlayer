@@ -58,4 +58,8 @@ public class ConfigurationModule extends AbstractModule {
 			}
 		}
 	}
+
+	public ConfigurationImpl getConfiguration() {
+		return configuration;
+	}
 }
