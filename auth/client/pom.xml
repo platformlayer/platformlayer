@@ -18,20 +18,33 @@
         </dependency>
     </dependencies>
 
-
     <build>
         <plugins>
             <!-- Build statically typed bindings to XSD -->
             <plugin>
-                <groupId>org.jvnet.jaxb2.maven2</groupId>
-                <artifactId>maven-jaxb2-plugin</artifactId>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jaxb2-maven-plugin</artifactId>
+                <version>1.5</version>
                 <configuration>
                     <schemaDirectory>src/main/schemas</schemaDirectory>
+                    <outputDirectory>src/generated/xjc</outputDirectory>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.7</version>
                 <executions>
                     <execution>
+                        <phase>process-sources</phase>
+                        <configuration>
+                            <sources>
+                                <source>${basedir}/src/generated/xjc</source>
+                            </sources>
+                        </configuration>
                         <goals>
-                            <goal>generate</goal>
+                            <goal>add-source</goal>
                         </goals>
                     </execution>
                 </executions>
