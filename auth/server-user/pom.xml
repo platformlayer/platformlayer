@@ -42,6 +42,11 @@
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-jdbc</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.fathomdb</groupId>
+            <artifactId>fathomdb-ratelimit</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

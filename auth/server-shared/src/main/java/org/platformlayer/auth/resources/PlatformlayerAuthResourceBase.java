@@ -21,7 +21,6 @@ public class PlatformlayerAuthResourceBase {
 	private static final Logger log = LoggerFactory.getLogger(PlatformlayerAuthResourceBase.class);
 
 	protected static final String AUTH_HEADER = "X-Auth-Token";
-	protected static final TimeSpan TOKEN_VALIDITY = new TimeSpan("1h");
 
 	public static final String JSONP = "application/javascript";
 	public static final String APPLICATION_JSON = javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -34,7 +33,7 @@ public class PlatformlayerAuthResourceBase {
 	HttpHeaders httpHeaders;
 
 	@Context
-	protected HttpServletRequest request;
+	protected HttpServletRequest httpRequest;
 
 	@Inject
 	protected KeystoneUserAuthenticator userAuthenticator;
@@ -59,7 +58,7 @@ public class PlatformlayerAuthResourceBase {
 	}
 
 	protected X509Certificate[] getCertificateChain() {
-		return HttpUtils.getCertificateChain(request);
+		return HttpUtils.getCertificateChain(httpRequest);
 	}
 
 }

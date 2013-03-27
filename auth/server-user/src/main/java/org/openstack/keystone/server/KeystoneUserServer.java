@@ -8,7 +8,7 @@ import javax.inject.Inject;
 
 import org.eclipse.jetty.server.Server;
 import org.openstack.keystone.resources.user.RegisterResource;
-import org.openstack.keystone.resources.user.TokensResource;
+import org.openstack.keystone.resources.user.TokensServlet;
 import org.platformlayer.WellKnownPorts;
 import org.platformlayer.auth.KeystoneJdbcModule;
 import org.platformlayer.auth.keystone.KeystoneOpsUserModule;
@@ -56,8 +56,9 @@ public class KeystoneUserServer {
 				bind(CORSFilter.class).asEagerSingleton();
 				filter("/*").through(CORSFilter.class);
 
-				bind(TokensResource.class);
 				bind(RegisterResource.class);
+
+				serve("/v2.0/tokens").with(TokensServlet.class);
 
 				Map<String, String> params = Maps.newHashMap();
 				params.put(PackagesResourceConfig.PROPERTY_PACKAGES, "org.codehaus.jackson.jaxrs");

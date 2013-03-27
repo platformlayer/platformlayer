@@ -22,6 +22,9 @@ public class RegisterResource extends UserResourceBase {
 	@Inject
 	RegistrationService registrationService;
 
+	@Inject
+	TokenHelpers tokenHelpers;
+	
 	@POST
 	@Produces({ APPLICATION_JSON, APPLICATION_XML })
 	@Consumes({ APPLICATION_JSON, APPLICATION_XML })
@@ -51,7 +54,7 @@ public class RegisterResource extends UserResourceBase {
 			throw new IllegalStateException();
 		}
 
-		response.access = buildAccess(userEntity);
+		response.access = tokenHelpers.buildAccess(userEntity);
 		return response;
 	}
 
