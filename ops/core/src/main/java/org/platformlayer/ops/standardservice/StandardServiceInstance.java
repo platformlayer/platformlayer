@@ -11,6 +11,7 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsProvider;
 import org.platformlayer.ops.crypto.ManagedKeystore;
 import org.platformlayer.ops.filesystem.ManagedDirectory;
+import org.platformlayer.ops.filesystem.TemplatedFile;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.metrics.MetricsInstance;
 import org.platformlayer.ops.metrics.MetricsManager;
@@ -46,6 +47,8 @@ public abstract class StandardServiceInstance extends OpsTreeBase {
 
 		addConfigurationFile(template);
 
+		addLogFile(template);
+
 		addExtraFiles();
 
 		{
@@ -79,6 +82,14 @@ public abstract class StandardServiceInstance extends OpsTreeBase {
 			}
 
 			addExtraKeys(configDir, keystoreFile);
+		}
+	}
+
+	private void addLogFile(StandardTemplateData template) throws OpsException {
+		File logFile = template.getLogConfigurationFile();
+		if (logFile != null) {
+			LogConfigFile conf = addChild(LogConfigFile.class);
+			conf.filePath = logFile;
 		}
 	}
 

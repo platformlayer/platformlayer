@@ -116,6 +116,10 @@ public abstract class StandardTemplateData implements TemplateDataSource {
 		return true;
 	}
 
+	public File getLogConfigurationFile() {
+		return null;
+	}
+
 	// public String getDatabaseName() {
 	// return "main";
 	// }
