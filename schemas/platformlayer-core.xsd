@@ -21,6 +21,8 @@
 
   <xs:element name="jobSchedule" type="tns:jobSchedule"/>
 
+  <xs:element name="links" type="tns:links"/>
+
   <xs:element name="managedItemCollection" type="tns:managedItemCollection"/>
 
   <xs:element name="publicEndpointBase" type="tns:publicEndpointBase"/>
@@ -44,6 +46,23 @@
     </xs:sequence>
   </xs:complexType>
 
+  <xs:complexType name="links">
+    <xs:sequence>
+      <xs:element name="link" type="tns:link" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="link">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" minOccurs="0"/>
+      <xs:element name="target" type="tns:platformLayerKey" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="platformLayerKey">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+
   <xs:complexType name="propertyList">
     <xs:sequence>
       <xs:element name="property" type="tns:property" minOccurs="0" maxOccurs="unbounded"/>
@@ -63,12 +82,9 @@
       <xs:element name="version" type="xs:long"/>
       <xs:element name="state" type="tns:managedItemState" minOccurs="0"/>
       <xs:element ref="tns:tags" minOccurs="0"/>
+      <xs:element ref="tns:links" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
-
-  <xs:simpleType name="platformLayerKey">
-    <xs:restriction base="xs:string"/>
-  </xs:simpleType>
 
   <xs:complexType name="tags">
     <xs:sequence>
@@ -126,6 +142,7 @@
       <xs:extension base="tns:itemBase">
         <xs:sequence>
           <xs:element name="publicPort" type="xs:int"/>
+          <xs:element name="publicPortCluster" type="xs:int" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
           <xs:element name="instance" type="tns:platformLayerKey" minOccurs="0"/>
           <xs:element name="backendPort" type="xs:int"/>
           <xs:element name="transport" type="xs:string" minOccurs="0"/>
@@ -134,11 +151,8 @@
     </xs:complexContent>
   </xs:complexType>
 
-  <xs:complexType name="jobSchedule">
-    <xs:sequence>
-      <xs:element name="base" type="xs:dateTime" minOccurs="0"/>
-      <xs:element name="interval" type="xs:string" minOccurs="0"/>
-    </xs:sequence>
+  <xs:complexType name="hostPolicyTag">
+    <xs:sequence/>
   </xs:complexType>
 
   <xs:complexType name="hostPolicy">
@@ -151,8 +165,11 @@
     </xs:sequence>
   </xs:complexType>
 
-  <xs:complexType name="hostPolicyTag">
-    <xs:sequence/>
+  <xs:complexType name="jobSchedule">
+    <xs:sequence>
+      <xs:element name="base" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="interval" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="managedItemCollection">
