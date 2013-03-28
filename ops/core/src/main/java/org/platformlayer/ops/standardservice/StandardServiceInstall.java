@@ -60,6 +60,11 @@ public abstract class StandardServiceInstall extends OpsTreeBase {
 	protected DownloadFileByHash buildDownload() {
 		StandardTemplateData template = getTemplate();
 
+		String specifier = template.getDownloadSpecifier();
+		if (specifier == null) {
+			return null;
+		}
+
 		// TODO: Auto-update this?? Add JenkinsLatest?
 
 		File zipFile = template.getDistFile();
@@ -67,6 +72,7 @@ public abstract class StandardServiceInstall extends OpsTreeBase {
 		// TODO: CAS / Cache?
 		DownloadFileByHash download = injected(DownloadFileByHash.class);
 		download.filePath = zipFile;
+		download.specifier = specifier;
 
 		return download;
 	}

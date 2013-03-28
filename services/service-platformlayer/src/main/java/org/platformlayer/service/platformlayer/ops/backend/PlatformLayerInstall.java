@@ -20,15 +20,6 @@ public class PlatformLayerInstall extends StandardServiceInstall {
 	}
 
 	@Override
-	protected DownloadFileByHash buildDownload() {
-		DownloadFileByHash download = super.buildDownload();
-
-		download.specifier = "platformlayer:production:platformlayer-xaas-webapp-1.0-SNAPSHOT-bin.tar.gz";
-
-		return download;
-	}
-
-	@Override
 	protected void addChildren() throws OpsException {
 		super.addChildren();
 

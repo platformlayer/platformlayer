@@ -70,4 +70,9 @@ public class UserAuthInstanceTemplate extends CommonAuthTemplateData {
 		return getModel().sslKey;
 	}
 
+	@Override
+	public String getDownloadSpecifier() {
+		return "platformlayer:production:keystone-webapp-user-1.0-SNAPSHOT-bin.tar.gz";
+	}
+
 }

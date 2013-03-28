@@ -66,4 +66,9 @@ public class DnsServerTemplate extends StandardTemplateData {
 	public File getLogConfigurationPath() {
 		return new File(getInstanceDir(), "logback.xml");
 	}
+
+	@Override
+	public String getDownloadSpecifier() {
+		return "http-proxy:promote-production:proxy-0.1-SNAPSHOT-bin.tar.gz";
+	}
 }

@@ -154,4 +154,9 @@ public class PlatformLayerInstanceTemplate extends StandardTemplateData {
 		return getModel().sslKey;
 	}
 
+	@Override
+	public String getDownloadSpecifier() {
+		return "platformlayer:production:platformlayer-xaas-webapp-1.0-SNAPSHOT-bin.tar.gz";
+	}
+
 }

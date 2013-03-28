@@ -66,4 +66,9 @@ public class SystemAuthInstanceTemplate extends CommonAuthTemplateData {
 		return getModel().sslKey;
 	}
 
+	@Override
+	public String getDownloadSpecifier() {
+		return "platformlayer:production:keystone-webapp-admin-1.0-SNAPSHOT-bin.tar.gz";
+	}
+
 }

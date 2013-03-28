@@ -212,4 +212,9 @@ public class ZookeeperInstanceModel extends StandardTemplateData {
 		return getClusterKey().toString();
 	}
 
+	@Override
+	public String getDownloadSpecifier() {
+		return "zookeeper-3.4.5.tar.gz";
+	}
+
 }

@@ -88,7 +88,16 @@ public abstract class StandardTemplateData implements TemplateDataSource {
 	}
 
 	public File getDistFile() {
-		return new File(getInstallDir(), getKey() + ".tar.gz");
+		String extension = ".tar.gz";
+
+		String specifier = getDownloadSpecifier();
+		if (specifier != null) {
+			if (specifier.endsWith(".zip")) {
+				extension = ".zip";
+			}
+		}
+
+		return new File(getInstallDir(), getKey() + extension);
 	}
 
 	public File getWarsPath() {
@@ -119,6 +128,8 @@ public abstract class StandardTemplateData implements TemplateDataSource {
 	public File getLogConfigurationFile() {
 		return null;
 	}
+
+	public abstract String getDownloadSpecifier();
 
 	// public String getDatabaseName() {
 	// return "main";

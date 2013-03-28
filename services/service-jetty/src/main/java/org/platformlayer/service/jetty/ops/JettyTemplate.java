@@ -113,4 +113,9 @@ public class JettyTemplate extends StandardTemplateData {
 		return new File(getInstallDir(), getVersion() + ".tar.gz");
 	}
 
+	@Override
+	public String getDownloadSpecifier() {
+		return "jetty-distribution-7.6.8.v20121106.tar.gz";
+	}
+
 }
