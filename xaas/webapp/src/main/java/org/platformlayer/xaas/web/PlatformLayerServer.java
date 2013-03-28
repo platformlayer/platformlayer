@@ -19,6 +19,9 @@ public class PlatformLayerServer {
 	public static URLClassLoader buildClassLoader(List<File> serviceDirs) {
 		List<URL> urls = new ArrayList<URL>();
 		for (File serviceDirBase : serviceDirs) {
+			if (!serviceDirBase.exists()) {
+				throw new IllegalStateException("Directory not found: " + serviceDirBase);
+			}
 			// for Lists.newArrayList(classLoader.getURLs());
 			for (File serviceDir : serviceDirBase.listFiles()) {
 				if (!serviceDir.isDirectory()) {
