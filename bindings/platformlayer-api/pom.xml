@@ -82,13 +82,6 @@
                     <!-- <args> <arg>-epsiode</arg> <arg>${project.basedir}/src/main/schemas/core/core.episode</arg> 
                         </args> -->
                 </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

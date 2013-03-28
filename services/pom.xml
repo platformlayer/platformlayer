@@ -90,6 +90,7 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jaxb2-maven-plugin</artifactId>
                 <version>1.4</version>
+<!--
                 <executions>
                     <execution>
                         <id>schemagen</id>
@@ -99,6 +100,7 @@
                         </goals>
                     </execution>
                 </executions>
+-->
                 <configuration>
                     <includes>
                         <include>**/model/**/*.java</include>
