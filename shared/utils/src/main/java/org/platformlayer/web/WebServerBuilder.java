@@ -1,5 +1,6 @@
 package org.platformlayer.web;
 
+import java.io.File;
 import java.util.Set;
 
 import org.eclipse.jetty.server.Server;
@@ -15,4 +16,6 @@ public interface WebServerBuilder {
 	void addGuiceContext(String path, Injector injector);
 
 	void addHttpsConnector(int port, Set<SslOption> options) throws Exception;
+
+	void addWar(String key, File file);
 }

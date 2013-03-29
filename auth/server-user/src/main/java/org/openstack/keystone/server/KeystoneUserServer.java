@@ -1,5 +1,6 @@
 package org.openstack.keystone.server;
 
+import java.io.File;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -7,6 +8,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.eclipse.jetty.server.Server;
+import org.openstack.keystone.resources.user.PingResource;
 import org.openstack.keystone.resources.user.RegisterResource;
 import org.openstack.keystone.resources.user.TokensServlet;
 import org.platformlayer.WellKnownPorts;
@@ -21,6 +23,7 @@ import org.platformlayer.web.CORSFilter;
 import org.platformlayer.web.SslOption;
 import org.platformlayer.web.WebServerBuilder;
 
+import com.fathomdb.Configuration;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Guice;
@@ -42,6 +45,9 @@ public class KeystoneUserServer {
 	@Inject
 	Injector injector;
 
+	@Inject
+	Configuration configuration;
+
 	public static void main(String[] args) throws Exception {
 		List<Module> modules = Lists.newArrayList();
 		modules.add(new ConfigurationModule());
@@ -57,6 +63,7 @@ public class KeystoneUserServer {
 				filter("/*").through(CORSFilter.class);
 
 				bind(RegisterResource.class);
+				bind(PingResource.class);
 
 				serve("/v2.0/tokens").with(TokensServlet.class);
 
@@ -77,6 +84,11 @@ public class KeystoneUserServer {
 
 		serverBuilder.addHttpsConnector(port, options);
 		serverBuilder.addGuiceContext("/", injector);
+
+		Map<String, String> wars = configuration.getChildProperties("war.");
+		for (Map.Entry<String, String> war : wars.entrySet()) {
+			serverBuilder.addWar(war.getKey(), new File(war.getValue()));
+		}
 
 		this.jettyServer = serverBuilder.start();
 

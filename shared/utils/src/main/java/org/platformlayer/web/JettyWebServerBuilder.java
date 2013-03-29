@@ -1,5 +1,6 @@
 package org.platformlayer.web;
 
+import java.io.File;
 import java.security.KeyStore;
 import java.util.EnumSet;
 import java.util.Set;
@@ -12,6 +13,7 @@ import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.bio.SocketConnector;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
 import org.eclipse.jetty.servlet.DefaultServlet;
@@ -20,6 +22,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
+import org.eclipse.jetty.webapp.WebAppContext;
 import org.platformlayer.crypto.AcceptAllClientCertificatesTrustManager;
 import org.platformlayer.ops.OpsException;
 
@@ -35,14 +38,19 @@ public class JettyWebServerBuilder implements WebServerBuilder {
 	@Inject(optional = true)
 	EncryptionStore encryptionStore;
 
-	Server server;
+	final Server server;
+
+	final ContextHandlerCollection contexts;
 
 	public JettyWebServerBuilder() {
-		server = new Server();
+		this.server = new Server();
+		this.contexts = new ContextHandlerCollection();
+		this.server.setHandler(contexts);
 	}
 
 	@Override
 	public Server start() throws Exception {
+
 		if (server.getThreadPool() == null) {
 			server.setThreadPool(buildThreadPool());
 		}
@@ -84,7 +92,7 @@ public class JettyWebServerBuilder implements WebServerBuilder {
 		ServletContextHandler context = new ServletContextHandler();
 		context.setContextPath("/");
 
-		server.setHandler(decorateContext(context));
+		contexts.addHandler(decorateContext(context));
 
 		return context;
 	}
@@ -159,6 +167,18 @@ public class JettyWebServerBuilder implements WebServerBuilder {
 		}
 
 		return encryptionStore.getCertificateAndKey("https");
+	}
+
+	@Override
+	public void addWar(String contextPath, File war) {
+		WebAppContext context = new WebAppContext();
+		context.setWar(war.getAbsolutePath());
+		contextPath = "/" + contextPath;
+		context.setContextPath(contextPath);
+
+		context.setInitParameter("org.eclipse.jetty.servlet.Default.dirAllowed", "false");
+
+		contexts.addHandler(context);
 	}
 
 }
