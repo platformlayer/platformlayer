@@ -6,11 +6,13 @@ import java.net.InetAddress;
 import org.platformlayer.choice.ScoreChooser;
 
 public class InetAddressChooser extends ScoreChooser<InetAddress, Integer> {
-	int scoreIpv4;
-	int scoreIpv6;
+	final int scoreIpv4;
+	final int scoreIpv6;
 
-	public InetAddressChooser() {
+	public InetAddressChooser(int scoreIpv4, int scoreIpv6) {
 		super(true);
+		this.scoreIpv4 = scoreIpv4;
+		this.scoreIpv6 = scoreIpv6;
 	}
 
 	@Override
@@ -21,16 +23,12 @@ public class InetAddressChooser extends ScoreChooser<InetAddress, Integer> {
 	}
 
 	public static InetAddressChooser preferIpv4() {
-		InetAddressChooser chooser = new InetAddressChooser();
-		chooser.scoreIpv4 = 100;
-		chooser.scoreIpv6 = 0;
+		InetAddressChooser chooser = new InetAddressChooser(100, 0);
 		return chooser;
 	}
 
 	public static InetAddressChooser preferIpv6() {
-		InetAddressChooser chooser = new InetAddressChooser();
-		chooser.scoreIpv4 = 0;
-		chooser.scoreIpv6 = 100;
+		InetAddressChooser chooser = new InetAddressChooser(0, 100);
 		return chooser;
 	}
 
