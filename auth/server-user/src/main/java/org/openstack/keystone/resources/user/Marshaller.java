@@ -3,6 +3,7 @@ package org.openstack.keystone.resources.user;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
 import javax.inject.Singleton;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -69,8 +70,7 @@ public class Marshaller {
 			}
 		} else {
 			try {
-				JaxbHelper jaxb = JaxbHelper.get(clazz);
-				T t = (T) jaxb.deserializeXmlObject(is, clazz, false);
+				T t = (T) JaxbHelper.deserializeXmlObject(is, clazz, false);
 				return t;
 			} catch (Exception e) {
 				log.info("Error deserializing value", e);
@@ -80,8 +80,7 @@ public class Marshaller {
 
 	}
 
-	public <T> void write(HttpServletRequest httpRequest,
-			HttpServletResponse httpResponse, T response) {
+	public <T> void write(HttpServletRequest httpRequest, HttpServletResponse httpResponse, T response) {
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
@@ -122,8 +121,7 @@ public class Marshaller {
 				jsonMapper.writeValue(baos, response);
 			} catch (Exception e) {
 				log.error("Error serializing value", e);
-				httpResponse
-						.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 				return;
 			}
 		} else {
@@ -133,8 +131,7 @@ public class Marshaller {
 				jaxb.marshal(response, formatted, baos);
 			} catch (Exception e) {
 				log.error("Error serializing value", e);
-				httpResponse
-						.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 				return;
 			}
 		}
@@ -156,8 +153,7 @@ public class Marshaller {
 			log.error("Error flushing data", e);
 			// Try setting an error response
 			try {
-				httpResponse
-						.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			} catch (Exception e2) {
 				log.warn("Unable to set error status", e2);
 			}
