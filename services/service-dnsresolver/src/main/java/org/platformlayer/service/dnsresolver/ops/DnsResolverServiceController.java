@@ -67,7 +67,7 @@ public class DnsResolverServiceController extends OpsTreeBase implements DnsReso
 			return Collections.emptyList();
 		}
 
-		List<InetAddress> addresses = machine.findAddresses(from, 53);
+		List<InetAddress> addresses = machine.getNetworkPoint().findAddresses(from);
 		return addresses;
 	}
 }

@@ -95,7 +95,7 @@ public class SiteTemplateData implements TemplateDataSource {
 			// TODO: We need to register a dependency on the resolved item
 
 			BackendModel model = new BackendModel();
-			model.address = backendMachine.getBestAddress(NetworkPoint.forTargetInContext(), port);
+			model.address = backendMachine.getNetworkPoint().getBestAddress(NetworkPoint.forTargetInContext());
 			model.port = port;
 			resolved.add(model);
 		}

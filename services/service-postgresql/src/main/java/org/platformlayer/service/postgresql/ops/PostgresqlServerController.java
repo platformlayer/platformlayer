@@ -104,7 +104,7 @@ public class PostgresqlServerController extends OpsTreeBase implements DatabaseS
 	public String getJdbcUrl(String databaseName, InetAddressChooser chooser) throws OpsException {
 		Machine itemMachine = instanceHelpers.getMachine(model);
 
-		InetAddress address = itemMachine.getBestAddress(NetworkPoint.forTargetInContext(), 5432, chooser);
+		InetAddress address = itemMachine.getNetworkPoint().getBestAddress(NetworkPoint.forTargetInContext(), chooser);
 		String host = address.getHostAddress();
 		if (InetAddressUtils.isIpv6(address)) {
 			host = "[" + host + "]";

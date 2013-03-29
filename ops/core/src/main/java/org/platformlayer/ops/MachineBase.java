@@ -19,7 +19,7 @@ public abstract class MachineBase extends Machine {
 
 		SshConnection sshConnection = sshContext.getSshConnection(user);
 
-		String address = getBestAddress(NetworkPoint.forMe(), 22);
+		String address = getNetworkPoint().getBestAddress(NetworkPoint.forMe());
 		try {
 			sshConnection.setHost(InetAddress.getByName(address));
 		} catch (UnknownHostException e) {

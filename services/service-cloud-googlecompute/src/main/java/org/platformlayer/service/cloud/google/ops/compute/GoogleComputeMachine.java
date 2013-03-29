@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.api.services.compute.model.Instance;
 import com.google.api.services.compute.model.Operation;
+import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -67,57 +68,6 @@ public class GoogleComputeMachine extends MachineBase {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
-	public List<InetAddress> findAddresses(NetworkPoint src, int destinationPort) {
-		// TODO: Check private networks
-
-		List<InetAddress> addresses = Lists.newArrayList();
-
-		// We assume that private networks can still reach the public internet, so these work for everyone
-		List<String> publicIps = GoogleComputeClient.findPublicIps(instance);
-		for (String ip : publicIps) {
-			// if (Objects.equal("6", ip.getVersion())) {
-			// continue;
-			// }
-
-			if (!Strings.isNullOrEmpty(ip)) {
-				addresses.add(InetAddresses.forString(ip));
-			}
-		}
-
-		// {
-		// String accessIPv4 = server.getAccessIpV4();
-		// if (!Strings.isNullOrEmpty(accessIPv4))
-		// return accessIPv4;
-		// }
-
-		// Addresses addresses = server.getAddresses();
-		// if (addresses != null) {
-		// for (Network network : addresses.getNetworks()) {
-		// String networkId = network.getId();
-		// // TODO: Check private network
-		// for (Ip ip : network.getIps()) {
-		// String ipType = ip.getVersion();
-		// // ipType is "4" or "6".
-		// // TODO: Check
-		// String addr = ip.getAddr();
-		// if (!Strings.isNullOrEmpty(addr))
-		// return addr;
-		// }
-		// }
-		// }
-
-		// String privateNetworkId = src.getPrivateNetworkId();
-		// if (Objects.equal(privateNetworkId, NetworkPoint.PRIVATE_NETWORK_ID)) {
-		// Tags tags = machine.getTags();
-		// for (String address : tags.find(Tag.NETWORK_ADDRESS)) {
-		// return address;
-		// }
-		// }
-
-		return addresses;
-	}
-
 	public List<Tag> buildAddressTags() {
 		List<Tag> tags = Lists.newArrayList();
 
@@ -161,6 +111,65 @@ public class GoogleComputeMachine extends MachineBase {
 
 	public String getServerSelfLink() {
 		return instance.getSelfLink();
+	}
+
+	NetworkPoint networkPoint;
+
+	@Override
+	public NetworkPoint getNetworkPoint() throws OpsException {
+		if (networkPoint == null) {
+			// TODO: Check private networks
+
+			List<InetAddress> addresses = Lists.newArrayList();
+
+			// We assume that private networks can still reach the public internet, so these work for everyone
+			List<String> publicIps = GoogleComputeClient.findPublicIps(instance);
+			for (String ip : publicIps) {
+				// if (Objects.equal("6", ip.getVersion())) {
+				// continue;
+				// }
+
+				if (!Strings.isNullOrEmpty(ip)) {
+					addresses.add(InetAddresses.forString(ip));
+				}
+			}
+
+			// {
+			// String accessIPv4 = server.getAccessIpV4();
+			// if (!Strings.isNullOrEmpty(accessIPv4))
+			// return accessIPv4;
+			// }
+
+			// Addresses addresses = server.getAddresses();
+			// if (addresses != null) {
+			// for (Network network : addresses.getNetworks()) {
+			// String networkId = network.getId();
+			// // TODO: Check private network
+			// for (Ip ip : network.getIps()) {
+			// String ipType = ip.getVersion();
+			// // ipType is "4" or "6".
+			// // TODO: Check
+			// String addr = ip.getAddr();
+			// if (!Strings.isNullOrEmpty(addr))
+			// return addr;
+			// }
+			// }
+			// }
+
+			// String privateNetworkId = src.getPrivateNetworkId();
+			// if (Objects.equal(privateNetworkId, NetworkPoint.PRIVATE_NETWORK_ID)) {
+			// Tags tags = machine.getTags();
+			// for (String address : tags.find(Tag.NETWORK_ADDRESS)) {
+			// return address;
+			// }
+			// }
+
+			if (addresses.size() != 1) {
+				throw new OpsException("Unexpected number of addresses found: " + Joiner.on(",").join(addresses));
+			}
+			networkPoint = NetworkPoint.forAddress(addresses.get(0));
+		}
+		return networkPoint;
 	}
 
 }

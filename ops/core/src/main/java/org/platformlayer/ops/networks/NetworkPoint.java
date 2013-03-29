@@ -5,13 +5,14 @@ import java.net.UnknownHostException;
 import java.util.List;
 import java.util.UUID;
 
-import org.slf4j.*;
 import org.platformlayer.InetAddressChooser;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.machines.InetAddressUtils;
 import org.platformlayer.ops.packages.AsBlock;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
@@ -89,6 +90,17 @@ public class NetworkPoint {
 		return new NetworkPoint(null, null);
 	}
 
+	public static NetworkPoint forAddress(InetAddress address) {
+		String privateNetwork = null;
+		if (!InetAddressUtils.isPublic(address)) {
+			throw new IllegalStateException();
+			// log.warn("Assigning fake private-network id for non-public IP");
+			// // Assign a unique private network
+			// privateNetwork = UUID.randomUUID().toString();
+		}
+		return new NetworkPoint(privateNetwork, address);
+	}
+
 	public static NetworkPoint forPublicHostname(InetAddress address) {
 		String privateNetwork = null;
 		if (!InetAddressUtils.isPublic(address)) {
@@ -137,7 +149,7 @@ public class NetworkPoint {
 		return "NetworkPoint [privateNetworkId=" + privateNetworkId + ", address=" + address.getHostAddress() + "]";
 	}
 
-	public List<InetAddress> findReachableAddresses(NetworkPoint src) {
+	public List<InetAddress> findAddresses(NetworkPoint src) {
 		List<InetAddress> reachables = Lists.newArrayList();
 
 		if (Objects.equal(src.getPrivateNetworkId(), getPrivateNetworkId())) {
@@ -173,6 +185,37 @@ public class NetworkPoint {
 		}
 
 		return 4;
+	}
+
+	public InetAddress findBestAddress(NetworkPoint src, InetAddressChooser chooser) throws OpsException {
+		List<InetAddress> addresses = findAddresses(src);
+		InetAddress address = chooser.choose(addresses);
+		return address;
+	}
+
+	public InetAddress getBestAddress(NetworkPoint src, InetAddressChooser chooser) throws OpsException {
+		InetAddress address = findBestAddress(src, chooser);
+
+		if (address == null) {
+			throw new OpsException("Cannot determine appropriate network address");
+		}
+
+		return address;
+	}
+
+	public String getBestAddress(NetworkPoint src) throws OpsException {
+		InetAddressChooser chooser;
+		if (!src.isPublicAddress()) {
+			chooser = InetAddressChooser.preferIpv6();
+		} else {
+			chooser = InetAddressChooser.preferIpv4();
+		}
+
+		InetAddress address = getBestAddress(src, chooser);
+		if (address == null) {
+			return null;
+		}
+		return address.getHostAddress();
 	}
 
 	@Override

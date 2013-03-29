@@ -61,7 +61,7 @@ public class WordpressTemplateData implements TemplateDataSource {
 			return item.dnsName;
 		} else {
 			Machine itemMachine = instanceHelpers.getMachine(item);
-			return itemMachine.getBestAddress(NetworkPoint.forTargetInContext(), 3306);
+			return itemMachine.getNetworkPoint().getBestAddress(NetworkPoint.forTargetInContext());
 		}
 	}
 

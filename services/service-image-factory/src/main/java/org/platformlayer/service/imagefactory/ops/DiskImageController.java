@@ -675,7 +675,7 @@ public class DiskImageController {
 		try {
 			final NetworkPoint myNetworkPoint = NetworkPoint.forMe();
 
-			List<InetAddress> addresses = machine.findAddresses(myNetworkPoint, 22);
+			List<InetAddress> addresses = machine.getNetworkPoint().findAddresses(myNetworkPoint);
 			if (!addresses.isEmpty()) {
 				return machine;
 			}
@@ -685,7 +685,7 @@ public class DiskImageController {
 				public Machine call() throws Exception {
 					Machine refreshed = cloud.refreshMachine(machine);
 
-					List<InetAddress> addresses = refreshed.findAddresses(myNetworkPoint, 22);
+					List<InetAddress> addresses = refreshed.getNetworkPoint().findAddresses(myNetworkPoint);
 					if (!addresses.isEmpty()) {
 						return refreshed;
 					}
@@ -698,5 +698,4 @@ public class DiskImageController {
 			throw new OpsException("Timeout while waiting for address", e);
 		}
 	}
-
 }

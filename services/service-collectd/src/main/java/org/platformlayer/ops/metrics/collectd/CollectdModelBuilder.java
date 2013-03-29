@@ -1,20 +1,19 @@
 package org.platformlayer.ops.metrics.collectd;
 
 import java.net.InetAddress;
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.platformlayer.InetAddressChooser;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
-import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsSystem;
-import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.networks.NetworkPoint;
+import org.platformlayer.ops.networks.NetworkPoints;
 import org.platformlayer.ops.templates.TemplateDataSource;
 import org.platformlayer.service.collectd.model.CollectdService;
 import org.slf4j.Logger;
@@ -27,10 +26,10 @@ public class CollectdModelBuilder implements TemplateDataSource {
 	PlatformLayerHelpers platformLayer;
 
 	@Inject
-	InstanceHelpers instances;
+	OpsSystem opsSystem;
 
 	@Inject
-	OpsSystem opsSystem;
+	NetworkPoints network;
 
 	@Override
 	public void buildTemplateModel(Map<String, Object> model) throws OpsException {
@@ -50,12 +49,14 @@ public class CollectdModelBuilder implements TemplateDataSource {
 		Iterable<CollectdService> collectdServices = platformLayer.listItems(CollectdService.class);
 		for (CollectdService collectdService : collectdServices) {
 			// TODO: Use DNS name when it works
-			Machine machine = instances.findMachine(collectdService);
-			if (machine != null) {
+
+			NetworkPoint target = network.getNetworkPoint(collectdService);
+
+			if (target != null) {
 				NetworkPoint targetNetworkPoint = NetworkPoint.forTargetInContext();
-				List<InetAddress> addresses = machine.findAddresses(targetNetworkPoint, CollectdCommon.COLLECTD_PORT);
-				if (!addresses.isEmpty()) {
-					return addresses.get(0).getHostAddress();
+				InetAddress address = target.findBestAddress(targetNetworkPoint, InetAddressChooser.preferIpv6());
+				if (address != null) {
+					return address.getHostAddress();
 				}
 			}
 		}

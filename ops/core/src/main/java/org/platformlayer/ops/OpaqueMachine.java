@@ -1,8 +1,5 @@
 package org.platformlayer.ops;
 
-import java.net.InetAddress;
-import java.util.List;
-
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.networks.NetworkPoint;
 
@@ -29,12 +26,12 @@ public class OpaqueMachine extends MachineBase {
 	}
 
 	@Override
-	public List<InetAddress> findAddresses(NetworkPoint src, int destinationPort) {
-		return address.findReachableAddresses(src);
+	public boolean isTerminated() {
+		return false;
 	}
 
 	@Override
-	public boolean isTerminated() {
-		return false;
+	public NetworkPoint getNetworkPoint() {
+		return address;
 	}
 }

@@ -102,7 +102,7 @@ public class PlatformLayerFirewallEntry extends OpsTreeBase {
 
 						String sourceCidr = null;
 
-						List<InetAddress> addresses = sourceMachine.findAddresses(targetNetworkPoint, port);
+						List<InetAddress> addresses = sourceMachine.getNetworkPoint().findAddresses(targetNetworkPoint);
 						if (transport == Transport.Ipv4) {
 							Iterables.removeIf(addresses, InetAddressUtils.IS_IPV6);
 

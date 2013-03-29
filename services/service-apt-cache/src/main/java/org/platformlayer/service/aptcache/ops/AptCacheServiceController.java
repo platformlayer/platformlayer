@@ -7,13 +7,13 @@ import javax.inject.Inject;
 
 import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.ops.Handler;
-import org.platformlayer.ops.Machine;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.SimpleFile;
 import org.platformlayer.ops.helpers.InstanceHelpers;
 import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.networks.NetworkPoint;
+import org.platformlayer.ops.networks.NetworkPoints;
 import org.platformlayer.ops.networks.PublicEndpoint;
 import org.platformlayer.ops.packages.PackageDependency;
 import org.platformlayer.ops.proxy.HttpProxyController;
@@ -24,13 +24,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class AptCacheServiceController extends OpsTreeBase implements HttpProxyController {
-
 	private static final Logger log = LoggerFactory.getLogger(AptCacheServiceController.class);
 
 	public static final int PORT = 3128;
 
 	@Inject
 	InstanceHelpers instances;
+
+	@Inject
+	NetworkPoints network;
 
 	@Handler
 	public void doOperation() {
@@ -73,6 +75,7 @@ public class AptCacheServiceController extends OpsTreeBase implements HttpProxyC
 		AptCacheService model = (AptCacheService) modelObject;
 
 		if (model.getState() != ManagedItemState.ACTIVE) {
+			log.info("Cache not active; returning null URL");
 			return null;
 		}
 
@@ -85,12 +88,13 @@ public class AptCacheServiceController extends OpsTreeBase implements HttpProxyC
 		//
 		// {
 		// By IP
-		Machine machine = instances.findMachine(model);
-		if (machine != null) {
-			String address = "http://" + machine.getBestAddress(forNetworkPoint, 3128) + ":3128/";
-			return address;
+		NetworkPoint networkPoint = network.findNetworkPoint(model);
+		if (networkPoint == null) {
+			log.info("Machine not found for cache; returning null URL");
+			return null;
 		}
-		return null;
-	}
 
+		String address = "http://" + networkPoint.getBestAddress(forNetworkPoint) + ":3128/";
+		return address;
+	}
 }

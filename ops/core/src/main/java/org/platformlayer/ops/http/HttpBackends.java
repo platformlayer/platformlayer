@@ -25,7 +25,7 @@ public class HttpBackends {
 		Machine machine = instances.getMachine(model);
 
 		InetAddressChooser chooser = InetAddressChooser.preferIpv6();
-		InetAddress address = machine.getBestAddress(src, port, chooser);
+		InetAddress address = machine.getNetworkPoint().getBestAddress(src, chooser);
 
 		String host = InetAddresses.toAddrString(address);
 

@@ -3,11 +3,14 @@ package org.platformlayer.service.platformlayer.ops.auth.user;
 import java.io.File;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.java.JavaCommandBuilder;
+import org.platformlayer.ops.uses.LinkHelpers;
 import org.platformlayer.service.platformlayer.model.UserAuthService;
 import org.platformlayer.service.platformlayer.ops.auth.CommonAuthTemplateData;
 import org.slf4j.Logger;
@@ -19,6 +22,9 @@ public class UserAuthInstanceTemplate extends CommonAuthTemplateData {
 
 	@Bound
 	UserAuthService model;
+
+	@Inject
+	LinkHelpers links;
 
 	@Override
 	public UserAuthService getModel() {
@@ -49,6 +55,8 @@ public class UserAuthInstanceTemplate extends CommonAuthTemplateData {
 	@Override
 	protected Map<String, String> getConfigurationProperties() throws OpsException {
 		Map<String, String> properties = super.getConfigurationProperties();
+
+		properties.putAll(links.buildLinkTargetProperties(model.links));
 
 		properties.put("auth.user.module", "org.platformlayer.auth.keystone.KeystoneOpsUserModule");
 		properties.put("sharedsecret", getModel().tokenSecret.plaintext());

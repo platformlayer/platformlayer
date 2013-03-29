@@ -40,7 +40,7 @@ public class EnsureFirewallIngress {
 		OpenstackComputeClient openstackComputeClient = cloudContext.getComputeClient(cloud);
 
 		// Find the public address, although the OpenStack firewall may be blocking it
-		publicAddress = machine.getBestAddress(NetworkPoint.forPublicInternet(), model.backendPort);
+		publicAddress = machine.getNetworkPoint().getBestAddress(NetworkPoint.forPublicInternet());
 
 		if (cloudBehaviours.supportsSecurityGroups()) {
 			Server server = machine.getServer();

@@ -29,7 +29,7 @@ public class NginxFrontendDns extends OwnedItem<DnsRecord> {
 
 		Machine machine = instanceHelpers.getMachine(nginxService);
 
-		String address = machine.getBestAddress(NetworkPoint.forPublicInternet(), 0);
+		String address = machine.getNetworkPoint().getBestAddress(NetworkPoint.forPublicInternet());
 
 		DnsRecord record = new DnsRecord();
 		record.setDnsName(nginxFrontend.hostname);

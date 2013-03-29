@@ -65,7 +65,7 @@ public class ZookeeperInstanceModel extends StandardTemplateData {
 			// TODO: What do we do about machines that don't yet have an ip?
 			NetworkPoint targetNetworkPoint = NetworkPoint.forPublicInternet();
 			Machine sourceMachine = instances.getMachine(server);
-			String address = sourceMachine.getBestAddress(targetNetworkPoint, ZookeeperConstants.ZK_SYSTEM_PORT_1);
+			String address = sourceMachine.getNetworkPoint().getBestAddress(targetNetworkPoint);
 
 			model.ip = address;
 

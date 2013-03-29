@@ -34,7 +34,7 @@ public class EnsureFirewallIngress {
 		GoogleComputeClient client = googleComputeClientFactory.getComputeClient(cloud);
 
 		// Find the public address, although the Google Cloud firewall may be blocking it
-		publicAddress = machine.getBestAddress(NetworkPoint.forPublicInternet(), model.backendPort);
+		publicAddress = machine.getNetworkPoint().getBestAddress(NetworkPoint.forPublicInternet());
 
 		String serverLink = machine.getServerSelfLink();
 		List<Firewall> rules = client.getInstanceFirewallRules(serverLink);

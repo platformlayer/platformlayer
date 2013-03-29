@@ -48,7 +48,7 @@ public class PrivateNetworkHelpers {
 
 				Machine machine = instanceHelpers.getMachine(dest, true);
 
-				String address = machine.getBestAddress(src, 0);
+				String address = machine.getNetworkPoint().getBestAddress(src);
 				return address;
 			}
 		};
