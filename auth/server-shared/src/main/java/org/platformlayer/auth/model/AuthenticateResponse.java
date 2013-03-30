@@ -11,6 +11,6 @@ public class AuthenticateResponse {
 
 	public byte[] challenge;
 
-	// For JSON-P
-	public Integer statusCode;
+	// // For JSON-P
+	// public Integer statusCode;
 }

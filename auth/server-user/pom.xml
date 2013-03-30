@@ -1,75 +1,83 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.platformlayer</groupId>
-        <artifactId>keystone-parent</artifactId>
-        <version>1.0-SNAPSHOT</version>
-    </parent>
+	<parent>
+		<groupId>org.platformlayer</groupId>
+		<artifactId>keystone-parent</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
 
-    <artifactId>keystone-webapp-user</artifactId>
-    <name>Keystone :: Server :: User</name>
+	<artifactId>keystone-webapp-user</artifactId>
+	<name>Keystone :: Server :: User</name>
 
-    <dependencies>
-        <dependency>
-            <groupId>postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-        </dependency>
+	<dependencies>
+		<dependency>
+			<groupId>postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+		</dependency>
 
-        <dependency>
-            <groupId>org.platformlayer</groupId>
-            <artifactId>keystone-webapp-shared</artifactId>
-            <version>${version.project}</version>
-        </dependency>
 
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.1</version>
+		</dependency>
 
-        <dependency>
-            <groupId>org.platformlayer</groupId>
-            <artifactId>metrics-client</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>org.platformlayer</groupId>
+			<artifactId>keystone-webapp-shared</artifactId>
+			<version>${version.project}</version>
+		</dependency>
 
-        <dependency>
-            <groupId>com.yammer.metrics</groupId>
-            <artifactId>metrics-jetty</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+		</dependency>
 
-        <dependency>
-            <groupId>org.apache.tomcat</groupId>
-            <artifactId>tomcat-jdbc</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>org.platformlayer</groupId>
+			<artifactId>metrics-client</artifactId>
+		</dependency>
 
-        <dependency>
-            <groupId>com.fathomdb</groupId>
-            <artifactId>fathomdb-ratelimit</artifactId>
-        </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>com.yammer.metrics</groupId>
+			<artifactId>metrics-jetty</artifactId>
+		</dependency>
 
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.3</version>
-                <configuration>
-                    <descriptors>
-                        <descriptor>src/main/assembly/tarfile.xml</descriptor>
-                    </descriptors>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>make-assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-jdbc</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.fathomdb</groupId>
+			<artifactId>fathomdb-templates</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+					<descriptors>
+						<descriptor>src/main/assembly/tarfile.xml</descriptor>
+					</descriptors>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>

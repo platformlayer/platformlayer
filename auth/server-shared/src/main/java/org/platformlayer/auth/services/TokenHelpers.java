@@ -1,4 +1,4 @@
-package org.openstack.keystone.resources.user;
+package org.platformlayer.auth.services;
 
 import java.util.Date;
 
@@ -12,8 +12,6 @@ import org.platformlayer.auth.keystone.AuthenticationSecrets;
 import org.platformlayer.auth.keystone.KeystoneUserAuthenticator;
 import org.platformlayer.auth.model.Access;
 import org.platformlayer.auth.model.Token;
-import org.platformlayer.auth.services.TokenInfo;
-import org.platformlayer.auth.services.TokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,8 +20,7 @@ import com.google.common.collect.Lists;
 
 @Singleton
 public class TokenHelpers {
-	private static final Logger log = LoggerFactory
-			.getLogger(TokenHelpers.class);
+	private static final Logger log = LoggerFactory.getLogger(TokenHelpers.class);
 
 	protected static final TimeSpan TOKEN_VALIDITY = new TimeSpan("1h");
 
@@ -36,7 +33,7 @@ public class TokenHelpers {
 	@Inject
 	KeystoneUserAuthenticator userAuthenticator;
 
-	protected Access buildAccess(UserEntity user) {
+	public Access buildAccess(UserEntity user) {
 		byte[] tokenSecret = authSecrets.buildToken(user.getUserSecret());
 
 		TokenInfo token = buildToken("" + user.getId(), tokenSecret);
@@ -55,8 +52,7 @@ public class TokenHelpers {
 			}
 		} catch (RepositoryException e) {
 			log.warn("Error while listing projects for user: " + user.key, e);
-			throw new IllegalStateException("Error listing projects for user",
-					e);
+			throw new IllegalStateException("Error listing projects for user", e);
 		}
 
 		return access;
@@ -67,8 +63,7 @@ public class TokenHelpers {
 		Date expiration = TOKEN_VALIDITY.addTo(now);
 
 		byte flags = 0;
-		TokenInfo tokenInfo = new TokenInfo(flags, userId, expiration,
-				tokenSecret);
+		TokenInfo tokenInfo = new TokenInfo(flags, userId, expiration, tokenSecret);
 
 		return tokenInfo;
 	}

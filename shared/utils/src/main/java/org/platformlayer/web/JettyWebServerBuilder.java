@@ -171,7 +171,7 @@ public class JettyWebServerBuilder implements WebServerBuilder {
 
 	@Override
 	public void addWar(String contextPath, File war) {
-		WebAppContext context = new WebAppContext();
+		final WebAppContext context = new WebAppContext();
 		context.setWar(war.getAbsolutePath());
 		contextPath = "/" + contextPath;
 		context.setContextPath(contextPath);

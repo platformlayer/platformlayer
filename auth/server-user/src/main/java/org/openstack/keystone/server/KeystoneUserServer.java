@@ -8,30 +8,27 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.eclipse.jetty.server.Server;
-import org.openstack.keystone.resources.user.PingResource;
-import org.openstack.keystone.resources.user.RegisterResource;
-import org.openstack.keystone.resources.user.TokensServlet;
+import org.openstack.keystone.resources.user.UserAuthServletModule;
 import org.platformlayer.WellKnownPorts;
 import org.platformlayer.auth.KeystoneJdbcModule;
 import org.platformlayer.auth.keystone.KeystoneOpsUserModule;
 import org.platformlayer.auth.server.GuiceAuthenticationConfig;
+import org.platformlayer.auth.services.LoginLimits;
+import org.platformlayer.auth.services.LoginService;
 import org.platformlayer.cache.CacheModule;
 import org.platformlayer.config.ConfigurationModule;
+import org.platformlayer.extensions.Extensions;
 import org.platformlayer.metrics.MetricReporter;
 import org.platformlayer.metrics.client.codahale.CodahaleMetricsModule;
-import org.platformlayer.web.CORSFilter;
 import org.platformlayer.web.SslOption;
 import org.platformlayer.web.WebServerBuilder;
 
 import com.fathomdb.Configuration;
+import com.fathomdb.config.ConfigurationImpl;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
-import com.sun.jersey.api.core.PackagesResourceConfig;
-import com.sun.jersey.guice.JerseyServletModule;
-import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 
 public class KeystoneUserServer {
 	private Server jettyServer;
@@ -48,30 +45,27 @@ public class KeystoneUserServer {
 	@Inject
 	Configuration configuration;
 
+	@Inject
+	LoginService loginService;
+
+	@Inject
+	LoginLimits loginLimits;
+
 	public static void main(String[] args) throws Exception {
 		List<Module> modules = Lists.newArrayList();
-		modules.add(new ConfigurationModule());
+
+		ConfigurationModule configurationModule = new ConfigurationModule();
+		modules.add(configurationModule);
+
+		ConfigurationImpl configuration = configurationModule.getConfiguration();
+		Extensions extensions = Extensions.load(configuration);
+
 		modules.add(new CacheModule());
 		modules.add(new GuiceAuthenticationConfig());
 		modules.add(new KeystoneJdbcModule());
 		modules.add(new KeystoneOpsUserModule());
 		modules.add(new CodahaleMetricsModule());
-		modules.add(new JerseyServletModule() {
-			@Override
-			protected void configureServlets() {
-				bind(CORSFilter.class).asEagerSingleton();
-				filter("/*").through(CORSFilter.class);
-
-				bind(RegisterResource.class);
-				bind(PingResource.class);
-
-				serve("/v2.0/tokens").with(TokensServlet.class);
-
-				Map<String, String> params = Maps.newHashMap();
-				params.put(PackagesResourceConfig.PROPERTY_PACKAGES, "org.codehaus.jackson.jaxrs");
-				serve("/*").with(GuiceContainer.class, params);
-			}
-		});
+		modules.add(new UserAuthServletModule(extensions));
 
 		Injector injector = Guice.createInjector(modules);
 

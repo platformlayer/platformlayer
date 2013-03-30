@@ -5,9 +5,9 @@ import java.util.Map;
 
 import org.platformlayer.Scope;
 import org.platformlayer.ScopeFilter;
+import org.platformlayer.extensions.Extensions;
+import org.platformlayer.extensions.HttpConfiguration;
 import org.platformlayer.model.ProjectAuthorization;
-import org.platformlayer.ops.extensions.Extensions;
-import org.platformlayer.ops.extensions.HttpConfiguration;
 import org.platformlayer.web.CORSFilter;
 import org.platformlayer.xaas.web.jaxrs.MetricDataSourceWriter;
 import org.platformlayer.xaas.web.jaxrs.ObjectMapperProvider;
@@ -20,6 +20,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Scopes;
+import com.google.inject.binder.AnnotatedBindingBuilder;
 import com.sun.jersey.api.core.PackagesResourceConfig;
 import com.sun.jersey.guice.JerseyServletModule;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
@@ -51,10 +52,20 @@ public class PlatformLayerServletModule extends JerseyServletModule {
 		bind(ScopeFilter.class).asEagerSingleton();
 		filter("/*").through(ScopeFilter.class);
 
-		extensions.addFilters(new HttpConfiguration() {
+		extensions.addHttpExtensions(new HttpConfiguration() {
 			@Override
 			public FilterKeyBindingBuilder filter(String urlPattern) {
 				return PlatformLayerServletModule.this.filter(urlPattern);
+			}
+
+			@Override
+			public ServletKeyBindingBuilder serve(String urlPattern) {
+				return PlatformLayerServletModule.this.serve(urlPattern);
+			}
+
+			@Override
+			public <T> AnnotatedBindingBuilder<T> bind(Class<T> clazz) {
+				return PlatformLayerServletModule.this.bind(clazz);
 			}
 		});
 

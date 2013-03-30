@@ -12,10 +12,11 @@ import org.platformlayer.auth.UserEntity;
 import org.platformlayer.auth.model.RegistrationRequest;
 import org.platformlayer.auth.model.RegistrationResponse;
 import org.platformlayer.auth.services.RegistrationService;
+import org.platformlayer.auth.services.TokenHelpers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Path("/v2.0/register")
+@Path("/api/register")
 public class RegisterResource extends UserResourceBase {
 	private static final Logger log = LoggerFactory.getLogger(RegisterResource.class);
 
@@ -24,7 +25,7 @@ public class RegisterResource extends UserResourceBase {
 
 	@Inject
 	TokenHelpers tokenHelpers;
-	
+
 	@POST
 	@Produces({ APPLICATION_JSON, APPLICATION_XML })
 	@Consumes({ APPLICATION_JSON, APPLICATION_XML })

@@ -1,4 +1,4 @@
-package org.platformlayer.ops.extensions;
+package org.platformlayer.extensions;
 
 import java.util.List;
 
@@ -45,7 +45,7 @@ public class Extensions {
 				Class<? extends ExtensionModule> extensionClass;
 				try {
 					if (!extension.contains(".")) {
-						extension = "org.platformlayer.ops.extensions." + extension;
+						extension = "org.platformlayer.extensions." + extension;
 					}
 					ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 					extensionClass = (Class<? extends ExtensionModule>) classLoader.loadClass(extension);
@@ -66,9 +66,9 @@ public class Extensions {
 		}
 	}
 
-	public void addFilters(HttpConfiguration http) {
+	public void addHttpExtensions(HttpConfiguration http) {
 		for (ExtensionModule extension : extensions) {
-			extension.addFilters(http);
+			extension.addHttpExtensions(http);
 		}
 	}
 
@@ -79,6 +79,13 @@ public class Extensions {
 	}
 
 	public Injector createInjector(List<Module> modules) {
+		for (ExtensionModule extension : extensions) {
+			List<Module> extraModules = extension.getExtraModules();
+			if (extraModules != null) {
+				modules.addAll(extraModules);
+			}
+		}
+
 		List<Module> overrides = Lists.newArrayList();
 
 		for (ExtensionModule extension : extensions) {
