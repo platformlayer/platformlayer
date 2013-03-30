@@ -56,7 +56,7 @@ public class PlatformLayerAuthenticationClient {
 
 		AuthenticateResponse response;
 		try {
-			response = doSimpleXmlRequest("POST", "tokens", request, AuthenticateResponse.class);
+			response = doSimpleXmlRequest("POST", "api/tokens", request, AuthenticateResponse.class);
 		} catch (RestClientException e) {
 			Integer httpResponseCode = e.getHttpResponseCode();
 			if (httpResponseCode != null && httpResponseCode == 401) {
@@ -98,7 +98,7 @@ public class PlatformLayerAuthenticationClient {
 		for (int i = 0; i < 2; i++) {
 			AuthenticateResponse response;
 			try {
-				RestfulRequest<AuthenticateResponse> httpRequest = httpClient.buildRequest("POST", "tokens",
+				RestfulRequest<AuthenticateResponse> httpRequest = httpClient.buildRequest("POST", "api/tokens",
 						HttpPayload.asXml(request), AuthenticateResponse.class);
 
 				httpRequest.setKeyManager(keyManager);
