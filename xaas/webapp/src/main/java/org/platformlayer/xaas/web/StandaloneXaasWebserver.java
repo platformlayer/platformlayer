@@ -47,6 +47,7 @@ import com.fathomdb.crypto.CertificateAndKey;
 import com.fathomdb.crypto.EncryptionStore;
 import com.fathomdb.crypto.KeyStoreUtils;
 import com.fathomdb.crypto.ssl.SslPolicy;
+import com.fathomdb.discovery.Discovery;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Injector;
@@ -82,9 +83,10 @@ class StandaloneXaasWebserver {
 			// Force GMT
 			TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
+			Discovery discovery = Discovery.build();
 			ConfigurationImpl configuration = ConfigurationImpl.load();
 
-			Extensions extensions = Extensions.load(configuration);
+			Extensions extensions = new Extensions(configuration, discovery);
 
 			List<Module> modules = Lists.newArrayList();
 			modules.add(new NullMetricsModule());

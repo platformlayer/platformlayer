@@ -25,6 +25,7 @@ import org.platformlayer.web.WebServerBuilder;
 
 import com.fathomdb.Configuration;
 import com.fathomdb.config.ConfigurationImpl;
+import com.fathomdb.discovery.Discovery;
 import com.google.common.collect.Lists;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -57,8 +58,10 @@ public class KeystoneUserServer {
 		ConfigurationModule configurationModule = new ConfigurationModule();
 		modules.add(configurationModule);
 
+		Discovery discovery = Discovery.build();
+
 		ConfigurationImpl configuration = configurationModule.getConfiguration();
-		Extensions extensions = Extensions.load(configuration);
+		Extensions extensions = new Extensions(configuration, discovery);
 
 		modules.add(new CacheModule());
 		modules.add(new GuiceAuthenticationConfig());
