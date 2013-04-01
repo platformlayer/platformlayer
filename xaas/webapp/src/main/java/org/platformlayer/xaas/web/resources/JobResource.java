@@ -48,13 +48,8 @@ public class JobResource extends XaasResourceBase {
 
 	@Path("runs/{runId}")
 	public JobExecutionResource getRun(@PathParam("runId") String runId) throws OpsException {
-		JobExecutionData jobExecution = jobRegistry.findExecution(job.getJobKey(), runId);
-		if (jobExecution == null) {
-			raiseNotFound();
-		}
-
 		JobExecutionResource jobExecutionResource = jobExecutionResourceProvider.get();
-		jobExecutionResource.init(jobExecution);
+		jobExecutionResource.init(job, runId);
 		return jobExecutionResource;
 	}
 
