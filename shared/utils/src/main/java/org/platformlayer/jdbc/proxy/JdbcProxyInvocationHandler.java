@@ -49,7 +49,7 @@ public class JdbcProxyInvocationHandler<T> implements InvocationHandler {
 	private Object invokeQuery(Method m, Object[] args) throws SQLException {
 		QueryDescriptor queryDescriptor = QueryDescriptor.getQueryDescriptor(m);
 
-		String sql = queryDescriptor.getSql();
+		SqlWithParameters sql = queryDescriptor.buildSql(args);
 
 		MetricTimer.Context timerContext = null;
 
@@ -64,12 +64,12 @@ public class JdbcProxyInvocationHandler<T> implements InvocationHandler {
 			log.debug("Executing SQL: " + sql);
 
 			if (batchExecute) {
-				ps = jdbcConnection.prepareBatchStatement(sql);
+				ps = jdbcConnection.prepareBatchStatement(sql.getSql());
 			} else {
-				ps = jdbcConnection.prepareStatement(sql);
+				ps = jdbcConnection.prepareStatement(sql.getSql());
 			}
 
-			queryDescriptor.setParameters(ps, args);
+			sql.setParameters(ps);
 
 			if (batchExecute) {
 				ps.addBatch();

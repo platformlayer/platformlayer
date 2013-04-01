@@ -97,7 +97,7 @@ public class JdbcClassProxy<T> {
 				public MethodInfo call() throws Exception {
 					MethodInfo methodInfo = new MethodInfo();
 
-					String sql = query.getSql();
+					String sql = query.getBaseSql();
 
 					MetricKey metricKey = MetricKey.build(interfaceType, sql);
 					methodInfo.timer = metricsSystem.getTimer(metricKey);

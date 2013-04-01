@@ -1,16 +1,15 @@
 package org.platformlayer.jdbc.proxy;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
 
 import org.platformlayer.jdbc.simplejpa.DatabaseNameMapping;
 import org.platformlayer.jdbc.simplejpa.FieldMap;
-import org.platformlayer.shared.EnumWithKey;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
@@ -30,70 +29,28 @@ class QueryDescriptor {
 
 	final boolean batchExecute;
 
+	final List<QueryFilterDescriptor> filters;
+
 	enum QueryType {
 		Manual, AutomaticUpdate, AutomaticInsert
 	}
 
-	private QueryDescriptor(QueryType queryType, String sql, List<Field> parameterMap, boolean batchExecute) {
+	private QueryDescriptor(QueryType queryType, String sql, List<QueryFilterDescriptor> filters,
+			List<Field> parameterMap, boolean batchExecute) {
 		super();
 		this.queryType = queryType;
 		this.sql = sql;
+		this.filters = filters;
 		this.parameterMap = parameterMap;
 		this.batchExecute = batchExecute;
 	}
 
-	private void setParameter(PreparedStatement ps, int i, Object param) throws SQLException {
-		if (param instanceof EnumWithKey) {
-			String key = ((EnumWithKey) param).getKey();
-			ps.setString(i + 1, key);
-		} else if (param instanceof java.util.Date) {
-			java.util.Date date = (java.util.Date) param;
-			Timestamp timestamp = new Timestamp(date.getTime());
-
-			ps.setTimestamp(i + 1, timestamp);
-			// if (!(param instanceof java.sql.Date)) {
-			// ps.setDate(i + 1, (java.util.Date) param);
-			// }
-		} else {
-			ps.setObject(i + 1, param);
-		}
-	}
-
-	public void setParameters(PreparedStatement ps, Object[] args) throws SQLException {
-		if (queryType == QueryType.Manual) {
-			assert parameterMap == null;
-
-			if (args != null) {
-				for (int i = 0; i < args.length; i++) {
-					Object arg = args[i];
-					setParameter(ps, i, args[i]);
-				}
-			}
-		} else {
-			assert parameterMap != null;
-			assert args.length == 1;
-
-			try {
-				int i = 0;
-				for (Field field : parameterMap) {
-					Object param = field.get(args[0]);
-
-					setParameter(ps, i, param);
-
-					i++;
-				}
-			} catch (IllegalAccessException e) {
-				throw new IllegalArgumentException("Error reading field values", e);
-			}
-		}
-	}
-
-	public String getSql() {
+	public String getBaseSql() {
 		return sql;
 	}
 
-	private static QueryDescriptor buildManual(String sql, boolean batchExecute) {
-		return new QueryDescriptor(QueryType.Manual, sql, null, batchExecute);
+	private static QueryDescriptor buildManual(String sql, List<QueryFilterDescriptor> filters, boolean batchExecute) {
+		return new QueryDescriptor(QueryType.Manual, sql, filters, null, batchExecute);
 	}
 
 	private static QueryDescriptor buildAutomaticInsert(FieldMap map, boolean batchExecute) {
@@ -120,7 +77,7 @@ class QueryDescriptor {
 
 		String sql = sb.toString();
 
-		return new QueryDescriptor(QueryType.AutomaticInsert, sql, parameterMap, batchExecute);
+		return new QueryDescriptor(QueryType.AutomaticInsert, sql, null, parameterMap, batchExecute);
 	}
 
 	private static QueryDescriptor buildAutomaticUpdate(FieldMap map, boolean batchExecute) {
@@ -168,7 +125,7 @@ class QueryDescriptor {
 
 		String sql = sb.toString();
 
-		return new QueryDescriptor(QueryType.AutomaticUpdate, sql, parameterMap, batchExecute);
+		return new QueryDescriptor(QueryType.AutomaticUpdate, sql, null, parameterMap, batchExecute);
 	}
 
 	public static QueryDescriptor getQueryDescriptor(Method m) {
@@ -196,13 +153,31 @@ class QueryDescriptor {
 			queryType = QueryType.AutomaticUpdate;
 		}
 
+		List<QueryFilterDescriptor> filters = Lists.newArrayList();
+		Annotation[][] parameterAnnotationsArray = m.getParameterAnnotations();
+		for (int i = 0; i < parameterAnnotationsArray.length; i++) {
+			Annotation[] annotations = parameterAnnotationsArray[i];
+			if (annotations == null || annotations.length == 0)
+				continue;
+
+			for (Annotation annotation : annotations) {
+				if (annotation.annotationType().equals(QueryFilter.class)) {
+					QueryFilterDescriptor filter = new QueryFilterDescriptor(i, (QueryFilter) annotation);
+					filters.add(filter);
+				}
+			}
+		}
 		FieldMap fieldMap = null;
 
 		BatchExecute batchExecuteAnnotation = m.getAnnotation(BatchExecute.class);
 		boolean batchExecute = batchExecuteAnnotation != null;
 		if (queryType == QueryType.Manual) {
-			queryDescriptor = QueryDescriptor.buildManual(sql, batchExecute);
+			queryDescriptor = QueryDescriptor.buildManual(sql, filters, batchExecute);
 		} else {
+			if (!filters.isEmpty()) {
+				throw new IllegalArgumentException("Filters not supported on automatic query");
+			}
+
 			Class<?>[] parameterTypes = m.getParameterTypes();
 			if (parameterTypes.length != 1) {
 				throw new IllegalArgumentException("Expected exactly one argument for automatic query");
@@ -237,5 +212,108 @@ class QueryDescriptor {
 
 	public boolean isBatchExecute() {
 		return batchExecute;
+	}
+
+	public SqlWithParameters buildSql(Object[] args) throws SQLException {
+		SqlWithParameters sqlBuilder = new SqlWithParameters();
+
+		// TODO: We could pre-compute this at construction
+		BitSet mappedParameters = new BitSet();
+		if (this.filters != null) {
+			for (QueryFilterDescriptor filter : this.filters) {
+				mappedParameters.set(filter.paramIndex);
+			}
+		}
+		if (queryType == QueryType.Manual) {
+			assert parameterMap == null;
+
+			if (args != null) {
+				for (int i = 0; i < args.length; i++) {
+					if (mappedParameters.get(i)) {
+						continue;
+					}
+
+					Object arg = args[i];
+					sqlBuilder.parameters.add(arg);
+				}
+			}
+		} else {
+			assert parameterMap != null;
+			assert args.length == 1;
+
+			try {
+				for (Field field : parameterMap) {
+					Object param = field.get(args[0]);
+					sqlBuilder.parameters.add(param);
+				}
+			} catch (IllegalAccessException e) {
+				throw new IllegalArgumentException("Error reading field values", e);
+			}
+		}
+
+		if (filters == null || filters.isEmpty()) {
+			sqlBuilder.sql = this.sql;
+			return sqlBuilder;
+		}
+
+		String limit = null;
+		Object limitArg = null;
+
+		List<String> filterSql = Lists.newArrayList();
+		List<Object> filterParameters = Lists.newArrayList();
+
+		for (QueryFilterDescriptor filter : filters) {
+			Object arg = args[filter.paramIndex];
+			if (filter.isLimit()) {
+				if (arg == null)
+					continue;
+				limit = "LIMIT ?";
+				limitArg = arg;
+			} else {
+				if (arg == null)
+					continue;
+
+				filterSql.add(filter.getSql());
+				filterParameters.add(arg);
+			}
+		}
+
+		StringBuilder sb = new StringBuilder();
+
+		if (!filterSql.isEmpty()) {
+			String normalized = sql.toLowerCase();
+			int whereIndex = normalized.indexOf(" where ");
+			if (whereIndex != -1) {
+				String tail = sql.substring(whereIndex + " where ".length());
+				String head = sql.substring(0, whereIndex);
+
+				sb.append(head);
+				sb.append(" WHERE (( ");
+				sb.append(tail);
+				sb.append(" ) AND ( ");
+			} else {
+				sb.append(this.sql);
+				sb.append(" WHERE ( ( ");
+			}
+
+			for (int i = 0; i < filterSql.size(); i++) {
+				if (i != 0) {
+					sb.append(" ) AND ( ");
+				}
+				sb.append(filterSql.get(i));
+				sqlBuilder.parameters.add(filterParameters.get(i));
+			}
+
+			sb.append(" ) ) ");
+		}
+
+		// Limit must come at the end
+		if (limit != null) {
+			sb.append(" LIMIT ?");
+			sqlBuilder.parameters.add(limitArg);
+		}
+
+		sqlBuilder.sql = sb.toString();
+		return sqlBuilder;
 	}
 }
