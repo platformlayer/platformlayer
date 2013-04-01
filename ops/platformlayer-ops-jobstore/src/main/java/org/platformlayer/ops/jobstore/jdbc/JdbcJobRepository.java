@@ -76,9 +76,9 @@ public class JdbcJobRepository implements JobRepository {
 		@Query("SELECT * FROM job_execution WHERE project=? and job_id=? and id=?")
 		JobExecutionEntity findExecution(int projectId, String jobId, String executionId) throws SQLException;
 
-		@Query("UPDATE job_execution SET ended_at=?, state=? WHERE project=? and job_id=? and id=?")
-		int updateExecution(Date endDate, JobState state, int projectId, String jobId, String executionId)
-				throws SQLException;
+		@Query("UPDATE job_execution SET log_cookie=?, ended_at=?, state=? WHERE project=? and job_id=? and id=?")
+		int updateExecution(String logCookie, Date endDate, JobState state, int projectId, String jobId,
+				String executionId) throws SQLException;
 
 		@Query(value = Query.AUTOMATIC_INSERT)
 		int insert(JobExecutionEntity entity) throws SQLException;
@@ -274,6 +274,7 @@ public class JdbcJobRepository implements JobRepository {
 		data.state = execution.state;
 		data.executionId = execution.executionId;
 		data.jobKey = jobKey;
+		data.logCookie = execution.logCookie;
 		return data;
 	}
 
@@ -335,14 +336,15 @@ public class JdbcJobRepository implements JobRepository {
 
 	@Override
 	@JdbcTransaction
-	public void recordJobEnd(PlatformLayerKey jobKey, String executionId, Date endedAt, JobState state)
+	public void recordJobEnd(PlatformLayerKey jobKey, String executionId, Date endedAt, JobState state, String logCookie)
 			throws RepositoryException {
 		DbHelper db = new DbHelper();
 		try {
 			ProjectId projectId = jobKey.getProject();
 			String jobId = jobKey.getItemIdString();
 
-			int updateCount = db.queries.updateExecution(endedAt, state, db.mapToValue(projectId), jobId, executionId);
+			int updateCount = db.queries.updateExecution(logCookie, endedAt, state, db.mapToValue(projectId), jobId,
+					executionId);
 
 			if (updateCount != 1) {
 				throw new RepositoryException("Unexpected number of rows updated");

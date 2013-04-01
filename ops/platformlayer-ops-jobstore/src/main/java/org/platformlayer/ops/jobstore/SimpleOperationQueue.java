@@ -200,8 +200,8 @@ public class SimpleOperationQueue extends OperationQueueBase {
 		// }
 
 		try {
-			jobLogStore.saveJobLog(jobKey, executionId, startTime, logger);
-			jobRepository.recordJobEnd(jobKey, executionId, endTime, state);
+			String logCookie = jobLogStore.saveJobLog(jobKey, executionId, startTime, logger);
+			jobRepository.recordJobEnd(jobKey, executionId, endTime, state, logCookie);
 		} catch (RepositoryException e) {
 			throw new OpsException("Error writing job to repository", e);
 		} catch (Exception e) {

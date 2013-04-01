@@ -31,4 +31,8 @@ public class JobExecutionEntity {
 
 	@Column(name = "ended_at")
 	public Date endedAt;
+
+	@Column(name = "log_cookie")
+	public String logCookie;
+
 }

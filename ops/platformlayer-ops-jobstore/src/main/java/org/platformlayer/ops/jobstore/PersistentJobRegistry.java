@@ -119,7 +119,6 @@ public class PersistentJobRegistry implements JobRegistry {
 
 	@Override
 	public JobLog getJobLog(PlatformLayerKey jobKey, String executionId, int logSkip) throws OpsException {
-
 		JobExecutionData execution = findExecution(jobKey, executionId);
 
 		Date startedAt = execution.getStartedAt();
@@ -134,7 +133,8 @@ public class PersistentJobRegistry implements JobRegistry {
 		}
 
 		try {
-			JobLog log = jobLogStore.getJobLog(startedAt, jobKey, executionId, logSkip);
+			String cookie = execution.logCookie;
+			JobLog log = jobLogStore.getJobLog(startedAt, jobKey, executionId, cookie, logSkip);
 			if (log != null) {
 				log.execution = execution;
 			}

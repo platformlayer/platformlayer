@@ -21,7 +21,7 @@ public interface JobRepository {
 
 	JobData findJob(PlatformLayerKey jobKey) throws RepositoryException;
 
-	void recordJobEnd(PlatformLayerKey jobKey, String executionId, Date endTime, JobState state)
+	void recordJobEnd(PlatformLayerKey jobKey, String executionId, Date endTime, JobState state, String logCookie)
 			throws RepositoryException;
 
 	String insertExecution(PlatformLayerKey jobKey, Date startedAt) throws RepositoryException;

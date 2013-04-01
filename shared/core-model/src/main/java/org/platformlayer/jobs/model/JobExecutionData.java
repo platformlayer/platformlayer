@@ -22,6 +22,8 @@ public class JobExecutionData implements IsJobExecution {
 	// Optional
 	public JobData job;
 
+	public String logCookie;
+
 	public void setState(JobState state) {
 		this.state = state;
 	}
@@ -61,4 +63,5 @@ public class JobExecutionData implements IsJobExecution {
 	public String getJobId() {
 		return jobKey.getItemIdString();
 	}
+
 }
