@@ -78,6 +78,8 @@ public interface PlatformLayerClient {
 	// Jobs
 	public JobDataList listJobs() throws PlatformLayerClientException;
 
+	public JobDataList listJobs(PlatformLayerKey target) throws PlatformLayerClientException;
+
 	public JobLog getJobExecutionLog(String jobId, String executionId) throws PlatformLayerClientException;
 
 	// Metrics

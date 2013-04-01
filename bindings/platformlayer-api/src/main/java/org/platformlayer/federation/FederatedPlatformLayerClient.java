@@ -290,9 +290,20 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	static class ListJobs extends HostFunction<JobDataList> {
+		final PlatformLayerKey target;
+
+		public ListJobs(PlatformLayerKey target) {
+			super();
+			this.target = target;
+		}
+
 		@Override
 		public JobDataList apply(final ChildClient child) throws PlatformLayerClientException {
-			return child.client.listJobs();
+			if (target != null) {
+				return child.client.listJobs();
+			} else {
+				return child.client.listJobs(target);
+			}
 		}
 	}
 
@@ -484,7 +495,12 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 
 	@Override
 	public JobDataList listJobs() throws PlatformLayerClientException {
-		return doListConcatenationJobs(getChildClients(), AddHostToJob.wrap(new ListJobs()));
+		return doListConcatenationJobs(getChildClients(), AddHostToJob.wrap(new ListJobs(null)));
+	}
+
+	@Override
+	public JobDataList listJobs(PlatformLayerKey target) throws PlatformLayerClientException {
+		return doListConcatenationJobs(getChildClients(), AddHostToJob.wrap(new ListJobs(target)));
 	}
 
 	@Override

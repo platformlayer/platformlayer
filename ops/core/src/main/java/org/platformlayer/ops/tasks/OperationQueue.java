@@ -3,7 +3,6 @@ package org.platformlayer.ops.tasks;
 import java.util.List;
 
 import org.platformlayer.core.model.PlatformLayerKey;
-import org.platformlayer.ids.ProjectId;
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobExecutionData;
 import org.platformlayer.jobs.model.JobExecutionList;
@@ -18,9 +17,9 @@ import com.fathomdb.TimeSpan;
 public interface OperationQueue {
 	void submit(ProjectAuthorization auth, JobData jobData) throws OpsException;
 
-	JobExecutionList listRecentExecutions(ProjectId projectId) throws OpsException;
+	JobExecutionList listRecentExecutions(JobQuery query) throws OpsException;
 
-	List<JobData> listRecentJobs(ProjectId projectId) throws OpsException;
+	List<JobData> listRecentJobs(JobQuery query) throws OpsException;
 
 	void jobFinished(JobExecutionData jobExecutionData, JobState state, JobLogger logger) throws OpsException;
 

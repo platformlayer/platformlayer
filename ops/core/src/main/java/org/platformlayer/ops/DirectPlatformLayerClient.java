@@ -165,6 +165,11 @@ public class DirectPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
+	public JobDataList listJobs(PlatformLayerKey target) throws PlatformLayerClientException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public JobLog getJobExecutionLog(String jobId, String executionId) throws PlatformLayerClientException {
 		throw new UnsupportedOperationException();
 	}

@@ -9,8 +9,7 @@ import org.platformlayer.ids.ProjectId;
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobExecutionData;
 import org.platformlayer.jobs.model.JobState;
-
-import com.fathomdb.TimeSpan;
+import org.platformlayer.ops.tasks.JobQuery;
 
 public interface JobRepository {
 	// void recordJob(PlatformLayerKey jobId, PlatformLayerKey itemKey, JobState jobState, JobLog jobLog)
@@ -29,7 +28,7 @@ public interface JobRepository {
 
 	String insertJob(ProjectId projectId, JobData jobData) throws RepositoryException;
 
-	List<JobExecutionData> listRecentExecutions(ProjectId projectId, TimeSpan window) throws RepositoryException;
+	List<JobExecutionData> listRecentExecutions(JobQuery query) throws RepositoryException;
 
-	List<JobData> listRecentJobs(ProjectId projectId, TimeSpan window) throws RepositoryException;
+	List<JobData> listRecentJobs(JobQuery query) throws RepositoryException;
 }

@@ -16,7 +16,6 @@ import com.fathomdb.cli.CliException;
 import com.fathomdb.cli.autocomplete.AutoCompletor;
 import com.fathomdb.cli.autocomplete.SimpleAutoCompleter;
 import com.fathomdb.cli.commands.Ansi;
-import com.google.common.base.Objects;
 
 public class ListJobs extends PlatformLayerCommandRunnerBase {
 	@Argument(index = 0)
@@ -30,23 +29,28 @@ public class ListJobs extends PlatformLayerCommandRunnerBase {
 	public Object runCommand() throws PlatformLayerClientException {
 		PlatformLayerClient client = getPlatformLayerClient();
 
-		JobDataList jobs = client.listJobs();
-
-		if (path != null) {
+		JobDataList jobs;
+		if (path == null) {
+			jobs = client.listJobs();
+		} else {
 			PlatformLayerKey resolved = path.resolve(getContext());
-
-			JobDataList matches = JobDataList.create();
-
-			for (JobData job : jobs.getJobs()) {
-				if (!Objects.equal(job.getTargetItemKey(), resolved)) {
-					continue;
-				}
-
-				matches.jobs.add(job);
-			}
-
-			jobs = matches;
+			jobs = client.listJobs(resolved);
 		}
+		// if (path != null) {
+		// PlatformLayerKey resolved = path.resolve(getContext());
+		//
+		// JobDataList matches = JobDataList.create();
+		//
+		// for (JobData job : jobs.getJobs()) {
+		// if (!Objects.equal(job.getTargetItemKey(), resolved)) {
+		// continue;
+		// }
+		//
+		// matches.jobs.add(job);
+		// }
+		//
+		// jobs = matches;
+		// }
 
 		return jobs;
 	}

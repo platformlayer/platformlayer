@@ -6,16 +6,14 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.platformlayer.RepositoryException;
-import org.platformlayer.ids.ProjectId;
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobExecutionData;
 import org.platformlayer.jobs.model.JobExecutionList;
 import org.platformlayer.jobs.model.JobState;
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.tasks.JobQuery;
 import org.platformlayer.ops.tasks.OperationQueue;
 import org.platformlayer.xaas.repository.JobRepository;
-
-import com.fathomdb.TimeSpan;
 
 public abstract class OperationQueueBase implements OperationQueue {
 	@Inject
@@ -41,12 +39,12 @@ public abstract class OperationQueueBase implements OperationQueue {
 	}
 
 	@Override
-	public JobExecutionList listRecentExecutions(ProjectId projectId) throws OpsException {
+	public JobExecutionList listRecentExecutions(JobQuery query) throws OpsException {
 		JobExecutionList ret = JobExecutionList.create();
 
 		List<JobExecutionData> jobs;
 		try {
-			jobs = jobRepository.listRecentExecutions(projectId, TimeSpan.FIVE_MINUTES);
+			jobs = jobRepository.listRecentExecutions(query);
 		} catch (RepositoryException e) {
 			throw new OpsException("Error querying for jobs", e);
 		}
@@ -62,10 +60,10 @@ public abstract class OperationQueueBase implements OperationQueue {
 	}
 
 	@Override
-	public List<JobData> listRecentJobs(ProjectId projectId) throws OpsException {
+	public List<JobData> listRecentJobs(JobQuery query) throws OpsException {
 		List<JobData> jobs;
 		try {
-			jobs = jobRepository.listRecentJobs(projectId, TimeSpan.FIVE_MINUTES);
+			jobs = jobRepository.listRecentJobs(query);
 		} catch (RepositoryException e) {
 			throw new OpsException("Error querying for jobs", e);
 		}

@@ -21,6 +21,7 @@ import org.platformlayer.model.ProjectAuthorization;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.tasks.ActiveJobExecution;
+import org.platformlayer.ops.tasks.JobQuery;
 import org.platformlayer.ops.tasks.JobRegistry;
 import org.platformlayer.ops.tasks.OperationQueue;
 import org.platformlayer.ops.tasks.OpsContextBuilder;
@@ -73,8 +74,8 @@ public class PersistentJobRegistry implements JobRegistry {
 	}
 
 	@Override
-	public List<JobData> listRecentJobs(ProjectId projectId) throws OpsException {
-		return operationQueue.listRecentJobs(projectId);
+	public List<JobData> listRecentJobs(JobQuery jobQuery) throws OpsException {
+		return operationQueue.listRecentJobs(jobQuery);
 	}
 
 	// @Override
@@ -177,7 +178,7 @@ public class PersistentJobRegistry implements JobRegistry {
 	}
 
 	@Override
-	public JobExecutionList listRecentExecutions(ProjectId projectId) throws OpsException {
-		return operationQueue.listRecentExecutions(projectId);
+	public JobExecutionList listRecentExecutions(JobQuery jobQuery) throws OpsException {
+		return operationQueue.listRecentExecutions(jobQuery);
 	}
 }

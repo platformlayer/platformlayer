@@ -152,6 +152,15 @@ public class ManagedItemResource extends XaasResourceBase {
 		return resource;
 	}
 
+	@Path("jobs")
+	@Consumes({ XML, JSON })
+	@Produces({ XML, JSON })
+	public JobsCollectionResource getJobs() {
+		JobsCollectionResource resource = objectInjector.getInstance(JobsCollectionResource.class);
+		resource.filterTarget = getPlatformLayerKey();
+		return resource;
+	}
+
 	@Path("actions")
 	public ActionsResource getActions() {
 		ActionsResource resource = objectInjector.getInstance(ActionsResource.class);

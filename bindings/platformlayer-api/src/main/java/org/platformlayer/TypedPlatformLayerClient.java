@@ -289,6 +289,11 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 	}
 
 	@Override
+	public JobDataList listJobs(PlatformLayerKey target) throws PlatformLayerClientException {
+		return platformLayerClient.listJobs(target);
+	}
+
+	@Override
 	public MetricDataStream getMetric(MetricQuery query) throws PlatformLayerClientException {
 		return platformLayerClient.getMetric(query);
 	}

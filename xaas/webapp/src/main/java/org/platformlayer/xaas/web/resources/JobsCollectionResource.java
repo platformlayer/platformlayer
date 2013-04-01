@@ -15,6 +15,7 @@ import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobDataList;
 import org.platformlayer.jobs.model.JobExecutionList;
 import org.platformlayer.ops.OpsException;
+import org.platformlayer.ops.tasks.JobQuery;
 import org.platformlayer.ops.tasks.JobRegistry;
 
 import com.google.common.collect.Lists;
@@ -26,11 +27,15 @@ public class JobsCollectionResource extends XaasResourceBase {
 	@Inject
 	Provider<JobResource> jobResourceProvider;
 
+	PlatformLayerKey filterTarget;
+
 	@GET
 	@Path("runs")
 	@Produces({ XML, JSON })
 	public JobExecutionList getExecutions() throws OpsException {
-		JobExecutionList executions = jobRegistry.listRecentExecutions(getProject());
+		JobQuery jobQuery = JobQuery.build(getProject(), filterTarget);
+
+		JobExecutionList executions = jobRegistry.listRecentExecutions(jobQuery);
 		return executions;
 	}
 
@@ -51,7 +56,9 @@ public class JobsCollectionResource extends XaasResourceBase {
 	@GET
 	@Produces({ XML, JSON })
 	public JobDataList getActiveJobs() throws OpsException {
-		List<JobData> jobList = jobRegistry.listRecentJobs(getProject());
+		JobQuery jobQuery = JobQuery.build(getProject(), filterTarget);
+
+		List<JobData> jobList = jobRegistry.listRecentJobs(jobQuery);
 		JobDataList jobs = JobDataList.create();
 		jobs.jobs = Lists.newArrayList();
 		for (JobData jobData : jobList) {

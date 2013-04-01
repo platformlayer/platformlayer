@@ -25,15 +25,17 @@ import org.platformlayer.jdbc.JdbcConnection;
 import org.platformlayer.jdbc.JdbcTransaction;
 import org.platformlayer.jdbc.proxy.Query;
 import org.platformlayer.jdbc.proxy.QueryFactory;
+import org.platformlayer.jdbc.proxy.QueryFilter;
 import org.platformlayer.jdbc.simplejpa.JoinedQueryResult;
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobExecutionData;
 import org.platformlayer.jobs.model.JobState;
+import org.platformlayer.ops.tasks.JobQuery;
 import org.platformlayer.xaas.repository.JobRepository;
 import org.platformlayer.xaas.services.ServiceProviderDictionary;
 
 import com.fathomdb.Casts;
-import com.fathomdb.TimeSpan;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -52,14 +54,20 @@ public class JdbcJobRepository implements JobRepository {
 		@Query("SELECT * FROM job_execution WHERE project=? and job_id=?")
 		List<JobExecutionEntity> listExecutions(int projectId, String jobId) throws SQLException;
 
-		@Query("SELECT * FROM job_execution WHERE project=? and started_at >= (current_timestamp - (? * interval '1 second'))")
-		List<JobExecutionEntity> listRecentExecutions(int projectId, long totalSeconds) throws SQLException;
+		@Query("SELECT * FROM job_execution")
+		List<JobExecutionEntity> listRecentExecutions(@QueryFilter("project=?") int projectId,
+				@QueryFilter("started_at >= (current_timestamp - (? * interval '1 second'))") Long maxAgeSeconds)
+				throws SQLException;
 
-		@Query("SELECT * FROM job WHERE project=? and id IN (SELECT job_id FROM job_execution WHERE project=? and started_at >= (current_timestamp - (? * interval '1 second')))")
-		List<JobEntity> listRecentJobs(int projectId, int projectIdDup, long totalSeconds);
+		@Query("SELECT j.* FROM job j, job_execution je WHERE (j.project = je.project) and (j.id = je.job_id)")
+		JoinedQueryResult listRecentJobs(@QueryFilter("je.project=?") int projectId,
+				@QueryFilter("je.started_at >= (current_timestamp - (? * interval '1 second'))") Long maxAgeSeconds,
+				@QueryFilter("j.target = ?") String target, @QueryFilter(QueryFilter.LIMIT) Integer limit);
 
-		@Query("SELECT * FROM job j, job_execution je WHERE je.project=? and je.started_at >= (current_timestamp - (? * interval '1 second')) AND (j.project = je.project) and (j.id = je.job_id)")
-		JoinedQueryResult listRecentJobsAndExecutions(int projectId, long totalSeconds);
+		@Query("SELECT * FROM job j, job_execution je WHERE (j.project = je.project) and (j.id = je.job_id)")
+		JoinedQueryResult listRecentJobsAndExecutions(@QueryFilter("je.project=?") int projectId,
+				@QueryFilter("je.started_at >= (current_timestamp - (? * interval '1 second'))") Long maxAgeSeconds,
+				@QueryFilter("j.target = ?") String target, @QueryFilter(QueryFilter.LIMIT) Integer limit);
 
 		@Query("SELECT * FROM job WHERE project=? and id=?")
 		JobEntity findJob(int projectId, String jobId) throws SQLException;
@@ -152,15 +160,26 @@ public class JdbcJobRepository implements JobRepository {
 
 	@Override
 	@JdbcTransaction
-	public List<JobExecutionData> listRecentExecutions(ProjectId projectId, TimeSpan window) throws RepositoryException {
+	public List<JobExecutionData> listRecentExecutions(JobQuery jobQuery) throws RepositoryException {
 		DbHelper db = new DbHelper();
 		try {
 			// We use JoinedQueryResult because we have a compound PK (projectId / jobId)
 			// and JPA makes this really complicated.
 
+			ProjectId projectId = jobQuery.project;
+			Preconditions.checkNotNull(projectId);
+			int project = db.mapToValue(projectId);
+
+			Long maxAge = null;
+			if (jobQuery.maxAge != null) {
+				maxAge = jobQuery.maxAge.getTotalSeconds();
+			}
+
+			Integer limit = jobQuery.limit;
+			String filterTarget = jobQuery.target != null ? jobQuery.target.getUrl() : null;
+
 			// TODO: Is it really a compound PK? Should jobId be globally unique?
-			JoinedQueryResult results = db.queries.listRecentJobsAndExecutions(db.mapToValue(projectId),
-					window.getTotalSeconds());
+			JoinedQueryResult results = db.queries.listRecentJobsAndExecutions(project, maxAge, filterTarget, limit);
 
 			List<JobExecutionData> ret = Lists.newArrayList();
 			Map<String, JobData> jobs = Maps.newHashMap();
@@ -194,13 +213,24 @@ public class JdbcJobRepository implements JobRepository {
 
 	@Override
 	@JdbcTransaction
-	public List<JobData> listRecentJobs(ProjectId projectId, TimeSpan window) throws RepositoryException {
+	public List<JobData> listRecentJobs(JobQuery jobQuery) throws RepositoryException {
 		DbHelper db = new DbHelper();
 		try {
+			ProjectId projectId = jobQuery.project;
+			Preconditions.checkNotNull(projectId);
 			int project = db.mapToValue(projectId);
-			List<JobEntity> jobs = db.queries.listRecentJobs(project, project, window.getTotalSeconds());
+
+			Long maxAge = null;
+			if (jobQuery.maxAge != null) {
+				maxAge = jobQuery.maxAge.getTotalSeconds();
+			}
+
+			Integer limit = jobQuery.limit;
+			String filterTarget = jobQuery.target != null ? jobQuery.target.getUrl() : null;
+
+			JoinedQueryResult result = db.queries.listRecentJobs(project, maxAge, filterTarget, limit);
 			List<JobData> ret = Lists.newArrayList();
-			for (JobEntity job : jobs) {
+			for (JobEntity job : result.getAll(JobEntity.class)) {
 				ManagedItemId jobId = new ManagedItemId(job.jobId);
 				PlatformLayerKey jobKey = JobData.buildKey(projectId, jobId);
 				ret.add(mapFromEntity(job, jobKey));

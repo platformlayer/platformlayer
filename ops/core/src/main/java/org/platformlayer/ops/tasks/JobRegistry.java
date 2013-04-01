@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.PlatformLayerKey;
-import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobExecutionData;
@@ -22,12 +21,12 @@ public interface JobRegistry {
 
 	JobData getJob(PlatformLayerKey jobKey) throws OpsException;
 
-	List<JobData> listRecentJobs(ProjectId project) throws OpsException;
+	List<JobData> listRecentJobs(JobQuery jobQuery) throws OpsException;
 
 	JobData enqueueOperation(Action action, ProjectAuthorization projectAuthorization, PlatformLayerKey itemKey)
 			throws OpsException;
 
 	ActiveJobExecution startSystemJob(ServiceType serviceType, ProjectAuthorization authentication);
 
-	JobExecutionList listRecentExecutions(ProjectId project) throws OpsException;
+	JobExecutionList listRecentExecutions(JobQuery jobQuery) throws OpsException;
 }
