@@ -3,6 +3,7 @@ package org.platformlayer.client.cli.commands;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import org.kohsuke.args4j.Argument;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
 import org.platformlayer.jobs.model.JobExecutionData;
@@ -16,8 +17,8 @@ import com.fathomdb.cli.autocomplete.SimpleAutoCompleter;
 import com.fathomdb.cli.commands.Ansi;
 
 public class ListJobExecutions extends PlatformLayerCommandRunnerBase {
-	// @Argument(index = 0)
-	// public ItemPath path;
+	@Argument(index = 0)
+	public String jobId;
 
 	public ListJobExecutions() {
 		super("list", "runs");
@@ -27,25 +28,14 @@ public class ListJobExecutions extends PlatformLayerCommandRunnerBase {
 	public Object runCommand() throws PlatformLayerClientException {
 		PlatformLayerClient client = getPlatformLayerClient();
 
-		JobExecutionList jobs = client.listJobExecutions();
+		JobExecutionList runs;
+		if (jobId == null) {
+			runs = client.listJobExecutions();
+		} else {
+			runs = client.listJobExecutions(jobId);
+		}
 
-		// if (path != null) {
-		// PlatformLayerKey resolved = path.resolve(getContext());
-		//
-		// JobExecutionList matches = JobExecutionList.create();
-		//
-		// for (JobExecutionData run : jobs.getRuns()) {
-		// if (!Objects.equal(run.getJob()..getTargetItemKey(), resolved)) {
-		// continue;
-		// }
-		//
-		// matches.runs.add(run);
-		// }
-		//
-		// jobs = matches;
-		// }
-
-		return jobs;
+		return runs;
 	}
 
 	@Override
