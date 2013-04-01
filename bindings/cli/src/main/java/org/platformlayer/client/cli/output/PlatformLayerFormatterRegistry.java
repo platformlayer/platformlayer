@@ -17,6 +17,7 @@ public class PlatformLayerFormatterRegistry extends FormatterRegistryBase {
 		addFormatter(new MetricDataStreamFormatter());
 		addFormatter(new MetricInfoFormatter());
 		addFormatter(new MetricValueFormatter());
+		addFormatter(new PlatformLayerKeyFormatter());
 	}
 
 }

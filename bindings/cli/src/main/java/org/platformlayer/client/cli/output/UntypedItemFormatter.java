@@ -10,7 +10,6 @@ import org.platformlayer.common.UntypedItem;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.Tags;
-import org.platformlayer.ids.ProjectId;
 import org.platformlayer.xml.XmlHelper;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -20,7 +19,6 @@ import com.fathomdb.cli.CliContext;
 import com.fathomdb.cli.commands.Ansi;
 import com.fathomdb.cli.formatter.SimpleFormatter;
 import com.fathomdb.cli.output.OutputSink;
-import com.google.common.base.Objects;
 import com.google.common.collect.Maps;
 
 @SuppressWarnings("rawtypes")
@@ -50,7 +48,7 @@ public class UntypedItemFormatter extends SimpleFormatter<UntypedItem> {
 		// throw new IllegalArgumentException("Error parsing XML", e);
 		// }
 
-		values.put("key", formatUrl(context, item.getKey()));
+		values.put("key", Utils.formatUrl(context, item.getKey()));
 		values.put("state", item.getState());
 
 		Tags tags = item.getTags();
@@ -82,7 +80,7 @@ public class UntypedItemFormatter extends SimpleFormatter<UntypedItem> {
 			}
 
 			String text = formatCell(node);
-			text = reformatText(context, text);
+			text = Utils.reformatText(context, text);
 			values.put(nodeName, text);
 		}
 
@@ -105,37 +103,11 @@ public class UntypedItemFormatter extends SimpleFormatter<UntypedItem> {
 				sb.append(", ");
 			}
 			String value = tag.getValue();
-			value = reformatText(context, value);
+			value = Utils.reformatText(context, value);
 			sb.append(tag.getKey() + "=" + value);
 		}
 
 		return sb.toString();
-	}
-
-	private String reformatText(PlatformLayerCliContext context, String text) {
-		if (text.startsWith("platform://")) {
-			// This looks like a PlatformLayerKey
-			try {
-				PlatformLayerKey key = PlatformLayerKey.parse(text);
-				text = formatUrl(context, key);
-			} catch (Exception e) {
-				// Ignore
-			}
-		}
-		return text;
-	}
-
-	private String formatUrl(PlatformLayerCliContext context, PlatformLayerKey key) {
-		String text = key.getUrl();
-
-		if (key.getHost() == null) {
-			ProjectId project = context.getProject();
-			if (Objects.equal(project, context.getProject())) {
-				text = "pl:" + key.getItemTypeString() + "/" + key.getItemIdString();
-			}
-		}
-
-		return text;
 	}
 
 	private String formatCell(Node node) {
