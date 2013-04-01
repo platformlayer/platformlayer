@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.platformlayer.jdbc.simplejpa.ResultSetMappersProvider;
 
+import com.fathomdb.Configuration;
 import com.google.inject.Module;
 
 public interface ExtensionModule {
@@ -13,5 +14,5 @@ public interface ExtensionModule {
 
 	Module getOverrideModule();
 
-	List<Module> getExtraModules();
+	List<Module> getExtraModules(Configuration configuration);
 }

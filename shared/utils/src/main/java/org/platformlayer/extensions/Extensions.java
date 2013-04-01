@@ -98,9 +98,9 @@ public class Extensions {
 		}
 	}
 
-	public Injector createInjector(List<Module> modules) {
+	public Injector createInjector(Configuration configuration, List<Module> modules) {
 		for (ExtensionModule extension : extensions) {
-			List<Module> extraModules = extension.getExtraModules();
+			List<Module> extraModules = extension.getExtraModules(configuration);
 			if (extraModules != null) {
 				modules.addAll(extraModules);
 			}

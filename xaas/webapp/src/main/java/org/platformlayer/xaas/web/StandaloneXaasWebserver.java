@@ -97,7 +97,7 @@ class StandaloneXaasWebserver {
 			modules.add(new PlatformLayerServletModule(extensions));
 			modules.add(new PlatformlayerValidationModule());
 
-			Injector injector = extensions.createInjector(modules);
+			Injector injector = extensions.createInjector(configuration, modules);
 
 			ResultSetMappersProvider provider = injector.getInstance(ResultSetMappersProvider.class);
 			provider.addAll(ItemEntity.class, TagEntity.class, SchedulerRecordEntity.class, JobEntity.class,
