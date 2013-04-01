@@ -59,7 +59,8 @@ public class JdbcJobRepository implements JobRepository {
 				@QueryFilter("started_at >= (current_timestamp - (? * interval '1 second'))") Long maxAgeSeconds)
 				throws SQLException;
 
-		@Query("SELECT j.* FROM job j, job_execution je WHERE (j.project = je.project) and (j.id = je.job_id)")
+		// HACK: We have to select je's primary key, other j is duplicated once for each je row
+		@Query("SELECT j.*, je.project, je.id FROM job j, job_execution je WHERE (j.project = je.project) and (j.id = je.job_id)")
 		JoinedQueryResult listRecentJobs(@QueryFilter("je.project=?") int projectId,
 				@QueryFilter("je.started_at >= (current_timestamp - (? * interval '1 second'))") Long maxAgeSeconds,
 				@QueryFilter("j.target = ?") String target, @QueryFilter(QueryFilter.LIMIT) Integer limit);
