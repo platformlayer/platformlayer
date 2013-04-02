@@ -69,9 +69,8 @@ public abstract class JobLogStoreBase implements JobLogStore {
 	}
 
 	protected void serialize(SimpleJobLogger logger, OutputStream os) throws IOException {
-		CodedOutputStream out = null;
-		os = new GZIPOutputStream(os);
-		out = CodedOutputStream.newInstance(os);
+		GZIPOutputStream gzip = new GZIPOutputStream(os);
+		CodedOutputStream out = CodedOutputStream.newInstance(gzip);
 
 		Iterable<JobLogLine> lines = logger.getLogEntries();
 
@@ -102,6 +101,7 @@ public abstract class JobLogStoreBase implements JobLogStore {
 		}
 
 		out.flush();
+		gzip.finish();
 	}
 
 	private void mapToProtobuf(JobLogExceptionInfo exception,
