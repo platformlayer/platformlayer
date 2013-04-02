@@ -16,7 +16,7 @@ import org.platformlayer.ops.tree.OwnedItem;
 public class TagFromChildren {
 	public ItemBase parentItem;
 	public OpsTreeBase parentController;
-	public Class<? extends OwnedItem> ownedItemType;
+	// public Class<? extends OwnedItem> ownedItemType;
 	public Integer port = null;
 
 	@Inject

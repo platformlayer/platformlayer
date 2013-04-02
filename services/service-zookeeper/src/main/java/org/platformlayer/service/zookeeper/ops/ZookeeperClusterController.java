@@ -80,7 +80,7 @@ public class ZookeeperClusterController extends OpsTreeBase implements MachineCl
 			TagFromChildren tagger = addChild(TagFromChildren.class);
 			tagger.parentItem = model;
 			tagger.parentController = this;
-			tagger.ownedItemType = ZookeeperChildServer.class;
+			// tagger.ownedItemType = ZookeeperChildServer.class;
 			tagger.port = ZookeeperConstants.ZK_PUBLIC_PORT;
 		}
 	}

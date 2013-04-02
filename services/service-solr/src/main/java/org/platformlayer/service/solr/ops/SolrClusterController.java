@@ -78,7 +78,7 @@ public class SolrClusterController extends OpsTreeBase implements MachineCluster
 			TagFromChildren tagger = addChild(TagFromChildren.class);
 			tagger.parentItem = model;
 			tagger.parentController = this;
-			tagger.ownedItemType = SolrChildServer.class;
+			// tagger.ownedItemType = SolrChildServer.class;
 		}
 	}
 
