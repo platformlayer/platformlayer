@@ -21,6 +21,14 @@ public class UniqueTag {
 		return Tag.build(Tag.UNIQUE_ID, s);
 	}
 
+	public static Tag build(PlatformLayerKey item, PlatformLayerKey item2, String key) {
+		String s = null;
+		s = append(s, item);
+		s = append(s, item2);
+		s = join(s, key);
+		return Tag.build(Tag.UNIQUE_ID, s);
+	}
+
 	public static Tag build(ItemBase item, ItemBase item2) {
 		String s = null;
 		s = append(s, item);
