@@ -234,7 +234,8 @@ public class JdbcJobRepository implements JobRepository {
 			for (JobEntity job : result.getAll(JobEntity.class)) {
 				ManagedItemId jobId = new ManagedItemId(job.jobId);
 				PlatformLayerKey jobKey = JobData.buildKey(projectId, jobId);
-				ret.add(mapFromEntity(job, jobKey));
+				JobData jobData = mapFromEntity(job, jobKey);
+				ret.add(jobData);
 			}
 			return ret;
 		} catch (SQLException e) {

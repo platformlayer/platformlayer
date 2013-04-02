@@ -77,4 +77,9 @@ public class DirectCloudController extends OpsTreeBase implements MachineProvide
 		return 10;
 	}
 
+	@Override
+	public String toString() {
+		return "DirectCloudController [model=" + model + "]";
+	}
+
 }

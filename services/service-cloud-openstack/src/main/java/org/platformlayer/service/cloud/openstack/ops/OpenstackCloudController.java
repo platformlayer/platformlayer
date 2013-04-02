@@ -97,4 +97,9 @@ public class OpenstackCloudController extends OpsTreeBase implements MachineProv
 
 		return 50;
 	}
+
+	@Override
+	public String toString() {
+		return "OpenstackCloudController [model=" + model + "]";
+	}
 }
