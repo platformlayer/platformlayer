@@ -76,12 +76,24 @@ public abstract class StandardTemplateData implements TemplateDataSource {
 		return null;
 	}
 
-	public ManagedSecretKey findCaSslKey(String alias) throws OpsException {
-		PlatformLayerKey sslKey = getCaPath();
-		if (sslKey == null) {
+	public ManagedSecretKey findCaSignedKey(String alias) throws OpsException {
+		PlatformLayerKey caPath = getCaPath();
+		if (caPath == null) {
 			return null;
 		}
-		return managedSecretKeys.findSslKey(getModel().getKey(), sslKey, alias);
+		return managedSecretKeys.findSslKey(getModel().getKey(), caPath, alias);
+	}
+
+	public ManagedSecretKey findCaKey() throws OpsException {
+		PlatformLayerKey caPath = getCaPath();
+		if (caPath == null) {
+			return null;
+		}
+
+		ItemBase sslKeyItem = (ItemBase) platformLayer.getItem(caPath);
+		ManagedSecretKey key = providers.toInterface(sslKeyItem, ManagedSecretKey.class);
+
+		return key;
 	}
 
 	protected abstract PlatformLayerKey getSslKeyPath() throws OpsException;
@@ -90,7 +102,7 @@ public abstract class StandardTemplateData implements TemplateDataSource {
 		PlatformLayerKey sslKey = getSslKeyPath();
 		if (sslKey == null) {
 			if (getCaPath() != null) {
-				ManagedSecretKey key = findCaSslKey("public");
+				ManagedSecretKey key = findCaSignedKey("public");
 				if (key != null) {
 					return key;
 				}
