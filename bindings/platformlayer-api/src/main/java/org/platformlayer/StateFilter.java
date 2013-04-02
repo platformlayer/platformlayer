@@ -37,4 +37,13 @@ public class StateFilter extends Filter {
 		return new StateFilter(allowStates);
 	}
 
+	public static Filter excludeDeleted(Filter filter) {
+		Filter stateFilter = StateFilter.exclude(ManagedItemState.DELETED);
+		if (filter == null) {
+			return stateFilter;
+		} else {
+			return Filter.and(filter, stateFilter);
+		}
+	}
+
 }

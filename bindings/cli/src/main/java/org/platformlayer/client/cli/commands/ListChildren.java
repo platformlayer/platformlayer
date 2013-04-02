@@ -25,7 +25,8 @@ public class ListChildren extends PlatformLayerCommandRunnerBase {
 		PlatformLayerClient client = getPlatformLayerClient();
 
 		PlatformLayerKey key = path.resolve(getContext());
-		return client.listChildren(key);
+		boolean includeDeleted = true;
+		return client.listChildren(key, includeDeleted);
 	}
 
 	@Override

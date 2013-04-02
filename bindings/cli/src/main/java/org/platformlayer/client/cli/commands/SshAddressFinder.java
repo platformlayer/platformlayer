@@ -55,7 +55,9 @@ public class SshAddressFinder {
 			}
 		}
 
-		for (UntypedItem child : client.listChildren(untypedItem.getKey()).getItems()) {
+		boolean includeDeleted = false;
+
+		for (UntypedItem child : client.listChildren(untypedItem.getKey(), includeDeleted).getItems()) {
 			visit(child);
 		}
 

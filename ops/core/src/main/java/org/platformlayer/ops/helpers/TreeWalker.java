@@ -25,8 +25,10 @@ public class TreeWalker {
 	List<PlatformLayerKey> queue = Lists.newArrayList();
 	Set<PlatformLayerKey> visited = Sets.newHashSet();
 
+	boolean includeDeleted = false;
+
 	protected void visitChildren(PlatformLayerKey parentKey) throws OpsException, OpsException {
-		for (ItemBase child : platformLayer.listChildrenTyped(parentKey)) {
+		for (ItemBase child : platformLayer.listChildrenTyped(parentKey, includeDeleted)) {
 			if (child.getState() == ManagedItemState.DELETED) {
 				// TODO: Push up into listChildren??
 				log.warn("Skipping deleted item: " + child);

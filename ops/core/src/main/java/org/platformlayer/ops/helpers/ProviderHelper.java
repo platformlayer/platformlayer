@@ -101,7 +101,8 @@ public class ProviderHelper {
 			}
 		}
 
-		for (ItemBase item : platformLayer.listChildrenTyped(parent)) {
+		boolean includeDeleted = false;
+		for (ItemBase item : platformLayer.listChildrenTyped(parent, includeDeleted)) {
 			// Object item = platformLayer.promoteToTyped(untypedItem);
 			ModelClass<?> modelClass = modelClasses.get(item.getClass());
 

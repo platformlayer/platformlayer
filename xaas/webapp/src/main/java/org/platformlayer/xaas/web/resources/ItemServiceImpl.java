@@ -259,7 +259,7 @@ public class ItemServiceImpl implements ItemService {
 						throw new IllegalArgumentException("Could not find unique tag");
 					}
 					Filter filter = TagFilter.byTag(uniqueTag);
-					filter = Filter.and(filter, StateFilter.exclude(ManagedItemState.DELETED));
+					filter = StateFilter.excludeDeleted(filter);
 
 					existing = null;
 					List<T> existingList = repository.findAll(modelClass, itemKey.getProject(), fetchTags,

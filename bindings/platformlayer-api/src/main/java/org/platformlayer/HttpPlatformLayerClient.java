@@ -367,8 +367,12 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
-	public UntypedItemCollection listChildren(PlatformLayerKey parent) throws PlatformLayerClientException {
+	public UntypedItemCollection listChildren(PlatformLayerKey parent, boolean includeDeleted)
+			throws PlatformLayerClientException {
 		String relativePath = buildRelativePath(parent) + "/children";
+		if (includeDeleted) {
+			relativePath += "?deleted=1";
+		}
 		String xml = doRequest("GET", relativePath, String.class, Format.XML, null, null);
 
 		return UntypedItemXmlCollection.build(xml);

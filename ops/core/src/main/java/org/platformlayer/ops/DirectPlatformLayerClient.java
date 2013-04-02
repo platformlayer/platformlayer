@@ -12,6 +12,7 @@ import org.platformlayer.PlatformLayerClientBase;
 import org.platformlayer.PlatformLayerClientException;
 import org.platformlayer.PlatformLayerEndpointInfo;
 import org.platformlayer.RepositoryException;
+import org.platformlayer.StateFilter;
 import org.platformlayer.TagFilter;
 import org.platformlayer.TypedItemMapper;
 import org.platformlayer.auth.crypto.SecretProvider;
@@ -114,7 +115,8 @@ public class DirectPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
-	public UntypedItemCollection listChildren(PlatformLayerKey parent) throws PlatformLayerClientException {
+	public UntypedItemCollection listChildren(PlatformLayerKey parent, boolean includeDeleted)
+			throws PlatformLayerClientException {
 		throw new UnsupportedOperationException();
 	}
 
@@ -260,9 +262,12 @@ public class DirectPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
-	public List<ItemBase> listChildrenTyped(PlatformLayerKey parentKey) throws OpsException {
+	public List<ItemBase> listChildrenTyped(PlatformLayerKey parentKey, boolean includeDeleted) throws OpsException {
 		Tag parentTag = Tag.buildParentTag(parentKey);
 		Filter filter = TagFilter.byTag(parentTag);
+		if (!includeDeleted) {
+			filter = StateFilter.excludeDeleted(filter);
+		}
 		List<ItemBase> items = itemService.listAll(auth, filter);
 		return items;
 	}

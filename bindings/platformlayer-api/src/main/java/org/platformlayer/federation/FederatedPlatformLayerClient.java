@@ -239,15 +239,18 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 
 	static class ListChildren extends HostFunction<UntypedItemCollection> {
 		final PlatformLayerKey parent;
+		final boolean includeDeleted;
 
-		public ListChildren(PlatformLayerKey parent) {
+		public ListChildren(PlatformLayerKey parent, boolean includeDeleted) {
+			super();
 			this.parent = parent;
+			this.includeDeleted = includeDeleted;
 		}
 
 		@Override
 		public UntypedItemCollection apply(final ChildClient child) throws PlatformLayerClientException {
 			try {
-				return child.client.listChildren(parent);
+				return child.client.listChildren(parent, includeDeleted);
 			} catch (PlatformLayerClientNotFoundException e) {
 				log.warn("Ignoring not found from federated client on: " + e.getUrl());
 				return UntypedItemCollectionBase.empty();
@@ -811,8 +814,10 @@ public class FederatedPlatformLayerClient extends PlatformLayerClientBase {
 	}
 
 	@Override
-	public UntypedItemCollection listChildren(PlatformLayerKey parent) throws PlatformLayerClientException {
-		return doListConcatenationUntyped(getChildClients(parent), AddHostUntyped.wrap(new ListChildren(parent)));
+	public UntypedItemCollection listChildren(PlatformLayerKey parent, boolean includeDeleted)
+			throws PlatformLayerClientException {
+		return doListConcatenationUntyped(getChildClients(parent),
+				AddHostUntyped.wrap(new ListChildren(parent, includeDeleted)));
 	}
 
 	@Override

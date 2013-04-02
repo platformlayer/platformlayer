@@ -18,6 +18,7 @@ import javax.xml.bind.JAXBException;
 import org.platformlayer.CheckedCallable;
 import org.platformlayer.Filter;
 import org.platformlayer.RepositoryException;
+import org.platformlayer.StateFilter;
 import org.platformlayer.TagFilter;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.ManagedItemCollection;
@@ -124,12 +125,18 @@ public class ManagedItemResource extends XaasResourceBase {
 	@GET
 	@Produces({ XML, JSON })
 	@Path("children")
-	public ManagedItemCollection<ItemBase> listChildren() throws OpsException, RepositoryException {
+	public ManagedItemCollection<ItemBase> listChildren(@QueryParam("deleted") boolean includeDeleted)
+			throws OpsException, RepositoryException {
 		boolean fetchTags = true;
 		ItemBase item = getManagedItem(fetchTags);
 
 		Tag parentTag = Tag.buildParentTag(item.getKey());
 		Filter filter = TagFilter.byTag(parentTag);
+
+		if (!includeDeleted) {
+			filter = StateFilter.excludeDeleted(filter);
+		}
+
 		List<ItemBase> roots = itemService.listAll(getProjectAuthorization(), filter);
 		ManagedItemCollection<ItemBase> collection = new ManagedItemCollection<ItemBase>();
 		collection.items = roots;

@@ -67,9 +67,10 @@ public interface PlatformLayerClient {
 
 	public UntypedItemCollection listRoots() throws PlatformLayerClientException;
 
-	public UntypedItemCollection listChildren(PlatformLayerKey parent) throws PlatformLayerClientException;
+	public UntypedItemCollection listChildren(PlatformLayerKey parent, boolean includeDeleted)
+			throws PlatformLayerClientException;
 
-	public List<ItemBase> listChildrenTyped(PlatformLayerKey parent) throws OpsException;
+	public List<ItemBase> listChildrenTyped(PlatformLayerKey parent, boolean includeDeleted) throws OpsException;
 
 	// Tags
 	public Tags changeTags(PlatformLayerKey key, TagChanges tagChanges, Long ifVersion)

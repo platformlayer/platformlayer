@@ -10,7 +10,6 @@ import org.platformlayer.common.UntypedItem;
 import org.platformlayer.common.UntypedItemCollection;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.ItemBase;
-import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.ServiceInfo;
 import org.platformlayer.core.model.Tag;
@@ -159,8 +158,11 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 	// return platformLayerClient.listItems(itemClass, filter);
 	// }
 
-	public <T> List<T> listItems(Class<T> clazz, boolean showDeleted) throws OpsException {
-		Filter filter = showDeleted ? null : StateFilter.exclude(ManagedItemState.DELETED);
+	public <T> List<T> listItems(Class<T> clazz, boolean includeDeleted) throws OpsException {
+		Filter filter = null;
+		if (!includeDeleted) {
+			filter = StateFilter.excludeDeleted(filter);
+		}
 		return listItems(clazz, filter);
 	}
 
@@ -170,8 +172,12 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 	}
 
 	public <T> List<T> listItems(Class<T> clazz, PlatformLayerKey parent) throws OpsException {
-		Filter filter = StateFilter.exclude(ManagedItemState.DELETED);
-		filter = Filter.and(filter, TagFilter.byParent(parent));
+		boolean includeDeleted = false;
+
+		Filter filter = TagFilter.byParent(parent);
+		if (!includeDeleted) {
+			filter = StateFilter.excludeDeleted(filter);
+		}
 
 		return listItems(clazz, filter);
 	}
@@ -274,13 +280,14 @@ public class TypedPlatformLayerClient implements PlatformLayerClient {
 	}
 
 	@Override
-	public UntypedItemCollection listChildren(PlatformLayerKey parent) throws PlatformLayerClientException {
-		return platformLayerClient.listChildren(parent);
+	public UntypedItemCollection listChildren(PlatformLayerKey parent, boolean includeDeleted)
+			throws PlatformLayerClientException {
+		return platformLayerClient.listChildren(parent, includeDeleted);
 	}
 
 	@Override
-	public List<ItemBase> listChildrenTyped(PlatformLayerKey parent) throws OpsException {
-		return platformLayerClient.listChildrenTyped(parent);
+	public List<ItemBase> listChildrenTyped(PlatformLayerKey parent, boolean includeDeleted) throws OpsException {
+		return platformLayerClient.listChildrenTyped(parent, includeDeleted);
 	}
 
 	@Override

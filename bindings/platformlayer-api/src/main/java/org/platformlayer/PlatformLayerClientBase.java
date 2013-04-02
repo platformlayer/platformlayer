@@ -237,9 +237,9 @@ public abstract class PlatformLayerClientBase implements PlatformLayerClient {
 	}
 
 	@Override
-	public List<ItemBase> listChildrenTyped(PlatformLayerKey parent) throws OpsException {
+	public List<ItemBase> listChildrenTyped(PlatformLayerKey parent, boolean includeDeleted) throws OpsException {
 		List<ItemBase> ret = Lists.newArrayList();
-		for (UntypedItem item : listChildren(parent).getItems()) {
+		for (UntypedItem item : listChildren(parent, includeDeleted).getItems()) {
 			ItemBase typedItem = promoteToTyped(item);
 			ret.add(typedItem);
 		}

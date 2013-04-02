@@ -7,7 +7,6 @@ import javax.inject.Inject;
 import org.platformlayer.Filter;
 import org.platformlayer.StateFilter;
 import org.platformlayer.TagFilter;
-import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.instances.model.PersistentInstance;
 import org.platformlayer.ops.OpsException;
@@ -25,7 +24,7 @@ public class InstanceSupervisor {
 
 	public PersistentInstance findPersistentInstance(Tag tag) throws OpsException {
 		Filter filter = TagFilter.byTag(tag);
-		filter = Filter.and(filter, StateFilter.exclude(ManagedItemState.DELETED));
+		filter = StateFilter.excludeDeleted(filter);
 
 		List<PersistentInstance> instances = Lists.newArrayList(platformLayer.listItems(PersistentInstance.class,
 				filter));
