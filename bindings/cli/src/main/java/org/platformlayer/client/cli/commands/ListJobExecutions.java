@@ -65,7 +65,6 @@ public class ListJobExecutions extends PlatformLayerCommandRunnerBase {
 		for (JobExecutionData job : jobs) {
 			JobState state = job.state;
 			if (state != null) {
-				ansi.setColorBlue();
 				switch (job.state) {
 				case FAILED:
 					ansi.setColorRed();
@@ -83,9 +82,11 @@ public class ListJobExecutions extends PlatformLayerCommandRunnerBase {
 					ansi.setColorBlue();
 					break;
 				}
+			} else {
+				ansi.setColorBlue();
 			}
 
-			writer.println(job.executionId);
+			writer.println(job.getJobId() + "/" + job.executionId);
 		}
 
 		ansi.reset();

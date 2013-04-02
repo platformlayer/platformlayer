@@ -37,6 +37,13 @@ public class GetJobLog extends PlatformLayerCommandRunnerBase {
 	public Object runCommand() throws PlatformLayerClientException {
 		PlatformLayerClient client = getPlatformLayerClient();
 
+		if (jobId.contains("/") && executionId == null) {
+			String[] tokens = jobId.split("/");
+			if (tokens.length == 2) {
+				jobId = tokens[0];
+				executionId = tokens[1];
+			}
+		}
 		List<JobLog> logs = Lists.newArrayList();
 
 		if (Strings.isNullOrEmpty(executionId)) {
