@@ -9,12 +9,12 @@ import java.security.KeyStoreException;
 import java.security.PublicKey;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.security.auth.x500.X500Principal;
 
-import org.slf4j.*;
 import org.platformlayer.ResourceUtils;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.Tag;
@@ -28,6 +28,8 @@ import org.platformlayer.ops.firewall.Sanitizer;
 import org.platformlayer.ops.firewall.Sanitizer.Decision;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.tree.OpsTreeBase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import sun.security.x509.X500Name;
 
@@ -37,6 +39,8 @@ import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
 public class ManagedKeystore extends OpsTreeBase {
+	private static final Logger log = LoggerFactory.getLogger(ManagedKeystore.class);
+
 	public static final String DEFAULT_WEBSERVER_ALIAS = "https";
 
 	public File path;
@@ -46,8 +50,6 @@ public class ManagedKeystore extends OpsTreeBase {
 	public String alias = "selfsigned";
 
 	public ItemBase tagWithPublicKeys;
-
-	private static final Logger log = LoggerFactory.getLogger(ManagedKeystore.class);
 
 	@Inject
 	PlatformLayerHelpers platformlayer;
@@ -89,7 +91,7 @@ public class ManagedKeystore extends OpsTreeBase {
 
 					boolean remove = false;
 					if (key != null) {
-						if (!Objects.equal(key.getCertificate(), certificate)) {
+						if (!Objects.equal(key.getCertificateChain()[0], certificate)) {
 							log.warn("Key found, but mismatch on certificate; will remove");
 							remove = true;
 						}
@@ -192,12 +194,12 @@ public class ManagedKeystore extends OpsTreeBase {
 	private void insertKey(KeyStore keystore, ManagedSecretKey key) throws OpsException {
 		String keyPassword = KeyStoreUtils.DEFAULT_KEYSTORE_SECRET;
 
-		X509Certificate certificate = key.getCertificate();
+		X509Certificate[] certificate = key.getCertificateChain();
 
 		List<X509Certificate> certificateChain = Lists.newArrayList();
-		certificateChain.add(certificate);
+		certificateChain.addAll(Arrays.asList(certificate));
 
-		ensureCertificateChain(certificateChain);
+		ensureIsCompleteCertificateChain(certificateChain);
 
 		addAll(keystore, certificateChain);
 
@@ -212,11 +214,11 @@ public class ManagedKeystore extends OpsTreeBase {
 		}
 	}
 
-	public static List<X509Certificate> buildCertificateChain(X509Certificate root) throws OpsException {
+	public static List<X509Certificate> buildCertificateChain(X509Certificate[] chain) throws OpsException {
 		List<X509Certificate> certificateChain = Lists.newArrayList();
-		certificateChain.add(root);
+		certificateChain.addAll(Arrays.asList(chain));
 
-		ensureCertificateChain(certificateChain);
+		ensureIsCompleteCertificateChain(certificateChain);
 		return certificateChain;
 	}
 
@@ -226,24 +228,32 @@ public class ManagedKeystore extends OpsTreeBase {
 		}
 	}
 
-	private void add(KeyStore keyStore, X509Certificate cert) throws OpsException {
+	private boolean add(KeyStore keyStore, X509Certificate cert) throws OpsException {
 		X500Principal issuer = cert.getSubjectX500Principal();
 
 		String alias = sanitizeX500Principal(issuer);
 
 		try {
 			if (keyStore.containsAlias(alias)) {
-				throw new OpsException("Keystore already has alias");
+				Certificate certificate = keyStore.getCertificate(alias);
+				if (Objects.equal(certificate, cert)) {
+					return false;
+				} else {
+					log.warn("Found non-equal certificate with same alias [{}]: {} vs {}", new Object[] { alias,
+							certificate, cert });
+					throw new OpsException("Keystore already has alias");
+				}
 			}
 
 			keyStore.setCertificateEntry(alias, cert);
+			return true;
 		} catch (KeyStoreException e) {
 			throw new OpsException("Error setting key into keystore", e);
 		}
 
 	}
 
-	static void ensureCertificateChain(List<X509Certificate> certificateChain) throws OpsException {
+	static void ensureIsCompleteCertificateChain(List<X509Certificate> certificateChain) throws OpsException {
 		while (true) {
 			X509Certificate tail = certificateChain.get(certificateChain.size() - 1);
 

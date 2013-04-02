@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.PrivateKey;
+import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
@@ -42,6 +43,51 @@ public class KeyStoreEncryptionStore implements EncryptionStore {
 		public EncryptionStore get() {
 			return KeyStoreEncryptionStore.build(configuration);
 		}
+	}
+
+	public X509Certificate[] getCertificate(String alias) {
+		Certificate[] certificateChain;
+
+		// TODO: Cache??
+
+		try {
+			certificateChain = keyStore.getCertificateChain(alias);
+		} catch (GeneralSecurityException e) {
+			throw new IllegalArgumentException("Error reading certifificate", e);
+		}
+
+		if (certificateChain == null) {
+			Certificate certificate;
+			try {
+				certificate = keyStore.getCertificate(alias);
+			} catch (GeneralSecurityException e) {
+				throw new IllegalArgumentException("Error reading certifificate", e);
+			}
+
+			if (certificate != null) {
+				X509Certificate x509Certificate = (X509Certificate) certificate;
+				if (!x509Certificate.getIssuerDN().equals(x509Certificate.getSubjectDN())) {
+					throw new IllegalStateException();
+				}
+
+				return new X509Certificate[] { x509Certificate };
+			}
+		}
+
+		if (certificateChain == null) {
+			log.warn("Unable to find certifificatey: " + alias);
+			throw new IllegalArgumentException("Certificate not found");
+		}
+
+		return toX509(certificateChain);
+	}
+
+	private static X509Certificate[] toX509(Certificate[] chain) {
+		X509Certificate[] x = new X509Certificate[chain.length];
+		for (int i = 0; i < chain.length; i++) {
+			x[i] = (X509Certificate) chain[i];
+		}
+		return x;
 	}
 
 	@Override
@@ -129,4 +175,5 @@ public class KeyStoreEncryptionStore implements EncryptionStore {
 		String secret = configuration.lookup("keystore.password", KeyStoreUtils.DEFAULT_KEYSTORE_SECRET);
 		return build(keystoreFile, secret);
 	}
+
 }

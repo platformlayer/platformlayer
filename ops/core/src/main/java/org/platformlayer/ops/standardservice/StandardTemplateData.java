@@ -10,6 +10,7 @@ import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.crypto.ManagedSecretKey;
+import org.platformlayer.ops.crypto.ManagedSecretKeys;
 import org.platformlayer.ops.helpers.ProviderHelper;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.metrics.MetricsManager;
@@ -27,6 +28,9 @@ public abstract class StandardTemplateData implements TemplateDataSource {
 
 	@Inject
 	protected MetricsManager metricsManager;
+
+	@Inject
+	protected ManagedSecretKeys managedSecretKeys;
 
 	public abstract ItemBase getModel();
 
@@ -68,15 +72,35 @@ public abstract class StandardTemplateData implements TemplateDataSource {
 
 	protected abstract Map<String, String> getConfigurationProperties() throws OpsException;
 
-	protected abstract PlatformLayerKey getSslKeyPath() throws OpsException;
+	protected PlatformLayerKey getCaPath() throws OpsException {
+		return null;
+	}
 
-	public ManagedSecretKey findSslKey() throws OpsException {
-		PlatformLayerKey sslKey = getSslKeyPath();
+	public ManagedSecretKey findCaSslKey(String alias) throws OpsException {
+		PlatformLayerKey sslKey = getCaPath();
 		if (sslKey == null) {
 			return null;
 		}
+		return managedSecretKeys.findSslKey(getModel().getKey(), sslKey, alias);
+	}
+
+	protected abstract PlatformLayerKey getSslKeyPath() throws OpsException;
+
+	public ManagedSecretKey findPublicSslKey() throws OpsException {
+		PlatformLayerKey sslKey = getSslKeyPath();
+		if (sslKey == null) {
+			if (getCaPath() != null) {
+				ManagedSecretKey key = findCaSslKey("public");
+				if (key != null) {
+					return key;
+				}
+			}
+
+			return null;
+		}
 		ItemBase sslKeyItem = (ItemBase) platformLayer.getItem(sslKey);
-		return providers.toInterface(sslKeyItem, ManagedSecretKey.class);
+		ManagedSecretKey key = providers.toInterface(sslKeyItem, ManagedSecretKey.class);
+		return key;
 	}
 
 	public boolean shouldCreateSslKey() {
@@ -130,6 +154,9 @@ public abstract class StandardTemplateData implements TemplateDataSource {
 	}
 
 	public abstract String getDownloadSpecifier();
+
+	public void getAdditionalKeys(Map<String, ManagedSecretKey> keys) throws OpsException {
+	}
 
 	// public String getDatabaseName() {
 	// return "main";

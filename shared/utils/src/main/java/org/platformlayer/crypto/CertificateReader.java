@@ -22,6 +22,20 @@ public class CertificateReader {
 	@SuppressWarnings("unused")
 	private static final Logger log = LoggerFactory.getLogger(CertificateReader.class);
 
+	CertificateFactory certificateFactory;
+
+	private CertificateFactory getX509CertificateFactory() {
+		if (certificateFactory == null) {
+			try {
+				certificateFactory = CertificateFactory.getInstance("X509");
+			} catch (CertificateException e) {
+				throw new IllegalStateException("Error loading X509 provider", e);
+			}
+		}
+
+		return certificateFactory;
+	}
+
 	public X509Certificate[] parse(byte[] data) {
 		return parse(new ByteArrayInputStream(data));
 	}
@@ -59,33 +73,33 @@ public class CertificateReader {
 		return parse(data.getBytes());
 	}
 
-	CertificateFactory certificateFactory;
-
-	private CertificateFactory getX509CertificateFactory() {
-		if (certificateFactory == null) {
-			try {
-				certificateFactory = CertificateFactory.getInstance("X509");
-			} catch (CertificateException e) {
-				throw new IllegalStateException("Error loading X509 provider", e);
-			}
-		}
-
-		return certificateFactory;
-	}
-
-	public static X509Certificate parseFirst(String cert) throws OpsException {
+	public X509Certificate parseFirst(String cert) throws OpsException {
 		CertificateReader reader = new CertificateReader();
-		java.security.cert.Certificate[] parsed = reader.parse(cert);
+		X509Certificate[] parsed = reader.parse(cert);
 		if (parsed == null || parsed.length == 0) {
 			throw new OpsException("Cannot parse certificate");
 		} else {
-			java.security.cert.Certificate first = parsed[0];
-			if (first instanceof X509Certificate) {
-				return (X509Certificate) first;
-			} else {
-				throw new OpsException("Expected X509 certificate, found: " + first.getClass().getSimpleName());
-			}
+			return parsed[0];
 		}
 	}
+
+	// public static X509Certificate[] parse(String cert) throws OpsException {
+	// CertificateReader reader = new CertificateReader();
+	// java.security.cert.Certificate[] parsed = reader.parse(cert);
+	// if (parsed == null || parsed.length == 0) {
+	// throw new OpsException("Cannot parse certificate");
+	// } else {
+	// X509Certificate[] certificates = new X509Certificate[parsed.length];
+	// for (int i = 0; i < parsed.length; i++) {
+	// java.security.cert.Certificate cert = parsed[i];
+	// if (cert instanceof X509Certificate) {
+	// certificates[i] = (X509Certificate) cert;
+	// } else {
+	// throw new OpsException("Expected X509 certificate, found: " + cert.getClass().getSimpleName());
+	// }
+	// }
+	// return certificates;
+	// }
+	// }
 
 }

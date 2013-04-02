@@ -16,7 +16,7 @@ public interface DatabaseServer {
 
 	DatabaseTarget buildDatabaseTarget(String username, Secret password, String databaseName) throws OpsException;
 
-	X509Certificate getCertificate() throws OpsException;
+	X509Certificate[] getCertificateChain() throws OpsException;
 
 	Map<String, String> buildTargetConfiguration(String username, Secret password, String databaseName,
 			InetAddressChooser inetAddressChooser) throws OpsException;

@@ -6,6 +6,7 @@ import java.io.StringReader;
 import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -38,7 +39,7 @@ public class SimpleCertificateAuthority {
 	public X509Certificate[] caCertificate;
 	public PrivateKey caPrivateKey;
 
-	private static Certificate buildCertificate(X500Name signer, PrivateKey signerPrivateKey, X500Name subject,
+	private static Certificate signCertificate(X500Name signer, PrivateKey signerPrivateKey, X500Name subject,
 			SubjectPublicKeyInfo subjectPublicKeyInfo) throws OpsException {
 		try {
 			AlgorithmIdentifier sigAlgId = new DefaultSignatureAlgorithmIdentifierFinder().find(SIGNATURE_ALGORITHM);
@@ -145,7 +146,7 @@ public class SimpleCertificateAuthority {
 	public X509Certificate signCsr(PKCS10CertificationRequest csr) throws OpsException {
 		SubjectPublicKeyInfo subjectPublicKeyInfo = csr.getSubjectPublicKeyInfo();
 		X500Name subject = csr.getSubject();
-		Certificate certificate = buildCertificate(
+		Certificate certificate = signCertificate(
 				BouncyCastleHelpers.toX500Name(caCertificate[0].getSubjectX500Principal()), caPrivateKey, subject,
 				subjectPublicKeyInfo);
 		return toX509(certificate);
@@ -182,9 +183,16 @@ public class SimpleCertificateAuthority {
 	// }
 	// }
 
+	public static X509Certificate signAsCa(X500Principal subject, PublicKey subjectPublicKey, X500Principal issuer,
+			PrivateKey issuerPrivateKey) throws OpsException {
+		Certificate certificate = signCertificate(BouncyCastleHelpers.toX500Name(issuer), issuerPrivateKey,
+				BouncyCastleHelpers.toX500Name(subject), BouncyCastleHelpers.toSubjectPublicKeyInfo(subjectPublicKey));
+		return toX509(certificate);
+	}
+
 	public static X509Certificate selfSign(X500Principal subject, KeyPair keyPair) throws OpsException {
 		X500Principal issuer = subject;
-		Certificate certificate = buildCertificate(BouncyCastleHelpers.toX500Name(issuer), keyPair.getPrivate(),
+		Certificate certificate = signCertificate(BouncyCastleHelpers.toX500Name(issuer), keyPair.getPrivate(),
 				BouncyCastleHelpers.toX500Name(subject),
 				BouncyCastleHelpers.toSubjectPublicKeyInfo(keyPair.getPublic()));
 		return toX509(certificate);
@@ -201,7 +209,7 @@ public class SimpleCertificateAuthority {
 			X500Name issuer = subject;
 			PrivateKey issuerPrivateKey = keyPair.getPrivate();
 
-			Certificate certificate = buildCertificate(issuer, issuerPrivateKey, subject, subjectPublicKeyInfo);
+			Certificate certificate = signCertificate(issuer, issuerPrivateKey, subject, subjectPublicKeyInfo);
 			return toX509(certificate);
 		} catch (IOException e) {
 			throw new OpsException("Error reading CSR", e);

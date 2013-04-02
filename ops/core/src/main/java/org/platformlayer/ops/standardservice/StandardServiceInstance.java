@@ -2,6 +2,7 @@ package org.platformlayer.ops.standardservice;
 
 import java.io.File;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.inject.Inject;
 
@@ -10,14 +11,15 @@ import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsProvider;
 import org.platformlayer.ops.crypto.ManagedKeystore;
+import org.platformlayer.ops.crypto.ManagedSecretKey;
 import org.platformlayer.ops.filesystem.ManagedDirectory;
-import org.platformlayer.ops.filesystem.TemplatedFile;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.metrics.MetricsInstance;
 import org.platformlayer.ops.metrics.MetricsManager;
 import org.platformlayer.ops.supervisor.StandardService;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
+import com.google.common.collect.Maps;
 import com.google.inject.util.Providers;
 
 public abstract class StandardServiceInstance extends OpsTreeBase {
@@ -69,20 +71,36 @@ public abstract class StandardServiceInstance extends OpsTreeBase {
 		}
 
 		if (template.shouldCreateKeystore()) {
-			ManagedDirectory configDir = findDirectory(template.getConfigDir());
-
-			File keystoreFile = template.getKeystoreFile();
-
-			if (template.shouldCreateSslKey()) {
-				ManagedKeystore httpsKey = configDir.addChild(ManagedKeystore.class);
-				httpsKey.path = keystoreFile;
-				httpsKey.tagWithPublicKeys = template.getModel();
-				httpsKey.alias = ManagedKeystore.DEFAULT_WEBSERVER_ALIAS;
-				httpsKey.key = template.findSslKey();
-			}
-
-			addExtraKeys(configDir, keystoreFile);
+			createKeystore(template);
 		}
+	}
+
+	private void createKeystore(StandardTemplateData template) throws OpsException {
+		ManagedDirectory configDir = findDirectory(template.getConfigDir());
+
+		File keystoreFile = template.getKeystoreFile();
+
+		if (template.shouldCreateSslKey()) {
+			// TODO: Unify with additional keys?
+			// But be careful.. this is normally a shared key across all instances
+			ManagedKeystore httpsKey = configDir.addChild(ManagedKeystore.class);
+			httpsKey.path = keystoreFile;
+			httpsKey.tagWithPublicKeys = template.getModel();
+			httpsKey.alias = ManagedKeystore.DEFAULT_WEBSERVER_ALIAS;
+			httpsKey.key = template.findPublicSslKey();
+		}
+
+		Map<String, ManagedSecretKey> keys = Maps.newHashMap();
+		template.getAdditionalKeys(keys);
+		for (Entry<String, ManagedSecretKey> entry : keys.entrySet()) {
+			ManagedKeystore httpsKey = configDir.addChild(ManagedKeystore.class);
+			httpsKey.path = keystoreFile;
+			// httpsKey.tagWithPublicKeys = template.getModel();
+			httpsKey.alias = entry.getKey();
+			httpsKey.key = entry.getValue();
+		}
+
+		addExtraKeys(configDir, keystoreFile);
 	}
 
 	private void addLogFile(StandardTemplateData template) throws OpsException {

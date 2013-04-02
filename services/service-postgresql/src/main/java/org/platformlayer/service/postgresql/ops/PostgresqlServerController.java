@@ -138,7 +138,7 @@ public class PostgresqlServerController extends OpsTreeBase implements DatabaseS
 	}
 
 	@Override
-	public X509Certificate getCertificate() {
+	public X509Certificate[] getCertificateChain() {
 		// Not yet supported
 		return null;
 	}
@@ -155,13 +155,13 @@ public class PostgresqlServerController extends OpsTreeBase implements DatabaseS
 		config.put("jdbc.username", username);
 		config.put("jdbc.password", password.plaintext());
 
-		X509Certificate sslCertificate = getCertificate();
+		X509Certificate[] sslCertificate = getCertificateChain();
 
 		boolean useSsl = (sslCertificate != null);
 		config.put("jdbc.ssl", String.valueOf(useSsl));
 
 		if (useSsl) {
-			String sigString = OpenSshUtils.getSignatureString(sslCertificate.getPublicKey());
+			String sigString = OpenSshUtils.getSignatureString(sslCertificate[0].getPublicKey());
 			config.put("jdbc.ssl.keys", sigString);
 		}
 
