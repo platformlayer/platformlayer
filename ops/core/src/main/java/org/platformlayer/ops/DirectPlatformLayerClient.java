@@ -263,6 +263,8 @@ public class DirectPlatformLayerClient extends PlatformLayerClientBase {
 
 	@Override
 	public List<ItemBase> listChildrenTyped(PlatformLayerKey parentKey, boolean includeDeleted) throws OpsException {
+		parentKey = resolveKey(parentKey);
+
 		Tag parentTag = Tag.buildParentTag(parentKey);
 		Filter filter = TagFilter.byTag(parentTag);
 		if (!includeDeleted) {
@@ -280,6 +282,8 @@ public class DirectPlatformLayerClient extends PlatformLayerClientBase {
 
 	@Override
 	public <T> T findItem(PlatformLayerKey key) throws PlatformLayerClientException {
+		key = resolveKey(key);
+
 		boolean fetchTags = true;
 		ItemBase managedItem;
 		try {
@@ -288,6 +292,13 @@ public class DirectPlatformLayerClient extends PlatformLayerClientBase {
 			throw new PlatformLayerClientException("Error fetching item", e);
 		}
 		return (T) managedItem;
+	}
+
+	private PlatformLayerKey resolveKey(PlatformLayerKey key) {
+		if (key.getProject() == null) {
+			key = key.withProject(getProject());
+		}
+		return key;
 	}
 
 	@Override
