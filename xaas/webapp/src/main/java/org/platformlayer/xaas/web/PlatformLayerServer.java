@@ -103,6 +103,7 @@ public class PlatformLayerServer {
 				prefixes.add("hibernate-");
 				prefixes.add("jboss-");
 				prefixes.add("service-");
+				prefixes.add("netty-3");
 
 				for (File file : dependenciesDir.listFiles()) {
 					boolean veto = false;
