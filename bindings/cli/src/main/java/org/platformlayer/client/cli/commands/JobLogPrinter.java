@@ -9,6 +9,7 @@ import org.platformlayer.jobs.model.JobLogLine;
 import org.platformlayer.jobs.model.JobLogLineLevels;
 
 import com.fathomdb.cli.commands.Ansi;
+import com.fathomdb.cli.commands.Ansi.Color;
 import com.google.common.base.Strings;
 
 public class JobLogPrinter {
@@ -61,37 +62,37 @@ public class JobLogPrinter {
 
 		if (!Strings.isNullOrEmpty(type)) {
 			if (type.equals(JobLogLine.TYPE_ENTER_SCOPE)) {
-				writer.println(indent + ">>> " + line.message);
+				ansi.println(Color.Default, indent + ">>> " + line.message);
 				depth++;
 				indent += "  ";
 			} else if (type.equals(JobLogLine.TYPE_EXIT_SCOPE)) {
 				depth--;
 				indent = indent.substring(0, depth * 2);
-				// writer.println(indent + "<<< " + line.message);
+				// ansi.println(indent + "<<< " + line.message);
 			} else {
-				writer.println(indent + "??? " + line.message);
+				ansi.println(Color.Red, indent + "??? " + line.message);
 			}
 			return;
 		}
 
+		Ansi.Color color = Ansi.Color.Default;
+
 		if (line.level >= JobLogLineLevels.LEVEL_ERROR) {
-			ansi.setColorRed();
+			color = Ansi.Color.Red;
 		} else if (line.level >= JobLogLineLevels.LEVEL_WARN) {
-			ansi.setColorYellow();
+			color = Ansi.Color.Yellow;
 		} else if (line.level >= JobLogLineLevels.LEVEL_INFO) {
-			ansi.setColorGreen();
+			color = Ansi.Color.Green;
 		} else {
-			ansi.setColorBlue();
+			color = Ansi.Color.Blue;
 		}
 
-		writer.print(indent);
-		writer.println(line.message);
+		ansi.println(color, indent + line.message);
 
 		JobLogExceptionInfo exceptionInfo = line.exception;
 		while (exceptionInfo != null) {
 			for (String exceptionLine : exceptionInfo.info) {
-				writer.print(indent);
-				writer.println(exceptionLine);
+				ansi.println(color, indent + exceptionLine);
 			}
 
 			exceptionInfo = exceptionInfo.inner;
