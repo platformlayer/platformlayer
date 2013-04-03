@@ -1,6 +1,14 @@
 package org.platformlayer;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+
 import org.platformlayer.core.model.ItemBase;
+import org.platformlayer.core.model.Tag;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 public class AndFilter extends Filter {
 
@@ -19,4 +27,21 @@ public class AndFilter extends Filter {
 		}
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return "AndFilter [filters=" + Arrays.toString(filters) + "]";
+	}
+
+	@Override
+	public List<Tag> getRequiredTags() {
+		Set<Tag> tags = Sets.newHashSet();
+
+		for (Filter filter : filters) {
+			tags.addAll(filter.getRequiredTags());
+		}
+
+		return Lists.newArrayList(tags);
+	}
+
 }

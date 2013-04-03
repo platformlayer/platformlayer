@@ -1,5 +1,8 @@
 package org.platformlayer;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
@@ -55,6 +58,16 @@ public class TagFilter extends Filter {
 
 	public Tag getRequiredTag() {
 		return requiredTag;
+	}
+
+	@Override
+	public String toString() {
+		return "TagFilter [requiredTag=" + requiredTag + "]";
+	}
+
+	@Override
+	public List<Tag> getRequiredTags() {
+		return Arrays.asList(requiredTag);
 	}
 
 }

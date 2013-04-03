@@ -15,7 +15,6 @@ import javax.xml.bind.Marshaller;
 
 import org.platformlayer.Filter;
 import org.platformlayer.RepositoryException;
-import org.platformlayer.TagFilter;
 import org.platformlayer.auth.crypto.SecretProvider;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.ManagedItemState;
@@ -46,6 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fathomdb.Utf8;
+import com.fathomdb.crypto.AesCryptoKey;
 import com.fathomdb.crypto.CryptoKey;
 import com.fathomdb.crypto.FathomdbCrypto;
 import com.google.common.base.Charsets;
@@ -187,16 +187,21 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 		DbHelper db = new DbHelper(project);
 
 		try {
-			// TODO: We should maybe push the tag filter into the DB
+			log.debug("listAll with filter: {}", filter);
 
 			// TODO: Use this logic for item selection as well
 
+			List<Tag> requiredTags = filter.getRequiredTags();
+
 			JoinedQueryResult result;
-			if (filter instanceof TagFilter) {
-				TagFilter tagFilter = (TagFilter) filter;
-				Tag requiredTag = tagFilter.getRequiredTag();
-				result = db.listAllItemsWithTag(requiredTag.getKey(), requiredTag.getValue());
+			if (!requiredTags.isEmpty()) {
+				Tag requiredTag = requiredTags.get(0);
+
+				int projectId = db.mapToValue(project);
+				result = db.queries.listAllItemsWithTag(projectId, projectId, requiredTag.getKey(),
+						requiredTag.getValue());
 			} else {
+				log.warn("Unable to optimize filter; selecting all items.  Filter={}", filter);
 				result = db.listAllItems();
 			}
 
@@ -391,11 +396,6 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 
 		public JoinedQueryResult listAllItems() throws SQLException {
 			return queries.listAllItems(getAtomValue(ProjectId.class));
-		}
-
-		public JoinedQueryResult listAllItemsWithTag(String tagName, String tagValue) throws SQLException {
-			int projectId = getAtomValue(ProjectId.class);
-			return queries.listAllItemsWithTag(projectId, projectId, tagName, tagValue);
 		}
 
 		public JoinedQueryResult listRoots() throws SQLException {

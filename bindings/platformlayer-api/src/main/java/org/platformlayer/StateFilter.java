@@ -1,9 +1,12 @@
 package org.platformlayer;
 
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.ManagedItemState;
+import org.platformlayer.core.model.Tag;
 
 public class StateFilter extends Filter {
 
@@ -46,4 +49,13 @@ public class StateFilter extends Filter {
 		}
 	}
 
+	@Override
+	public String toString() {
+		return "StateFilter [allowStates=" + allowStates + "]";
+	}
+
+	@Override
+	public List<Tag> getRequiredTags() {
+		return Collections.emptyList();
+	}
 }

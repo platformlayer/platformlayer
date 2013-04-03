@@ -1,6 +1,9 @@
 package org.platformlayer;
 
+import java.util.List;
+
 import org.platformlayer.core.model.ItemBase;
+import org.platformlayer.core.model.Tag;
 
 public abstract class Filter {
 	public static final Filter EMPTY = null;
@@ -18,4 +21,6 @@ public abstract class Filter {
 	public static Filter and(Filter... filters) {
 		return new AndFilter(filters);
 	}
+
+	public abstract List<Tag> getRequiredTags();
 }
