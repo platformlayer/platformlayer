@@ -4,25 +4,27 @@ import java.io.File;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
+import java.security.KeyStore.Entry;
+import java.security.KeyStore.PrivateKeyEntry;
+import java.security.KeyStore.ProtectionParameter;
+import java.security.KeyStore.TrustedCertificateEntry;
 import java.security.PrivateKey;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
+import java.util.Enumeration;
 import java.util.List;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fathomdb.Configuration;
 import com.fathomdb.crypto.CertificateAndKey;
 import com.fathomdb.crypto.EncryptionStore;
 import com.fathomdb.crypto.KeyStoreUtils;
 import com.fathomdb.crypto.SimpleCertificateAndKey;
 import com.fathomdb.crypto.bouncycastle.PrivateKeys;
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
 
-@Singleton
 public class KeyStoreEncryptionStore implements EncryptionStore {
 	private static final Logger log = LoggerFactory.getLogger(KeyStoreEncryptionStore.class);
 
@@ -33,16 +35,6 @@ public class KeyStoreEncryptionStore implements EncryptionStore {
 	public KeyStoreEncryptionStore(KeyStore keyStore) {
 		super();
 		this.keyStore = keyStore;
-	}
-
-	public static class Provider implements javax.inject.Provider<EncryptionStore> {
-		@Inject
-		Configuration configuration;
-
-		@Override
-		public EncryptionStore get() {
-			return KeyStoreEncryptionStore.build(configuration);
-		}
 	}
 
 	public X509Certificate[] getCertificate(String alias) {
@@ -153,27 +145,51 @@ public class KeyStoreEncryptionStore implements EncryptionStore {
 		return new KeyStoreEncryptionStore(keyStore);
 	}
 
-	public static EncryptionStore build(Configuration configuration) {
-		File keystoreFile = configuration.lookupFile("keystore", null);
-
-		if (keystoreFile == null) {
-			keystoreFile = new File(configuration.getBasePath(), "keystore.jks");
-			if (!keystoreFile.exists()) {
-				log.warn("No keystore specified (or found); starting with an empty keystore");
-
-				try {
-					KeyStore keyStore = KeyStoreUtils.createEmpty(KeyStoreUtils.DEFAULT_KEYSTORE_SECRET);
-					return new KeyStoreEncryptionStore(keyStore);
-				} catch (GeneralSecurityException e) {
-					throw new IllegalStateException("Error creating keystore", e);
-				} catch (IOException e) {
-					throw new IllegalStateException("Error creating keystore", e);
-				}
-			}
+	public static void main(String[] args) throws Exception {
+		if (!args[0].equals("explode")) {
+			throw new IllegalStateException();
 		}
 
-		String secret = configuration.lookup("keystore.password", KeyStoreUtils.DEFAULT_KEYSTORE_SECRET);
-		return build(keystoreFile, secret);
+		char[] password = "notasecret".toCharArray();
+		ProtectionParameter protParam = new KeyStore.PasswordProtection(password);
+
+		KeyStore keyStore = KeyStoreUtils.load(new File(args[1]));
+		File dest = new File(args[2]);
+		dest.mkdirs();
+
+		Enumeration<String> aliases = keyStore.aliases();
+		while (aliases.hasMoreElements()) {
+			String alias = aliases.nextElement();
+
+			if (keyStore.isKeyEntry(alias)) {
+				Entry entry = keyStore.getEntry(alias, protParam);
+				PrivateKeyEntry privateKeyEntry = (PrivateKeyEntry) entry;
+
+				{
+					X509Certificate[] certificateChain = toX509(privateKeyEntry.getCertificateChain());
+					String encoded = CertificateUtils.toPem(certificateChain);
+					File out = new File(dest, alias + ".crt");
+					Files.write(encoded, out, Charsets.UTF_8);
+				}
+
+				{
+					PrivateKey key = privateKeyEntry.getPrivateKey();
+					String encoded = PrivateKeys.toPem(key);
+					File out = new File(dest, alias + ".key");
+					Files.write(encoded, out, Charsets.UTF_8);
+				}
+			}
+
+			if (keyStore.isCertificateEntry(alias)) {
+				Entry entry = keyStore.getEntry(alias, null);
+				TrustedCertificateEntry trustedCertificateEntry = (TrustedCertificateEntry) entry;
+
+				X509Certificate cert = (X509Certificate) trustedCertificateEntry.getTrustedCertificate();
+				String encoded = CertificateUtils.toPem(cert);
+				File out = new File(dest, alias + ".crt");
+				Files.write(encoded, out, Charsets.UTF_8);
+			}
+		}
 	}
 
 }

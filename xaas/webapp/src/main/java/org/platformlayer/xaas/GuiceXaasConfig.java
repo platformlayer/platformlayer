@@ -15,7 +15,7 @@ import org.platformlayer.auth.client.PlatformLayerAuthenticationClient;
 import org.platformlayer.auth.client.PlatformLayerAuthenticationClientProvider;
 import org.platformlayer.auth.system.PlatformLayerAuthAdminClient;
 import org.platformlayer.auth.system.PlatformlayerAuthenticationService;
-import org.platformlayer.crypto.KeyStoreEncryptionStore;
+import org.platformlayer.crypto.EncryptionStoreProvider;
 import org.platformlayer.guice.xaas.JdbcManagedItemRepository;
 import org.platformlayer.guice.xaas.JdbcServiceAuthorizationRepository;
 import org.platformlayer.http.HttpStrategy;
@@ -77,7 +77,7 @@ public class GuiceXaasConfig extends AbstractModule {
 
 	@Override
 	protected void configure() {
-		bind(EncryptionStore.class).toProvider(KeyStoreEncryptionStore.Provider.class);
+		bind(EncryptionStore.class).toProvider(EncryptionStoreProvider.class);
 
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		FreemarkerTemplateEngine freemarker = new FreemarkerTemplateEngine(classLoader);
