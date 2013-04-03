@@ -40,11 +40,8 @@ public class LogbackHook<E> extends AppenderBase<E> {
 		if (opsContext != null) {
 			ILoggingEvent event = (ILoggingEvent) e;
 
-			String message = null;
-			Object o = event.getMessage();
-			if (o != null) {
-				message = o.toString();
-			}
+			// Note that we can get the unformatted message in getMessage(), presumably along with the parameters...
+			String message = event.getFormattedMessage();
 			Level level = event.getLevel();
 			int levelInt = level.toInt();
 
