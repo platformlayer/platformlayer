@@ -19,13 +19,18 @@ import org.platformlayer.jdbc.JdbcUtils;
 import org.platformlayer.ops.crypto.SecretHelper;
 import org.platformlayer.xaas.model.ServiceAuthorization;
 import org.platformlayer.xaas.repository.ServiceAuthorizationRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fathomdb.Utf8;
+import com.fathomdb.crypto.AesCryptoKey;
 import com.fathomdb.crypto.CryptoKey;
 import com.fathomdb.crypto.FathomdbCrypto;
 import com.google.common.collect.Lists;
 
 public class JdbcServiceAuthorizationRepository implements ServiceAuthorizationRepository {
+	private static final Logger log = LoggerFactory.getLogger(JdbcServiceAuthorizationRepository.class);
+
 	@Inject
 	Provider<JdbcConnection> connectionProvider;
 
@@ -134,7 +139,13 @@ public class JdbcServiceAuthorizationRepository implements ServiceAuthorizationR
 			}
 
 			while (rs.next()) {
-				byte[] plaintext = secretHelper.decryptSecret(rs.getBytes("data"), rs.getBytes("secret"));
+				CryptoKey secretKey = secretHelper.getSecret(rs.getBytes("secret"));
+
+				if (secretKey instanceof AesCryptoKey) {
+					log.warn("Legacy AES crypto key: findPrivateData[{}, {}, {}]", new Object[] { serviceType, project,
+							metadataKey });
+				}
+				byte[] plaintext = FathomdbCrypto.decrypt(secretKey, rs.getBytes("data"));
 				String value = Utf8.toString(plaintext);
 				values.add(value);
 			}

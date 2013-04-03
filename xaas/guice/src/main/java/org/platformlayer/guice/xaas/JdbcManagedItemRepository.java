@@ -275,6 +275,11 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 				throw new RepositoryException("Could not get secret to decrypt item");
 			}
 
+			if (itemSecret instanceof AesCryptoKey) {
+				log.warn("Legacy AES crypto key on {} {} {} {}",
+						new Object[] { project, serviceType, itemType, entity });
+			}
+
 			secret.unlock(itemSecret);
 
 			byte[] plaintext = FathomdbCrypto.decrypt(itemSecret, data);

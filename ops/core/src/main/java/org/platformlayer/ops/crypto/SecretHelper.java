@@ -113,20 +113,29 @@ public class SecretHelper {
 	//
 	// }
 
-	public byte[] decryptSecret(byte[] data, byte[] secret) {
+	// public byte[] decryptSecret(byte[] data, byte[] secret) {
+	// CryptoKey secretKey = getSecret(secret);
+	//
+	// return FathomdbCrypto.decrypt(secretKey, data);
+	// }
+
+	public CryptoKey getSecret(byte[] secret) {
 		SecretStore secretStore = new SecretStore(secret);
 
 		CryptoKey secretKey = null;
 
 		for (ProjectAuthorization project : OpsContext.get().getEncryptingProjects()) {
 			secretKey = secretStore.getSecretFromProject(project);
+			if (secretKey != null) {
+				break;
+			}
 		}
 
 		if (secretKey == null) {
 			throw new SecurityException();
 		}
 
-		return FathomdbCrypto.decrypt(secretKey, data);
+		return secretKey;
 	}
 
 }
