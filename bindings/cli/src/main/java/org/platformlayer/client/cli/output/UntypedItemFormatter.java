@@ -21,7 +21,6 @@ import com.fathomdb.cli.formatter.SimpleFormatter;
 import com.fathomdb.cli.output.OutputSink;
 import com.google.common.collect.Maps;
 
-@SuppressWarnings("rawtypes")
 public class UntypedItemFormatter extends SimpleFormatter<UntypedItem> {
 	public UntypedItemFormatter() {
 		super(UntypedItem.class);

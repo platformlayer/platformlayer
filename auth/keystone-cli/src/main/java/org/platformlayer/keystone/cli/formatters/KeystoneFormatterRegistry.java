@@ -6,7 +6,7 @@ public class KeystoneFormatterRegistry extends FormatterRegistryBase {
 	public KeystoneFormatterRegistry() {
 		addDefaultFormatters();
 
-		discoverFormatters(getClass().getPackage());
+		discoverFormatters();
 	}
 
 }

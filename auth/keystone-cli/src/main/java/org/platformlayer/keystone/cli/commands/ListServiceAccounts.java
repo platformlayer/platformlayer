@@ -3,10 +3,11 @@ package org.platformlayer.keystone.cli.commands;
 import java.util.List;
 
 import org.kohsuke.args4j.Option;
-import com.fathomdb.utils.Hex;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.auth.ServiceAccountEntity;
 import org.platformlayer.auth.UserDatabase;
+
+import com.fathomdb.utils.Hex;
 
 public class ListServiceAccounts extends KeystoneCommandRunnerBase {
 	@Option(name = "-k", aliases = "--key", usage = "Public key")

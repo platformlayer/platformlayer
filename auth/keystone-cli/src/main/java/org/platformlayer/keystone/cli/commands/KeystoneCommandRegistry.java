@@ -12,7 +12,7 @@ public class KeystoneCommandRegistry extends CommandRegistryBase {
 	public KeystoneCommandRegistry() {
 		addCommand(new AutoComplete());
 
-		discoverCommands(getClass().getPackage());
+		discoverCommands();
 	}
 
 }
