@@ -87,11 +87,9 @@ public class ManagedKeystore extends OpsTreeBase {
 				if (certificateChain == null || certificateChain.length == 0) {
 					keyAliases.remove(alias);
 				} else {
-					Certificate certificate = certificateChain[0];
-
 					boolean remove = false;
 					if (key != null) {
-						if (!Objects.equal(key.getCertificateChain()[0], certificate)) {
+						if (!Arrays.equals(key.getCertificateChain(), certificateChain)) {
 							log.warn("Key found, but mismatch on certificate; will remove");
 							remove = true;
 						}
