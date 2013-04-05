@@ -21,4 +21,6 @@ public class SystemAuthService extends ItemBase {
 	public Secret tokenSecret;
 
 	public PlatformLayerKey sslKey;
+
+	public PlatformLayerKey ca;
 }

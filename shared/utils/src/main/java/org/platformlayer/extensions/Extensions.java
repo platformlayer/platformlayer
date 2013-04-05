@@ -47,7 +47,7 @@ public class Extensions {
 		String extensionList = configuration.find("extensions");
 		if (!Strings.isNullOrEmpty(extensionList)) {
 			for (String extension : Splitter.on(',').split(extensionList)) {
-				log.info("Using extension: " + extension);
+				log.info("Using configured extension: " + extension);
 
 				Class<? extends ExtensionModule> extensionClass;
 				try {
@@ -76,7 +76,7 @@ public class Extensions {
 	private void loadReflectedExtensions(Discovery discovery) {
 		Collection<Class> subTypes = discovery.findAnnotatedClasses(Extension.class);
 		if (subTypes == null || subTypes.isEmpty()) {
-			log.info("No extensions found");
+			log.info("No Annotated extensions found");
 			return;
 		}
 

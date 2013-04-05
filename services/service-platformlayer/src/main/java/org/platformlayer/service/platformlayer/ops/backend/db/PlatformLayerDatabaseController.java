@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import org.platformlayer.InetAddressChooser;
 import org.platformlayer.ResourceUtils;
 import org.platformlayer.core.model.ItemBase;
+import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
@@ -82,5 +83,10 @@ public class PlatformLayerDatabaseController extends OpsTreeBase implements Link
 
 		return databaseServer.buildTargetConfiguration(model.username, model.password, model.databaseName,
 				inetAddressChooser);
+	}
+
+	@Override
+	public PlatformLayerKey getCaForClientKey() {
+		return null;
 	}
 }

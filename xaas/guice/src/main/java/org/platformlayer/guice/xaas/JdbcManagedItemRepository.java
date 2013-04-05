@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -34,6 +33,7 @@ import org.platformlayer.jdbc.JdbcTransaction;
 import org.platformlayer.jdbc.JdbcUtils;
 import org.platformlayer.jdbc.proxy.Query;
 import org.platformlayer.jdbc.proxy.QueryFactory;
+import org.platformlayer.jdbc.proxy.QueryFilter;
 import org.platformlayer.jdbc.simplejpa.JoinedQueryResult;
 import org.platformlayer.ops.crypto.SecretHelper;
 import org.platformlayer.xaas.repository.ManagedItemRepository;
@@ -51,7 +51,6 @@ import com.fathomdb.crypto.FathomdbCrypto;
 import com.google.common.base.Charsets;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 public class JdbcManagedItemRepository implements ManagedItemRepository {
@@ -77,41 +76,54 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 	public <T extends ItemBase> List<T> findAll(ModelClass<T> modelClass, ProjectId project, boolean fetchTags,
 			SecretProvider secretProvider, Filter filter) throws RepositoryException {
 		DbHelper db = new DbHelper(modelClass, project);
-		JaxbHelper jaxbHelper = JaxbHelper.get(modelClass.getJavaClass());
-
-		Map<Integer, T> items = Maps.newHashMap();
 
 		try {
-			// TODO: Our mapper may be able to do this join for us in one query...
+			int projectId = db.mapToValue(project);
+			int modelId = db.mapToValue(modelClass.getItemType());
+			int serviceId = db.mapToValue(modelClass.getServiceType());
 
-			for (ItemEntity entity : db.listItems()) {
-				T item = mapToModel(project, modelClass.getServiceType(), modelClass.getItemType(), entity, jaxbHelper,
-						secretProvider);
-				items.put(entity.id, item);
-			}
+			String filterKey = null;
 
-			for (TagEntity tag : db.listTags()) {
-				ItemBase managed = items.get(tag.item);
-				if (managed == null) {
-					// Looks like someone deleted an item without deleting a tag (this should be a foreign-key)
-					continue;
-				}
-				Tags tags = managed.getTags();
-				tags.add(Tag.build(tag.key, tag.data));
-			}
+			JoinedQueryResult result = db.queries.listItems(serviceId, modelId, projectId, filterKey);
 
-			List<T> ret = Lists.newArrayList();
-			for (T item : items.values()) {
-				if (filter == null || filter.matches(item)) {
-					ret.add(item);
-				}
-			}
-			return ret;
+			List<T> items = mapItemsAndTags(project, secretProvider, db, result);
+			return applyFilter(items, filter);
 		} catch (SQLException e) {
 			throw new RepositoryException("Error fetching items", e);
 		} finally {
 			db.close();
 		}
+	}
+
+	private <T extends ItemBase> List<T> mapItemsAndTags(ProjectId project, SecretProvider secretProvider, DbHelper db,
+			JoinedQueryResult result) throws RepositoryException, SQLException {
+		Multimap<Integer, Tag> itemTags = HashMultimap.create();
+		for (TagEntity row : result.getAll(TagEntity.class)) {
+			Tag tag = Tag.build(row.key, row.data);
+			itemTags.put(row.item, tag);
+		}
+
+		List<T> items = Lists.newArrayList();
+
+		for (ItemEntity entity : result.getAll(ItemEntity.class)) {
+			if (entity == null) {
+				throw new IllegalStateException();
+			}
+
+			ServiceType serviceType = db.getServiceType(entity.service);
+			ItemType itemType = db.getItemType(entity.model);
+
+			JaxbHelper jaxbHelper = getJaxbHelper(db, serviceType, itemType);
+			T item = mapToModel(project, serviceType, itemType, entity, jaxbHelper, secretProvider);
+
+			int itemId = entity.id;
+			Collection<Tag> tags = itemTags.get(itemId);
+			item.getTags().addAll(tags);
+
+			items.add(item);
+		}
+
+		return items;
 	}
 
 	@Override
@@ -125,19 +137,12 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 
 			JoinedQueryResult result = db.listRoots();
 
-			Multimap<Integer, Tag> itemTags = HashMultimap.create();
-			for (TagEntity row : result.getAll(TagEntity.class)) {
-				Tag tag = Tag.build(row.key, row.data);
-				itemTags.put(row.item, tag);
-			}
+			List<ItemBase> roots = mapItemsAndTags(project, secretProvider, db, result);
 
-			List<Integer> rootIds = Lists.newArrayList();
-
-			for (ItemEntity entity : result.getAll(ItemEntity.class)) {
-				int itemId = entity.id;
-
+			for (ItemBase root : roots) {
+				// A little bit of paranoia
 				boolean isRoot = true;
-				for (Tag tag : itemTags.get(itemId)) {
+				for (Tag tag : root.getTags()) {
 					boolean tagIsParent = Tag.PARENT.getKey().equals(tag.getKey());
 					if (tagIsParent) {
 						isRoot = false;
@@ -147,29 +152,9 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 
 				assert isRoot;
 
-				if (isRoot) {
-					rootIds.add(itemId);
+				if (!isRoot) {
+					throw new IllegalStateException();
 				}
-			}
-
-			List<ItemBase> roots = Lists.newArrayList();
-
-			for (Integer itemId : rootIds) {
-				ItemEntity entity = result.get(ItemEntity.class, itemId);
-				if (entity == null) {
-					continue;
-				}
-
-				ServiceType serviceType = db.getServiceType(entity.service);
-				ItemType itemType = db.getItemType(entity.model);
-
-				JaxbHelper jaxbHelper = getJaxbHelper(db, serviceType, itemType);
-				ItemBase item = mapToModel(project, serviceType, itemType, entity, jaxbHelper, secretProvider);
-
-				Collection<Tag> tags = itemTags.get(itemId);
-				item.getTags().addAll(tags);
-
-				roots.add(item);
 			}
 
 			return roots;
@@ -205,40 +190,30 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 				result = db.listAllItems();
 			}
 
-			Multimap<Integer, Tag> itemTags = HashMultimap.create();
-			for (TagEntity row : result.getAll(TagEntity.class)) {
-				Tag tag = Tag.build(row.key, row.data);
-				itemTags.put(row.item, tag);
-			}
+			List<ItemBase> items = mapItemsAndTags(project, secretProvider, db, result);
 
-			List<ItemBase> roots = Lists.newArrayList();
-
-			for (ItemEntity entity : result.getAll(ItemEntity.class)) {
-				if (entity == null) {
-					throw new IllegalStateException();
-				}
-
-				ServiceType serviceType = db.getServiceType(entity.service);
-				ItemType itemType = db.getItemType(entity.model);
-
-				JaxbHelper jaxbHelper = getJaxbHelper(db, serviceType, itemType);
-				ItemBase item = mapToModel(project, serviceType, itemType, entity, jaxbHelper, secretProvider);
-
-				int itemId = entity.id;
-				Collection<Tag> tags = itemTags.get(itemId);
-				item.getTags().addAll(tags);
-
-				if (filter.matchesItem(item)) {
-					roots.add(item);
-				}
-			}
-
-			return roots;
+			return applyFilter(items, filter);
 		} catch (SQLException e) {
 			throw new RepositoryException("Error fetching items", e);
 		} finally {
 			db.close();
 		}
+	}
+
+	private <T extends ItemBase> List<T> applyFilter(List<T> items, Filter filter) {
+		if (filter == null) {
+			return items;
+		}
+
+		List<T> matching = Lists.newArrayList();
+
+		for (T item : items) {
+			if (filter.matchesItem(item)) {
+				matching.add(item);
+			}
+		}
+
+		return matching;
 	}
 
 	private JaxbHelper getJaxbHelper(DbHelper db, ServiceType serviceType, ItemType itemType) throws SQLException {
@@ -301,11 +276,13 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 	}
 
 	static interface Queries {
-		@Query("SELECT id, key, state, data, secret FROM items WHERE service=? and model=? and project=? and key=?")
-		ItemEntity findByKey(int serviceId, int modelId, int projectId, String key) throws SQLException;
+		@Query("SELECT i.* FROM items i WHERE i.service=? and i.model=? and i.project=?")
+		ItemEntity findItem(int serviceId, int modelId, int projectId, @QueryFilter("i.key=?") String itemKey)
+				throws SQLException;
 
-		@Query("SELECT id, key, state, data, secret FROM items WHERE service=? and model=? and project=?")
-		List<ItemEntity> listItems(int serviceId, int modelId, int projectId) throws SQLException;
+		@Query("SELECT i.*, t.* FROM items i LEFT JOIN item_tags t on t.item = i.id WHERE i.service=? and i.model=? and i.project=?")
+		JoinedQueryResult listItems(int serviceId, int modelId, int projectId, @QueryFilter("i.key=?") String itemKey)
+				throws SQLException;
 
 		@Query("SELECT i.*, t.* FROM items i LEFT JOIN item_tags t on t.item = i.id WHERE i.project=?")
 		JoinedQueryResult listAllItems(int projectId) throws SQLException;
@@ -389,15 +366,15 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 			this(modelClass.getServiceType(), modelClass.getItemType(), project);
 		}
 
-		public ItemEntity findByKey(ManagedItemId managedItemId) throws SQLException {
-			return queries.findByKey(getAtomValue(ServiceType.class), getAtomValue(ItemType.class),
-					getAtomValue(ProjectId.class), managedItemId.getKey());
-		}
+		// public ItemEntity findByKey(ManagedItemId managedItemId) throws SQLException {
+		// return queries.findByKey(getAtomValue(ServiceType.class), getAtomValue(ItemType.class),
+		// getAtomValue(ProjectId.class), managedItemId.getKey());
+		// }
 
-		public List<ItemEntity> listItems() throws SQLException {
-			return queries.listItems(getAtomValue(ServiceType.class), getAtomValue(ItemType.class),
-					getAtomValue(ProjectId.class));
-		}
+		// public List<ItemEntity> listItems() throws SQLException {
+		// return queries.listItems(getAtomValue(ServiceType.class), getAtomValue(ItemType.class),
+		// getAtomValue(ProjectId.class));
+		// }
 
 		public JoinedQueryResult listAllItems() throws SQLException {
 			return queries.listAllItems(getAtomValue(ProjectId.class));
@@ -572,7 +549,13 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 
 			ModelClass<?> modelClass = serviceProvider.getModelClass(key.getItemType());
 
-			return fetchItem(db, key, modelClass.getJavaClass(), secretProvider, fetchTags);
+			ServiceType serviceType = key.getServiceType();
+			ItemType itemType = key.getItemType();
+			ProjectId project = key.getProject();
+			ManagedItemId itemId = key.getItemId();
+
+			return fetchItem(db, serviceType, itemType, project, itemId, modelClass.getJavaClass(), secretProvider,
+					fetchTags);
 		} catch (SQLException e) {
 			throw new RepositoryException("Error running query", e);
 		} finally {
@@ -580,29 +563,29 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 		}
 	}
 
-	private <T extends ItemBase> T fetchItem(DbHelper db, PlatformLayerKey plk, Class<T> modelClass,
-			SecretProvider secretProvider, boolean fetchTags) throws SQLException, RepositoryException {
-		ItemEntity entity = db.findByKey(plk.getItemId());
-		if (entity == null) {
+	private <T extends ItemBase> T fetchItem(DbHelper db, ServiceType serviceType, ItemType itemType,
+			ProjectId project, ManagedItemId itemId, Class<T> modelClass, SecretProvider secretProvider,
+			boolean fetchTags) throws SQLException, RepositoryException {
+
+		int projectId = db.mapToValue(project);
+		int modelId = db.mapToValue(itemType);
+		int serviceId = db.mapToValue(serviceType);
+
+		String filterKey = itemId.getKey();
+
+		JoinedQueryResult result = db.queries.listItems(serviceId, modelId, projectId, filterKey);
+
+		List<T> items = mapItemsAndTags(project, secretProvider, db, result);
+
+		if (items.size() == 0) {
 			return null;
 		}
 
-		JaxbHelper jaxb = JaxbHelper.get(modelClass);
-
-		if (plk.getProject() == null) {
+		if (items.size() != 1) {
 			throw new IllegalStateException();
 		}
 
-		T item = mapToModel(plk.getProject(), plk.getServiceType(), plk.getItemType(), entity, jaxb, secretProvider);
-
-		if (fetchTags) {
-			// This is theoretically 1+N, but we only expect a single item to match
-			mapToTags(db.listTagsForItem(entity.id), item.getTags());
-		}
-
-		item.setKey(plk);
-
-		return item;
+		return items.get(0);
 	}
 
 	@Override
@@ -640,7 +623,13 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 		try {
 			ManagedItemId itemId = new ManagedItemId(item.getId());
 
-			ItemEntity rs = db.findByKey(itemId);
+			ModelClass<T> modelClass = serviceProviderDirectory.getModelClass(itemClass);
+
+			int projectId = db.mapToValue(project);
+			int modelId = db.mapToValue(modelClass.getItemType());
+			int serviceId = db.mapToValue(modelClass.getServiceType());
+
+			ItemEntity rs = db.queries.findItem(serviceId, modelId, projectId, itemId.getKey());
 			if (rs == null) {
 				throw new RepositoryException("Item not found");
 			}
@@ -667,7 +656,8 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 			SecretProvider secretProvider = SecretProvider.forKey(itemSecret);
 
 			boolean fetchTags = true;
-			return fetchItem(db, item.getKey(), itemClass, secretProvider, fetchTags);
+			return fetchItem(db, modelClass.getServiceType(), modelClass.getItemType(), project, itemId, itemClass,
+					secretProvider, fetchTags);
 		} catch (SQLException e) {
 			throw new RepositoryException("Error running query", e);
 		} finally {
@@ -712,7 +702,11 @@ public class JdbcManagedItemRepository implements ManagedItemRepository {
 		DbHelper db = new DbHelper(modelClass, project);
 
 		try {
-			ItemEntity rs = db.findByKey(itemKey);
+			int projectId = db.mapToValue(project);
+			int modelId = db.mapToValue(modelClass.getItemType());
+			int serviceId = db.mapToValue(modelClass.getServiceType());
+
+			ItemEntity rs = db.queries.findItem(serviceId, modelId, projectId, itemKey.getKey());
 			if (rs == null) {
 				// TODO: Better exception??
 				throw new IllegalStateException("Not found");

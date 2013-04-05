@@ -324,7 +324,7 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 	public List<ServiceAccountEntity> listAllServiceAccounts(byte[] filterPublicKey) throws RepositoryException {
 		DbHelper db = new DbHelper();
 		try {
-			List<ServiceAccountEntity> serviceAccounts = db.listAllServiceAccounts();
+			List<ServiceAccountEntity> serviceAccounts = db.queries.listAllServiceAccounts();
 
 			List<ServiceAccountEntity> ret = Lists.newArrayList();
 
@@ -495,10 +495,6 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 			return queries.listProjects(keyLike);
 		}
 
-		public List<ServiceAccountEntity> listAllServiceAccounts() throws SQLException {
-			return queries.listAllServiceAccounts();
-		}
-
 		public UserEntity findUserById(int userId) throws SQLException {
 			return queries.findUserById(userId);
 		}
@@ -518,10 +514,6 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 
 		public ProjectEntity findProjectByKey(String key) throws SQLException {
 			return queries.findProjectByKey(key);
-		}
-
-		public ServiceAccountEntity findServiceAccount(String subject, byte[] publicKey) throws SQLException {
-			return queries.findServiceAccount(subject, publicKey);
 		}
 
 		public int insertServiceAccount(String subject, byte[] publicKey) throws SQLException {
@@ -694,7 +686,7 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 
 		DbHelper db = new DbHelper();
 		try {
-			return db.findServiceAccount(subject, publicKey);
+			return db.queries.findServiceAccount(subject, publicKey);
 		} catch (SQLException e) {
 			throw new RepositoryException("Error reading system account", e);
 		} finally {
@@ -738,7 +730,7 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 			String subject = cert.getSubjectDN().getName();
 			byte[] publicKey = cert.getPublicKey().getEncoded();
 
-			ServiceAccountEntity existing = db.findServiceAccount(subject, publicKey);
+			ServiceAccountEntity existing = db.queries.findServiceAccount(subject, publicKey);
 			if (existing == null) {
 				db.insertServiceAccount(subject, publicKey);
 			} else {

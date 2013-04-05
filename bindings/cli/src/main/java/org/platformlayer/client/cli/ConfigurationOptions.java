@@ -80,7 +80,6 @@ public class ConfigurationOptions extends CliOptions {
 
 				try {
 					client = platformLayerClientCache.get(propertiesKey, new Callable<HttpPlatformLayerClient>() {
-
 						@Override
 						public HttpPlatformLayerClient call() throws Exception {
 							return buildPlatformLayerClient(properties, false);

@@ -1,6 +1,8 @@
 package org.platformlayer.service.platformlayer.ops.auth.user;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -55,8 +57,6 @@ public class UserAuthInstanceTemplate extends CommonAuthTemplateData {
 	@Override
 	protected Map<String, String> getConfigurationProperties() throws OpsException {
 		Map<String, String> properties = super.getConfigurationProperties();
-
-		properties.putAll(links.buildLinkTargetProperties(model.links));
 
 		properties.put("auth.user.module", "org.platformlayer.auth.keystone.KeystoneOpsUserModule");
 		properties.put("sharedsecret", getModel().tokenSecret.plaintext());

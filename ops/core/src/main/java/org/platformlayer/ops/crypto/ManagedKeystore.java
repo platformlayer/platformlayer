@@ -83,15 +83,18 @@ public class ManagedKeystore extends OpsTreeBase {
 
 		if (keyAliases.contains(alias)) {
 			try {
-				Certificate[] certificateChain = keystore.getCertificateChain(alias);
-				if (certificateChain == null || certificateChain.length == 0) {
+				Certificate[] existingCertificateChain = keystore.getCertificateChain(alias);
+				if (existingCertificateChain == null || existingCertificateChain.length == 0) {
 					keyAliases.remove(alias);
 				} else {
-					Certificate certificate = certificateChain[0];
-
 					boolean remove = false;
 					if (key != null) {
-						if (!Objects.equal(key.getCertificateChain()[0], certificate)) {
+						X509Certificate[] wantCertificateChain = key.getCertificateChain();
+						// wantCertificateChain might not be a complete chain
+						// as we auto-add subsequent well-known CAs
+						// So we just check the head; if the head is the same then it's almost guaranteed that the tail
+						// is the same
+						if (!Objects.equal(wantCertificateChain[0], existingCertificateChain[0])) {
 							log.warn("Key found, but mismatch on certificate; will remove");
 							remove = true;
 						}

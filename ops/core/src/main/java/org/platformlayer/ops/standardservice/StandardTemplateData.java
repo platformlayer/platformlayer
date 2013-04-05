@@ -1,11 +1,15 @@
 package org.platformlayer.ops.standardservice;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
 import org.platformlayer.core.model.ItemBase;
+import org.platformlayer.core.model.Link;
+import org.platformlayer.core.model.Links;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsException;
@@ -15,6 +19,8 @@ import org.platformlayer.ops.helpers.ProviderHelper;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.metrics.MetricsManager;
 import org.platformlayer.ops.templates.TemplateDataSource;
+import org.platformlayer.ops.uses.LinkHelpers;
+import org.platformlayer.ops.uses.LinkTarget;
 
 import com.google.common.collect.Maps;
 
@@ -31,6 +37,9 @@ public abstract class StandardTemplateData implements TemplateDataSource {
 
 	@Inject
 	protected ManagedSecretKeys managedSecretKeys;
+
+	@Inject
+	protected LinkHelpers links;
 
 	public abstract ItemBase getModel();
 
@@ -70,18 +79,38 @@ public abstract class StandardTemplateData implements TemplateDataSource {
 		return new File(getConfigDir(), "configuration.properties");
 	}
 
-	protected abstract Map<String, String> getConfigurationProperties() throws OpsException;
+	protected Map<String, String> getConfigurationProperties() throws OpsException {
+		Map<String, String> properties = Maps.newHashMap();
+
+		List<Link> modelLinks = getLinks();
+		if (modelLinks != null) {
+			properties.putAll(links.buildLinkTargetProperties(modelLinks));
+		}
+
+		return properties;
+	}
+
+	protected List<Link> getLinks() {
+		Links links = getModel().links;
+		if (links == null) {
+			return Collections.emptyList();
+		}
+		return links.getLinks();
+	}
 
 	protected PlatformLayerKey getCaPath() throws OpsException {
 		return null;
 	}
 
-	public ManagedSecretKey findCaSignedKey(String alias) throws OpsException {
-		PlatformLayerKey caPath = getCaPath();
+	public ManagedSecretKey findCaSignedKey(PlatformLayerKey caPath, String alias) throws OpsException {
 		if (caPath == null) {
 			return null;
 		}
 		return managedSecretKeys.findSslKey(getModel().getKey(), caPath, alias);
+	}
+
+	public ManagedSecretKey findCaSignedKey(String alias) throws OpsException {
+		return findCaSignedKey(getCaPath(), alias);
 	}
 
 	public ManagedSecretKey findCaKey() throws OpsException {
@@ -168,9 +197,16 @@ public abstract class StandardTemplateData implements TemplateDataSource {
 	public abstract String getDownloadSpecifier();
 
 	public void getAdditionalKeys(Map<String, ManagedSecretKey> keys) throws OpsException {
-	}
+		for (Link link : getLinks()) {
+			ItemBase item = platformLayer.getItem(link.getTarget());
+			LinkTarget linkTarget = providers.toInterface(item, LinkTarget.class);
 
-	// public String getDatabaseName() {
-	// return "main";
-	// }
+			PlatformLayerKey caPath = linkTarget.getCaForClientKey();
+			if (caPath != null) {
+				String alias = links.buildKeyName(link);
+
+				keys.put(alias, findCaSignedKey(caPath, alias));
+			}
+		}
+	}
 }

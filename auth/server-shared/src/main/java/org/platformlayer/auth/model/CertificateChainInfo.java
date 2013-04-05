@@ -12,4 +12,10 @@ import com.google.common.collect.Lists;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CertificateChainInfo {
 	public List<CertificateInfo> certificates = Lists.newArrayList();
+
+	@Override
+	public String toString() {
+		return "CertificateChainInfo [certificates=" + certificates + "]";
+	}
+
 }

@@ -30,13 +30,20 @@ public class ClientCertificateSystemAuthenticator implements SystemAuthenticator
 			return null;
 		}
 
-		CertificateInfo head = certChainInfo.certificates.get(0);
+		// If it's a single cert; we check the cert.
+		// Otherwise, we assume a CA signed the tail cert, so we check the penultimate cert
+		CertificateInfo inspect;
+		if (certChainInfo.certificates.size() == 1) {
+			inspect = certChainInfo.certificates.get(0);
+		} else {
+			inspect = certChainInfo.certificates.get(1);
+		}
 
-		String subject = head.subjectDN;
-		if (Strings.isNullOrEmpty(head.publicKey)) {
+		String subject = inspect.subjectDN;
+		if (Strings.isNullOrEmpty(inspect.publicKey)) {
 			throw new IllegalArgumentException();
 		}
-		byte[] publicKey = Hex.fromHex(head.publicKey);
+		byte[] publicKey = Hex.fromHex(inspect.publicKey);
 
 		ServiceAccountEntity auth;
 		try {

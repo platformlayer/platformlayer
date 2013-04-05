@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.platformlayer.InetAddressChooser;
+import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
@@ -108,6 +109,11 @@ public class SystemAuthServiceController extends OpsTreeBase implements LinkTarg
 		properties.put("ssl.cert", CERT_NAME);
 
 		return properties;
+	}
+
+	@Override
+	public PlatformLayerKey getCaForClientKey() {
+		return model.ca;
 	}
 
 	@Override

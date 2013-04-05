@@ -1,35 +1,39 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.platformlayer</groupId>
-        <artifactId>platformlayer-services-parent</artifactId>
-        <version>1.0-SNAPSHOT</version>
-    </parent>
+	<parent>
+		<groupId>org.platformlayer</groupId>
+		<artifactId>platformlayer-services-parent</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
 
-    <artifactId>service-cloud-googlecompute</artifactId>
-    <name>PlatformLayer :: Services :: Cloud :: Google Compute</name>
+	<artifactId>service-cloud-googlecompute</artifactId>
+	<name>PlatformLayer :: Services :: Cloud :: Google Compute</name>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.platformlayer</groupId>
-            <artifactId>service-base</artifactId>
-        </dependency>
+	<dependencies>
+		<dependency>
+			<groupId>org.platformlayer</groupId>
+			<artifactId>service-base</artifactId>
+		</dependency>
 
 
-        <dependency>
-            <groupId>com.google.apis</groupId>
-            <artifactId>google-api-services-compute</artifactId>
-            <version>v1beta12-rev1-1.7.2-beta</version>
-        </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>com.google.apis</groupId>
+			<artifactId>google-api-services-compute</artifactId>
+			<version>v1beta12-rev1-1.7.2-beta</version>
+		</dependency>
+	</dependencies>
 
-    <repositories>
-        <repository>
-            <id>google-api-services</id>
-            <url>http://mavenrepo.google-api-java-client.googlecode.com/hg</url>
-        </repository>
-    </repositories>
+	<repositories>
+		<repository>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+
+			<id>google-api-services</id>
+			<url>http://mavenrepo.google-api-java-client.googlecode.com/hg</url>
+		</repository>
+	</repositories>
 
 </project>

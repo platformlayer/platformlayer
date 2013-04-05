@@ -66,8 +66,7 @@ public class PlatformLayerAuthAdminClient implements AuthenticationTokenValidato
 		String keystoneServiceUrl = configuration.lookup("auth.system.url", "https://127.0.0.1:"
 				+ WellKnownPorts.PORT_PLATFORMLAYER_AUTH_ADMIN + "/");
 
-		String cert = configuration.get("auth.system.ssl.cert");
-		// String secret = configuration.lookup("multitenant.cert.password", KeyStoreUtils.DEFAULT_KEYSTORE_SECRET);
+		String cert = configuration.get("auth.system.tls.clientcert");
 
 		CertificateAndKey certificateAndKey = encryptionStore.getCertificateAndKey(cert);
 
