@@ -76,22 +76,12 @@ fi
 
 
 # By default, we won't use nailgun (for easier setup)
-if [[ "${USE_NAILGUN}" == "" ]]; then
-	USE_NAILGUN=0
-fi
-
-if [[ "${USE_NAILGUN}" == "1" ]]; then
-	NAILGUN=ng-nailgun
+if [[ "${NAILGUN}" != "" ]]; then
 	if ! builtin type -p ${NAILGUN} &>/dev/null; then
-		NAILGUN=ng
-		if ! builtin type -p ${NAILGUN} &>/dev/null; then
-			NAILGUN=${BASEDIR}/../nailgun/ng
-			if ! builtin type -p ${NAILGUN} &>/dev/null; then
-				echo "${NAILGUN} not found; try sudo apt-get install nailgun"
-				exit 1
-			fi
-		fi
+		echo "NAILGUN=${NAILGUN}, but ${NAILGUN} not found"
+		exit 1
 	fi
+	USE_NAILGUN=1
 fi
 
 
@@ -120,6 +110,8 @@ if [[ "${USE_NAILGUN}" == "1" ]]; then
 
 	cmd=(${NAILGUN} org.platformlayer.client.cli.PlatformLayerCli)
 	args=(--format "${FORMAT}" --config -)
+
+	${NAILGUN} bootstrap  ${JAVA} -jar ${BASEDIR}/platformlayer-cli-standalone.jar --listen=${NAILGUN_PORT} &
 else
 	cmd=(${JAVA} -jar ${BASEDIR}/platformlayer-cli-standalone.jar)
 	args=(--format "${FORMAT}" --config "${CONFIG_FILE}")
