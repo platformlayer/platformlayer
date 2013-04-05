@@ -197,18 +197,15 @@ public abstract class StandardTemplateData implements TemplateDataSource {
 	public abstract String getDownloadSpecifier();
 
 	public void getAdditionalKeys(Map<String, ManagedSecretKey> keys) throws OpsException {
-		ItemBase model = getModel();
-		if (model.links != null) {
-			for (Link link : model.links.getLinks()) {
-				ItemBase item = platformLayer.getItem(link.getTarget());
-				LinkTarget linkTarget = providers.toInterface(item, LinkTarget.class);
+		for (Link link : getLinks()) {
+			ItemBase item = platformLayer.getItem(link.getTarget());
+			LinkTarget linkTarget = providers.toInterface(item, LinkTarget.class);
 
-				PlatformLayerKey caPath = linkTarget.getCaForClientKey();
-				if (caPath != null) {
-					String alias = links.buildKeyName(link);
+			PlatformLayerKey caPath = linkTarget.getCaForClientKey();
+			if (caPath != null) {
+				String alias = links.buildKeyName(link);
 
-					keys.put(alias, findCaSignedKey(caPath, alias));
-				}
+				keys.put(alias, findCaSignedKey(caPath, alias));
 			}
 		}
 	}
