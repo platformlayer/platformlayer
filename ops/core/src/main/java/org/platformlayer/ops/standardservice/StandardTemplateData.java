@@ -212,7 +212,4 @@ public abstract class StandardTemplateData implements TemplateDataSource {
 			}
 		}
 	}
-	// public String getDatabaseName() {
-	// return "main";
-	// }
 }

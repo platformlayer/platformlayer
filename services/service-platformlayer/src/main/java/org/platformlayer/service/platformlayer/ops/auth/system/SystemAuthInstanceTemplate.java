@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SystemAuthInstanceTemplate extends CommonAuthTemplateData {
-
 	private static final Logger log = LoggerFactory.getLogger(SystemAuthInstanceTemplate.class);
 
 	@Bound
@@ -64,6 +63,11 @@ public class SystemAuthInstanceTemplate extends CommonAuthTemplateData {
 	@Override
 	protected PlatformLayerKey getSslKeyPath() {
 		return getModel().sslKey;
+	}
+
+	@Override
+	protected PlatformLayerKey getCaPath() {
+		return getModel().ca;
 	}
 
 	@Override

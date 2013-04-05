@@ -113,7 +113,7 @@ public class SystemAuthServiceController extends OpsTreeBase implements LinkTarg
 
 	@Override
 	public PlatformLayerKey getCaForClientKey() {
-		return null;
+		return model.ca;
 	}
 
 	@Override
