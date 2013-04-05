@@ -305,6 +305,8 @@ class QueryDescriptor {
 			}
 
 			sb.append(" ) ) ");
+		} else {
+			sb.append(this.sql);
 		}
 
 		// Limit must come at the end
