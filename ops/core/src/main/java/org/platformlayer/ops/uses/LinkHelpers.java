@@ -1,5 +1,6 @@
 package org.platformlayer.ops.uses;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -7,8 +8,6 @@ import javax.inject.Inject;
 import org.platformlayer.InetAddressChooser;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.Link;
-import org.platformlayer.core.model.Links;
-import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.helpers.ProviderHelper;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
@@ -29,14 +28,14 @@ public class LinkHelpers {
 
 	// public InetAddressChooser inetAddressChooser = InetAddressChooser.preferIpv6();
 
-	public Map<String, String> buildLinkTargetProperties(Links links) throws OpsException {
+	public Map<String, String> buildLinkTargetProperties(List<Link> links) throws OpsException {
 		Map<String, String> config = Maps.newHashMap();
 
 		if (links != null) {
 			NetworkPoint networkPoint = NetworkPoint.forTargetInContext();
 			InetAddressChooser inetAddressChooser = NearestAddressChooser.build(networkPoint);
 
-			for (Link link : links.getLinks()) {
+			for (Link link : links) {
 				ItemBase item = platformLayer.getItem(link.getTarget());
 				LinkTarget linkTarget = providers.toInterface(item, LinkTarget.class);
 
@@ -68,27 +67,6 @@ public class LinkHelpers {
 		}
 
 		return config;
-	}
-
-	/**
-	 * Deprecated: Prefer using LinkTargets instead
-	 * 
-	 * @param properties
-	 * @param linkName
-	 * @param key
-	 * @throws OpsException
-	 */
-	@Deprecated
-	public void addTarget(Map<String, String> properties, String linkName, PlatformLayerKey key) throws OpsException {
-		ItemBase item = platformLayer.findItem(key);
-		LinkTarget linkTarget = providers.toInterface(item, LinkTarget.class);
-
-		NetworkPoint networkPoint = NetworkPoint.forTargetInContext();
-
-		InetAddressChooser inetAddressChooser = NearestAddressChooser.build(networkPoint);
-		Map<String, String> config = buildLinkTargetConfiguration(linkName, linkTarget, inetAddressChooser);
-
-		properties.putAll(config);
 	}
 
 	public String buildKeyName(Link link) {

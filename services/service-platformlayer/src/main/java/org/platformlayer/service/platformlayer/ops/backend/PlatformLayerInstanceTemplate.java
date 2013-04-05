@@ -1,8 +1,10 @@
 package org.platformlayer.service.platformlayer.ops.backend;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
+import org.platformlayer.core.model.Link;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Property;
 import org.platformlayer.ops.Bound;
@@ -17,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
+import com.google.common.collect.Lists;
 
 public class PlatformLayerInstanceTemplate extends StandardTemplateData {
 
@@ -82,21 +84,47 @@ public class PlatformLayerInstanceTemplate extends StandardTemplateData {
 	}
 
 	@Override
+	protected List<Link> getLinks() {
+		List<Link> links = Lists.newArrayList();
+
+		links.addAll(super.getLinks());
+
+		{
+			// Link to database
+			Link link = new Link();
+			link.name = "platformlayer";
+			link.target = getDatabaseKey();
+			links.add(link);
+		}
+
+		{
+			// Link to user auth
+			Link link = new Link();
+			link.name = "auth.user";
+			link.target = model.auth;
+			links.add(link);
+		}
+
+		{
+			// Link to system auth (token validation)
+			Link link = new Link();
+			link.name = "auth.system";
+			link.target = model.systemAuth;
+			links.add(link);
+		}
+
+		return links;
+	}
+
+	@Override
 	protected Map<String, String> getConfigurationProperties() throws OpsException {
-		Map<String, String> properties = Maps.newHashMap();
+		Map<String, String> properties = super.getConfigurationProperties();
 
 		PlatformLayerService model = getModel();
-
-		properties.putAll(links.buildLinkTargetProperties(model.links));
 
 		{
 			// Configure keystore
 			properties.put("keystore", getKeystoreFile().getAbsolutePath());
-		}
-
-		{
-			// Link to database
-			links.addTarget(properties, "platformlayer", getDatabaseKey());
 		}
 
 		if (isMultitenant()) {
@@ -105,16 +133,6 @@ public class PlatformLayerInstanceTemplate extends StandardTemplateData {
 			properties.put("multitenant.user", "master@" + model.dnsName);
 			// properties.put("multitenant.password", model.multitenantPassword.plaintext());
 			properties.put("multitenant.cert", getMultitenantKeyAlias());
-		}
-
-		{
-			// Link to user auth
-			links.addTarget(properties, "auth.user", model.auth);
-		}
-
-		{
-			// Link to system auth (token validation)
-			links.addTarget(properties, "auth.system", model.systemAuth);
 		}
 
 		if (model.config != null) {

@@ -1,12 +1,15 @@
 package org.platformlayer.ops.standardservice;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.Link;
+import org.platformlayer.core.model.Links;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsException;
@@ -76,7 +79,24 @@ public abstract class StandardTemplateData implements TemplateDataSource {
 		return new File(getConfigDir(), "configuration.properties");
 	}
 
-	protected abstract Map<String, String> getConfigurationProperties() throws OpsException;
+	protected Map<String, String> getConfigurationProperties() throws OpsException {
+		Map<String, String> properties = Maps.newHashMap();
+
+		List<Link> modelLinks = getLinks();
+		if (modelLinks != null) {
+			properties.putAll(links.buildLinkTargetProperties(modelLinks));
+		}
+
+		return properties;
+	}
+
+	protected List<Link> getLinks() {
+		Links links = getModel().links;
+		if (links == null) {
+			return Collections.emptyList();
+		}
+		return links.getLinks();
+	}
 
 	protected PlatformLayerKey getCaPath() throws OpsException {
 		return null;
