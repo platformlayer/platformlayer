@@ -31,6 +31,7 @@ public class ServicesResource extends RootResource {
 			log.warn("Error while authenticating chain", e);
 			throwInternalError();
 		}
+
 		CheckServiceAccessResponse response = new CheckServiceAccessResponse();
 		if (serviceAccount != null) {
 			response.serviceAccount = serviceAccount.subject;

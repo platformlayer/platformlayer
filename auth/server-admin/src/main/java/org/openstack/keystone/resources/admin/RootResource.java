@@ -41,8 +41,7 @@ public class RootResource extends PlatformlayerAuthResourceBase {
 				return;
 			}
 
-			CertificateInfo head = chain.certificates.get(0);
-			log.debug("Certificate authentication request failed for " + head);
+			log.debug("Certificate authentication request failed for " + chain);
 		} else {
 			log.debug("Certificate authentication failed (no certificate presented)");
 		}

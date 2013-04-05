@@ -25,7 +25,13 @@ public class CreateServiceAccount extends KeystoneCommandRunnerBase {
 	public Object runCommand() throws Exception {
 		Certificate[] certificateChain = getContext().getCertificateChain(keystore, keystoreSecret, keyAlias);
 
-		X509Certificate cert = (X509Certificate) certificateChain[0];
+		X509Certificate cert;
+		if (certificateChain.length == 1) {
+			cert = (X509Certificate) certificateChain[0];
+		} else {
+			System.out.println("Certificate chain has length " + certificateChain.length + ", assuming entry 2 is CA");
+			cert = (X509Certificate) certificateChain[1];
+		}
 
 		UserDatabase userRepository = getContext().getUserRepository();
 
