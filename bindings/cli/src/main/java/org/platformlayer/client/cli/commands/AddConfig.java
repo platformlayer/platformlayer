@@ -64,4 +64,5 @@ public class AddConfig extends ItemMutatorCommand {
 			throw new UnsupportedOperationException();
 		}
 	}
+
 }
