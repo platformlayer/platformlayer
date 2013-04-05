@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.platformlayer.InetAddressChooser;
+import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
@@ -106,6 +107,11 @@ public class UserAuthServiceController extends OpsTreeBase implements LinkTarget
 		// The ssl cert is actually multitenant.cert
 
 		return properties;
+	}
+
+	@Override
+	public PlatformLayerKey getCaForClientKey() {
+		return null;
 	}
 
 	@Override

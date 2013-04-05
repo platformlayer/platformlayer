@@ -26,7 +26,7 @@ public abstract class CommonAuthTemplateData extends StandardTemplateData {
 		Map<String, String> properties = Maps.newHashMap();
 
 		{
-			links.addTarget(properties, "auth.", getAuthDatabaseKey());
+			links.addTarget(properties, "auth", getAuthDatabaseKey());
 		}
 
 		return properties;

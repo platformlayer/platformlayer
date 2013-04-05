@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.platformlayer.core.model.ItemBase;
+import org.platformlayer.core.model.Link;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsException;
@@ -15,6 +16,8 @@ import org.platformlayer.ops.helpers.ProviderHelper;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.metrics.MetricsManager;
 import org.platformlayer.ops.templates.TemplateDataSource;
+import org.platformlayer.ops.uses.LinkHelpers;
+import org.platformlayer.ops.uses.LinkTarget;
 
 import com.google.common.collect.Maps;
 
@@ -31,6 +34,9 @@ public abstract class StandardTemplateData implements TemplateDataSource {
 
 	@Inject
 	protected ManagedSecretKeys managedSecretKeys;
+
+	@Inject
+	protected LinkHelpers links;
 
 	public abstract ItemBase getModel();
 
@@ -76,12 +82,15 @@ public abstract class StandardTemplateData implements TemplateDataSource {
 		return null;
 	}
 
-	public ManagedSecretKey findCaSignedKey(String alias) throws OpsException {
-		PlatformLayerKey caPath = getCaPath();
+	public ManagedSecretKey findCaSignedKey(PlatformLayerKey caPath, String alias) throws OpsException {
 		if (caPath == null) {
 			return null;
 		}
 		return managedSecretKeys.findSslKey(getModel().getKey(), caPath, alias);
+	}
+
+	public ManagedSecretKey findCaSignedKey(String alias) throws OpsException {
+		return findCaSignedKey(getCaPath(), alias);
 	}
 
 	public ManagedSecretKey findCaKey() throws OpsException {
@@ -168,8 +177,21 @@ public abstract class StandardTemplateData implements TemplateDataSource {
 	public abstract String getDownloadSpecifier();
 
 	public void getAdditionalKeys(Map<String, ManagedSecretKey> keys) throws OpsException {
-	}
+		ItemBase model = getModel();
+		if (model.links != null) {
+			for (Link link : model.links.getLinks()) {
+				ItemBase item = platformLayer.getItem(link.getTarget());
+				LinkTarget linkTarget = providers.toInterface(item, LinkTarget.class);
 
+				PlatformLayerKey caPath = linkTarget.getCaForClientKey();
+				if (caPath != null) {
+					String alias = links.buildKeyName(link);
+
+					keys.put(alias, findCaSignedKey(caPath, alias));
+				}
+			}
+		}
+	}
 	// public String getDatabaseName() {
 	// return "main";
 	// }

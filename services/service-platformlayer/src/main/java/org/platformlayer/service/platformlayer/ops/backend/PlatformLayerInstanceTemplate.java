@@ -3,8 +3,6 @@ package org.platformlayer.service.platformlayer.ops.backend;
 import java.io.File;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Property;
 import org.platformlayer.ops.Bound;
@@ -13,7 +11,6 @@ import org.platformlayer.ops.Command.Argument;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.java.JavaCommandBuilder;
 import org.platformlayer.ops.standardservice.StandardTemplateData;
-import org.platformlayer.ops.uses.LinkHelpers;
 import org.platformlayer.service.platformlayer.model.PlatformLayerService;
 import org.platformlayer.service.platformlayer.ops.auth.system.SystemAuthServiceController;
 import org.slf4j.Logger;
@@ -25,9 +22,6 @@ import com.google.common.collect.Maps;
 public class PlatformLayerInstanceTemplate extends StandardTemplateData {
 
 	private static final Logger log = LoggerFactory.getLogger(PlatformLayerInstanceTemplate.class);
-
-	@Inject
-	LinkHelpers links;
 
 	@Bound
 	PlatformLayerService model;
@@ -102,7 +96,7 @@ public class PlatformLayerInstanceTemplate extends StandardTemplateData {
 
 		{
 			// Link to database
-			links.addTarget(properties, "platformlayer.", getDatabaseKey());
+			links.addTarget(properties, "platformlayer", getDatabaseKey());
 		}
 
 		if (isMultitenant()) {
@@ -115,12 +109,12 @@ public class PlatformLayerInstanceTemplate extends StandardTemplateData {
 
 		{
 			// Link to user auth
-			links.addTarget(properties, "auth.user.", model.auth);
+			links.addTarget(properties, "auth.user", model.auth);
 		}
 
 		{
 			// Link to system auth (token validation)
-			links.addTarget(properties, "auth.system.", model.systemAuth);
+			links.addTarget(properties, "auth.system", model.systemAuth);
 		}
 
 		if (model.config != null) {
