@@ -5,15 +5,17 @@ import java.io.InputStream;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import com.fathomdb.Utf8;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.service.solr.model.SolrSchemaField;
+import org.platformlayer.xml.DomUtils;
 import org.platformlayer.xml.XmlHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import com.fathomdb.Utf8;
 
 public class SolrSchemaFile extends SyntheticXmlFile {
 
@@ -66,7 +68,7 @@ public class SolrSchemaFile extends SyntheticXmlFile {
 			fieldsElement.appendChild(el);
 		}
 
-		return Utf8.getBytes(XmlHelper.toXml(dom));
+		return Utf8.getBytes(DomUtils.toXml(dom));
 	}
 
 }

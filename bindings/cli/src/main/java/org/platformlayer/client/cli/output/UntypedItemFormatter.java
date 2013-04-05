@@ -10,7 +10,7 @@ import org.platformlayer.common.UntypedItem;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.Tags;
-import org.platformlayer.xml.XmlHelper;
+import org.platformlayer.xml.DomUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -136,7 +136,7 @@ public class UntypedItemFormatter extends SimpleFormatter<UntypedItem> {
 			return formatCell(childNodes.item(0));
 		}
 
-		return XmlHelper.toXml(node);
+		return DomUtils.toXml(node);
 	}
 
 	public static void formatItem(UntypedItem o, Ansi ansi, boolean fullPath) {

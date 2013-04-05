@@ -18,6 +18,7 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.util.EntityUtils;
+import org.platformlayer.http.HttpMethod;
 import org.platformlayer.http.HttpRequest;
 import org.platformlayer.http.HttpResponse;
 import org.slf4j.Logger;
@@ -33,25 +34,34 @@ public class ApacheCommonsHttpRequest implements HttpRequest {
 	private static final Logger log = LoggerFactory.getLogger(ApacheCommonsHttpRequest.class);
 
 	final HttpClient httpClient;
-	final String method;
+	final HttpMethod method;
 	final URI uri;
 
 	final HttpRequestBase request;
 
-	ApacheCommonsHttpRequest(HttpClient httpClient, String method, URI uri) {
+	ApacheCommonsHttpRequest(HttpClient httpClient, HttpMethod method, URI uri) {
 		this.httpClient = httpClient;
 		this.method = method;
 		this.uri = uri;
 
-		if (method.equals(HttpGet.METHOD_NAME)) {
+		switch (method) {
+		case GET:
 			request = new HttpGet(uri);
-		} else if (method.equals(HttpPost.METHOD_NAME)) {
+			break;
+
+		case POST:
 			request = new HttpPost(uri);
-		} else if (method.equals(HttpPut.METHOD_NAME)) {
+			break;
+
+		case PUT:
 			request = new HttpPut(uri);
-		} else if (method.equals(HttpDelete.METHOD_NAME)) {
+			break;
+
+		case DELETE:
 			request = new HttpDelete(uri);
-		} else {
+			break;
+
+		default:
 			throw new IllegalArgumentException("Unhandled method: " + method);
 		}
 	}

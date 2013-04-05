@@ -6,10 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimerTask;
 
-import org.slf4j.*;
-
-import com.fathomdb.TimeSpan;
-import com.fathomdb.utils.Hex;
 import org.platformlayer.HttpPlatformLayerClient;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
@@ -23,9 +19,13 @@ import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.http.HttpStrategy;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ops.OpsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.fathomdb.TimeSpan;
 import com.fathomdb.crypto.CryptoKey;
 import com.fathomdb.crypto.FathomdbCrypto;
+import com.fathomdb.utils.Hex;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;

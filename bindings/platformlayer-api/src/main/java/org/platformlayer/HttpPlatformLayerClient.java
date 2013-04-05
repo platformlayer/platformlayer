@@ -22,6 +22,7 @@ import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.core.model.Tags;
 import org.platformlayer.federation.model.PlatformLayerConnectionConfiguration;
+import org.platformlayer.http.HttpMethod;
 import org.platformlayer.http.HttpStrategy;
 import org.platformlayer.ids.ItemType;
 import org.platformlayer.ids.ManagedItemId;
@@ -134,7 +135,8 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 	@Override
 	public List<ServiceInfo> listServices(boolean allowCache) throws PlatformLayerClientException {
 		if (!allowCache || services == null) {
-			ServiceInfoCollection ret = doRequest("GET", "", ServiceInfoCollection.class, Format.XML, null, null);
+			ServiceInfoCollection ret = doRequest(HttpMethod.GET, "", ServiceInfoCollection.class, Format.XML, null,
+					null);
 			services = ret.services;
 		}
 
@@ -153,7 +155,7 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 	// return httpClient.doRequest("POST", relativePath, String.class, data, format);
 	// }
 
-	private <T> T doRequest(String method, String relativeUrl, Class<T> retvalClass, Format acceptFormat,
+	private <T> T doRequest(HttpMethod method, String relativeUrl, Class<T> retvalClass, Format acceptFormat,
 			Object sendData, Format sendDataFormat) throws PlatformLayerClientException {
 		if (relativeUrl.startsWith("/")) {
 			assert false;
@@ -173,7 +175,7 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 
 		String relativePath = buildRelativePath(serviceType, itemType, id);
 
-		String xml = doRequest("PUT", relativePath, String.class, Format.XML, data, dataFormat);
+		String xml = doRequest(HttpMethod.PUT, relativePath, String.class, Format.XML, data, dataFormat);
 		return UntypedItemXml.build(xml);
 	}
 
@@ -190,7 +192,7 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 			relativePath += "?unique=" + urlEncode(uniqueTag.getKey());
 		}
 
-		String xml = doRequest("PUT", relativePath, String.class, Format.XML, data, dataFormat);
+		String xml = doRequest(HttpMethod.PUT, relativePath, String.class, Format.XML, data, dataFormat);
 		UntypedItem item = UntypedItemXml.build(xml);
 
 		// PlatformLayerKey platformLayerKey = item.getPlatformLayerKey();
@@ -211,28 +213,28 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 			throws PlatformLayerClientException {
 		String relativePath = "authorizations/" + serviceType + "/";
 
-		return doRequest("POST", relativePath, String.class, Format.XML, data, dataFormat);
+		return doRequest(HttpMethod.POST, relativePath, String.class, Format.XML, data, dataFormat);
 	}
 
 	@Override
 	public String getActivation(String serviceType, Format format) throws PlatformLayerClientException {
 		String relativePath = "authorizations/" + serviceType + "/";
 
-		return doRequest("GET", relativePath, String.class, format, null, null);
+		return doRequest(HttpMethod.GET, relativePath, String.class, format, null, null);
 	}
 
 	@Override
 	public String getSshPublicKey(String serviceType) throws PlatformLayerClientException {
 		String relativePath = serviceType + "/sshkey";
 
-		return doRequest("GET", relativePath, String.class, Format.TEXT, null, null);
+		return doRequest(HttpMethod.GET, relativePath, String.class, Format.TEXT, null, null);
 	}
 
 	@Override
 	public String getSchema(String serviceType, Format format) throws PlatformLayerClientException {
 		String relativePath = serviceType + "/schema";
 
-		return doRequest("GET", relativePath, String.class, format, null, null);
+		return doRequest(HttpMethod.GET, relativePath, String.class, format, null, null);
 	}
 
 	// public <T> T createItem(T item) throws PlatformLayerClientException {
@@ -266,7 +268,7 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 	public Tags changeTags(ServiceType serviceType, ItemType itemType, ManagedItemId id, TagChanges tagChanges)
 			throws PlatformLayerClientException {
 		String url = buildRelativePath(serviceType, itemType, id) + "/tags";
-		Tags retval = doRequest("POST", url, Tags.class, Format.XML, tagChanges, Format.XML);
+		Tags retval = doRequest(HttpMethod.POST, url, Tags.class, Format.XML, tagChanges, Format.XML);
 		return retval;
 	}
 
@@ -281,7 +283,7 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 	public JobData deleteItem(PlatformLayerKey key) throws PlatformLayerClientException {
 		String relativePath = buildRelativePath(key);
 
-		JobData retval = doRequest("DELETE", relativePath, JobData.class, Format.XML, null, null);
+		JobData retval = doRequest(HttpMethod.DELETE, relativePath, JobData.class, Format.XML, null, null);
 		return retval;
 	}
 
@@ -325,7 +327,7 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 	// throw new UnsupportedOperationException();
 	//
 	// String relativePath = buildRelativePath(key);
-	// T item = httpClient.doRequest("GET", relativePath, clazz, Format.XML, null, Format.XML);
+	// T item = httpClient.doRequest(HttpMethod.GET, relativePath, clazz, Format.XML, null, Format.XML);
 	//
 	// setPlatformLayerKey(item, key);
 	//
@@ -342,7 +344,7 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 
 	private String doListItemsRequest(PlatformLayerKey path) throws PlatformLayerClientException {
 		String relativePath = buildRelativePath(path);
-		String retval = doRequest("GET", relativePath, String.class, Format.XML, null, null);
+		String retval = doRequest(HttpMethod.GET, relativePath, String.class, Format.XML, null, null);
 		return retval;
 	}
 
@@ -355,7 +357,7 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 
 	private String doListRootsRequest() throws PlatformLayerClientException {
 		String relativePath = "roots";
-		String retval = doRequest("GET", relativePath, String.class, Format.XML, null, null);
+		String retval = doRequest(HttpMethod.GET, relativePath, String.class, Format.XML, null, null);
 		return retval;
 	}
 
@@ -373,7 +375,7 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 		if (includeDeleted) {
 			relativePath += "?deleted=1";
 		}
-		String xml = doRequest("GET", relativePath, String.class, Format.XML, null, null);
+		String xml = doRequest(HttpMethod.GET, relativePath, String.class, Format.XML, null, null);
 
 		return UntypedItemXmlCollection.build(xml);
 	}
@@ -382,7 +384,7 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 	public UntypedItem getItemUntyped(PlatformLayerKey key, Format format) throws PlatformLayerClientException {
 		String relativePath = buildRelativePath(key);
 
-		String data = doRequest("GET", relativePath, String.class, format, null, null);
+		String data = doRequest(HttpMethod.GET, relativePath, String.class, format, null, null);
 
 		UntypedItem item;
 		switch (format) {
@@ -406,14 +408,14 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 	public JobDataList listJobs(PlatformLayerKey key) throws PlatformLayerClientException {
 		String relativePath = buildRelativePath(key) + "/jobs";
 
-		JobDataList jobs = doRequest("GET", relativePath, JobDataList.class, Format.XML, null, null);
+		JobDataList jobs = doRequest(HttpMethod.GET, relativePath, JobDataList.class, Format.XML, null, null);
 		return jobs;
 	}
 
 	@Override
 	public JobDataList listJobs() throws PlatformLayerClientException {
 		String relativePath = "jobs";
-		JobDataList jobs = doRequest("GET", relativePath, JobDataList.class, Format.XML, null, null);
+		JobDataList jobs = doRequest(HttpMethod.GET, relativePath, JobDataList.class, Format.XML, null, null);
 
 		return jobs;
 	}
@@ -421,7 +423,7 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 	@Override
 	public JobExecutionList listJobExecutions() throws PlatformLayerClientException {
 		String relativePath = "jobs/runs";
-		JobExecutionList jobs = doRequest("GET", relativePath, JobExecutionList.class, Format.XML, null, null);
+		JobExecutionList jobs = doRequest(HttpMethod.GET, relativePath, JobExecutionList.class, Format.XML, null, null);
 
 		return jobs;
 	}
@@ -430,7 +432,7 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 	public MetricInfoCollection listMetrics(PlatformLayerKey key) throws PlatformLayerClientException {
 		String relativePath = buildRelativePath(key) + "/metrics";
 
-		String retval = doRequest("GET", relativePath, String.class, Format.XML, null, null);
+		String retval = doRequest(HttpMethod.GET, relativePath, String.class, Format.XML, null, null);
 		MetricInfoCollection items;
 		try {
 			items = JaxbHelper.deserializeXmlObject(retval, MetricInfoCollection.class);
@@ -444,8 +446,8 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 	public MetricDataStream getMetric(MetricQuery query) throws PlatformLayerClientException {
 		String relativePath = buildRelativePath(query.item) + "/metrics";
 
-		StreamingResponse response = doRequest("POST", relativePath, StreamingResponse.class, Format.JSON, query,
-				Format.XML);
+		StreamingResponse response = doRequest(HttpMethod.POST, relativePath, StreamingResponse.class, Format.JSON,
+				query, Format.XML);
 		MetricDataStream dataStream;
 		try {
 			dataStream = JsonMetricDataStream.build(response.getResponseStream());
@@ -462,7 +464,7 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 	public JobData doAction(PlatformLayerKey key, Action action) throws PlatformLayerClientException {
 		String relativePath = buildRelativePath(key) + "/actions";
 
-		JobData retval = doRequest("POST", relativePath, JobData.class, Format.XML, action, Format.XML);
+		JobData retval = doRequest(HttpMethod.POST, relativePath, JobData.class, Format.XML, action, Format.XML);
 		return retval;
 	}
 
@@ -470,7 +472,7 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 	public JobData doAction(PlatformLayerKey key, String action, Format dataFormat) throws PlatformLayerClientException {
 		String relativePath = buildRelativePath(key) + "/actions";
 
-		JobData retval = doRequest("POST", relativePath, JobData.class, Format.XML, action, dataFormat);
+		JobData retval = doRequest(HttpMethod.POST, relativePath, JobData.class, Format.XML, action, dataFormat);
 		return retval;
 	}
 
@@ -491,14 +493,15 @@ public class HttpPlatformLayerClient extends PlatformLayerClientBase {
 	@Override
 	public JobLog getJobExecutionLog(String jobId, String executionId) throws PlatformLayerClientException {
 		String relativePath = "jobs/" + jobId + "/runs/" + executionId + "/log";
-		JobLog jobLog = doRequest("GET", relativePath, JobLog.class, Format.XML, null, null);
+		JobLog jobLog = doRequest(HttpMethod.GET, relativePath, JobLog.class, Format.XML, null, null);
 		return jobLog;
 	}
 
 	@Override
 	public JobExecutionList listJobExecutions(String jobId) throws PlatformLayerClientException {
 		String relativePath = "jobs/" + jobId + "/runs";
-		JobExecutionList executions = doRequest("GET", relativePath, JobExecutionList.class, Format.XML, null, null);
+		JobExecutionList executions = doRequest(HttpMethod.GET, relativePath, JobExecutionList.class, Format.XML, null,
+				null);
 		return executions;
 	}
 

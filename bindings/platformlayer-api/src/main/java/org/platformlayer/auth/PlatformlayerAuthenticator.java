@@ -8,10 +8,6 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.TrustManager;
 
-import org.platformlayer.auth.AuthenticationToken;
-import org.platformlayer.auth.Authenticator;
-import org.platformlayer.auth.PlatformlayerAuthenticationClientException;
-import org.platformlayer.auth.PlatformlayerAuthenticationToken;
 import org.platformlayer.auth.client.PlatformLayerAuthenticationClient;
 import org.platformlayer.auth.v1.AuthenticateResponse;
 import org.platformlayer.auth.v1.PasswordCredentials;

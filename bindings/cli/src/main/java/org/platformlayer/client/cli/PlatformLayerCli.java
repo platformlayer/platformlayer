@@ -40,6 +40,8 @@ public class PlatformLayerCli extends CliBase {
 	}
 
 	public static void main(String[] args) {
+		// System.setProperty("javax.xml.bind.context.factory",
+		// org.eclipse.persistence.jaxb.JAXBContextFactory.class.getName());
 		CliBase.main(args);
 	}
 

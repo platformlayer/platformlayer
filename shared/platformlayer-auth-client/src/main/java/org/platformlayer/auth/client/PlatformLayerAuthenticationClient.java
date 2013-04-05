@@ -20,6 +20,7 @@ import org.platformlayer.auth.v1.AuthenticateRequest;
 import org.platformlayer.auth.v1.AuthenticateResponse;
 import org.platformlayer.auth.v1.CertificateCredentials;
 import org.platformlayer.auth.v1.PasswordCredentials;
+import org.platformlayer.http.HttpMethod;
 import org.platformlayer.rest.HttpPayload;
 import org.platformlayer.rest.RestClientException;
 import org.platformlayer.rest.RestfulClient;
@@ -56,7 +57,7 @@ public class PlatformLayerAuthenticationClient {
 
 		AuthenticateResponse response;
 		try {
-			response = doSimpleXmlRequest("POST", "api/tokens", request, AuthenticateResponse.class);
+			response = doSimpleXmlRequest(HttpMethod.POST, "api/tokens", request, AuthenticateResponse.class);
 		} catch (RestClientException e) {
 			Integer httpResponseCode = e.getHttpResponseCode();
 			if (httpResponseCode != null && httpResponseCode == 401) {
@@ -98,8 +99,8 @@ public class PlatformLayerAuthenticationClient {
 		for (int i = 0; i < 2; i++) {
 			AuthenticateResponse response;
 			try {
-				RestfulRequest<AuthenticateResponse> httpRequest = httpClient.buildRequest("POST", "api/tokens",
-						HttpPayload.asXml(request), AuthenticateResponse.class);
+				RestfulRequest<AuthenticateResponse> httpRequest = httpClient.buildRequest(HttpMethod.POST,
+						"api/tokens", HttpPayload.asXml(request), AuthenticateResponse.class);
 
 				httpRequest.setKeyManager(keyManager);
 
@@ -146,7 +147,7 @@ public class PlatformLayerAuthenticationClient {
 		}
 	}
 
-	protected <T> T doSimpleXmlRequest(String method, String relativeUri, Object postObject, Class<T> responseClass)
+	protected <T> T doSimpleXmlRequest(HttpMethod method, String relativeUri, Object postObject, Class<T> responseClass)
 			throws RestClientException {
 		HttpPayload payload = postObject != null ? HttpPayload.asXml(postObject) : null;
 		RestfulRequest<T> request = httpClient.buildRequest(method, relativeUri, payload, responseClass);

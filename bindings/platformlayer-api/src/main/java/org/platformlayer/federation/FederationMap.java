@@ -33,7 +33,7 @@ public class FederationMap {
 
 	final List<Rule> rules;
 
-	private final HttpStrategy httpStrategy;
+	final HttpStrategy httpStrategy;
 
 	static class MappedTarget {
 		PlatformLayerConnectionConfiguration configuration;

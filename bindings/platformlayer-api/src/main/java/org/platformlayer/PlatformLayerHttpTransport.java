@@ -9,6 +9,7 @@ import org.platformlayer.auth.AuthenticationToken;
 import org.platformlayer.auth.Authenticator;
 import org.platformlayer.auth.PlatformlayerAuthenticationClientException;
 import org.platformlayer.exceptions.OpenstackClientConnectionException;
+import org.platformlayer.http.HttpMethod;
 import org.platformlayer.http.HttpStrategy;
 import org.platformlayer.ids.ProjectId;
 import org.slf4j.Logger;
@@ -90,7 +91,7 @@ class PlatformLayerHttpTransport {
 		return uri;
 	}
 
-	protected <T> T doRequest(String method, String relativePath, Class<T> retvalClass, Format acceptFormat,
+	protected <T> T doRequest(HttpMethod method, String relativePath, Class<T> retvalClass, Format acceptFormat,
 			Object sendData, Format sendDataFormat) throws PlatformLayerClientException {
 		int maxRetries = 1;
 		for (int i = 1; i <= maxRetries; i++) {

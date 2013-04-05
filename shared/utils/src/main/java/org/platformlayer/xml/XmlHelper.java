@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
@@ -21,17 +20,6 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stax.StAXSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,47 +102,6 @@ public class XmlHelper {
 	// return DateUtils.smartParse(dateString);
 	// }
 
-	public static String toXml(Node node) {
-		Source src = new DOMSource(node);
-		return toXml(src, -1);
-	}
-
-	public static String toXml(XMLStreamReader xml) {
-		Source src = new StAXSource(xml);
-		return toXml(src, -1);
-	}
-
-	public static String toXml(Source src, int indent) {
-		try {
-			Transformer transformer = buildXmlTransformer();
-
-			if (indent >= 0) {
-				transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-				transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", String.valueOf(indent));
-			}
-
-			StringWriter writer = new StringWriter();
-
-			Result dest = new StreamResult(writer);
-			transformer.transform(src, dest);
-
-			return writer.getBuffer().toString();
-		} catch (TransformerException e) {
-			throw new IllegalArgumentException("Error transforming to XML", e);
-		}
-	}
-
-	public static String toXml(Document xmlDocument) {
-		return toXml(xmlDocument.getDocumentElement());
-	}
-
-	private static Transformer buildXmlTransformer() throws TransformerFactoryConfigurationError,
-			TransformerConfigurationException {
-		TransformerFactory transformerFactory = TransformerFactory.newInstance();
-		Transformer transformer = transformerFactory.newTransformer();
-		return transformer;
-	}
-
 	public static Node getChildElement(Node parent, String elementName) {
 		NodeList childNodes = parent.getChildNodes();
 		for (int i = 0; i < childNodes.getLength(); i++) {
@@ -165,14 +112,6 @@ public class XmlHelper {
 			}
 		}
 		return null;
-	}
-
-	public static String safeToXml(Element element) {
-		try {
-			return toXml(element);
-		} catch (IllegalArgumentException e) {
-			return "Error transforming to xml: " + e.toString();
-		}
 	}
 
 	public static Node findUniqueChild(Element parent, String tagName, boolean create) {
@@ -197,7 +136,7 @@ public class XmlHelper {
 		}
 
 		if (matches.size() != 1) {
-			String xml = XmlHelper.toXml(parent);
+			String xml = DomUtils.toXml(parent);
 			log.warn("Multiple elements in XML: " + xml);
 			throw new IllegalStateException("Found multiple elements of name: " + tagName);
 		}
@@ -205,6 +144,14 @@ public class XmlHelper {
 		Node child = matches.get(0);
 
 		return child;
+	}
+
+	public static String safeToXml(Element element) {
+		try {
+			return DomUtils.toXml(element);
+		} catch (IllegalArgumentException e) {
+			return "Error transforming to xml: " + e.toString();
+		}
 	}
 
 	public static Object unmarshal(JAXBContext jaxbContext, XMLStreamReader xmlStreamReader) throws JAXBException {

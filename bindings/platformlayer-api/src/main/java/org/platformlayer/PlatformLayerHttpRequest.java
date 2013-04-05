@@ -16,6 +16,7 @@ import javax.net.ssl.TrustManager;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.UnmarshalException;
 
+import org.platformlayer.http.HttpMethod;
 import org.platformlayer.http.HttpRequest;
 import org.platformlayer.http.HttpResponse;
 import org.platformlayer.http.SslConfiguration;
@@ -39,8 +40,8 @@ class PlatformLayerHttpRequest implements Closeable {
 
 	PrintStream debug;
 
-	public PlatformLayerHttpRequest(PlatformLayerHttpTransport client, String method, URI uri, List<String> trustKeys)
-			throws PlatformLayerClientException {
+	public PlatformLayerHttpRequest(PlatformLayerHttpTransport client, HttpMethod method, URI uri,
+			List<String> trustKeys) throws PlatformLayerClientException {
 		this.client = client;
 
 		KeyManager keyManager = null;

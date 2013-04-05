@@ -18,6 +18,11 @@
         </dependency>
 
         <dependency>
+            <groupId>com.fathomdb</groupId>
+            <artifactId>fathomdb-discovery</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.platformlayer</groupId>
             <artifactId>billing-client</artifactId>
             <version>${project.version}</version>

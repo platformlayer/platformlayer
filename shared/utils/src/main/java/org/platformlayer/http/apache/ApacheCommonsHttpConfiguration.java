@@ -17,6 +17,7 @@ import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.impl.conn.SchemeRegistryFactory;
 import org.apache.http.params.HttpParams;
 import org.platformlayer.http.HttpConfiguration;
+import org.platformlayer.http.HttpMethod;
 import org.platformlayer.http.HttpRequest;
 import org.platformlayer.http.SslConfiguration;
 import org.slf4j.Logger;
@@ -34,7 +35,7 @@ public class ApacheCommonsHttpConfiguration implements HttpConfiguration {
 	}
 
 	@Override
-	public HttpRequest buildRequest(String method, URI uri) {
+	public HttpRequest buildRequest(HttpMethod method, URI uri) {
 		return new ApacheCommonsHttpRequest(httpClient, method, uri);
 	}
 

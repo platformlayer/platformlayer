@@ -8,6 +8,8 @@ import org.platformlayer.core.model.Links;
 import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tags;
+import org.platformlayer.rest.JaxbXmlCodec;
+import org.platformlayer.xml.DomUtils;
 import org.platformlayer.xml.JaxbHelper;
 import org.platformlayer.xml.XmlHelper;
 import org.platformlayer.xml.XmlHelper.ElementInfo;
@@ -71,9 +73,8 @@ public class UntypedItemXml implements UntypedItem {
 				return null;
 			}
 
-			JaxbHelper helper = JaxbHelper.get(Tags.class);
 			try {
-				tags = (Tags) helper.unmarshal(tagsElement);
+				tags = JaxbXmlCodec.deserializeXmlObject(tagsElement, Tags.class, false);
 			} catch (JAXBException e) {
 				throw new IllegalStateException("Error parsing tags data", e);
 			}
@@ -304,7 +305,7 @@ public class UntypedItemXml implements UntypedItem {
 	// }
 
 	public String serialize() {
-		return XmlHelper.toXml(this.root);
+		return DomUtils.toXml(this.root);
 	}
 
 	@Override

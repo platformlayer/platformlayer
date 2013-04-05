@@ -20,7 +20,7 @@ import org.platformlayer.ids.ItemType;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.jobs.model.JobDataList;
-import org.platformlayer.xml.XmlHelper;
+import org.platformlayer.xml.DomUtils;
 
 import com.fathomdb.cli.commands.Ansi;
 import com.fathomdb.cli.commands.CommandRunnerBase;
@@ -111,7 +111,7 @@ public abstract class PlatformLayerCommandRunnerBase extends CommandRunnerBase {
 			UntypedItemXml item = (UntypedItemXml) o;
 
 			Source src = new DOMSource(item.getRoot());
-			String xml = XmlHelper.toXml(src, 4);
+			String xml = DomUtils.toXml(src, 4);
 			data = xml;
 		} else if (o instanceof UntypedItemJson) {
 			UntypedItemJson item = (UntypedItemJson) o;

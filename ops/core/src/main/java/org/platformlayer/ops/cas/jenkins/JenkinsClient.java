@@ -11,6 +11,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.platformlayer.PlatformLayerClientBase;
+import org.platformlayer.xml.DomUtils;
 import org.platformlayer.xml.XmlHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,7 +101,7 @@ public class JenkinsClient {
 
 		@Override
 		public String toString() {
-			return getClass().getName() + " [root=" + XmlHelper.toXml(root) + "]";
+			return getClass().getName() + " [root=" + DomUtils.toXml(root) + "]";
 		}
 	}
 

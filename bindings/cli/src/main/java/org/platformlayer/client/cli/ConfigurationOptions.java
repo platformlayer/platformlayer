@@ -101,6 +101,7 @@ public class ConfigurationOptions extends CliOptions {
 
 	private HttpPlatformLayerClient buildPlatformLayerClient(Properties properties, boolean debug) {
 		HttpStrategy httpStrategy = new JreHttpStrategy();
+		// HttpStrategy httpStrategy = new ApacheCommonsHttpStrategy();
 		HttpPlatformLayerClient client = HttpPlatformLayerClient.buildUsingProperties(httpStrategy, properties);
 
 		if (debug) {
