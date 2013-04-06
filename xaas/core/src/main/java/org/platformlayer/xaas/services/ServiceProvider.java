@@ -51,4 +51,6 @@ public interface ServiceProvider {
 	Object getExtensionResource();
 
 	Object getItemExtensionResource(Object item) throws OpsException;
+
+	String buildItemId(ModelClass<?> modelClass, ItemBase item);
 }

@@ -9,7 +9,6 @@
 	</parent>
 
 	<artifactId>keystone-webapp-user</artifactId>
-	<name>Keystone :: Server :: User</name>
 
 	<dependencies>
 		<dependency>

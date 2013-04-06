@@ -212,12 +212,13 @@ public class ItemServiceImpl implements ItemService {
 
 		// JaxbHelper jaxbHelper = JaxbHelper.get(javaClass);
 
+		final ServiceProvider serviceProvider = modelClass.getProvider();
+
 		String id = item.getId();
 
 		if (Strings.isNullOrEmpty(id)) {
 			if (generateUniqueName) {
-				// TODO: Try to build something based on the values??
-				id = modelClass.getItemType().getKey();
+				id = serviceProvider.buildItemId(modelClass, item);
 			} else {
 				// TODO: We could auto-generate this, but it seems better to require it,
 				// otherwise we end up with lots of randomly named items
@@ -233,8 +234,6 @@ public class ItemServiceImpl implements ItemService {
 		item.setKey(itemKey);
 
 		item.state = ManagedItemState.CREATION_REQUESTED;
-
-		final ServiceProvider serviceProvider = modelClass.getProvider();
 
 		final OpsContext opsContext = buildTemporaryOpsContext(modelClass.getServiceType(), auth);
 
