@@ -38,12 +38,13 @@ public class RootResource extends PlatformlayerAuthResourceBase {
 
 			ServiceAccount auth = systemAuthenticator.authenticate(chain);
 			if (auth != null) {
+				log.debug("Certificate authentication SUCCESS for " + chain);
 				return;
 			}
 
-			log.debug("Certificate authentication request failed for " + chain);
+			log.debug("Certificate authentication FAIL for " + chain);
 		} else {
-			log.debug("Certificate authentication failed (no certificate presented)");
+			log.debug("Certificate authentication FAIL (no certificate presented)");
 		}
 
 		throwUnauthorized();
