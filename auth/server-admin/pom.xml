@@ -9,7 +9,6 @@
     </parent>
 
     <artifactId>keystone-webapp-admin</artifactId>
-    <name>Keystone :: Server :: Admin</name>
 
     <dependencies>
         <dependency>
