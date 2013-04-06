@@ -401,4 +401,10 @@ public abstract class ServiceProviderBase implements ServiceProvider {
 		}
 		return null;
 	}
+
+	@Override
+	public String buildItemId(ModelClass<?> modelClass, ItemBase item) {
+		String id = modelClass.getItemType().getKey();
+		return id;
+	}
 }
