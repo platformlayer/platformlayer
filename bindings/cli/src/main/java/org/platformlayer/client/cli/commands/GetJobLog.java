@@ -61,6 +61,11 @@ public class GetJobLog extends PlatformLayerCommandRunnerBase {
 				}
 			});
 
+			// TODO: Remove limit (or iterate)
+			if (runs.size() > 10) {
+				runs = Lists.newArrayList(runs.subList(runs.size() - 10, runs.size()));
+			}
+
 			// TODO: Fix 1+N slowness...
 			for (JobExecutionData execution : runs) {
 				if (execution.getState() == JobState.PRESTART) {
