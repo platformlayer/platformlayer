@@ -46,6 +46,7 @@ import com.fathomdb.crypto.FathomdbCrypto;
 import com.fathomdb.crypto.SimpleClientCertificateKeyManager;
 import com.fathomdb.crypto.ssl.AcceptAllHostnameVerifier;
 import com.fathomdb.crypto.ssl.PublicKeyTrustManager;
+import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 
@@ -82,6 +83,11 @@ public class PlatformLayerAuthAdminClient implements AuthenticationTokenValidato
 			trustManager = new PublicKeyTrustManager(Splitter.on(',').trimResults().split(trustKeys));
 
 			hostnameVerifier = new AcceptAllHostnameVerifier();
+		}
+
+		if (log.isDebugEnabled() && certificateAndKey != null) {
+			X509Certificate[] chain = certificateAndKey.getCertificateChain();
+			log.debug("Using client cert for PL auth: " + Joiner.on(",").join(chain));
 		}
 
 		SslConfiguration sslConfiguration = new SslConfiguration(keyManager, trustManager, hostnameVerifier);
