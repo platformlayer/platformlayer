@@ -1,16 +1,12 @@
 package org.platformlayer.client.cli.commands;
 
 import java.io.PrintWriter;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
 import org.kohsuke.args4j.Argument;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
 import org.platformlayer.PlatformLayerClientNotFoundException;
-import org.platformlayer.PrimitiveComparators;
 import org.platformlayer.client.cli.autocomplete.AutoCompleteJobId;
 import org.platformlayer.jobs.model.JobExecutionData;
 import org.platformlayer.jobs.model.JobExecutionList;
@@ -51,15 +47,7 @@ public class GetJobLog extends PlatformLayerCommandRunnerBase {
 
 			List<JobExecutionData> runs = jobExecutions.getRuns();
 
-			Collections.sort(runs, new Comparator<JobExecutionData>() {
-				@Override
-				public int compare(JobExecutionData o1, JobExecutionData o2) {
-					Date v1 = o1.startedAt;
-					Date v2 = o2.startedAt;
-
-					return PrimitiveComparators.compare(v1, v2);
-				}
-			});
+			sort(runs);
 
 			// TODO: Remove limit (or iterate)
 			if (runs.size() > 10) {

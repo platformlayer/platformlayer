@@ -3,6 +3,8 @@ package org.platformlayer.ops.jobstore.jdbc;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +17,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.platformlayer.PrimitiveComparators;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.PlatformLayerKey;
@@ -151,6 +154,9 @@ public class JdbcJobRepository implements JobRepository {
 			for (JobExecutionEntity execution : executions) {
 				ret.add(mapFromEntity(execution, jobKey));
 			}
+
+			sort(ret);
+
 			return ret;
 		} catch (SQLException e) {
 			throw new RepositoryException("Error listing job executions", e);
@@ -204,6 +210,8 @@ public class JdbcJobRepository implements JobRepository {
 				ret.add(run);
 			}
 
+			sort(ret);
+
 			return ret;
 		} catch (SQLException e) {
 			throw new RepositoryException("Error listing job executions", e);
@@ -237,6 +245,7 @@ public class JdbcJobRepository implements JobRepository {
 				JobData jobData = mapFromEntity(job, jobKey);
 				ret.add(jobData);
 			}
+
 			return ret;
 		} catch (SQLException e) {
 			throw new RepositoryException("Error listing job executions", e);
@@ -409,7 +418,21 @@ public class JdbcJobRepository implements JobRepository {
 		} finally {
 			db.close();
 		}
-
 	}
 
+	protected void sort(List<JobExecutionData> runs) {
+		if (runs == null) {
+			return;
+		}
+
+		Collections.sort(runs, new Comparator<JobExecutionData>() {
+			@Override
+			public int compare(JobExecutionData o1, JobExecutionData o2) {
+				Date v1 = o1.startedAt;
+				Date v2 = o2.startedAt;
+
+				return PrimitiveComparators.compare(v1, v2);
+			}
+		});
+	}
 }
