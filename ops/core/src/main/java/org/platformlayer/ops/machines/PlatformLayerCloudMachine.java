@@ -87,7 +87,8 @@ public class PlatformLayerCloudMachine extends MachineBase {
 			}
 
 			if (matching.size() != 1) {
-				throw new OpsException("Found multiple addresses: " + Joiner.on(",").join(matching));
+				throw new OpsException("Found multiple addresses for: " + getKey() + ": "
+						+ Joiner.on(",").join(matching));
 			}
 			networkPoint = NetworkPoint.forAddress(matching.get(0));
 
