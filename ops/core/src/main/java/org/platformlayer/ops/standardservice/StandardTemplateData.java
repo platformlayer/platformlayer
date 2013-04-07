@@ -1,7 +1,6 @@
 package org.platformlayer.ops.standardservice;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +24,7 @@ import org.platformlayer.ops.uses.LinkHelpers;
 import org.platformlayer.ops.uses.LinkTarget;
 import org.platformlayer.ops.uses.SimpleLinkConsumer;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public abstract class StandardTemplateData implements TemplateDataSource {
@@ -100,7 +100,7 @@ public abstract class StandardTemplateData implements TemplateDataSource {
 	protected List<Link> getLinks() throws OpsException {
 		List<Link> links;
 		if (getModel().links == null) {
-			links = Collections.emptyList();
+			links = Lists.newArrayList();
 		} else {
 			links = getModel().links.getLinks();
 		}
