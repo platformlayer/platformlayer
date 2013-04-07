@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fathomdb.Utf8;
 import com.fathomdb.crypto.CertificateAndKey;
+import com.fathomdb.crypto.Certificates;
 import com.fathomdb.crypto.CryptoKey;
 import com.fathomdb.crypto.FathomdbCrypto;
 import com.fathomdb.crypto.OpenSshUtils;
@@ -727,7 +728,7 @@ public class JdbcUserRepository implements UserRepository, UserDatabase {
 			// byte[] privateKeyData = RsaUtils.serialize(userRsaKeyPair.getPrivate());
 			// privateKeyData = AesUtils.encrypt(userSecret, privateKeyData);
 			// byte[] publicKeyData = RsaUtils.serialize(userRsaKeyPair.getPublic());
-			String subject = cert.getSubjectDN().getName();
+			String subject = Certificates.getSubject(cert);
 			byte[] publicKey = cert.getPublicKey().getEncoded();
 
 			ServiceAccountEntity existing = db.queries.findServiceAccount(subject, publicKey);

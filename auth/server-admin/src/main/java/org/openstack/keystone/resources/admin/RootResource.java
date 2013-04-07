@@ -14,6 +14,7 @@ import org.platformlayer.auth.services.TokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.crypto.Certificates;
 import com.fathomdb.utils.Hex;
 
 public class RootResource extends PlatformlayerAuthResourceBase {
@@ -31,8 +32,13 @@ public class RootResource extends PlatformlayerAuthResourceBase {
 			CertificateChainInfo chain = new CertificateChainInfo();
 			for (X509Certificate cert : certChain) {
 				CertificateInfo info = new CertificateInfo();
+
 				info.publicKey = Hex.toHex(cert.getPublicKey().getEncoded());
-				info.subjectDN = cert.getSubjectDN().getName();
+				info.subjectDN = Certificates.getSubject(cert);
+
+				// Md5Hash hash = OpenSshUtils.getSignature(cert.getPublicKey());
+				// certificateInfo.setPublicKeyHash(hash.toHex());
+
 				chain.certificates.add(info);
 			}
 

@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fathomdb.crypto.CertificateAndKey;
+import com.fathomdb.crypto.Certificates;
 import com.fathomdb.crypto.EncryptionStore;
 import com.fathomdb.crypto.KeyStoreUtils;
 import com.fathomdb.crypto.SimpleCertificateAndKey;
@@ -58,7 +59,7 @@ public class KeyStoreEncryptionStore implements EncryptionStore {
 
 			if (certificate != null) {
 				X509Certificate x509Certificate = (X509Certificate) certificate;
-				if (!x509Certificate.getIssuerDN().equals(x509Certificate.getSubjectDN())) {
+				if (!Certificates.isSelfSigned(x509Certificate)) {
 					throw new IllegalStateException();
 				}
 

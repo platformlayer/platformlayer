@@ -6,6 +6,7 @@ import java.util.List;
 import org.platformlayer.auth.v1.CertificateChainInfo;
 import org.platformlayer.auth.v1.CertificateInfo;
 
+import com.fathomdb.crypto.Certificates;
 import com.fathomdb.crypto.OpenSshUtils;
 import com.fathomdb.hash.Md5Hash;
 import com.fathomdb.utils.Hex;
@@ -17,7 +18,7 @@ public class CertificateChains {
 		for (X509Certificate cert : chain) {
 			CertificateInfo certificateInfo = new CertificateInfo();
 
-			certificateInfo.setSubjectDN(cert.getSubjectX500Principal().getName());
+			certificateInfo.setSubjectDN(Certificates.getSubject(cert));
 			Md5Hash hash = OpenSshUtils.getSignature(cert.getPublicKey());
 			certificateInfo.setPublicKeyHash(hash.toHex());
 

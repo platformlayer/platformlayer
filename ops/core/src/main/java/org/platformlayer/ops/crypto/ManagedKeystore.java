@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import sun.security.x509.X500Name;
 
+import com.fathomdb.crypto.Certificates;
 import com.fathomdb.crypto.KeyStoreUtils;
 import com.fathomdb.crypto.OpenSshUtils;
 import com.google.common.base.Objects;
@@ -263,7 +264,7 @@ public class ManagedKeystore extends OpsTreeBase {
 		while (true) {
 			X509Certificate tail = certificateChain.get(certificateChain.size() - 1);
 
-			if (isSelfSigned(tail)) {
+			if (Certificates.isSelfSigned(tail)) {
 				break;
 			}
 
@@ -317,10 +318,6 @@ public class ManagedKeystore extends OpsTreeBase {
 		sanitizer.allowAlphanumeric().setCombineBlocked(true);
 
 		return sanitizer.clean(issuer.getName());
-	}
-
-	private static boolean isSelfSigned(X509Certificate cert) {
-		return cert.getSubjectDN().equals(cert.getIssuerDN());
 	}
 
 	@Override
