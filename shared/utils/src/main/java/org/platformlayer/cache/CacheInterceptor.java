@@ -1,7 +1,6 @@
 package org.platformlayer.cache;
 
 import java.lang.reflect.Method;
-import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -51,17 +50,18 @@ public class CacheInterceptor implements MethodInterceptor {
 			}
 		});
 
-		CacheKey cacheKey = new CacheKey(invocation.getArguments());
+		final CacheKey cacheKey = new CacheKey(invocation.getArguments());
 
-		for (Entry<CacheKey, Object> entry : cacheStore.cache.asMap().entrySet()) {
-			log.info(entry.getKey() + " => " + entry.getValue());
-			log.info(" this = " + cacheKey + " equals=" + cacheKey.equals(entry.getKey()));
-		}
+		// for (Entry<CacheKey, Object> entry : cacheStore.cache.asMap().entrySet()) {
+		// log.info(entry.getKey() + " => " + entry.getValue());
+		// log.info(" this = " + cacheKey + " equals=" + cacheKey.equals(entry.getKey()));
+		// }
 
 		Object v = cacheStore.cache.get(cacheKey, new Callable<Object>() {
 			@Override
 			public Object call() throws Exception {
 				try {
+					log.debug("Cache miss on " + cacheKey);
 					Object ret = invocation.proceed();
 					if (ret == null) {
 						// Guice cache can't cache nulls, so return a marker instead
