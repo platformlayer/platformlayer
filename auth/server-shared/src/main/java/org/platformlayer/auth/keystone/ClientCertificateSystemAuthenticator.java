@@ -53,8 +53,9 @@ public class ClientCertificateSystemAuthenticator implements SystemAuthenticator
 		}
 
 		if (auth == null) {
-			log.debug("Authentication failed - public key not recognized: " + Hex.toHex(publicKey));
-			log.debug("Authentication failed - chain: " + certChainInfo);
+			log.debug("Certificate validation failed (though the caller was authenticated)");
+			log.debug("Certificate validation failed - public key not recognized: " + Hex.toHex(publicKey));
+			log.debug("Certificate validation failed - chain: " + certChainInfo);
 		}
 
 		return auth;

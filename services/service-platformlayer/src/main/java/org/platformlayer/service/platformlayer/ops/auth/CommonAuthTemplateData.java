@@ -29,7 +29,7 @@ public abstract class CommonAuthTemplateData extends StandardTemplateData {
 	}
 
 	@Override
-	protected List<Link> getLinks() {
+	protected List<Link> getLinks() throws OpsException {
 		List<Link> links = Lists.newArrayList();
 
 		links.addAll(super.getLinks());

@@ -7,7 +7,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.platformlayer.InetAddressChooser;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.Bound;
@@ -22,6 +21,7 @@ import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.networks.PublicEndpoint;
 import org.platformlayer.ops.tree.OpsTreeBase;
+import org.platformlayer.ops.uses.LinkConsumer;
 import org.platformlayer.ops.uses.LinkTarget;
 import org.platformlayer.service.platformlayer.model.SystemAuthService;
 import org.slf4j.Logger;
@@ -36,7 +36,7 @@ public class SystemAuthServiceController extends OpsTreeBase implements LinkTarg
 
 	public static final int BACKEND_PORT = 35358;
 
-	public static final String CERT_NAME = "clientcert.systemauth";
+	// public static final String CERT_NAME = "clientcert.systemauth";
 
 	@Bound
 	SystemAuthService model;
@@ -94,7 +94,7 @@ public class SystemAuthServiceController extends OpsTreeBase implements LinkTarg
 	}
 
 	@Override
-	public Map<String, String> buildLinkTargetConfiguration(InetAddressChooser inetAddressChooser) throws OpsException {
+	public Map<String, String> buildLinkTargetConfiguration(LinkConsumer consumer) throws OpsException {
 		Map<String, String> properties = Maps.newHashMap();
 
 		List<String> systemAuthKeys = Lists.newArrayList();
@@ -106,7 +106,8 @@ public class SystemAuthServiceController extends OpsTreeBase implements LinkTarg
 
 		properties.put("ssl.keys", Joiner.on(',').join(systemAuthKeys));
 		properties.put("url", systemAuthUrl);
-		properties.put("ssl.cert", CERT_NAME);
+
+		// properties.put("ssl.cert", CERT_NAME);
 
 		return properties;
 	}

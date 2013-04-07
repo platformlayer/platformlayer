@@ -14,7 +14,6 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.java.JavaCommandBuilder;
 import org.platformlayer.ops.standardservice.StandardTemplateData;
 import org.platformlayer.service.platformlayer.model.PlatformLayerService;
-import org.platformlayer.service.platformlayer.ops.auth.system.SystemAuthServiceController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,7 +83,7 @@ public class PlatformLayerInstanceTemplate extends StandardTemplateData {
 	}
 
 	@Override
-	protected List<Link> getLinks() {
+	protected List<Link> getLinks() throws OpsException {
 		List<Link> links = Lists.newArrayList();
 
 		links.addAll(super.getLinks());
@@ -142,10 +141,6 @@ public class PlatformLayerInstanceTemplate extends StandardTemplateData {
 		}
 
 		return properties;
-	}
-
-	String getSystemCertAlias() {
-		return SystemAuthServiceController.CERT_NAME;
 	}
 
 	protected PlatformLayerKey getDatabaseKey() {

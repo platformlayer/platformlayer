@@ -7,7 +7,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.platformlayer.InetAddressChooser;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.ops.Bound;
@@ -22,6 +21,7 @@ import org.platformlayer.ops.instances.InstanceBuilder;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.networks.PublicEndpoint;
 import org.platformlayer.ops.tree.OpsTreeBase;
+import org.platformlayer.ops.uses.LinkConsumer;
 import org.platformlayer.ops.uses.LinkTarget;
 import org.platformlayer.service.platformlayer.model.UserAuthService;
 import org.slf4j.Logger;
@@ -91,7 +91,7 @@ public class UserAuthServiceController extends OpsTreeBase implements LinkTarget
 	}
 
 	@Override
-	public Map<String, String> buildLinkTargetConfiguration(InetAddressChooser inetAddressChooser) throws OpsException {
+	public Map<String, String> buildLinkTargetConfiguration(LinkConsumer consumer) throws OpsException {
 		Map<String, String> properties = Maps.newHashMap();
 
 		List<String> userAuthKeys = Lists.newArrayList();

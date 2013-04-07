@@ -17,17 +17,8 @@ public class PlatformLayerInstance extends StandardServiceInstance {
 	protected void addChildren() throws OpsException {
 		super.addChildren();
 
-		PlatformLayerInstanceTemplate template = getTemplate();
-
 		ManagedDirectory configDir = findDirectory(template.getConfigDir());
 		File keystoreFile = template.getKeystoreFile();
-
-		{
-			ManagedKeystore systemAuthKey = configDir.addChild(ManagedKeystore.class);
-			systemAuthKey.path = keystoreFile;
-			systemAuthKey.tagWithPublicKeys = template.getModel();
-			systemAuthKey.alias = template.getSystemCertAlias();
-		}
 
 		if (template.isMultitenant()) {
 			ManagedKeystore masterProjectKey = configDir.addChild(ManagedKeystore.class);

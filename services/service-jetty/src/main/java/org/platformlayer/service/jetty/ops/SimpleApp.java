@@ -6,6 +6,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.platformlayer.InetAddressChooser;
+import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.Bound;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsException;
@@ -15,10 +17,13 @@ import org.platformlayer.ops.filesystem.DownloadFileByHash;
 import org.platformlayer.ops.filesystem.ManagedDirectory;
 import org.platformlayer.ops.filesystem.ManagedSymlink;
 import org.platformlayer.ops.filesystem.TemplatedFile;
+import org.platformlayer.ops.networks.NearestAddressChooser;
+import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.standardservice.PropertiesConfigFile;
 import org.platformlayer.ops.templates.TemplateDataSource;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.ops.uses.LinkHelpers;
+import org.platformlayer.ops.uses.SimpleLinkConsumer;
 import org.platformlayer.service.jetty.model.JettyContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +41,8 @@ public class SimpleApp extends OpsTreeBase {
 
 	@Inject
 	LinkHelpers consumeHelper;
+
+	public PlatformLayerKey consumerKey;
 
 	public File getWorkDir() {
 		File workDir = new File(jettyTemplate.getBaseDir(), "work/" + key);
@@ -95,7 +102,11 @@ public class SimpleApp extends OpsTreeBase {
 		Map<String, String> config = Maps.newHashMap();
 
 		if (context.links != null) {
-			config.putAll(consumeHelper.buildLinkTargetProperties(context.links.getLinks()));
+			NetworkPoint networkPoint = NetworkPoint.forTargetInContext();
+			InetAddressChooser inetAddressChooser = NearestAddressChooser.build(networkPoint);
+			SimpleLinkConsumer consumer = new SimpleLinkConsumer(consumerKey, inetAddressChooser);
+
+			config.putAll(consumeHelper.buildLinkTargetProperties(consumer, context.links.getLinks()));
 		}
 
 		return config;

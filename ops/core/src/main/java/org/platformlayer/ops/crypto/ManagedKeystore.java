@@ -17,6 +17,7 @@ import javax.security.auth.x500.X500Principal;
 
 import org.platformlayer.ResourceUtils;
 import org.platformlayer.core.model.ItemBase;
+import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Tag;
 import org.platformlayer.core.model.TagChanges;
 import org.platformlayer.crypto.CertificateReader;
@@ -51,10 +52,12 @@ public class ManagedKeystore extends OpsTreeBase {
 
 	public ItemBase tagWithPublicKeys;
 
+	public ManagedSecretKey key;
+
+	public PlatformLayerKey ca;
+
 	@Inject
 	PlatformLayerHelpers platformlayer;
-
-	public ManagedSecretKey key;
 
 	@Handler
 	public void handler(OpsTarget target) throws OpsException {

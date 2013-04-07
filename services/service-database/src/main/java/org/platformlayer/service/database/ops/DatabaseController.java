@@ -18,6 +18,7 @@ import org.platformlayer.ops.postgres.CreateDatabase;
 import org.platformlayer.ops.postgres.CreateUser;
 import org.platformlayer.ops.postgres.DatabaseConnection;
 import org.platformlayer.ops.tree.OpsTreeBase;
+import org.platformlayer.ops.uses.LinkConsumer;
 import org.platformlayer.ops.uses.LinkTarget;
 import org.platformlayer.service.database.model.Database;
 import org.slf4j.Logger;
@@ -65,9 +66,11 @@ public class DatabaseController extends OpsTreeBase implements LinkTarget {
 	}
 
 	@Override
-	public Map<String, String> buildLinkTargetConfiguration(InetAddressChooser inetAddressChooser) throws OpsException {
+	public Map<String, String> buildLinkTargetConfiguration(LinkConsumer consumer) throws OpsException {
 		ItemBase serverItem = platformLayer.getItem(model.server);
 		DatabaseServer databaseServer = providers.toInterface(serverItem, DatabaseServer.class);
+
+		InetAddressChooser inetAddressChooser = consumer.getInetAddressChooser();
 
 		return databaseServer.buildTargetConfiguration(model.username, model.password, model.databaseName,
 				inetAddressChooser);

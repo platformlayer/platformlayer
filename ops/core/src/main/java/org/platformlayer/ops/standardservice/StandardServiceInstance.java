@@ -15,7 +15,6 @@ import org.platformlayer.ops.crypto.ManagedSecretKey;
 import org.platformlayer.ops.filesystem.ManagedDirectory;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.metrics.MetricsInstance;
-import org.platformlayer.ops.metrics.MetricsManager;
 import org.platformlayer.ops.supervisor.StandardService;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
@@ -24,10 +23,7 @@ import com.google.inject.util.Providers;
 
 public abstract class StandardServiceInstance extends OpsTreeBase {
 	@Inject
-	PlatformLayerHelpers platformLayer;
-
-	@Inject
-	MetricsManager metricsManager;
+	protected PlatformLayerHelpers platformLayer;
 
 	@Handler
 	public void handler() {
@@ -128,8 +124,6 @@ public abstract class StandardServiceInstance extends OpsTreeBase {
 			@Override
 			public Map<String, String> get() throws OpsException {
 				Map<String, String> properties = template.getConfigurationProperties();
-
-				template.addMetricsProperties(properties);
 
 				return properties;
 			}

@@ -72,6 +72,7 @@ public class JettyInstance extends StandardServiceInstance {
 				}
 				app.key = key;
 				app.context = context;
+				app.consumerKey = model.getKey();
 			}
 		}
 

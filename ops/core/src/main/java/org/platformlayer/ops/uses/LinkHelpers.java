@@ -5,14 +5,11 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.platformlayer.InetAddressChooser;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.Link;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.helpers.ProviderHelper;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
-import org.platformlayer.ops.networks.NearestAddressChooser;
-import org.platformlayer.ops.networks.NetworkPoint;
 
 import com.fathomdb.properties.PropertyUtils;
 import com.google.common.base.Strings;
@@ -28,19 +25,16 @@ public class LinkHelpers {
 
 	// public InetAddressChooser inetAddressChooser = InetAddressChooser.preferIpv6();
 
-	public Map<String, String> buildLinkTargetProperties(List<Link> links) throws OpsException {
+	public Map<String, String> buildLinkTargetProperties(LinkConsumer consumer, List<Link> links) throws OpsException {
 		Map<String, String> config = Maps.newHashMap();
 
 		if (links != null) {
-			NetworkPoint networkPoint = NetworkPoint.forTargetInContext();
-			InetAddressChooser inetAddressChooser = NearestAddressChooser.build(networkPoint);
 
 			for (Link link : links) {
 				ItemBase item = platformLayer.getItem(link.getTarget());
 				LinkTarget linkTarget = providers.toInterface(item, LinkTarget.class);
 
-				Map<String, String> linkTargetConfig = buildLinkTargetConfiguration(link.name, linkTarget,
-						inetAddressChooser);
+				Map<String, String> linkTargetConfig = buildLinkTargetConfiguration(consumer, link.name, linkTarget);
 				config.putAll(linkTargetConfig);
 			}
 		}
@@ -48,9 +42,9 @@ public class LinkHelpers {
 		return config;
 	}
 
-	private Map<String, String> buildLinkTargetConfiguration(String linkName, LinkTarget linkTarget,
-			InetAddressChooser inetAddressChooser) throws OpsException {
-		Map<String, String> config = linkTarget.buildLinkTargetConfiguration(inetAddressChooser);
+	private Map<String, String> buildLinkTargetConfiguration(LinkConsumer consumer, String linkName,
+			LinkTarget linkTarget) throws OpsException {
+		Map<String, String> config = linkTarget.buildLinkTargetConfiguration(consumer);
 
 		if (config == null) {
 			config = Maps.newHashMap();

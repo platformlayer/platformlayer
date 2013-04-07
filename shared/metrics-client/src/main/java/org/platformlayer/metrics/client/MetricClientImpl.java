@@ -264,7 +264,8 @@ public class MetricClientImpl implements MetricClient {
 			return new DummyMetricClient();
 		}
 
-		String cert = configuration.get("metrics.report.ssl.cert");
+		// String cert = configuration.get("metrics.report.ssl.cert");
+		String cert = configuration.get("metrics.tls.clientcert");
 		CertificateAndKey certificateAndKey = encryptionStore.getCertificateAndKey(cert);
 
 		String project = configuration.get("metrics.report.project");

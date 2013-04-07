@@ -7,9 +7,9 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.platformlayer.InetAddressChooser;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.core.model.Link;
-import org.platformlayer.core.model.Links;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ops.Command;
 import org.platformlayer.ops.OpsException;
@@ -18,9 +18,12 @@ import org.platformlayer.ops.crypto.ManagedSecretKeys;
 import org.platformlayer.ops.helpers.ProviderHelper;
 import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.metrics.MetricsManager;
+import org.platformlayer.ops.networks.NearestAddressChooser;
+import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.templates.TemplateDataSource;
 import org.platformlayer.ops.uses.LinkHelpers;
 import org.platformlayer.ops.uses.LinkTarget;
+import org.platformlayer.ops.uses.SimpleLinkConsumer;
 
 import com.google.common.collect.Maps;
 
@@ -33,13 +36,13 @@ public abstract class StandardTemplateData implements TemplateDataSource {
 	protected PlatformLayerHelpers platformLayer;
 
 	@Inject
-	protected MetricsManager metricsManager;
-
-	@Inject
 	protected ManagedSecretKeys managedSecretKeys;
 
 	@Inject
 	protected LinkHelpers links;
+
+	@Inject
+	protected MetricsManager metricsManager;
 
 	public abstract ItemBase getModel();
 
@@ -83,19 +86,36 @@ public abstract class StandardTemplateData implements TemplateDataSource {
 		Map<String, String> properties = Maps.newHashMap();
 
 		List<Link> modelLinks = getLinks();
-		if (modelLinks != null) {
-			properties.putAll(links.buildLinkTargetProperties(modelLinks));
+		if (modelLinks != null && !modelLinks.isEmpty()) {
+			NetworkPoint networkPoint = NetworkPoint.forTargetInContext();
+			InetAddressChooser inetAddressChooser = NearestAddressChooser.build(networkPoint);
+			SimpleLinkConsumer consumer = new SimpleLinkConsumer(getModel().getKey(), inetAddressChooser);
+
+			properties.putAll(links.buildLinkTargetProperties(consumer, modelLinks));
 		}
 
 		return properties;
 	}
 
-	protected List<Link> getLinks() {
-		Links links = getModel().links;
-		if (links == null) {
-			return Collections.emptyList();
+	protected List<Link> getLinks() throws OpsException {
+		List<Link> links;
+		if (getModel().links == null) {
+			links = Collections.emptyList();
+		} else {
+			links = getModel().links.getLinks();
 		}
-		return links.getLinks();
+
+		{
+			PlatformLayerKey metricsKey = metricsManager.findMetricsServer();
+			if (metricsKey != null) {
+				Link link = new Link();
+				link.name = "metrics";
+				link.target = metricsKey;
+				links.add(link);
+			}
+		}
+
+		return links;
 	}
 
 	protected PlatformLayerKey getCaPath() throws OpsException {
@@ -180,10 +200,6 @@ public abstract class StandardTemplateData implements TemplateDataSource {
 
 	public String getMatchExecutableName() {
 		return null;
-	}
-
-	public void addMetricsProperties(Map<String, String> properties) {
-		metricsManager.addConfigurationProperties(getModel().getKey(), properties);
 	}
 
 	public boolean shouldCreateKeystore() {
