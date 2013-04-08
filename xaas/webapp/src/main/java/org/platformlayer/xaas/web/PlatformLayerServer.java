@@ -48,8 +48,9 @@ public class PlatformLayerServer {
 				}
 				for (File file : dependenciesDir.listFiles()) {
 					String name = file.getName();
-					if (name.startsWith("fathomdb-"))
+					if (name.startsWith("fathomdb-")) {
 						continue;
+					}
 
 					file = file.getAbsoluteFile();
 					try {
@@ -108,8 +109,9 @@ public class PlatformLayerServer {
 				for (File file : dependenciesDir.listFiles()) {
 					boolean veto = false;
 					String name = file.getName();
-					if (done.contains(name))
+					if (done.contains(name)) {
 						continue;
+					}
 
 					for (String prefix : prefixes) {
 						if (name.startsWith(prefix)) {
@@ -117,8 +119,9 @@ public class PlatformLayerServer {
 							break;
 						}
 					}
-					if (veto)
+					if (veto) {
 						continue;
+					}
 
 					file = file.getAbsoluteFile();
 					try {
