@@ -266,6 +266,8 @@ public class JdbcJobRepository implements JobRepository {
 				ret.add(jobData);
 			}
 
+			sortJobs(ret);
+
 			return ret;
 		} catch (SQLException e) {
 			throw new RepositoryException("Error listing job executions", e);
@@ -465,6 +467,30 @@ public class JdbcJobRepository implements JobRepository {
 			public int compare(JobExecutionData o1, JobExecutionData o2) {
 				Date v1 = o1.startedAt;
 				Date v2 = o2.startedAt;
+
+				return PrimitiveComparators.compare(v1, v2);
+			}
+		});
+	}
+
+	protected void sortJobs(List<JobData> runs) {
+		if (runs == null) {
+			return;
+		}
+
+		Collections.sort(runs, new Comparator<JobData>() {
+			Date getLastRun(JobData d) {
+				JobExecutionData lastRun = d.getLastRun();
+				if (lastRun == null) {
+					return null;
+				}
+				return lastRun.getEndedAt();
+			}
+
+			@Override
+			public int compare(JobData o1, JobData o2) {
+				Date v1 = getLastRun(o1);
+				Date v2 = getLastRun(o2);
 
 				return PrimitiveComparators.compare(v1, v2);
 			}
