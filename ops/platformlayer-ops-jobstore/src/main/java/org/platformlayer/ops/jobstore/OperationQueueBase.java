@@ -40,23 +40,25 @@ public abstract class OperationQueueBase implements OperationQueue {
 
 	@Override
 	public JobExecutionList listRecentExecutions(JobQuery query) throws OpsException {
-		JobExecutionList ret = JobExecutionList.create();
+		throw new UnsupportedOperationException();
 
-		List<JobExecutionData> jobs;
-		try {
-			jobs = jobRepository.listRecentExecutions(query);
-		} catch (RepositoryException e) {
-			throw new OpsException("Error querying for jobs", e);
-		}
-
-		for (JobExecutionData jobExecution : jobs) {
-			// if (!jobExecution.getJobKey().getProject().equals(projectId)) {
-			// throw new IllegalStateException();
-			// }
-			ret.add(jobExecution);
-		}
-
-		return ret;
+		// JobExecutionList ret = JobExecutionList.create();
+		//
+		// List<JobExecutionData> jobs;
+		// try {
+		// jobs = jobRepository.listRecentExecutions(query);
+		// } catch (RepositoryException e) {
+		// throw new OpsException("Error querying for jobs", e);
+		// }
+		//
+		// for (JobExecutionData jobExecution : jobs) {
+		// // if (!jobExecution.getJobKey().getProject().equals(projectId)) {
+		// // throw new IllegalStateException();
+		// // }
+		// ret.add(jobExecution);
+		// }
+		//
+		// return ret;
 	}
 
 	@Override
