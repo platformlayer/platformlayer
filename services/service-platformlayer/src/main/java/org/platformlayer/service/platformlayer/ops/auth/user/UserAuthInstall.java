@@ -17,4 +17,17 @@ public class UserAuthInstall extends StandardServiceInstall {
 	protected StandardTemplateData getTemplate() {
 		return template;
 	}
+
+	@Override
+	protected void addChildren() throws OpsException {
+		super.addChildren();
+
+		for (String extension : template.getExtensions()) {
+			String key = extension;
+
+			DownloadFileByHash download = addChild(DownloadFileByHash.class);
+			download.filePath = new File(template.getExtensionsPath(), key + ".jar");
+			download.specifier = "platformlayerplus:production:" + key + "-1.0-SNAPSHOT.jar";
+		}
+	}
 }

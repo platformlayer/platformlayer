@@ -83,4 +83,11 @@ public class UserAuthInstanceTemplate extends CommonAuthTemplateData {
 		return "platformlayer:production:keystone-webapp-user-1.0-SNAPSHOT-bin.tar.gz";
 	}
 
+	public List<String> getExtensions() {
+		return Arrays.asList("auth-webapp");
+	}
+
+	public File getExtensionsPath() {
+		return getInstallDir();
+	}
 }

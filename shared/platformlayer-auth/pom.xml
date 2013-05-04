@@ -1,85 +1,90 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.platformlayer</groupId>
-        <artifactId>platformlayer-shared-parent</artifactId>
-        <version>1.0-SNAPSHOT</version>
-    </parent>
+	<parent>
+		<groupId>org.platformlayer</groupId>
+		<artifactId>platformlayer-shared-parent</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
 
-    <artifactId>platformlayer-auth</artifactId>
-    <packaging>jar</packaging>
-    <name>PlatformLayer :: Shared :: Authentication</name>
+	<artifactId>platformlayer-auth</artifactId>
+	<packaging>jar</packaging>
+	<name>PlatformLayer :: Shared :: Authentication</name>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.platformlayer</groupId>
-            <artifactId>platformlayer-auth-common</artifactId>
-        </dependency>
+	<dependencies>
+		<dependency>
+			<groupId>org.platformlayer</groupId>
+			<artifactId>platformlayer-auth-common</artifactId>
+		</dependency>
 
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+		</dependency>
 
-        <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>javax.inject</groupId>
+			<artifactId>javax.inject</artifactId>
+		</dependency>
 
-        <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>com.google.inject</groupId>
+			<artifactId>guice</artifactId>
+		</dependency>
 
-        <dependency>
-            <groupId>org.platformlayer</groupId>
-            <artifactId>platformlayer-shared-utils</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>org.platformlayer</groupId>
+			<artifactId>platformlayer-shared-utils</artifactId>
+		</dependency>
 
-        <dependency>
-            <groupId>com.fathomdb</groupId>
-            <artifactId>fathomdb-crypto</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>com.fathomdb</groupId>
+			<artifactId>fathomdb-crypto</artifactId>
+		</dependency>
 
-        <dependency>
-            <groupId>org.platformlayer</groupId>
-            <artifactId>keystone-api</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>com.fathomdb</groupId>
+			<artifactId>fathomdb-jpa</artifactId>
+		</dependency>
 
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>org.platformlayer</groupId>
+			<artifactId>keystone-api</artifactId>
+		</dependency>
 
-        <!-- Database drivers -->
-        <dependency>
-            <groupId>commons-dbcp</groupId>
-            <artifactId>commons-dbcp</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
 
-        <dependency>
-            <groupId>org.hibernate.javax.persistence</groupId>
-            <artifactId>hibernate-jpa-2.0-api</artifactId>
-        </dependency>
+		<!-- Database drivers -->
+		<dependency>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+		</dependency>
 
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>org.hibernate.javax.persistence</groupId>
+			<artifactId>hibernate-jpa-2.0-api</artifactId>
+		</dependency>
 
-    <build>
-        <resources>
-            <resource>
-                <directory>${basedir}/src/main/resources</directory>
-            </resource>
-            <resource>
-                <directory>${basedir}/src/main/java</directory>
-            </resource>
-        </resources>
-    </build>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<resources>
+			<resource>
+				<directory>${basedir}/src/main/resources</directory>
+			</resource>
+			<resource>
+				<directory>${basedir}/src/main/java</directory>
+			</resource>
+		</resources>
+	</build>
 
 </project>

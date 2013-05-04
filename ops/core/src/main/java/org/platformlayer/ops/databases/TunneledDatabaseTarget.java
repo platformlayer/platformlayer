@@ -12,14 +12,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.slf4j.*;
 import org.platformlayer.core.model.Secret;
-import org.platformlayer.jdbc.JdbcUtils;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.SshOpsTarget;
 import org.platformlayer.ops.ssh.SshPortForward;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.fathomdb.jdbc.JdbcUtils;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;

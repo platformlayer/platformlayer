@@ -4,6 +4,8 @@ import java.util.Properties;
 
 import javax.inject.Inject;
 
+import com.fathomdb.jdbc.DatabaseStatistics;
+
 public abstract class DataSourceBuilderBase implements DataSourceBuilder {
 	@Inject
 	DatabaseStatistics databaseStatistics;

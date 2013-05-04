@@ -5,8 +5,8 @@ import org.platformlayer.metrics.JerseyMetricsHook;
 import org.platformlayer.metrics.MetricRegistry;
 import org.platformlayer.metrics.MetricReporter;
 import org.platformlayer.web.InstrumentedJettyWebServerBuilder;
-import org.platformlayer.web.WebServerBuilder;
 
+import com.fathomdb.server.http.WebServerBuilder;
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 import com.google.inject.matcher.Matchers;

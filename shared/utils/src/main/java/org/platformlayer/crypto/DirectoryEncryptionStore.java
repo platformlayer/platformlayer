@@ -10,6 +10,7 @@ import com.fathomdb.crypto.CertificateAndKey;
 import com.fathomdb.crypto.EncryptionStore;
 import com.fathomdb.crypto.SimpleCertificateAndKey;
 import com.fathomdb.crypto.bouncycastle.PrivateKeys;
+import com.google.common.base.Preconditions;
 
 public class DirectoryEncryptionStore implements EncryptionStore {
 	private File base;
@@ -21,6 +22,8 @@ public class DirectoryEncryptionStore implements EncryptionStore {
 	@Override
 	public CertificateAndKey getCertificateAndKey(String alias) {
 		CertificateAndKey certificateAndKey;
+
+		Preconditions.checkNotNull(alias);
 
 		// Path to file
 		File certPath = new File(base, alias + ".crt");

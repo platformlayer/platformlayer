@@ -5,12 +5,12 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.platformlayer.jdbc.simplejpa.ResultSetMappersProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fathomdb.Configuration;
 import com.fathomdb.discovery.Discovery;
+import com.fathomdb.jpa.impl.ResultSetMappersProvider;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;

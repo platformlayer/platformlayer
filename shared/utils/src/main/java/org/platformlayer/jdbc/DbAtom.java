@@ -4,6 +4,8 @@ import java.sql.SQLException;
 
 import org.platformlayer.model.StringWrapper;
 
+import com.fathomdb.jdbc.JdbcConnection;
+
 public class DbAtom<T> {
 	T value;
 

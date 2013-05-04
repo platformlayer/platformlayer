@@ -5,8 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.platformlayer.jdbc.simplejpa.ReflectionUtils;
-
+import com.fathomdb.jpa.impl.ReflectionUtils;
 import com.google.common.collect.Lists;
 import com.google.inject.Injector;
 

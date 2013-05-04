@@ -2,9 +2,8 @@ package org.platformlayer.extensions;
 
 import java.util.List;
 
-import org.platformlayer.jdbc.simplejpa.ResultSetMappersProvider;
-
 import com.fathomdb.Configuration;
+import com.fathomdb.jpa.impl.ResultSetMappersProvider;
 import com.google.inject.Module;
 
 public interface ExtensionModule {

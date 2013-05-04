@@ -23,8 +23,6 @@ import org.platformlayer.http.apache.InstrumentedApacheHttpStrategy;
 import org.platformlayer.inject.GuiceObjectInjector;
 import org.platformlayer.inject.ObjectInjector;
 import org.platformlayer.jdbc.GuiceDataSourceProvider;
-import org.platformlayer.jdbc.simplejpa.ResultSetMappers;
-import org.platformlayer.jdbc.simplejpa.ResultSetMappersProvider;
 import org.platformlayer.ops.ItemService;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsSystem;
@@ -61,6 +59,8 @@ import org.slf4j.LoggerFactory;
 
 import com.fathomdb.config.ConfigurationImpl;
 import com.fathomdb.crypto.EncryptionStore;
+import com.fathomdb.jpa.impl.ResultSetMappers;
+import com.fathomdb.jpa.impl.ResultSetMappersProvider;
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 

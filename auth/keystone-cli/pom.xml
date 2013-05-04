@@ -41,6 +41,12 @@
 			<artifactId>fathomdb-http</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>com.fathomdb</groupId>
+			<artifactId>fathomdb-metrics</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+
 		<!-- Databases -->
 		<dependency>
 			<groupId>postgresql</groupId>

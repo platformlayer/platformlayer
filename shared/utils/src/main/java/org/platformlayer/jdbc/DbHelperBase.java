@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Map;
 
+import com.fathomdb.jdbc.JdbcConnection;
+import com.fathomdb.jdbc.JdbcUtils;
 import com.google.common.collect.Maps;
 
 public class DbHelperBase implements Closeable {

@@ -7,17 +7,12 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.xml.bind.JAXBException;
 
-import org.slf4j.*;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.JobSchedule;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.Secret;
 import org.platformlayer.jdbc.DbHelperBase;
-import org.platformlayer.jdbc.JdbcConnection;
-import org.platformlayer.jdbc.JdbcTransaction;
-import org.platformlayer.jdbc.proxy.Query;
-import org.platformlayer.jdbc.proxy.QueryFactory;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.schedule.ActionTask;
 import org.platformlayer.ops.schedule.EndpointRecord;
@@ -25,7 +20,13 @@ import org.platformlayer.ops.schedule.JobExecution;
 import org.platformlayer.ops.schedule.SchedulerRecord;
 import org.platformlayer.ops.schedule.SchedulerRepository;
 import org.platformlayer.xml.JaxbHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.fathomdb.jdbc.JdbcConnection;
+import com.fathomdb.jdbc.JdbcTransaction;
+import com.fathomdb.jpa.Query;
+import com.fathomdb.jpa.QueryFactory;
 import com.fathomdb.utils.Hex;
 import com.google.common.collect.Lists;
 

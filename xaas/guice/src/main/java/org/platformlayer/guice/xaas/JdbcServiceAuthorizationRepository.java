@@ -13,9 +13,6 @@ import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceMetadataKey;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.jdbc.DbHelperBase;
-import org.platformlayer.jdbc.JdbcConnection;
-import org.platformlayer.jdbc.JdbcTransaction;
-import org.platformlayer.jdbc.JdbcUtils;
 import org.platformlayer.ops.crypto.SecretHelper;
 import org.platformlayer.xaas.model.ServiceAuthorization;
 import org.platformlayer.xaas.repository.ServiceAuthorizationRepository;
@@ -26,6 +23,9 @@ import com.fathomdb.Utf8;
 import com.fathomdb.crypto.AesCryptoKey;
 import com.fathomdb.crypto.CryptoKey;
 import com.fathomdb.crypto.FathomdbCrypto;
+import com.fathomdb.jdbc.JdbcConnection;
+import com.fathomdb.jdbc.JdbcTransaction;
+import com.fathomdb.jdbc.JdbcUtils;
 import com.google.common.collect.Lists;
 
 public class JdbcServiceAuthorizationRepository implements ServiceAuthorizationRepository {

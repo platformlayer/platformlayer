@@ -1,6 +1,6 @@
 package org.platformlayer.jobs.model;
 
-import org.platformlayer.shared.EnumWithKey;
+import com.fathomdb.EnumWithKey;
 
 public enum JobState implements EnumWithKey {
 	PRESTART("P"), RUNNING("R"), FAILED("F"), SUCCESS("S");

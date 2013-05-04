@@ -3,11 +3,12 @@ package org.platformlayer.auth;
 import javax.sql.DataSource;
 
 import org.platformlayer.jdbc.GuiceDataSourceProvider;
-import org.platformlayer.jdbc.JdbcGuiceModule;
-import org.platformlayer.jdbc.simplejpa.ResultSetMappers;
-import org.platformlayer.jdbc.simplejpa.ResultSetMappersProvider;
 
+import com.fathomdb.jdbc.JdbcGuiceModule;
+import com.fathomdb.jpa.impl.ResultSetMappers;
+import com.fathomdb.jpa.impl.ResultSetMappersProvider;
 import com.google.inject.AbstractModule;
+import com.google.inject.util.Providers;
 
 public class KeystoneJdbcModule extends AbstractModule {
 
@@ -20,7 +21,7 @@ public class KeystoneJdbcModule extends AbstractModule {
 
 		bind(UserDatabase.class).to(JdbcUserRepository.class).asEagerSingleton();
 		bind(ResultSetMappers.class).toProvider(
-				ResultSetMappersProvider.build(UserEntity.class, ProjectEntity.class, ServiceAccountEntity.class,
-						UserProjectEntity.class, UserCertEntity.class));
+				Providers.guicify(ResultSetMappersProvider.build(UserEntity.class, ProjectEntity.class,
+						ServiceAccountEntity.class, UserProjectEntity.class, UserCertEntity.class)));
 	}
 }

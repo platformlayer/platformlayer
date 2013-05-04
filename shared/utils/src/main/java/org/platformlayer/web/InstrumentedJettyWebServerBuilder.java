@@ -5,6 +5,7 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.thread.ThreadPool;
 
+import com.fathomdb.server.http.JettyWebServerBuilder;
 import com.yammer.metrics.jetty.InstrumentedHandler;
 import com.yammer.metrics.jetty.InstrumentedQueuedThreadPool;
 import com.yammer.metrics.jetty.InstrumentedSelectChannelConnector;

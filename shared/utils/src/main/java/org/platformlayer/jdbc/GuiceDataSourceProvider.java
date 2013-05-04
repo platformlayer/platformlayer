@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fathomdb.Configuration;
+import com.fathomdb.jdbc.DatabaseStatistics;
 import com.google.inject.Provider;
 
 @Singleton

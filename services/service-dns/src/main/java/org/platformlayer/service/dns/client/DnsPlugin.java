@@ -82,11 +82,11 @@ public class DnsPlugin extends ExternalPlugin {
 
 	@Override
 	public Activity getActivity(Place place, String context) {
-		if (place instanceof DnsRecordListPlace) {
-			return dnsRecordListActivity.get();
-		}
 		if (place instanceof HomePlace) {
 			return homeActivity.get();
+		}
+		if (place instanceof DnsRecordListPlace) {
+			return dnsRecordListActivity.get();
 		}
 		if (place instanceof DnsRecordPlace) {
 			return dnsRecordActivity.get();

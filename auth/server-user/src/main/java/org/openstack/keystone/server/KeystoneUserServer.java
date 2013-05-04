@@ -20,12 +20,12 @@ import org.platformlayer.config.ConfigurationModule;
 import org.platformlayer.extensions.Extensions;
 import org.platformlayer.metrics.MetricReporter;
 import org.platformlayer.metrics.client.codahale.CodahaleMetricsModule;
-import org.platformlayer.web.SslOption;
-import org.platformlayer.web.WebServerBuilder;
 
 import com.fathomdb.Configuration;
 import com.fathomdb.config.ConfigurationImpl;
 import com.fathomdb.discovery.Discovery;
+import com.fathomdb.server.http.SslOption;
+import com.fathomdb.server.http.WebServerBuilder;
 import com.google.common.collect.Lists;
 import com.google.inject.Guice;
 import com.google.inject.Injector;

@@ -8,6 +8,9 @@ import java.util.concurrent.Callable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.jdbc.JdbcConnection;
+import com.fathomdb.jdbc.JdbcUtils;
+
 public class AtomHelpers {
 	private static final Logger log = LoggerFactory.getLogger(AtomHelpers.class);
 

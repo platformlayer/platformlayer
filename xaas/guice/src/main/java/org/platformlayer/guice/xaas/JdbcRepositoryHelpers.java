@@ -6,7 +6,8 @@ import org.platformlayer.ids.ItemType;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.jdbc.AtomHelpers;
-import org.platformlayer.jdbc.JdbcConnection;
+
+import com.fathomdb.jdbc.JdbcConnection;
 
 public class JdbcRepositoryHelpers {
 	@Deprecated
