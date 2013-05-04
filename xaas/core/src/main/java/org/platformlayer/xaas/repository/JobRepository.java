@@ -28,7 +28,7 @@ public interface JobRepository {
 
 	String insertJob(ProjectId projectId, JobData jobData) throws RepositoryException;
 
-	List<JobExecutionData> listRecentExecutions(JobQuery query) throws RepositoryException;
+	// List<JobExecutionData> listRecentExecutions(JobQuery query) throws RepositoryException;
 
 	List<JobData> listRecentJobs(JobQuery query) throws RepositoryException;
 }

@@ -1,7 +1,7 @@
 package org.platformlayer.extensions;
 
-import java.util.Collection;
 import java.util.List;
+import java.util.ServiceLoader;
 
 import javax.inject.Inject;
 
@@ -74,16 +74,29 @@ public class Extensions {
 	}
 
 	private void loadReflectedExtensions(Discovery discovery) {
-		Collection<Class> subTypes = discovery.findAnnotatedClasses(Extension.class);
-		if (subTypes == null || subTypes.isEmpty()) {
-			log.info("No Annotated extensions found");
-			return;
+		ServiceLoader<ExtensionModule> serviceLoader = ServiceLoader.load(ExtensionModule.class);
+
+		int count = 0;
+
+		for (ExtensionModule extension : serviceLoader) {
+			extensions.add(extension);
+			count++;
 		}
 
-		List<ExtensionModule> instances = Discovery.buildInstances(ExtensionModule.class, subTypes);
-		for (ExtensionModule instance : instances) {
-			extensions.add(instance);
+		if (count == 0) {
+			log.info("No Annotated extensions found");
 		}
+
+		// Collection<Class> extensionTypes = discovery.findAnnotatedClasses(Extension.class);
+		// if (extensionTypes == null || extensionTypes.isEmpty()) {
+		// log.info("No Annotated extensions found");
+		// return;
+		// }
+		//
+		// List<ExtensionModule> instances = Discovery.buildInstances(ExtensionModule.class, extensionTypes);
+		// for (ExtensionModule instance : instances) {
+		// extensions.add(instance);
+		// }
 	}
 
 	public void addHttpExtensions(HttpConfiguration http) {

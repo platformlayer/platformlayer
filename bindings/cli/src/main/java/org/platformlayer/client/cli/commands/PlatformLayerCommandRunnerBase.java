@@ -1,6 +1,10 @@
 package org.platformlayer.client.cli.commands;
 
 import java.io.PrintWriter;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
@@ -10,6 +14,7 @@ import org.json.JSONObject;
 import org.platformlayer.Format;
 import org.platformlayer.PlatformLayerClient;
 import org.platformlayer.PlatformLayerClientException;
+import org.platformlayer.PrimitiveComparators;
 import org.platformlayer.UntypedItemJson;
 import org.platformlayer.UntypedItemXml;
 import org.platformlayer.client.cli.PlatformLayerCliContext;
@@ -20,6 +25,7 @@ import org.platformlayer.ids.ItemType;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.ids.ServiceType;
 import org.platformlayer.jobs.model.JobDataList;
+import org.platformlayer.jobs.model.JobExecutionData;
 import org.platformlayer.xml.DomUtils;
 
 import com.fathomdb.cli.commands.Ansi;
@@ -133,6 +139,22 @@ public abstract class PlatformLayerCommandRunnerBase extends CommandRunnerBase {
 		ansi.println();
 
 		ansi.reset();
+	}
+
+	protected void sort(List<JobExecutionData> runs) {
+		if (runs == null) {
+			return;
+		}
+
+		Collections.sort(runs, new Comparator<JobExecutionData>() {
+			@Override
+			public int compare(JobExecutionData o1, JobExecutionData o2) {
+				Date v1 = o1.startedAt;
+				Date v2 = o2.startedAt;
+
+				return PrimitiveComparators.compare(v1, v2);
+			}
+		});
 	}
 
 }

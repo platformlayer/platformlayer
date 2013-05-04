@@ -21,6 +21,8 @@ public class JobData /* implements Job */{
 	public PlatformLayerKey targetId;
 	public Action action;
 
+	public JobExecutionData lastRun;
+
 	public static PlatformLayerKey buildKey(ProjectId projectId, ManagedItemId jobId) {
 		return new PlatformLayerKey(null, projectId, JobData.SERVICE_TYPE, JobData.ITEM_TYPE, jobId);
 	}
@@ -39,6 +41,10 @@ public class JobData /* implements Job */{
 
 	public Action getAction() {
 		return action;
+	}
+
+	public JobExecutionData getLastRun() {
+		return lastRun;
 	}
 
 }

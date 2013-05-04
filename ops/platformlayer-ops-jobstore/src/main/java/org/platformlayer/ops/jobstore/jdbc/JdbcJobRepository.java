@@ -3,9 +3,10 @@ package org.platformlayer.ops.jobstore.jdbc;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -15,12 +16,18 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.platformlayer.PrimitiveComparators;
 import org.platformlayer.RepositoryException;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.ids.ManagedItemId;
 import org.platformlayer.ids.ProjectId;
 import org.platformlayer.jdbc.DbHelperBase;
+import org.platformlayer.jdbc.JdbcConnection;
+import org.platformlayer.jdbc.JdbcTransaction;
+import org.platformlayer.jdbc.proxy.Query;
+import org.platformlayer.jdbc.proxy.QueryFactory;
+import org.platformlayer.jdbc.proxy.QueryFilter;
 import org.platformlayer.jobs.model.JobData;
 import org.platformlayer.jobs.model.JobExecutionData;
 import org.platformlayer.jobs.model.JobState;
@@ -37,7 +44,19 @@ import com.fathomdb.jpa.QueryFilter;
 import com.fathomdb.jpa.impl.JoinedQueryResult;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+
+/*
+ create index job_execution_ix on job_execution (project, job_id, started_at);
+
+ create view last_job_execution as select je.* from job_execution je join (select project, job_id, max(started_at) as max_started_at from job_execution group by project, job_id) as max_je on je.project=max_je.project and je.job_id=max_je.job_id and je.started_at = max_je.max_started_at;
+ create view job_with_last_execution as select j.*, je.project as je_project, je.job_id as je_job_id, je.state as je_state, je.started_at as je_started_at, je.ended_at as je_ended_at, je.log_cookie as je_log_cookie from job j left outer join last_job_execution je on je.project = j.project and j.id = je.job_id;
+
+ grant all on job_with_last_execution to user platformlayer_ops;
+
+ alter table job add column lastrun_ended_at timestamp without time zone, add column lastrun_state character(1), add column lastrun_job_id text;
+
+
+ */
 
 public class JdbcJobRepository implements JobRepository {
 	@Inject
@@ -54,21 +73,27 @@ public class JdbcJobRepository implements JobRepository {
 		@Query("SELECT * FROM job_execution WHERE project=? and job_id=?")
 		List<JobExecutionEntity> listExecutions(int projectId, String jobId) throws SQLException;
 
-		@Query("SELECT * FROM job_execution")
-		List<JobExecutionEntity> listRecentExecutions(@QueryFilter("project=?") int projectId,
-				@QueryFilter("started_at >= (current_timestamp - (? * interval '1 second'))") Long maxAgeSeconds)
-				throws SQLException;
+		// @Query("SELECT * FROM job_execution")
+		// List<JobExecutionEntity> listRecentExecutions(
+		// @QueryFilter("project=?") int projectId,
+		// @QueryFilter("(ended_at is null) or (ended_at >= (current_timestamp - (? * interval '1 second')))") Long
+		// maxAgeSeconds)
+		// throws SQLException;
 
-		// HACK: We have to select je's primary key, other j is duplicated once for each je row
-		@Query("SELECT j.*, je.project, je.id FROM job j, job_execution je WHERE (j.project = je.project) and (j.id = je.job_id)")
-		JoinedQueryResult listRecentJobs(@QueryFilter("je.project=?") int projectId,
-				@QueryFilter("je.started_at >= (current_timestamp - (? * interval '1 second'))") Long maxAgeSeconds,
-				@QueryFilter("j.target = ?") String target, @QueryFilter(QueryFilter.LIMIT) Integer limit);
+		@Query("SELECT * FROM job")
+		List<JobEntity> listRecentJobs(
+				@QueryFilter("project=?") int projectId,
+				// @QueryFilter("(lastrun_ended_at is null and ) or (lastrun_ended_at >= (current_timestamp - (? * interval '1 second')))")
+				// Long maxAgeSeconds,
+				@QueryFilter("(lastrun_ended_at >= (current_timestamp - (? * interval '1 second')))") Long maxAgeSeconds,
+				@QueryFilter("target = ?") String target, @QueryFilter(QueryFilter.LIMIT) Integer limit);
 
-		@Query("SELECT * FROM job j, job_execution je WHERE (j.project = je.project) and (j.id = je.job_id)")
-		JoinedQueryResult listRecentJobsAndExecutions(@QueryFilter("je.project=?") int projectId,
-				@QueryFilter("je.started_at >= (current_timestamp - (? * interval '1 second'))") Long maxAgeSeconds,
-				@QueryFilter("j.target = ?") String target, @QueryFilter(QueryFilter.LIMIT) Integer limit);
+		// @Query("SELECT * FROM job")
+		// List<JobExecutionEntity> listRecentJobsAndExecutions(
+		// @QueryFilter("project=?") int projectId,
+		// @QueryFilter("(lastrun_ended_at is null) or (lastrun_ended_at >= (current_timestamp - (? * interval '1 second')))")
+		// Long maxAgeSeconds,
+		// @QueryFilter("target = ?") String target, @QueryFilter(QueryFilter.LIMIT) Integer limit);
 
 		@Query("SELECT * FROM job WHERE project=? and id=?")
 		JobEntity findJob(int projectId, String jobId) throws SQLException;
@@ -79,6 +104,10 @@ public class JdbcJobRepository implements JobRepository {
 		@Query("UPDATE job_execution SET log_cookie=?, ended_at=?, state=? WHERE project=? and job_id=? and id=?")
 		int updateExecution(String logCookie, Date endDate, JobState state, int projectId, String jobId,
 				String executionId) throws SQLException;
+
+		@Query("UPDATE job SET lastrun_ended_at=?, lastrun_state=?, lastrun_job_id=? WHERE project=? and id=?")
+		int updateJob(Date endDate, JobState state, String executionId, int projectId, String jobId)
+				throws SQLException;
 
 		@Query(value = Query.AUTOMATIC_INSERT)
 		int insert(JobExecutionEntity entity) throws SQLException;
@@ -151,58 +180,8 @@ public class JdbcJobRepository implements JobRepository {
 			for (JobExecutionEntity execution : executions) {
 				ret.add(mapFromEntity(execution, jobKey));
 			}
-			return ret;
-		} catch (SQLException e) {
-			throw new RepositoryException("Error listing job executions", e);
-		} finally {
-			db.close();
-		}
-	}
 
-	@Override
-	@JdbcTransaction
-	public List<JobExecutionData> listRecentExecutions(JobQuery jobQuery) throws RepositoryException {
-		DbHelper db = new DbHelper();
-		try {
-			// We use JoinedQueryResult because we have a compound PK (projectId / jobId)
-			// and JPA makes this really complicated.
-
-			ProjectId projectId = jobQuery.project;
-			Preconditions.checkNotNull(projectId);
-			int project = db.mapToValue(projectId);
-
-			Long maxAge = null;
-			if (jobQuery.maxAge != null) {
-				maxAge = jobQuery.maxAge.getTotalSeconds();
-			}
-
-			Integer limit = jobQuery.limit;
-			String filterTarget = jobQuery.target != null ? jobQuery.target.getUrl() : null;
-
-			// TODO: Is it really a compound PK? Should jobId be globally unique?
-			JoinedQueryResult results = db.queries.listRecentJobsAndExecutions(project, maxAge, filterTarget, limit);
-
-			List<JobExecutionData> ret = Lists.newArrayList();
-			Map<String, JobData> jobs = Maps.newHashMap();
-
-			for (JobEntity job : results.getAll(JobEntity.class)) {
-				ManagedItemId jobId = new ManagedItemId(job.jobId);
-				PlatformLayerKey jobKey = JobData.buildKey(projectId, jobId);
-				jobs.put(job.jobId, mapFromEntity(job, jobKey));
-			}
-
-			for (JobExecutionEntity execution : results.getAll(JobExecutionEntity.class)) {
-				JobData jobData = jobs.get(execution.jobId);
-				if (jobData == null) {
-					throw new IllegalStateException();
-				}
-
-				ManagedItemId jobId = new ManagedItemId(execution.jobId);
-				PlatformLayerKey jobKey = JobData.buildKey(projectId, jobId);
-				JobExecutionData run = mapFromEntity(execution, jobKey);
-				run.job = jobData;
-				ret.add(run);
-			}
+			sort(ret);
 
 			return ret;
 		} catch (SQLException e) {
@@ -211,6 +190,60 @@ public class JdbcJobRepository implements JobRepository {
 			db.close();
 		}
 	}
+
+	// @Override
+	// @JdbcTransaction
+	// public List<JobExecutionData> listRecentExecutions(JobQuery jobQuery) throws RepositoryException {
+	// DbHelper db = new DbHelper();
+	// try {
+	// // We use JoinedQueryResult because we have a compound PK (projectId / jobId)
+	// // and JPA makes this really complicated.
+	//
+	// ProjectId projectId = jobQuery.project;
+	// Preconditions.checkNotNull(projectId);
+	// int project = db.mapToValue(projectId);
+	//
+	// Long maxAge = null;
+	// if (jobQuery.maxAge != null) {
+	// maxAge = jobQuery.maxAge.getTotalSeconds();
+	// }
+	//
+	// Integer limit = jobQuery.limit;
+	// String filterTarget = jobQuery.target != null ? jobQuery.target.getUrl() : null;
+	//
+	// JoinedQueryResult results = db.queries.listRecentExecutions(project, maxAge, filterTarget, limit);
+	//
+	// List<JobExecutionData> ret = Lists.newArrayList();
+	// Map<String, JobData> jobs = Maps.newHashMap();
+	//
+	// for (JobEntity job : results.getAll(JobEntity.class)) {
+	// ManagedItemId jobId = new ManagedItemId(job.jobId);
+	// PlatformLayerKey jobKey = JobData.buildKey(projectId, jobId);
+	// jobs.put(job.jobId, mapFromEntity(job, jobKey));
+	// }
+	//
+	// for (JobExecutionEntity execution : results.getAll(JobExecutionEntity.class)) {
+	// JobData jobData = jobs.get(execution.jobId);
+	// if (jobData == null) {
+	// throw new IllegalStateException();
+	// }
+	//
+	// ManagedItemId jobId = new ManagedItemId(execution.jobId);
+	// PlatformLayerKey jobKey = JobData.buildKey(projectId, jobId);
+	// JobExecutionData run = mapFromEntity(execution, jobKey);
+	// run.job = jobData;
+	// ret.add(run);
+	// }
+	//
+	// sort(ret);
+	//
+	// return ret;
+	// } catch (SQLException e) {
+	// throw new RepositoryException("Error listing job executions", e);
+	// } finally {
+	// db.close();
+	// }
+	// }
 
 	@Override
 	@JdbcTransaction
@@ -229,14 +262,18 @@ public class JdbcJobRepository implements JobRepository {
 			Integer limit = jobQuery.limit;
 			String filterTarget = jobQuery.target != null ? jobQuery.target.getUrl() : null;
 
-			JoinedQueryResult result = db.queries.listRecentJobs(project, maxAge, filterTarget, limit);
+			// TODO: Include currently running jobs...
+			List<JobEntity> results = db.queries.listRecentJobs(project, maxAge, filterTarget, limit);
 			List<JobData> ret = Lists.newArrayList();
-			for (JobEntity job : result.getAll(JobEntity.class)) {
+			for (JobEntity job : results) {
 				ManagedItemId jobId = new ManagedItemId(job.jobId);
 				PlatformLayerKey jobKey = JobData.buildKey(projectId, jobId);
 				JobData jobData = mapFromEntity(job, jobKey);
 				ret.add(jobData);
 			}
+
+			sortJobs(ret);
+
 			return ret;
 		} catch (SQLException e) {
 			throw new RepositoryException("Error listing job executions", e);
@@ -285,6 +322,14 @@ public class JdbcJobRepository implements JobRepository {
 		data.action = actionFromXml(entity.actionXml);
 		data.key = jobKey;
 		data.targetId = PlatformLayerKey.parse(entity.target);
+
+		if (entity.lastrunId != null) {
+			JobExecutionData execution = new JobExecutionData();
+			execution.endedAt = entity.lastrunEndedAt;
+			execution.executionId = entity.lastrunId;
+			execution.state = entity.lastrunState;
+			data.lastRun = execution;
+		}
 
 		return data;
 	}
@@ -339,14 +384,19 @@ public class JdbcJobRepository implements JobRepository {
 	@JdbcTransaction
 	public void recordJobEnd(PlatformLayerKey jobKey, String executionId, Date endedAt, JobState state, String logCookie)
 			throws RepositoryException {
+
 		DbHelper db = new DbHelper();
 		try {
-			ProjectId projectId = jobKey.getProject();
+			ProjectId project = jobKey.getProject();
 			String jobId = jobKey.getItemIdString();
 
-			int updateCount = db.queries.updateExecution(logCookie, endedAt, state, db.mapToValue(projectId), jobId,
-					executionId);
+			int projectId = db.mapToValue(project);
+			int updateCount = db.queries.updateExecution(logCookie, endedAt, state, projectId, jobId, executionId);
+			if (updateCount != 1) {
+				throw new RepositoryException("Unexpected number of rows updated");
+			}
 
+			updateCount = db.queries.updateJob(endedAt, state, executionId, projectId, jobId);
 			if (updateCount != 1) {
 				throw new RepositoryException("Unexpected number of rows updated");
 			}
@@ -365,11 +415,13 @@ public class JdbcJobRepository implements JobRepository {
 			ProjectId projectId = jobKey.getProject();
 			String jobId = jobKey.getItemIdString();
 
+			String executionId = UUID.randomUUID().toString();
+
 			JobExecutionEntity execution = new JobExecutionEntity();
 			execution.project = db.mapToValue(projectId);
 			execution.startedAt = startedAt;
 			execution.state = JobState.RUNNING;
-			execution.executionId = UUID.randomUUID().toString();
+			execution.executionId = executionId;
 			execution.jobId = jobId;
 
 			int updateCount = db.queries.insert(execution);
@@ -409,7 +461,45 @@ public class JdbcJobRepository implements JobRepository {
 		} finally {
 			db.close();
 		}
-
 	}
 
+	protected void sort(List<JobExecutionData> runs) {
+		if (runs == null) {
+			return;
+		}
+
+		Collections.sort(runs, new Comparator<JobExecutionData>() {
+			@Override
+			public int compare(JobExecutionData o1, JobExecutionData o2) {
+				Date v1 = o1.startedAt;
+				Date v2 = o2.startedAt;
+
+				return PrimitiveComparators.compare(v1, v2);
+			}
+		});
+	}
+
+	protected void sortJobs(List<JobData> runs) {
+		if (runs == null) {
+			return;
+		}
+
+		Collections.sort(runs, new Comparator<JobData>() {
+			Date getLastRun(JobData d) {
+				JobExecutionData lastRun = d.getLastRun();
+				if (lastRun == null) {
+					return null;
+				}
+				return lastRun.getEndedAt();
+			}
+
+			@Override
+			public int compare(JobData o1, JobData o2) {
+				Date v1 = getLastRun(o1);
+				Date v2 = getLastRun(o2);
+
+				return PrimitiveComparators.compare(v1, v2);
+			}
+		});
+	}
 }
