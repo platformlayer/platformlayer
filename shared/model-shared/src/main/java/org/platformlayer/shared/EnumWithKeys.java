@@ -1,5 +1,7 @@
 package org.platformlayer.shared;
 
+import com.fathomdb.EnumWithKey;
+
 public class EnumWithKeys {
 
 	public static <T extends EnumWithKey> T fromKey(Class<T> enumType, String key) {
