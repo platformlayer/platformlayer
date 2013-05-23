@@ -82,6 +82,7 @@ public class PlatformLayerServer {
 				}
 
 				List<String> prefixes = Lists.newArrayList();
+
 				prefixes.add("platformlayer-");
 				prefixes.add("fathomdb-");
 				prefixes.add("gwt-");
@@ -119,6 +120,7 @@ public class PlatformLayerServer {
 							break;
 						}
 					}
+
 					if (veto) {
 						continue;
 					}

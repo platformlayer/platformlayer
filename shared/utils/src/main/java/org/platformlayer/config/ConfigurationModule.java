@@ -8,26 +8,26 @@ import org.slf4j.LoggerFactory;
 
 import com.fathomdb.Configuration;
 import com.fathomdb.config.ConfigurationImpl;
-import com.google.inject.AbstractModule;
+import com.fathomdb.config.SimpleConfigurationModule;
 import com.google.inject.matcher.Matchers;
 
-public class ConfigurationModule extends AbstractModule {
+public class ConfigurationModule extends SimpleConfigurationModule {
 	@SuppressWarnings("unused")
 	private static final Logger log = LoggerFactory.getLogger(ConfigurationModule.class);
 
-	private final ConfigurationImpl configuration;
-
 	public ConfigurationModule(ConfigurationImpl configuration) {
-		this.configuration = configuration;
+		super(configuration);
 	}
 
 	public ConfigurationModule() {
-		this(ConfigurationImpl.load());
+		super();
 	}
 
 	@Override
 	protected void configure() {
-		bind(Configuration.class).toInstance(configuration);
+		super.configure();
+
+		ConfigurationImpl configuration = getConfiguration();
 
 		// TODO: Do we really need this??
 		// configuration.bindProperties(binder());
@@ -57,9 +57,5 @@ public class ConfigurationModule extends AbstractModule {
 				throw e;
 			}
 		}
-	}
-
-	public ConfigurationImpl getConfiguration() {
-		return configuration;
 	}
 }

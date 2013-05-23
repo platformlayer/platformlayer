@@ -23,6 +23,18 @@
         </dependency>
 
         <dependency>
+            <groupId>com.fathomdb</groupId>
+            <artifactId>fathomdb-protobuf</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fathomdb</groupId>
+            <artifactId>fathomdb-cluster</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.platformlayer</groupId>
             <artifactId>billing-client</artifactId>
             <version>${project.version}</version>
