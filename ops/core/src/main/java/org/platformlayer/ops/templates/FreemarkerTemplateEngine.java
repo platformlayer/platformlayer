@@ -25,6 +25,12 @@ public class FreemarkerTemplateEngine implements TemplateEngine {
 	Configuration cfg;
 
 	public FreemarkerTemplateEngine(ClassLoader classLoader) {
+		try {
+			freemarker.log.Logger.selectLoggerLibrary(freemarker.log.Logger.LIBRARY_SLF4J);
+		} catch (ClassNotFoundException e) {
+			throw new IllegalStateException("Error configuring freemarker to use SLF4J", e);
+		}
+
 		cfg = new Configuration();
 
 		File baseDir = new File(System.getProperty("user.dir"));
