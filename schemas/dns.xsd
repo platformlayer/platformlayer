@@ -3,8 +3,6 @@
 
   <xs:import namespace="http://platformlayer.org/core/v1.0" schemaLocation="platformlayer-core.xsd"/>
 
-  <xs:element name="dnsRecord" type="tns:dnsRecord"/>
-
   <xs:element name="dnsServer" type="tns:dnsServer"/>
 
   <xs:element name="dnsZone" type="tns:dnsZone"/>
@@ -24,18 +22,6 @@
       <xs:extension base="ns1:itemBase">
         <xs:sequence>
           <xs:element name="dnsName" type="xs:string" minOccurs="0"/>
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-
-  <xs:complexType name="dnsRecord">
-    <xs:complexContent>
-      <xs:extension base="ns1:itemBase">
-        <xs:sequence>
-          <xs:element name="dnsName" type="xs:string" minOccurs="0"/>
-          <xs:element name="recordType" type="xs:string" minOccurs="0"/>
-          <xs:element name="address" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
