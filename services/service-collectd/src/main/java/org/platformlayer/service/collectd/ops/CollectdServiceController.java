@@ -1,8 +1,5 @@
 package org.platformlayer.service.collectd.ops;
 
-import java.io.IOException;
-
-import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.instances.DiskImageRecipeBuilder;
@@ -19,10 +16,6 @@ import com.google.common.base.Strings;
 
 public class CollectdServiceController extends OpsTreeBase {
 	private static final Logger log = LoggerFactory.getLogger(CollectdServiceController.class);
-
-	@Handler
-	public void handler() throws OpsException, IOException {
-	}
 
 	@Override
 	protected void addChildren() throws OpsException {

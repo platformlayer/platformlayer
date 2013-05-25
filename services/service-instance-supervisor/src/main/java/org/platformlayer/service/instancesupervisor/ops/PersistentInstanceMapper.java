@@ -73,6 +73,7 @@ public class PersistentInstanceMapper extends OpsTreeBase {
 
 		if (!OpsContext.isDelete()) {
 			// We always PUT the machine
+			// TODO: Check if unchanged??
 			MachineCreationRequest request = buildMachineCreationRequest(model);
 			request.tags.add(tagForInstance);
 

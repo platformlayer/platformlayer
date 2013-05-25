@@ -156,10 +156,17 @@ public class OpsContext implements Closeable {
 	}
 
 	public void recurseOperation(Object target) throws OpsException {
-		OperationInvoker operationInvoker = opsSystem.getInjector().getInstance(OperationInvoker.class);
-
 		enterLogScope(target);
 		try {
+			if (target instanceof OpsItem) {
+				if (((OpsItem) target).isLazyDelete() && OpsContext.isDelete()) {
+					log.debug("Skipping recursion - lazy delete");
+					return;
+				}
+			}
+
+			OperationInvoker operationInvoker = opsSystem.getInjector().getInstance(OperationInvoker.class);
+
 			try {
 				operationInvoker.invoke(target);
 			} catch (IllegalArgumentException e) {

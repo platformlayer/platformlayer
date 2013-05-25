@@ -15,11 +15,15 @@ import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.service.cloud.direct.model.DirectHost;
 import org.platformlayer.service.cloud.direct.model.DirectInstance;
 import org.platformlayer.service.cloud.direct.ops.DirectCloudUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
 public class CloudMap {
+
+	private static final Logger log = LoggerFactory.getLogger(CloudMap.class);
 
 	@Inject
 	PlatformLayerHelpers platformLayer;
@@ -62,8 +66,15 @@ public class CloudMap {
 					continue;
 				}
 
-				OpsTarget target = directHelpers.toTarget(host);
+				if (host.lifecycle != null) {
+					switch (host.lifecycle) {
+					case Stopping:
+						log.info("Host is terminating; won't allocate to it {}", host.getKey());
+						continue;
+					}
+				}
 
+				OpsTarget target = directHelpers.toTarget(host);
 				hosts.add(new DirectCloudHost(host, target));
 			}
 			this.hosts = hosts;

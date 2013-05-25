@@ -5,6 +5,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.platformlayer.core.model.ItemBase;
+import org.platformlayer.core.model.Lifecycle;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.service.cloud.direct.ops.DirectHostController;
 import org.platformlayer.xaas.Controller;
@@ -26,4 +27,6 @@ public class DirectHost extends ItemBase {
 	public String publicInterface = "eth0";
 
 	public PlatformLayerKey network;
+
+	public Lifecycle lifecycle;
 }

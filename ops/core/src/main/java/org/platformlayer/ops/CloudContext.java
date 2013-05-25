@@ -17,7 +17,7 @@ public interface CloudContext {
 
 	InstanceBase findInstanceByInstanceKey(PlatformLayerKey instanceKey) throws OpsException;
 
-	Machine findMachine(Tag cloudInstanceTag) throws OpsException;
+	Machine findMachine(Tag tag) throws OpsException;
 
 	Machine refreshMachine(Machine machine) throws OpsException;
 

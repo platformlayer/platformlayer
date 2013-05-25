@@ -23,6 +23,7 @@ public class DirectTarget extends OpsTreeBase implements CustomRecursor {
 
 	}
 
+	@Override
 	@Handler
 	public void handler() {
 	}

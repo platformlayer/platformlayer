@@ -6,9 +6,13 @@ import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.HasDescription;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsTarget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 //@Icon("folder")
 public class ManagedDirectory extends ManagedFilesystemItem implements HasDescription {
+
+	private static final Logger log = LoggerFactory.getLogger(ManagedDirectory.class);
 
 	public static ManagedDirectory build(String path, String mode) {
 		return build(new File(path), mode);
@@ -30,7 +34,12 @@ public class ManagedDirectory extends ManagedFilesystemItem implements HasDescri
 	// static final Logger log = LoggerFactory.getLogger(ManagedDirectoryOpsItem.class);
 	//
 	@Handler
-	public void doConfigureValidate(OpsTarget target) throws Exception {
+	public void handler(OpsTarget target) throws Exception {
+		if (OpsContext.isDelete()) {
+			log.debug("Skipping directory deletion");
+			return;
+		}
+
 		File path = getFilePath();
 		FilesystemInfo fsInfo = target.getFilesystemInfoFile(path);
 		boolean exists = (fsInfo != null);

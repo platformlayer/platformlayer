@@ -3,7 +3,6 @@ package org.platformlayer.ops.bootstrap;
 import java.io.File;
 import java.util.Map;
 
-import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.filesystem.TemplatedFile;
@@ -26,10 +25,6 @@ import org.slf4j.LoggerFactory;
 public class InstanceBootstrap extends OpsTreeBase {
 	@SuppressWarnings("unused")
 	private static final Logger log = LoggerFactory.getLogger(InstanceBootstrap.class);
-
-	@Handler
-	public void handler() {
-	}
 
 	@Override
 	protected void addChildren() throws OpsException {

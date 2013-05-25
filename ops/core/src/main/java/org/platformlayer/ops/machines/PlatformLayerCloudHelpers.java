@@ -5,12 +5,8 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
-import org.platformlayer.Filter;
-import org.platformlayer.StateFilter;
-import org.platformlayer.TagFilter;
 import org.platformlayer.core.model.InstanceBase;
 import org.platformlayer.core.model.ItemBase;
-import org.platformlayer.core.model.ManagedItemState;
 import org.platformlayer.core.model.PlatformLayerKey;
 import org.platformlayer.core.model.PublicEndpointBase;
 import org.platformlayer.core.model.Tag;
@@ -22,10 +18,10 @@ import org.platformlayer.ops.helpers.ProviderHelper.ProviderOf;
 import org.platformlayer.ops.helpers.SshKeys;
 import org.platformlayer.ops.images.ImageStore;
 import org.platformlayer.ops.images.ImageStoreProvider;
-import org.platformlayer.xaas.services.ModelClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
@@ -125,26 +121,35 @@ public class PlatformLayerCloudHelpers {
 	}
 
 	public List<InstanceBase> findMachines(Tag tag) throws OpsException {
-		List<InstanceBase> machines = Lists.newArrayList();
-
-		boolean showDeleted = false;
-
-		Filter filter = TagFilter.byTag(tag);
-		if (!showDeleted) {
-			filter = Filter.and(filter, StateFilter.exclude(ManagedItemState.DELETED));
+		if (!Objects.equal(tag.getKey(), Tag.PARENT.getKey())) {
+			throw new IllegalArgumentException();
 		}
 
-		// TODO: Fix this!!
-		for (ModelClass<? extends InstanceBase> modelClass : serviceProviderHelpers
-				.getModelSubclasses(InstanceBase.class)) {
-			for (InstanceBase machine : platformLayer.listItems(modelClass.getJavaClass(), filter)) {
-				machines.add(machine);
+		List<InstanceBase> machines = Lists.newArrayList();
+		boolean showDeleted = false;
+		PlatformLayerKey parent = PlatformLayerKey.parse(tag.getValue());
+		for (ItemBase item : platformLayer.listChildrenTyped(parent, showDeleted)) {
+			if (item instanceof InstanceBase) {
+				machines.add((InstanceBase) item);
 			}
 		}
 
-		// machines.addAll(platformLayer.listItems(DirectInstance.class, tag));
-		// machines.addAll(platformLayer.listItems(RawInstance.class, tag));
-		// machines.addAll(platformLayer.listItems(OpenstackInstance.class, tag));
+		// List<InstanceBase> machines = Lists.newArrayList();
+		//
+		// boolean showDeleted = false;
+		//
+		// Filter filter = TagFilter.byTag(tag);
+		// if (!showDeleted) {
+		// filter = Filter.and(filter, StateFilter.exclude(ManagedItemState.DELETED));
+		// }
+		//
+		// // TODO: Fix this!!
+		// for (ModelClass<? extends InstanceBase> modelClass : serviceProviderHelpers
+		// .getModelSubclasses(InstanceBase.class)) {
+		// for (InstanceBase machine : platformLayer.listItems(modelClass.getJavaClass(), filter)) {
+		// machines.add(machine);
+		// }
+		// }
 
 		return machines;
 	}

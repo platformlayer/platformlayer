@@ -10,13 +10,9 @@ import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.filesystem.FilesystemInfo;
+import org.platformlayer.ops.tree.OpsItemBase;
 
-public class MountCgroups {
-
-	public static MountCgroups build() {
-		return new MountCgroups();
-	}
-
+public class MountCgroups extends OpsItemBase {
 	@Handler
 	public void handler() throws OpsException, IOException {
 		// TODO: Only if not installed

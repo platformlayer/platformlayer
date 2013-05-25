@@ -2,7 +2,6 @@ package org.platformlayer.ops.dns;
 
 import java.io.File;
 
-import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.Injection;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
@@ -14,9 +13,6 @@ import org.platformlayer.ops.tree.LateBound;
 import org.platformlayer.ops.tree.OpsTreeBase;
 
 public class DnsResolver extends OpsTreeBase {
-	@Handler
-	public void doOperation() throws OpsException {
-	}
 
 	@Override
 	protected void addChildren() throws OpsException {

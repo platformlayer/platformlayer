@@ -7,12 +7,13 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-import org.slf4j.*;
 import org.platformlayer.core.model.Action;
 import org.platformlayer.core.model.ItemBase;
 import org.platformlayer.ops.BindingScope;
 import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.reflection.MethodInvoker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -157,6 +158,20 @@ public class OperationInvoker {
 				}
 			} else {
 				log.warn("No OperationType in scope");
+			}
+		}
+
+		// Favor the more derived class
+		Class<?> declaringClassL = l.getDeclaringClass();
+		Class<?> declaringClassR = r.getDeclaringClass();
+		if (!declaringClassL.equals(declaringClassR)) {
+			if (declaringClassL.isAssignableFrom(declaringClassR)) {
+				// R is derived from L
+				return r;
+			}
+			if (declaringClassR.isAssignableFrom(declaringClassL)) {
+				// L is derived from R
+				return l;
 			}
 		}
 

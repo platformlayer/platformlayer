@@ -5,21 +5,23 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.*;
 import org.platformlayer.ops.BindingScope;
 import org.platformlayer.ops.CustomRecursor;
+import org.platformlayer.ops.Handler;
 import org.platformlayer.ops.OperationRecursor;
 import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTree;
 import org.platformlayer.ops.filesystem.ManagedDirectory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fathomdb.Casts;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-public abstract class OpsTreeBase implements OpsTree, CustomRecursor {
+public abstract class OpsTreeBase extends OpsItemBase implements OpsTree, CustomRecursor {
 	static final Logger log = LoggerFactory.getLogger(OpsTreeBase.class);
 
 	private List<Object> children = null;
@@ -137,5 +139,9 @@ public abstract class OpsTreeBase implements OpsTree, CustomRecursor {
 			}
 		}
 		return null;
+	}
+
+	@Handler
+	public void handler() throws Exception {
 	}
 }

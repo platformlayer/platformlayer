@@ -3,7 +3,6 @@ package org.platformlayer.ops.tasks;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import javax.inject.Inject;
 import javax.ws.rs.WebApplicationException;
 
 import org.platformlayer.ApplicationMode;
@@ -30,7 +29,6 @@ import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsSystem;
 import org.platformlayer.ops.backups.BackupContext;
 import org.platformlayer.ops.backups.BackupHelpers;
-import org.platformlayer.ops.lock.LockSystem;
 import org.platformlayer.xaas.repository.ManagedItemRepository;
 import org.platformlayer.xaas.services.ServiceProvider;
 import org.slf4j.Logger;
@@ -51,12 +49,6 @@ public class OperationWorker implements Callable<Object> {
 		this.activeJob = jobRecord;
 		this.opsSystem = opsSystem;
 	}
-
-	@Inject
-	BackupHelpers backups;
-
-	@Inject
-	LockSystem locks;
 
 	Object doOperation() throws OpsException {
 		final Action action = activeJob.getAction();
@@ -145,7 +137,8 @@ public class OperationWorker implements Callable<Object> {
 							throws OpsException {
 						if (action instanceof BackupAction) {
 							// TODO: Don't hard-code this
-							BackupContext backupContext = backups.createBackupContext(item);
+							BackupHelpers backupHelpers = opsSystem.getInjector().getInstance(BackupHelpers.class);
+							BackupContext backupContext = backupHelpers.createBackupContext(item);
 							scopeItems.add(backupContext);
 						}
 					}

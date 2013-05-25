@@ -31,6 +31,7 @@ import org.platformlayer.ops.machines.PlatformLayerHelpers;
 import org.platformlayer.ops.networks.NetworkPoint;
 import org.platformlayer.ops.packages.PackageDependency;
 import org.platformlayer.ops.supervisor.ServiceManager;
+import org.platformlayer.ops.tree.OpsItemBase;
 import org.platformlayer.ops.tree.OpsTreeBase;
 import org.platformlayer.service.cloud.direct.model.DirectHost;
 import org.platformlayer.service.cloud.direct.ops.kvm.host.KvmHost;
@@ -64,6 +65,7 @@ public class DirectHostController extends OpsTreeBase implements CasStoreProvide
 	@Inject
 	ServiceManager serviceManager;
 
+	@Override
 	@Handler
 	public void handler() throws OpsException, IOException {
 		// String instanceId = lxcHost.getTags().findUnique(Tag.INSTANCE_ID);
@@ -135,11 +137,13 @@ public class DirectHostController extends OpsTreeBase implements CasStoreProvide
 
 		host.addChild(KvmHost.class);
 
-		host.addChild(MountCgroups.build());
+		host.addChild(MountCgroups.class);
 
 		host.addChild(PackageDependency.build("bridge-utils"));
 
 		host.addChild(NetworkBridge.class);
+
+		OpsItemBase.setAllChildrenLazyDelete(host, true);
 	}
 
 	@Override

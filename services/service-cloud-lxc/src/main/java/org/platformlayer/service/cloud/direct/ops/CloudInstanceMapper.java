@@ -21,10 +21,14 @@ import org.platformlayer.service.cloud.direct.model.DirectHost;
 import org.platformlayer.service.cloud.direct.model.DirectInstance;
 import org.platformlayer.service.cloud.direct.ops.cloud.CloudMap;
 import org.platformlayer.service.cloud.direct.ops.cloud.DirectCloudHost;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
 public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
+	private static final Logger log = LoggerFactory.getLogger(CloudInstanceMapper.class);
+
 	public DirectInstance instance;
 	public boolean createInstance = true;
 
@@ -62,27 +66,39 @@ public class CloudInstanceMapper extends OpsTreeBase implements CustomRecursor {
 
 		DirectHost host;
 		if (hosts.isEmpty()) {
-			if (createInstance) {
-				DirectCloudHost cloudHost = cloudMap.pickHost(instance);
-				host = cloudHost.getModel();
-
-				platformLayer.addTag(host.getKey(), tag);
+			if (OpsContext.isDelete()) {
+				host = null;
 			} else {
-				throw new OpsException("Instance not yet assigned");
+				if (createInstance) {
+					DirectCloudHost cloudHost = cloudMap.pickHost(instance);
+					host = cloudHost.getModel();
+
+					platformLayer.addTag(host.getKey(), tag);
+				} else {
+					throw new OpsException("Instance not yet assigned");
+				}
 			}
 		} else {
 			host = hosts.get(0);
 		}
 
-		this.cloud = platformLayer.getItem(host.cloud, DirectCloud.class);
-
-		this.hostTarget = directHelpers.toTarget(host);
-
 		RecursionState recursion = getRecursionState();
+		if (host != null) {
+			this.cloud = platformLayer.getItem(host.cloud, DirectCloud.class);
 
-		recursion.pushChildScope(cloud);
-		recursion.pushChildScope(host);
-		recursion.pushChildScope(hostTarget);
+			this.hostTarget = directHelpers.toTarget(host);
+
+			recursion.pushChildScope(cloud);
+			recursion.pushChildScope(host);
+			recursion.pushChildScope(hostTarget);
+		} else {
+			if (!OpsContext.isDelete()) {
+				throw new IllegalStateException();
+			}
+			log.info("No host set; won't recurse in");
+
+			recursion.setPreventRecursion(true);
+		}
 	}
 
 	@Override

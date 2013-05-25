@@ -63,4 +63,9 @@ public class DirectCloudHost {
 		return model;
 	}
 
+	@Override
+	public String toString() {
+		return "DirectCloudHost [model=" + model.getKey() + "]";
+	}
+
 }

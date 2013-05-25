@@ -15,12 +15,13 @@ import org.platformlayer.ops.OpsContext;
 import org.platformlayer.ops.OpsException;
 import org.platformlayer.ops.OpsTarget;
 import org.platformlayer.ops.instances.HasDiskImageRecipe;
+import org.platformlayer.ops.tree.OpsItemBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
-public class PackageDependency implements HasDiskImageRecipe, HasDescription {
+public class PackageDependency extends OpsItemBase implements HasDiskImageRecipe, HasDescription {
 	private static final Logger log = LoggerFactory.getLogger(PackageDependency.class);
 
 	public String packageName;
@@ -38,6 +39,7 @@ public class PackageDependency implements HasDiskImageRecipe, HasDescription {
 	public void doOperation() throws OpsException {
 		if (OpsContext.isDelete()) {
 			// Should we delete the packages? Probably not, because others may also need them
+			log.debug("Not removing package on delete (in case someone else also uses it)");
 		}
 
 		if (OpsContext.isConfigure() || OpsContext.isValidate()) {
