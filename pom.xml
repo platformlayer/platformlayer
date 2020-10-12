@@ -14,7 +14,7 @@
 
         <jetty.version>8.1.10.v20130312</jetty.version>
         <jersey.version>1.13</jersey.version>
-        <junit.version>4.10</junit.version>
+        <junit.version>4.13.1</junit.version>
 
         <jackson.version>2.1.4</jackson.version>
 
