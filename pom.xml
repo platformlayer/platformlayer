@@ -16,7 +16,7 @@
         <jersey.version>1.13</jersey.version>
         <junit.version>4.10</junit.version>
 
-        <jackson.version>2.1.4</jackson.version>
+        <jackson.version>2.12.1</jackson.version>
 
         <version.project>1.0-SNAPSHOT</version.project>
 
