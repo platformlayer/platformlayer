@@ -22,7 +22,7 @@
 
 
         <version.postgresql>9.3-SNAPSHOT</version.postgresql>
-        <version.jettison>1.3.2</version.jettison>
+        <version.jettison>1.5.1</version.jettison>
         <version.fileprovider>1.0-SNAPSHOT</version.fileprovider>
 
         <maven.compiler.source>1.7</maven.compiler.source>
